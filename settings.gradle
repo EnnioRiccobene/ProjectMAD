@@ -1,1 +1,1 @@
-include ':appCustomers', ':appBikers', ':appCompany'
+include ':appCustomers', ':appBikers', ':appCompany', ':SDK'
