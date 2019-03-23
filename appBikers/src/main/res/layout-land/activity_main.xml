@@ -18,10 +18,10 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.108"
+        app:layout_constraintHorizontal_bias="0.101"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.375"
+        app:layout_constraintVertical_bias="0.293"
         app:srcCompat="@drawable/personicon" />
 
     <ScrollView
@@ -37,7 +37,7 @@
         app:layout_constraintHorizontal_bias="0.808"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.405">
+        app:layout_constraintVertical_bias="0.245">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -55,8 +55,8 @@
                         android:id="@+id/editTextEmail"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:layout_marginTop="8dp"
+                        android:layout_weight="1"
                         android:hint="Email"
                         android:inputType="textEmailAddress"
                         app:layout_constraintEnd_toEndOf="@+id/editTextName"
@@ -70,8 +70,8 @@
                         android:id="@+id/editTextName"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:layout_marginTop="8dp"
+                        android:layout_weight="1"
                         android:hint="Name"
                         android:inputType="textPersonName"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -111,5 +111,24 @@
             </TableLayout>
         </LinearLayout>
     </ScrollView>
+
+    <EditText
+        android:id="@+id/additionalInformation"
+        android:layout_width="564dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:hint="Additional Information"
+        android:inputType="text"
+        android:maxLength="150"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.453"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView3"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
