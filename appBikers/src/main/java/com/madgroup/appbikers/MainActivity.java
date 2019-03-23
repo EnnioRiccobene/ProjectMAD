@@ -3,12 +3,14 @@ package com.madgroup.appbikers;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import com.madgroup.sdk.SmartLogger;
+
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText email;
     private EditText password;
     private EditText phone;
-    private ImageView editInfo;
+    private EditText additionalInformation;
     private Boolean modifyingInfo;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
@@ -36,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         email = findViewById(R.id.editTextEmail);
         password = findViewById(R.id.editTextPassword);
         phone = findViewById(R.id.editTextPhone);
-        editInfo = (ImageView)findViewById(R.id.imageButton);
+        additionalInformation = findViewById(R.id.additionalInformation);
         modifyingInfo = false;
 
         // Set all field to unclickable
@@ -44,11 +46,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Load saved information, if exist
         loadFields();
+    }
 
-        // Click on Modify Information Icon
-        editInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    // What happens if I click on a icon on the menu
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            // Edit icon
+            case R.id.editIcon:
                 if(!modifyingInfo){         // I pressed for modifying data
                     modifyingInfo = true;
                     setFieldClickable();
@@ -58,8 +63,14 @@ public class MainActivity extends AppCompatActivity {
                     setFieldUnclickable();
                     saveFields();
                 }
-            }
-        });
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
     }
 
     // What happens if I press back button
@@ -80,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         email.setEnabled(false);
         password.setEnabled(false);
         phone.setEnabled(false);
+        additionalInformation.setEnabled(false);
     }
 
     private void setFieldClickable() {
@@ -87,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         email.setEnabled(true);
         password.setEnabled(true);
         phone.setEnabled(true);
+        additionalInformation.setEnabled(true);
     }
 
     private void loadFields() {
@@ -98,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
             password.setText(prefs.getString("Password", ""));
         if(prefs.contains("Phone"))
             phone.setText(prefs.getString("Phone", ""));
+        if(prefs.contains("Information"))
+            additionalInformation.setText(prefs.getString("Information", ""));
+
     }
 
     private void saveFields() {
@@ -105,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("Email",email.getText().toString());
         editor.putString("Password",password.getText().toString());
         editor.putString("Phone",phone.getText().toString());
+        editor.putString("Information",additionalInformation.getText().toString());
         editor.apply();
     }
-
 }
