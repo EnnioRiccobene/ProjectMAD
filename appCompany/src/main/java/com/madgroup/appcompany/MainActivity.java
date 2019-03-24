@@ -63,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
                                 mUserItems.add(position);
                             }
                         } else if(mUserItems.contains(position)){
-                            mUserItems.remove(position);
+                            //non devo fare remove di position ma devo ottenere l'indice dell'elemento nell'array che contiene position e rimuovere quello
+                            int a = mUserItems.indexOf(position);
+                            mUserItems.remove(a); //Error! l'indice nella rimozione in alcuni casi (inserimento e rimozione disordinata) oltrepassa la size della lista
                         }
                     }
                 });
