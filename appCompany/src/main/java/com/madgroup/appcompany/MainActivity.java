@@ -179,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
         phone.setEnabled(false);
         address.setEnabled(false);
         additionalInformation.setEnabled(false);
+        setCategory.setEnabled(false);
     }
 
     private void setFieldClickable() {
@@ -188,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
         phone.setEnabled(true);
         address.setEnabled(true);
         additionalInformation.setEnabled(true);
+        setCategory.setEnabled(true);
     }
 
     private void loadFields() {
