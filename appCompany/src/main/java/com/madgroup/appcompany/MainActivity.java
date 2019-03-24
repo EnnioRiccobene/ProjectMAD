@@ -1,17 +1,32 @@
 package com.madgroup.appcompany;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.madgroup.sdk.SmartLogger;
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity {
+
+    private Button setCategory;
+    private TextView viewCategories;
+    private String[] listItems;
+    private boolean[] checkedItems;
+    private ArrayList<Integer> mUserItems = new ArrayList<>();
 
     private ImageView personalImage;
     private EditText name;
@@ -28,6 +43,68 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setCategory = (Button) findViewById(R.id.btnFoodCategory);
+        viewCategories = (TextView) findViewById(R.id.textViewFoodCategory);
+
+        listItems = getResources().getStringArray(R.array.food_categories);
+        checkedItems = new boolean[listItems.length];
+
+        setCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+                mBuilder.setTitle(getString(R.string.dialog_title));
+                mBuilder.setMultiChoiceItems(listItems, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int position, boolean isChecked) {
+                        if(isChecked){
+                            if( !mUserItems.contains(position)){
+                                mUserItems.add(position);
+                            }
+                        } else if(mUserItems.contains(position)){
+                            mUserItems.remove(position);
+                        }
+                    }
+                });
+
+                mBuilder.setCancelable(false);
+                mBuilder.setPositiveButton(getString(R.string.ok_label), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String item = "";
+                        for(int i = 0; i < mUserItems.size(); i++){
+                            item = item + listItems[mUserItems.get(i)];
+                            if(i != mUserItems.size() - 1) {
+                                item = item + ", ";
+                            }
+                        }
+                        viewCategories.setText(item);
+                    }
+                });
+
+                mBuilder.setNegativeButton(getString(R.string.dismiss_label), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                mBuilder.setNeutralButton(getString(R.string.clear_all_label), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        for(int i = 0; i < checkedItems.length; i++){
+                            checkedItems[i] = false;
+                            mUserItems.clear();
+                            viewCategories.setText("");
+                        }
+                    }
+                });
+
+                AlertDialog mDialog = mBuilder.create();
+                mDialog.show();
+            }
+        });
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();

@@ -7,4 +7,24 @@
     <string name="form_phone">Phone Number</string>
     <string name="form_address">Address</string>
     <string name="form_info">Additional Information</string>
+    <string name="dialog_title">Select your food categories</string>
+    <string name="ok_label">OK</string>
+    <string name="dismiss_label">Dismiss</string>
+    <string name="clear_all_label">Clear all</string>
+    <string name="form_food_category_btn">Set food category</string>
+
+    <!--Food Categories-->
+    <string-array name="food_categories">
+        <item>Pizza</item>
+        <item>Sandwiches</item>
+        <item>Kebab</item>
+        <item>Italian</item>
+        <item>American</item>
+        <item>Desserts</item>
+        <item>Fry</item>
+        <item>Vegetarian</item>
+        <item>Asian</item>
+        <item>Mediterranean</item>
+        <item>South American</item>
+    </string-array>
 </resources>
