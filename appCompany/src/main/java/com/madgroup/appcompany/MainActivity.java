@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //capire se va salvato anche categoriesCount
+    //salvare anche categoriesCount e i valori booleani di checkedItems che corrispondono alle checkbox
 
     private void saveFields() {
         editor.putString("Name", name.getText().toString());
