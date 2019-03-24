@@ -202,11 +202,15 @@ public class MainActivity extends AppCompatActivity {
         if (prefs.contains("Phone"))
             phone.setText(prefs.getString("Phone", ""));
         if (prefs.contains("Address"))
-            additionalInformation.setText(prefs.getString("Address", ""));
+            address.setText(prefs.getString("Address", ""));
         if (prefs.contains("Information"))
             additionalInformation.setText(prefs.getString("Information", ""));
+        if (prefs.contains("Category"))
+            viewCategories.setText(prefs.getString("Category", "")); //Non funziona quando ruoto il telefono
 
     }
+
+    //capire se va salvato anche categoriesCount
 
     private void saveFields() {
         editor.putString("Name", name.getText().toString());
@@ -215,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("Phone", phone.getText().toString());
         editor.putString("Address", address.getText().toString());
         editor.putString("Information", additionalInformation.getText().toString());
+        editor.putString("Category", viewCategories.getText().toString()); //non funziona quando ruoto il telefono
         editor.apply();
     }
 }
