@@ -10,14 +10,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import com.madgroup.sdk.SmartLogger;
-
-import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -27,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private String[] listItems;
     private boolean[] checkedItems;
     private ArrayList<Integer> mUserItems = new ArrayList<>();
+    private int categoriesCount = 0;
 
     private ImageView personalImage;
     private EditText name;
@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         listItems = getResources().getStringArray(R.array.food_categories);
         checkedItems = new boolean[listItems.length];
+        categoriesCount = 0;
 
         setCategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,13 +59,20 @@ public class MainActivity extends AppCompatActivity {
                 mBuilder.setMultiChoiceItems(listItems, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int position, boolean isChecked) {
-                        if(isChecked){
-                            if( !mUserItems.contains(position)){
-                                mUserItems.add(position);
+                        if (isChecked) {
+                            if (categoriesCount < 3) {
+                                if (!mUserItems.contains(position)) {
+                                    mUserItems.add(position);
+                                    categoriesCount++;
+                                }
+                            } else {
+                                checkedItems[position] = false;
+                                Toast.makeText(getApplicationContext(), getString(R.string.toast_checkbox_limit), Toast.LENGTH_SHORT).show();
                             }
-                        } else if(mUserItems.contains(position)){
+                        } else if (mUserItems.contains(position)) {
                             int a = mUserItems.indexOf(position);
                             mUserItems.remove(a);
+                            categoriesCount--;
                         }
                     }
                 });
@@ -74,9 +82,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String item = "";
-                        for(int i = 0; i < mUserItems.size(); i++){
+                        for (int i = 0; i < mUserItems.size(); i++) {
                             item = item + listItems[mUserItems.get(i)];
-                            if(i != mUserItems.size() - 1) {
+                            if (i != mUserItems.size() - 1) {
                                 item = item + ", ";
                             }
                         }
@@ -84,19 +92,20 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-                mBuilder.setNegativeButton(getString(R.string.dismiss_label), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+//                mBuilder.setNegativeButton(getString(R.string.dismiss_label), new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                    }
+//                });
 
                 mBuilder.setNeutralButton(getString(R.string.clear_all_label), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        for(int i = 0; i < checkedItems.length; i++){
+                        for (int i = 0; i < checkedItems.length; i++) {
                             checkedItems[i] = false;
                             mUserItems.clear();
+                            categoriesCount = 0;
                             viewCategories.setText("");
                         }
                     }
@@ -130,14 +139,13 @@ public class MainActivity extends AppCompatActivity {
     // What happens if I click on a icon on the menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             // Edit icon
             case R.id.editIcon:
-                if(!modifyingInfo){         // I pressed for modifying data
+                if (!modifyingInfo) {         // I pressed for modifying data
                     modifyingInfo = true;
                     setFieldClickable();
-                }
-                else{                      // I pressed to come back
+                } else {                      // I pressed to come back
                     modifyingInfo = false;
                     setFieldUnclickable();
                     saveFields();
@@ -155,12 +163,11 @@ public class MainActivity extends AppCompatActivity {
     // What happens if I press back button
     @Override
     public void onBackPressed() {
-        if(modifyingInfo){
+        if (modifyingInfo) {
             modifyingInfo = false;
             setFieldUnclickable();
             saveFields();
-        }
-        else
+        } else
             super.onBackPressed();
     }
 
@@ -184,28 +191,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadFields() {
-        if(prefs.contains("Name"))
+        if (prefs.contains("Name"))
             name.setText(prefs.getString("Name", ""));
-        if(prefs.contains("Email"))
+        if (prefs.contains("Email"))
             email.setText(prefs.getString("Email", ""));
-        if(prefs.contains("Password"))
+        if (prefs.contains("Password"))
             password.setText(prefs.getString("Password", ""));
-        if(prefs.contains("Phone"))
+        if (prefs.contains("Phone"))
             phone.setText(prefs.getString("Phone", ""));
-        if(prefs.contains("Address"))
+        if (prefs.contains("Address"))
             additionalInformation.setText(prefs.getString("Address", ""));
-        if(prefs.contains("Information"))
+        if (prefs.contains("Information"))
             additionalInformation.setText(prefs.getString("Information", ""));
 
     }
 
     private void saveFields() {
-        editor.putString("Name",name.getText().toString());
-        editor.putString("Email",email.getText().toString());
-        editor.putString("Password",password.getText().toString());
-        editor.putString("Phone",phone.getText().toString());
-        editor.putString("Address",address.getText().toString());
-        editor.putString("Information",additionalInformation.getText().toString());
+        editor.putString("Name", name.getText().toString());
+        editor.putString("Email", email.getText().toString());
+        editor.putString("Password", password.getText().toString());
+        editor.putString("Phone", phone.getText().toString());
+        editor.putString("Address", address.getText().toString());
+        editor.putString("Information", additionalInformation.getText().toString());
         editor.apply();
     }
 }

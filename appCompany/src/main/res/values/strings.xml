@@ -12,6 +12,7 @@
     <string name="dismiss_label">Dismiss</string>
     <string name="clear_all_label">Clear all</string>
     <string name="form_food_category_btn">Set food category</string>
+    <string name="toast_checkbox_limit">Limit reached!!!</string>
 
     <!--Food Categories-->
     <string-array name="food_categories">
