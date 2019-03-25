@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">appCompany</string>
+    <string name="form_name">Nome del ristorante</string>
+    <string name="form_email">Email</string>
+    <string name="form_password">Password</string>
+    <string name="form_phone">Numero di telefono</string>
+    <string name="form_address">Indirizzo</string>
+    <string name="form_info">Altre informazioni</string>
+    <string name="dialog_title">Seleziona le tue categorie di alimenti</string>
+    <string name="ok_label">OK</string>
+    <string name="dismiss_label">Annulla</string>
+    <string name="clear_all_label">Cancella tutto</string>
+    <string name="form_food_category_btn">Scegli categoria</string>
+    <string name="toast_checkbox_limit">Limite raggiunto!!!</string>
+
+    <!--Food Categories-->
+    <string-array name="food_categories">
+        <item>Pizza</item>
+        <item>Panini</item>
+        <item>Kebab</item>
+        <item>Italiano</item>
+        <item>Americano</item>
+        <item>Dolci</item>
+        <item>Fritti</item>
+        <item>Vegetariano</item>
+        <item>Asiatico</item>
+        <item>Mediterraneano</item>
+        <item>Sud Americano</item>
+    </string-array>
+</resources>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">appBikers</string>
-    <string name="form_name">Name</string>
+    <string name="form_name">Nome</string>
     <string name="form_email">Email</string>
     <string name="form_password">Password</string>
-    <string name="form_phone">Phone number</string>
-    <string name="form_info">Additional information</string>
+    <string name="form_phone">Numero di telefono</string>
+    <string name="form_info">Altre informazioni</string>
 </resources>

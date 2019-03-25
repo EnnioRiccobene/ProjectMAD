@@ -207,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
             additionalInformation.setText(prefs.getString("Information", ""));
         if (prefs.contains("Category"))
             viewCategories.setText(prefs.getString("Category", "")); //Non funziona quando ruoto il telefono
-
     }
 
     //salvare anche categoriesCount e i valori booleani di checkedItems che corrispondono alle checkbox
