@@ -21,8 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button setCategory;
-    private TextView viewCategories;
+    private EditText editCategory;
     private String[] listItems;
     private boolean[] checkedItems;
     private ArrayList<Integer> mUserItems = new ArrayList<>();
@@ -44,14 +43,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setCategory = (Button) findViewById(R.id.btnFoodCategory);
-        viewCategories = (TextView) findViewById(R.id.textViewFoodCategory);
-
+        editCategory = findViewById(R.id.editTextFoodCategory);
         listItems = getResources().getStringArray(R.array.food_categories);
         checkedItems = new boolean[listItems.length];
         categoriesCount = 0;
 
-        setCategory.setOnClickListener(new View.OnClickListener() {
+        editCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
@@ -88,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                                 item = item + ", ";
                             }
                         }
-                        viewCategories.setText(item);
+                        editCategory.setText(item);
                     }
                 });
 
@@ -106,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                             checkedItems[i] = false;
                             mUserItems.clear();
                             categoriesCount = 0;
-                            viewCategories.setText("");
+                            editCategory.setText("");
                         }
                     }
                 });
@@ -179,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         phone.setEnabled(false);
         address.setEnabled(false);
         additionalInformation.setEnabled(false);
-        setCategory.setEnabled(false);
+        editCategory.setEnabled(false);
     }
 
     private void setFieldClickable() {
@@ -189,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
         phone.setEnabled(true);
         address.setEnabled(true);
         additionalInformation.setEnabled(true);
-        setCategory.setEnabled(true);
+        editCategory.setEnabled(true);
     }
 
     private void loadFields() {
@@ -205,8 +202,8 @@ public class MainActivity extends AppCompatActivity {
             address.setText(prefs.getString("Address", ""));
         if (prefs.contains("Information"))
             additionalInformation.setText(prefs.getString("Information", ""));
-        if (prefs.contains("Category"))
-            viewCategories.setText(prefs.getString("Category", "")); //Non funziona quando ruoto il telefono
+        if (prefs.contains("EditCategory"))//prova
+            editCategory.setText(prefs.getString("EditCategory", ""));
     }
 
     //salvare anche categoriesCount e i valori booleani di checkedItems che corrispondono alle checkbox
@@ -218,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("Phone", phone.getText().toString());
         editor.putString("Address", address.getText().toString());
         editor.putString("Information", additionalInformation.getText().toString());
-        editor.putString("Category", viewCategories.getText().toString()); //non funziona quando ruoto il telefono
+        editor.putString("EditCategory", editCategory.getText().toString());//prova
         editor.apply();
     }
 }

@@ -99,26 +99,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextAddress" />
 
-        <Button
-            android:id="@+id/btnFoodCategory"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/form_food_category_btn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/additionalInformation" />
-
-        <TextView
-            android:id="@+id/textViewFoodCategory"
+        <EditText
+            android:id="@+id/editTextFoodCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/vertical_margin"
-            android:textSize="20sp"
-            android:gravity="center"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="@string/form_food_category_btn"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnFoodCategory" />
+            app:layout_constraintTop_toBottomOf="@+id/additionalInformation" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
