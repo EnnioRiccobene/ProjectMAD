@@ -25,7 +25,11 @@
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/personicon" />
+            app:srcCompat="@drawable/personicon"
+            android:scaleType="fitCenter"
+            android:onClick="showPopup"
+            />
+        <!--android:background="@drawable/btn_background"-->
 
         <EditText
             android:id="@+id/editTextName"
