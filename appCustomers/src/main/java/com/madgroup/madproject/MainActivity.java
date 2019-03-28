@@ -1,8 +1,11 @@
 package com.madgroup.madproject;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -28,6 +31,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.view.UCropView;
@@ -55,6 +61,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private SharedPreferences.Editor editor;
     private static final int Camera_Pick_Code = 0;
     private static final int Gallery_Pick_Code = 1;
+    private static final String TAG = "SearchActivity";
+    private static final int CAMERA_PERMISSIONS_CODE = 1;
+    private static final int GALLERY_PERMISSIONS_CODE = 2;
+    private static String POPUP_CONSTANT = "mPopup";
+    private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
+    public int iteration = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,20 +92,18 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
         // Load saved information, if exist
         loadFields();
-
     }
 
     // What happens if I click on a icon on the menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             // Edit icon
             case R.id.editIcon:
-                if(!modifyingInfo){         // I pressed for modifying data
+                if (!modifyingInfo) {         // I pressed for modifying data
                     modifyingInfo = true;
                     setFieldClickable();
-                }
-                else{                      // I pressed to come back
+                } else {                      // I pressed to come back
                     modifyingInfo = false;
                     setFieldUnclickable();
                     saveFields();
@@ -111,12 +121,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     // What happens if I press back button
     @Override
     public void onBackPressed() {
-        if(modifyingInfo){
+        if (modifyingInfo) {
             modifyingInfo = false;
             setFieldUnclickable();
             saveFields();
-        }
-        else
+        } else
             super.onBackPressed();
     }
 
@@ -142,36 +151,32 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
     private void loadFields() {
-        if(prefs.contains("Name"))
+        if (prefs.contains("Name"))
             name.setText(prefs.getString("Name", ""));
-        if(prefs.contains("Email"))
+        if (prefs.contains("Email"))
             email.setText(prefs.getString("Email", ""));
-        if(prefs.contains("Password"))
+        if (prefs.contains("Password"))
             password.setText(prefs.getString("Password", ""));
-        if(prefs.contains("Phone"))
+        if (prefs.contains("Phone"))
             phone.setText(prefs.getString("Phone", ""));
-        if(prefs.contains("Address"))
+        if (prefs.contains("Address"))
             additionalInformation.setText(prefs.getString("Address", ""));
-        if(prefs.contains("Information"))
+        if (prefs.contains("Information"))
             additionalInformation.setText(prefs.getString("Information", ""));
     }
 
     private void saveFields() {
-        editor.putString("Name",name.getText().toString());
-        editor.putString("Email",email.getText().toString());
-        editor.putString("Password",password.getText().toString());
-        editor.putString("Phone",phone.getText().toString());
-        editor.putString("Address",address.getText().toString());
-        editor.putString("Information",additionalInformation.getText().toString());
+        editor.putString("Name", name.getText().toString());
+        editor.putString("Email", email.getText().toString());
+        editor.putString("Password", password.getText().toString());
+        editor.putString("Phone", phone.getText().toString());
+        editor.putString("Address", address.getText().toString());
+        editor.putString("Information", additionalInformation.getText().toString());
         editor.apply();
     }
-    private static String POPUP_CONSTANT = "mPopup";
-    private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
 
     public void showPopup(View v) {
-
         PopupMenu popup = new PopupMenu(this, v);
-
         try {
             // Reflection apis to enforce show icon
             Field[] fields = popup.getClass().getDeclaredFields();
@@ -188,7 +193,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         // This activity implements OnMenuItemClickListener
         popup.setOnMenuItemClickListener(this);
         popup.inflate(R.menu.actions);
@@ -199,22 +203,39 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.itemCamera:
-                // Funzione fotocamera
-                Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                /* Performing this check is important because if you call startActivityForResult()
-                using an intent that no app can handle, your app will crash. */
-                if (intentCamera.resolveActivity(getPackageManager()) != null) {
-                   startActivityForResult(intentCamera, Camera_Pick_Code);
-                }
+                int cameraPermission = ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.CAMERA);
+                boolean userPreviousDeniedRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.CAMERA);
 
+                if (cameraPermission==PackageManager.PERMISSION_GRANTED) {
+                    startCamera();
+                } else {
+                    if (userPreviousDeniedRequest) {
+                        Toast.makeText(getApplicationContext(), "Allow the camera usage in settings to use this funcionality.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSIONS_CODE);
+                    }
+                }
                 return true;
+
             case R.id.itemGallery:
-                // Funzione galleria
-                Intent intentGallery = new Intent();
-                intentGallery.setAction(Intent.ACTION_GET_CONTENT);
-                intentGallery.setType("image/*");   // Show only images, no videos or anything else
-                if (intentGallery.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intentGallery, Gallery_Pick_Code);
+
+                int readStoragePermission = ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.READ_EXTERNAL_STORAGE);
+                boolean userPreviousDeniedGalleryRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE);
+
+                if (readStoragePermission==PackageManager.PERMISSION_GRANTED) {
+                    startGallery();
+                } else {
+                    if (userPreviousDeniedGalleryRequest) {
+                        Toast.makeText(getApplicationContext(), "Allow the Gallery usage in settings to use this funcionality.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, GALLERY_PERMISSIONS_CODE);
+                    }
                 }
                 return true;
 
@@ -229,23 +250,42 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         }
     }
 
-    public int iteration = 0;
+    private void startCamera() {
+        // Funzione fotocamera
+        Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    /* Performing this check is important because if you call startActivityForResult()
+                    using an intent that no app can handle, your app will crash. */
+        if (intentCamera.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intentCamera, Camera_Pick_Code);
+        }
+    }
+
+    private void startGallery() {
+        // Funzione galleria
+        Intent intentGallery = new Intent();
+        intentGallery.setAction(Intent.ACTION_GET_CONTENT);
+        intentGallery.setType("image/*");   // Show only images, no videos or anything else
+        if (intentGallery.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intentGallery, Gallery_Pick_Code);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.d("MAD", ""+requestCode);
+        Log.d("MAD", "" + requestCode);
 
         /* Retreiving the tumbnail: the Android Camera application encodes the photo in the return Intent
         delivered to onActivityResult() as a small Bitmap in the extras, under the key "data" */
-        if (requestCode == Camera_Pick_Code && resultCode==RESULT_OK && data!=null) {
+        if (requestCode == Camera_Pick_Code && resultCode == RESULT_OK && data != null) {
             Bundle extras = data.getExtras();
             Bitmap bitmap = (Bitmap) extras.get("data");
             personalImage.setImageBitmap(bitmap);
             //startCrop(getImageUrl);
         }
 
-        if (requestCode == Gallery_Pick_Code && resultCode==RESULT_OK && data!=null) {
+        if (requestCode == Gallery_Pick_Code && resultCode == RESULT_OK && data != null) {
             try {
                 Uri selectedImageUri = data.getData();
                 /*
@@ -259,8 +299,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 } else {
                     // Give the error
                 }
-            }
-            catch(Exception e) {
+            } catch (Exception e) {
 
             }
         }
@@ -296,10 +335,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
         //options.setFreeStyleCropEnabled(true); // Resize a runtime per l'utente
 
-        options.withAspectRatio(1,1);
+        options.withAspectRatio(1, 1);
         options.setHideBottomControls(true);    // Nascondo la barra delle opzioni
-        options.setStatusBarColor(Color.rgb(0,255,0));
-        options.setToolbarColor(Color.rgb(0,255,125));
+        options.setStatusBarColor(Color.rgb(0, 255, 0));
+        options.setToolbarColor(Color.rgb(0, 255, 125));
         options.setCircleDimmedLayer(true); // Mostro il cerchio
         return uCrop.withOptions(options);
     }
@@ -321,12 +360,35 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
     private void restoreImageOnRotation() {
-        if(prefs.contains("PersonalImage")) {
+        if (prefs.contains("PersonalImage")) {
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             personalImage.setImageBitmap(bitmap);
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case CAMERA_PERMISSIONS_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    startCamera();
+                } else {
+                    // permission denied, boo!
+                }
+                return;
+            }
+            case GALLERY_PERMISSIONS_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startGallery();
+                } else {
+                    // permission denied, boo!
+                }
+            }
+        }
+    }
 }
 
