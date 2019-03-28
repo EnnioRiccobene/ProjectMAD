@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.madgroup.sdk.SmartLogger;
+
 import java.util.ArrayList;
 
 import androidx.appcompat.app.AlertDialog;
@@ -88,13 +90,6 @@ public class MainActivity extends AppCompatActivity {
                         editCategory.setText(item);
                     }
                 });
-
-//                mBuilder.setNegativeButton(getString(R.string.dismiss_label), new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.dismiss();
-//                    }
-//                });
 
                 mBuilder.setNeutralButton(getString(R.string.clear_all_label), new DialogInterface.OnClickListener() {
                     @Override
@@ -202,11 +197,22 @@ public class MainActivity extends AppCompatActivity {
             address.setText(prefs.getString("Address", ""));
         if (prefs.contains("Information"))
             additionalInformation.setText(prefs.getString("Information", ""));
-        if (prefs.contains("EditCategory"))//prova
+        if (prefs.contains("FoodCounter"))
+            categoriesCount = prefs.getInt("FoodCounter", 0);
+        if (prefs.contains("checkedItems_size")){
+            int size = prefs.getInt("checkedItems_size", 0);
+            for (int i = 0; i < size; i++) {
+                checkedItems[i] = prefs.getBoolean("checkedItems_" + i, false);
+                SmartLogger.d("LoadFields: array["+i+"] = " + checkedItems[i]);
+            }
+            int listsize = prefs.getInt("mUserItems_size", 0);
+            for (int i = 0; i < listsize; i++) {
+                mUserItems.add(prefs.getInt("listItems_" + i, 0));
+            }
+        }
+        if (prefs.contains("EditCategory"))
             editCategory.setText(prefs.getString("EditCategory", ""));
     }
-
-    //salvare anche categoriesCount e i valori booleani di checkedItems che corrispondono alle checkbox
 
     private void saveFields() {
         editor.putString("Name", name.getText().toString());
@@ -215,7 +221,19 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("Phone", phone.getText().toString());
         editor.putString("Address", address.getText().toString());
         editor.putString("Information", additionalInformation.getText().toString());
-        editor.putString("EditCategory", editCategory.getText().toString());//prova
+        editor.putInt("FoodCounter", categoriesCount);
+        editor.putInt("checkedItems_size", checkedItems.length);
+        editor.putInt("mUserItems_size", mUserItems.size());
+        for(int i = 0; i < checkedItems.length; i++) {
+            editor.putBoolean("checkedItems_" + i, checkedItems[i]);
+            SmartLogger.d("SaveFields: array["+i+"] = " + checkedItems[i]);
+        }
+        for(int i = 0; i < mUserItems.size(); i++){
+            editor.putInt("listItems_" + i, mUserItems.get(i));
+        }
+        editor.putString("EditCategory", editCategory.getText().toString());
         editor.apply();
+
+
     }
 }
