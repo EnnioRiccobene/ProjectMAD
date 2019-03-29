@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
         // Load saved information, if exist
         loadFields();
+
     }
 
     // What happens if I click on a icon on the menu
@@ -103,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 if (!modifyingInfo) {         // I pressed for modifying data
                     modifyingInfo = true;
                     setFieldClickable();
+
                 } else {                      // I pressed to come back
                     modifyingInfo = false;
                     setFieldUnclickable();
@@ -163,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             address.setText(prefs.getString("Address", ""));
         if(prefs.contains("Information"))
             additionalInformation.setText(prefs.getString("Information", ""));
+        restoreImageContent();
     }
 
     private void saveFields() {
@@ -172,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         editor.putString("Phone", phone.getText().toString());
         editor.putString("Address", address.getText().toString());
         editor.putString("Information", additionalInformation.getText().toString());
+        saveImageContent();
         editor.apply();
     }
 
@@ -243,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 // Set the default image
                 Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                 personalImage.setImageDrawable(defaultImg);
+                saveImageContent();
                 return true;
 
             default:
@@ -282,6 +287,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             Bundle extras = data.getExtras();
             Bitmap bitmap = (Bitmap) extras.get("data");
             personalImage.setImageBitmap(bitmap);
+            saveImageContent();
             //startCrop(getImageUrl);
         }
 
@@ -304,7 +310,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         }
         if (requestCode == UCrop.REQUEST_CROP) {
-            handleCropResult(data);
+            if (data!=null)
+                handleCropResult(data);
         }
 
     }
@@ -323,6 +330,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         if (uri != null) {
             try {
                 personalImage.setImageURI(uri);
+                saveImageContent();
             } catch (Exception e) {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -337,8 +345,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
         options.withAspectRatio(1, 1);
         options.setHideBottomControls(true);    // Nascondo la barra delle opzioni
-        options.setStatusBarColor(Color.rgb(0, 255, 0));
-        options.setToolbarColor(Color.rgb(0, 255, 125));
+        options.setStatusBarColor(Color.rgb(0, 87, 75));
+        options.setToolbarColor(Color.rgb(0, 133, 119));
         options.setCircleDimmedLayer(true); // Mostro il cerchio
         return uCrop.withOptions(options);
     }
@@ -352,14 +360,14 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         return encodedString;
     }
 
-    private void saveImageOnRotation() {
+    private void saveImageContent() {
         Bitmap bitmap = ((BitmapDrawable) personalImage.getDrawable()).getBitmap();
         String encoded = fromBitmapToString(bitmap);
         editor.putString("PersonalImage", encoded);
-        editor.commit();
+        editor.apply();
     }
 
-    private void restoreImageOnRotation() {
+    private void restoreImageContent() {
         if (prefs.contains("PersonalImage")) {
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
