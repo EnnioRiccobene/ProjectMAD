@@ -159,9 +159,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             password.setText(prefs.getString("Password", ""));
         if (prefs.contains("Phone"))
             phone.setText(prefs.getString("Phone", ""));
-        if (prefs.contains("Address"))
-            additionalInformation.setText(prefs.getString("Address", ""));
-        if (prefs.contains("Information"))
+        if(prefs.contains("Address"))
+            address.setText(prefs.getString("Address", ""));
+        if(prefs.contains("Information"))
             additionalInformation.setText(prefs.getString("Information", ""));
     }
 
