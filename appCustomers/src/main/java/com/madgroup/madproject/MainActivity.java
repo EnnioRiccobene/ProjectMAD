@@ -35,6 +35,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.madgroup.sdk.SmartLogger;
+import com.madgroup.sdk.MyImageHandler;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.view.UCropView;
 
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private static final int Camera_Pick_Code = 0;
-    private static final int Gallery_Pick_Code = 1;
+//    private static final int Gallery_Pick_Code = 1;
     private static final String TAG = "SearchActivity";
     private static final int CAMERA_PERMISSIONS_CODE = 1;
     private static final int GALLERY_PERMISSIONS_CODE = 2;
@@ -271,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         intentGallery.setAction(Intent.ACTION_GET_CONTENT);
         intentGallery.setType("image/*");   // Show only images, no videos or anything else
         if (intentGallery.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intentGallery, Gallery_Pick_Code);
+            startActivityForResult(intentGallery, MyImageHandler.getInstance().Gallery_Pick_Code);
         }
     }
 
@@ -291,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             //startCrop(getImageUrl);
         }
 
-        if (requestCode == Gallery_Pick_Code && resultCode == RESULT_OK && data != null) {
+        if (requestCode == MyImageHandler.getInstance().Gallery_Pick_Code && resultCode == RESULT_OK && data != null) {
             try {
                 Uri selectedImageUri = data.getData();
                 /*
@@ -351,18 +352,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         return uCrop.withOptions(options);
     }
 
-    // Conversione da Bitmap a String
-    private String fromBitmapToString(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        byte[] bitmapdata = stream.toByteArray();
-        String encodedString = Base64.encodeToString(bitmapdata, Base64.DEFAULT);
-        return encodedString;
-    }
-
     private void saveImageContent() {
         Bitmap bitmap = ((BitmapDrawable) personalImage.getDrawable()).getBitmap();
-        String encoded = fromBitmapToString(bitmap);
+        String encoded = MyImageHandler.getInstance().fromBitmapToString(bitmap);
         editor.putString("PersonalImage", encoded);
         editor.apply();
     }
