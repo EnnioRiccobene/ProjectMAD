@@ -17,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
@@ -35,6 +34,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private ArrayList<Integer> mUserItems = new ArrayList<>();
     private int categoriesCount = 0;
 
-    private ImageView personalImage;
+    private CircleImageView personalImage;
     private EditText name;
     private EditText email;
     private EditText password;
@@ -397,6 +397,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             personalImage.setImageBitmap(bitmap);
+        } else {
+            Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
+            personalImage.setImageDrawable(defaultImg);
         }
     }
 
