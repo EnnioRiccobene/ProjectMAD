@@ -7,7 +7,7 @@
     <string name="form_phone">Numero di telefono</string>
     <string name="form_address">Indirizzo</string>
     <string name="form_info">Altre informazioni</string>
-    <string name="camera">Fotoamera</string>
+    <string name="camera">Fotocamera</string>
     <string name="gallery">Galleria</string>
     <string name="remove">Rimuovi</string>
     <string name="gallerypermission">Abilita i permessi della galleria dalle impostazioni.</string>

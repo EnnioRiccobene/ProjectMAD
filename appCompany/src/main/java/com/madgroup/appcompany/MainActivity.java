@@ -1,27 +1,43 @@
 package com.madgroup.appcompany;
 
+import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
+import com.yalantis.ucrop.UCrop;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     private EditText editCategory;
     private String[] listItems;
@@ -39,6 +55,12 @@ public class MainActivity extends AppCompatActivity {
     private Boolean modifyingInfo;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
+    private static final String TAG = "SearchActivity";
+    private static final int CAMERA_PERMISSIONS_CODE = 1;
+    private static final int GALLERY_PERMISSIONS_CODE = 2;
+    private static String POPUP_CONSTANT = "mPopup";
+    private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
+    public int iteration = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
         phone.setEnabled(false);
         address.setEnabled(false);
         additionalInformation.setEnabled(false);
+        personalImage.setEnabled(false);
         editCategory.setEnabled(false);
     }
 
@@ -181,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
         phone.setEnabled(true);
         address.setEnabled(true);
         additionalInformation.setEnabled(true);
+        personalImage.setEnabled(true);
         editCategory.setEnabled(true);
     }
 
@@ -212,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (prefs.contains("EditCategory"))
             editCategory.setText(prefs.getString("EditCategory", ""));
+        restoreImageContent();
     }
 
     private void saveFields() {
@@ -232,8 +257,172 @@ public class MainActivity extends AppCompatActivity {
             editor.putInt("listItems_" + i, mUserItems.get(i));
         }
         editor.putString("EditCategory", editCategory.getText().toString());
+        saveImageContent();
         editor.apply();
+    }
 
+    public void showPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        try {
+            // Reflection apis to enforce show icon
+            Field[] fields = popup.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if (field.getName().equals(POPUP_CONSTANT)) {
+                    field.setAccessible(true);
+                    Object menuPopupHelper = field.get(popup);
+                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
+                    Method setForceIcons = classPopupHelper.getMethod(POPUP_FORCE_SHOW_ICON, boolean.class);
+                    setForceIcons.invoke(menuPopupHelper, true);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // This activity implements OnMenuItemClickListener
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.actions);
+        popup.show();
+    }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.itemCamera:
+                int cameraPermission = ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.CAMERA);
+                boolean userPreviousDeniedRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.CAMERA);
+
+                if (cameraPermission== PackageManager.PERMISSION_GRANTED) {
+                    MyImageHandler.getInstance().startCamera(this);
+                } else {
+                    if (userPreviousDeniedRequest) {
+                        Toast.makeText(getApplicationContext(), getString(R.string.camerapermission), Toast.LENGTH_SHORT).show();
+                    } else {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSIONS_CODE);
+                    }
+                }
+                return true;
+
+            case R.id.itemGallery:
+
+                int readStoragePermission = ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.READ_EXTERNAL_STORAGE);
+                boolean userPreviousDeniedGalleryRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE);
+
+                if (readStoragePermission==PackageManager.PERMISSION_GRANTED) {
+                    MyImageHandler.getInstance().startGallery(this);
+                } else {
+                    if (userPreviousDeniedGalleryRequest) {
+                        Toast.makeText(getApplicationContext(), getString(R.string.gallerypermission), Toast.LENGTH_SHORT).show();
+                    } else {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, GALLERY_PERMISSIONS_CODE);
+                    }
+                }
+                return true;
+
+            case R.id.itemDelete:
+                // Set the default image
+                Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
+                personalImage.setImageDrawable(defaultImg);
+                saveImageContent();
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        /* Retreiving the tumbnail: the Android Camera application encodes the photo in the return Intent
+        delivered to onActivityResult() as a small Bitmap in the extras, under the key "data" */
+        if (requestCode == MyImageHandler.Camera_Pick_Code && resultCode == RESULT_OK && data != null) {
+            Bundle extras = data.getExtras();
+            Bitmap bitmap = (Bitmap) extras.get("data");
+            personalImage.setImageBitmap(bitmap);
+            saveImageContent();
+        }
+
+        if (requestCode == MyImageHandler.Gallery_Pick_Code && resultCode == RESULT_OK && data != null) {
+            try {
+                Uri selectedImageUri = data.getData();
+                /*
+                    Getting the result and show it in the ImageButton
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
+                    personalImage.setImageBitmap(bitmap);
+                */
+                if (selectedImageUri != null) {
+                    MyImageHandler.getInstance().startCrop(selectedImageUri, iteration, this, this);
+                    iteration++;
+                }
+            } catch (Exception e) {
+                SmartLogger.e("Error in selectedImageUri: " + e.getMessage());
+            }
+        }
+        if (requestCode == UCrop.REQUEST_CROP) {
+            if (data!=null)
+                handleCropResult(data);
+        }
+    }
+
+    //  Richiamata dopo il crop
+    private void handleCropResult(@NonNull Intent result) {
+        final Uri uri = UCrop.getOutput(result);
+        if (uri != null) {
+            try {
+                personalImage.setImageURI(uri);
+                saveImageContent();
+            } catch (Exception e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void saveImageContent() {
+        Bitmap bitmap = ((BitmapDrawable) personalImage.getDrawable()).getBitmap();
+        String encoded = MyImageHandler.getInstance().fromBitmapToString(bitmap);
+        editor.putString("PersonalImage", encoded);
+        editor.apply();
+    }
+
+    private void restoreImageContent() {
+        if (prefs.contains("PersonalImage")) {
+            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+            personalImage.setImageBitmap(bitmap);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case CAMERA_PERMISSIONS_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    MyImageHandler.getInstance().startCamera(this);
+                } else {
+                    // permission denied!
+                    Toast.makeText(getApplicationContext(), getString(R.string.camerapermission), Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+            case GALLERY_PERMISSIONS_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    MyImageHandler.getInstance().startGallery(this);
+                } else {
+                    // permission denied!
+                    Toast.makeText(getApplicationContext(), getString(R.string.gallerypermission), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 }

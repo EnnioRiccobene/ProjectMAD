@@ -13,6 +13,11 @@
     <string name="clear_all_label">Cancella tutto</string>
     <string name="form_food_category_btn">Scegli categoria</string>
     <string name="toast_checkbox_limit">Limite raggiunto!!!</string>
+    <string name="camera">Fotocamera</string>
+    <string name="gallery">Galleria</string>
+    <string name="remove">Rimuovi</string>
+    <string name="gallerypermission">Abilita i permessi della galleria dalle impostazioni.</string>
+    <string name="camerapermission">Abilita i permessi della fotocamera dalle impostazioni.</string>
 
     <!--Food Categories-->
     <string-array name="food_categories">

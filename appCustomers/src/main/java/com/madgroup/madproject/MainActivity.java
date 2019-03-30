@@ -1,51 +1,37 @@
 package com.madgroup.madproject;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.StrictMode;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.util.Base64;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
+
+import com.madgroup.sdk.MyImageHandler;
+import com.madgroup.sdk.SmartLogger;
+import com.yalantis.ucrop.UCrop;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-import com.madgroup.sdk.SmartLogger;
-import com.madgroup.sdk.MyImageHandler;
-import com.yalantis.ucrop.UCrop;
-import com.yalantis.ucrop.view.UCropView;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
@@ -60,8 +46,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private Boolean modifyingInfo;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
-    private static final int Camera_Pick_Code = 0;
-//    private static final int Gallery_Pick_Code = 1;
     private static final String TAG = "SearchActivity";
     private static final int CAMERA_PERMISSIONS_CODE = 1;
     private static final int GALLERY_PERMISSIONS_CODE = 2;
@@ -214,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                         Manifest.permission.CAMERA);
 
                 if (cameraPermission==PackageManager.PERMISSION_GRANTED) {
-                    startCamera();
+                    MyImageHandler.getInstance().startCamera(this);
                 } else {
                     if (userPreviousDeniedRequest) {
                         Toast.makeText(getApplicationContext(), getString(R.string.camerapermission), Toast.LENGTH_SHORT).show();
@@ -233,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                         Manifest.permission.READ_EXTERNAL_STORAGE);
 
                 if (readStoragePermission==PackageManager.PERMISSION_GRANTED) {
-                    startGallery();
+                    MyImageHandler.getInstance().startGallery(this);
                 } else {
                     if (userPreviousDeniedGalleryRequest) {
                         Toast.makeText(getApplicationContext(), getString(R.string.gallerypermission), Toast.LENGTH_SHORT).show();
@@ -256,43 +240,20 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         }
     }
 
-    private void startCamera() {
-        // Funzione fotocamera
-        Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    /* Performing this check is important because if you call startActivityForResult()
-                    using an intent that no app can handle, your app will crash. */
-        if (intentCamera.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intentCamera, Camera_Pick_Code);
-        }
-    }
-
-    private void startGallery() {
-        // Funzione galleria
-        Intent intentGallery = new Intent();
-        intentGallery.setAction(Intent.ACTION_GET_CONTENT);
-        intentGallery.setType("image/*");   // Show only images, no videos or anything else
-        if (intentGallery.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intentGallery, MyImageHandler.getInstance().Gallery_Pick_Code);
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.d("MAD", "" + requestCode);
-
         /* Retreiving the tumbnail: the Android Camera application encodes the photo in the return Intent
         delivered to onActivityResult() as a small Bitmap in the extras, under the key "data" */
-        if (requestCode == Camera_Pick_Code && resultCode == RESULT_OK && data != null) {
+        if (requestCode == MyImageHandler.Camera_Pick_Code && resultCode == RESULT_OK && data != null) {
             Bundle extras = data.getExtras();
             Bitmap bitmap = (Bitmap) extras.get("data");
             personalImage.setImageBitmap(bitmap);
             saveImageContent();
-            //startCrop(getImageUrl);
         }
 
-        if (requestCode == MyImageHandler.getInstance().Gallery_Pick_Code && resultCode == RESULT_OK && data != null) {
+        if (requestCode == MyImageHandler.Gallery_Pick_Code && resultCode == RESULT_OK && data != null) {
             try {
                 Uri selectedImageUri = data.getData();
                 /*
@@ -301,31 +262,20 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                     personalImage.setImageBitmap(bitmap);
                 */
                 if (selectedImageUri != null) {
-                    startCrop(selectedImageUri, iteration);
+                    MyImageHandler.getInstance().startCrop(selectedImageUri, iteration, this, this);
                     iteration++;
-                } else {
-                    // Give the error
                 }
             } catch (Exception e) {
-
+                SmartLogger.e("Error in selectedImageUri: " + e.getMessage());
             }
         }
         if (requestCode == UCrop.REQUEST_CROP) {
             if (data!=null)
                 handleCropResult(data);
         }
-
     }
 
-    private void startCrop(@NonNull Uri uri, int iteration) {
-        String destinationFileName = "SampleCropImage.png" + iteration;
-        Uri uriDestionation = Uri.fromFile(new File(getCacheDir(), destinationFileName));   // getCacheDir è il path della cache
-        UCrop uCrop = UCrop.of(uri, uriDestionation);
-        uCrop = advancedConfig(uCrop);  // Modifica della configurazione
-        uCrop.start(MainActivity.this);
-    }
-
-    // Richiamata dopo il crop
+//  Richiamata dopo il crop
     private void handleCropResult(@NonNull Intent result) {
         final Uri uri = UCrop.getOutput(result);
         if (uri != null) {
@@ -336,20 +286,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
-    }
-
-    // Configurazione del cropper
-    private UCrop advancedConfig(@NonNull UCrop uCrop) {
-        UCrop.Options options = new UCrop.Options();
-
-        //options.setFreeStyleCropEnabled(true); // Resize a runtime per l'utente
-
-        options.withAspectRatio(1, 1);
-        options.setHideBottomControls(true);    // Nascondo la barra delle opzioni
-        options.setStatusBarColor(Color.rgb(0, 87, 75));
-        options.setToolbarColor(Color.rgb(0, 133, 119));
-        options.setCircleDimmedLayer(true); // Mostro il cerchio
-        return uCrop.withOptions(options);
     }
 
     private void saveImageContent() {
@@ -375,20 +311,21 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay!
-                    startCamera();
+                    MyImageHandler.getInstance().startCamera(this);
                 } else {
-                    // permission denied, boo!
+                    // permission denied!
+                    Toast.makeText(getApplicationContext(), getString(R.string.camerapermission), Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
             case GALLERY_PERMISSIONS_CODE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startGallery();
+                    MyImageHandler.getInstance().startGallery(this);
                 } else {
-                    // permission denied, boo!
+                    // permission denied!
+                    Toast.makeText(getApplicationContext(), getString(R.string.gallerypermission), Toast.LENGTH_SHORT).show();
                 }
             }
         }
     }
 }
-
