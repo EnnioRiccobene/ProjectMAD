@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                     startCamera();
                 } else {
                     if (userPreviousDeniedRequest) {
-                        Toast.makeText(getApplicationContext(), "Allow the camera usage in settings to use this funcionality.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.camerapermission), Toast.LENGTH_SHORT).show();
                     } else {
                         ActivityCompat.requestPermissions(this,
                                 new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSIONS_CODE);
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                     startGallery();
                 } else {
                     if (userPreviousDeniedGalleryRequest) {
-                        Toast.makeText(getApplicationContext(), "Allow the Gallery usage in settings to use this funcionality.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.gallerypermission), Toast.LENGTH_SHORT).show();
                     } else {
                         ActivityCompat.requestPermissions(this,
                                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, GALLERY_PERMISSIONS_CODE);

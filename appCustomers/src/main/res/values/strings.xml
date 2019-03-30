@@ -6,4 +6,9 @@
     <string name="form_phone">Phone number</string>
     <string name="form_address">Address</string>
     <string name="form_info">Additional information</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="remove">Remove</string>
+    <string name="gallerypermission">Allow the Gallery usage in settings to use this funcionality.</string>
+    <string name="camerapermission">Allow the camera usage in settings to use this funcionality.</string>
 </resources>
