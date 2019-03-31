@@ -75,11 +75,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         editCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+                final AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
                 mBuilder.setTitle(getString(R.string.dialog_title));
                 mBuilder.setMultiChoiceItems(listItems, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int position, boolean isChecked) {
+
                         if (isChecked) {
                             if (categoriesCount < 3) {
                                 if (!mUserItems.contains(position)) {
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                             categoriesCount--;
                         }
                     }
+
                 });
 
                 mBuilder.setCancelable(false);
