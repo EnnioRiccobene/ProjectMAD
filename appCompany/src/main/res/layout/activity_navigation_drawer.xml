@@ -8,11 +8,13 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+    <!--This is the App Bar, that also include the main screen-->
     <include
         layout="@layout/app_bar_navigation_drawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!--This is the Navigation Drawer-->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
@@ -23,3 +25,10 @@
         app:menu="@menu/activity_navigation_drawer_drawer" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
+
+
+<!--The Navigation Drawer activity template has 4 different xml layouts which usually named:-->
+<!--1. activity_main.xml: contains the DrawerLayout and includes no. 2-->
+<!--2. app_bar_main.xml: contains the action bar xml code and includes no. 3-->
+<!--3. content_main.xml: this should be your main layout-->
+<!--4. nav_header_main: contains the top view of the drawer-->

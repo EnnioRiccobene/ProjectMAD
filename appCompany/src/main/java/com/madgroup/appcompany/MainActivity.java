@@ -7,21 +7,26 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.navigation.NavigationView;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     private EditText editCategory;
     private String[] listItems;
@@ -39,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private Boolean modifyingInfo;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
+    private ActionBarDrawerToggle toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +132,62 @@ public class MainActivity extends AppCompatActivity {
 
         // Load saved information, if exist
         loadFields();
+
+        // Navigation Drawer
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(        // Three lines icon on the left corner
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Set the photo of the Navigation Bar Icon (Need to be completed: refresh when new image is updated)
+//        ImageView nav_profile_icon = (ImageView) findViewById(R.id.nav_profile_icon);
+//        nav_profile_icon.setImageDrawable(personalImage.getDrawable());
+
+        // Set restaurant name and email on navigation header
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
+        if(name.getText() != null)
+            navUsername.setText(name.getText());
+        TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
+        if(email.getText() != null)
+            navEmail.setText(email.getText());
     }
+
+    // Navigation Drawer
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_daily_offer) {
+            // Change activity to Daily Offer
+
+        } else if (id == R.id.nav_reservations) {
+            // Change activity to Reservations
+
+        } else if (id == R.id.nav_profile) {
+            // Change activity to Profile (Current MainActivity)
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        toggle.onConfigurationChanged(newConfig);
+//    }
 
     // What happens if I click on a icon on the menu
     @Override
@@ -233,7 +294,5 @@ public class MainActivity extends AppCompatActivity {
         }
         editor.putString("EditCategory", editCategory.getText().toString());
         editor.apply();
-
-
     }
 }

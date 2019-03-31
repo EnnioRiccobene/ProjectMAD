@@ -28,4 +28,8 @@
         <item>Mediterraneano</item>
         <item>Sud Americano</item>
     </string-array>
+    <string name="title_activity_navigation_drawer">navigationDrawer</string>
+    <string name="navigation_drawer_open">Apri navigation drawer</string>
+    <string name="navigation_drawer_close">Chiudi navigation drawer</string>
+    <string name="nav_header_desc">Navigation header</string>
 </resources>
