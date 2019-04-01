@@ -16,10 +16,12 @@ import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.google.android.material.navigation.NavigationView;
 import com.madgroup.sdk.MyImageHandler;
@@ -69,7 +71,7 @@ public class MainActivity extends AppCompatActivity
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
     public int iteration = 0;
     private ActionBarDrawerToggle toggle;
-
+    private NavigationView navigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +81,6 @@ public class MainActivity extends AppCompatActivity
         listItems = getResources().getStringArray(R.array.food_categories);
         checkedItems = new boolean[listItems.length];
         categoriesCount = 0;
-
         editCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,22 +159,7 @@ public class MainActivity extends AppCompatActivity
         // Load saved information, if exist
         loadFields();
 
-        // Navigation Drawer
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        toggle = new ActionBarDrawerToggle(        // Three lines icon on the left corner
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        // Set the photo of the Navigation Bar Icon (Need to be completed: refresh when new image is updated)
-//        ImageView nav_profile_icon = (ImageView) findViewById(R.id.nav_profile_icon);
-//        nav_profile_icon.setImageDrawable(personalImage.getDrawable());
+        initializeNavigationDrawer();
 
         // Set restaurant name and email on navigation header
         View headerView = navigationView.getHeaderView(0);
@@ -328,11 +314,12 @@ public class MainActivity extends AppCompatActivity
         // Set restaurant name and email on navigation header
         View headerView = ((NavigationView) findViewById(R.id.nav_view)).getHeaderView(0);
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
-        if(name.getText() != null)
-            navUsername.setText(name.getText());
+        String username = prefs.getString("Name", "");
+        navUsername.setText(username);
+
+        String email = prefs.getString("Email", "");
         TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
-        if(email.getText() != null)
-            navEmail.setText(email.getText());
+        navEmail.setText(email);
     }
 
     public void showPopup(View v) {
@@ -467,7 +454,6 @@ public class MainActivity extends AppCompatActivity
         editor.apply();
     }
 
-    // TODO SISTEMARE PERCHE' NON ENTRA NELL'ELSE QUANDO SI RIMUOVE UN'IMMAGINE
     private void restoreImageContent() {
         String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
         if(!ImageBitmap.equals("NoImage")){
@@ -504,5 +490,26 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }
+    }
+
+    public void initializeNavigationDrawer(){
+
+        // Navigation Drawer
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(        // Three lines icon on the left corner
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Set the photo of the Navigation Bar Icon (Need to be completed: refresh when new image is updated)
+//        ImageView nav_profile_icon = (ImageView) findViewById(R.id.nav_profile_icon);
+//        nav_profile_icon.setImageDrawable(personalImage.getDrawable());
+
     }
 }
