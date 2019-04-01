@@ -216,7 +216,10 @@ public class MainActivity extends AppCompatActivity
     // What happens if I press back button
     @Override
     public void onBackPressed() {
-        if (modifyingInfo) {
+        DrawerLayout layout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        if(layout.isDrawerOpen(GravityCompat.START))
+            layout.closeDrawer(GravityCompat.START);
+        else if (modifyingInfo) {
             modifyingInfo = false;
             setFieldUnclickable();
             saveFields();
