@@ -22,19 +22,23 @@
             android:paddingEnd="16dp"
             tools:context=".MainActivity">
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/imagePersonalPhoto"
                 android:layout_width="156dp"
                 android:layout_height="156dp"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/drawer_layout"
+                app:layout_constraintBottom_toTopOf="@id/editTextName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.078"
-                app:srcCompat="@drawable/personicon" />
+                app:srcCompat="@drawable/personicon"
+                android:onClick="showPopup"
+                app:civ_border_width="1dp"
+                app:civ_border_color="#FF000000"/>
 
             <EditText
                 android:id="@+id/editTextName"
@@ -109,8 +113,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/vertical_margin"
-                android:ems="10"
                 android:hint="@string/form_address"
+                android:ems="10"
                 android:inputType="textPostalAddress"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -122,10 +126,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/vertical_margin"
                 android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="@string/form_food_category_btn"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
-                android:hint="@string/form_food_category_btn"
-                android:inputType="textPersonName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/additionalInformation" />

@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity
                             } else {
                                 checkedItems[position] = false;
                                 Toast.makeText(getApplicationContext(), getString(R.string.toast_checkbox_limit), Toast.LENGTH_SHORT).show();
+                                ((AlertDialog)dialog).getListView().setItemChecked(position, false);    // Do not select the 4th
                             }
                         } else if (mUserItems.contains(position)) {
                             int a = mUserItems.indexOf(position);
@@ -192,25 +194,24 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_daily_offer) {
             // Change activity to Daily Offer
+            Intent myIntent = new Intent(this, DailyOfferActivity.class);
+            // myIntent.putExtra("key", value); //Optional parameters
+            this.startActivity(myIntent);
 
         } else if (id == R.id.nav_reservations) {
             // Change activity to Reservations
+            Intent myIntent = new Intent(this, ReservationActivity.class);
+            // myIntent.putExtra("key", value); //Optional parameters
+            this.startActivity(myIntent);
 
         } else if (id == R.id.nav_profile) {
-            // Change activity to Profile (Current MainActivity)
-
+            onBackPressed();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//        toggle.onConfigurationChanged(newConfig);
-//    }
 
     // What happens if I click on a icon on the menu
     @Override
@@ -324,6 +325,15 @@ public class MainActivity extends AppCompatActivity
         editor.putString("EditCategory", editCategory.getText().toString());
         saveImageContent();
         editor.apply();
+
+        // Set restaurant name and email on navigation header
+        View headerView = ((NavigationView) findViewById(R.id.nav_view)).getHeaderView(0);
+        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
+        if(name.getText() != null)
+            navUsername.setText(name.getText());
+        TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
+        if(email.getText() != null)
+            navEmail.setText(email.getText());
     }
 
     public void showPopup(View v) {
@@ -394,6 +404,7 @@ public class MainActivity extends AppCompatActivity
                 // Set the default image
                 Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                 personalImage.setImageDrawable(defaultImg);
+                editor.putString("PersonalImage", "Default");
                 saveImageContent();
                 return true;
 
@@ -457,14 +468,16 @@ public class MainActivity extends AppCompatActivity
         editor.apply();
     }
 
+    // TODO SISTEMARE PERCHE' NON ENTRA NELL'ELSE QUANDO SI RIMUOVE UN'IMMAGINE
     private void restoreImageContent() {
-        if (prefs.contains("PersonalImage")) {
+        if (prefs.contains("PersonalImage") && !prefs.getString("PersonalImage", "").equals("Default")) {
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             personalImage.setImageBitmap(bitmap);
         } else {
             Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
             personalImage.setImageDrawable(defaultImg);
+
         }
     }
 
