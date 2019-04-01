@@ -151,7 +151,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         editor.putString("Password",password.getText().toString());
         editor.putString("Phone",phone.getText().toString());
         editor.putString("Information",additionalInformation.getText().toString());
-        saveImageContent();
         editor.apply();
     }
 

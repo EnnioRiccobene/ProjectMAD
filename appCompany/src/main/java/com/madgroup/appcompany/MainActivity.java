@@ -323,7 +323,6 @@ public class MainActivity extends AppCompatActivity
             editor.putInt("listItems_" + i, mUserItems.get(i));
         }
         editor.putString("EditCategory", editCategory.getText().toString());
-        saveImageContent();
         editor.apply();
 
         // Set restaurant name and email on navigation header
@@ -404,8 +403,8 @@ public class MainActivity extends AppCompatActivity
                 // Set the default image
                 Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                 personalImage.setImageDrawable(defaultImg);
-                editor.putString("PersonalImage", "Default");
-                saveImageContent();
+                editor.remove("PersonalImage");
+                editor.apply();
                 return true;
 
             default:
@@ -470,14 +469,14 @@ public class MainActivity extends AppCompatActivity
 
     // TODO SISTEMARE PERCHE' NON ENTRA NELL'ELSE QUANDO SI RIMUOVE UN'IMMAGINE
     private void restoreImageContent() {
-        if (prefs.contains("PersonalImage") && !prefs.getString("PersonalImage", "").equals("Default")) {
+        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
+        if(!ImageBitmap.equals("NoImage")){
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             personalImage.setImageBitmap(bitmap);
         } else {
             Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
             personalImage.setImageDrawable(defaultImg);
-
         }
     }
 
