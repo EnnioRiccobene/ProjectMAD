@@ -1,6 +1,7 @@
 package com.madgroup.appcompany;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,6 +24,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.github.aakira.expandablelayout.ExpandableLayout;
+import com.github.aakira.expandablelayout.Utils;
 import com.google.android.material.navigation.NavigationView;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
@@ -72,10 +75,24 @@ public class MainActivity extends AppCompatActivity
     public int iteration = 0;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
+
+    TextView hours;
+    TextView arrowbtn;
+    ExpandableLayout hiddenhours;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        hours = findViewById(R.id.hours);
+        arrowbtn = findViewById(R.id.arrowbtn);
+        hiddenhours = findViewById(R.id.hiddenhours);
+
+        //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
+        if(!hiddenhours.isExpanded()){
+            hiddenhours.collapse();
+        }
 
         editCategory = findViewById(R.id.editTextFoodCategory);
         listItems = getResources().getStringArray(R.array.food_categories);
@@ -169,6 +186,23 @@ public class MainActivity extends AppCompatActivity
         TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
         if(email.getText() != null)
             navEmail.setText(email.getText());
+    }
+
+    //I seguenti due metodi sono per gestire l'animazione della freccia durante l'interazione con l'ExpandableLayout
+    public void showhoursdetails(View view) {
+        if (hiddenhours.isExpanded()) {
+            createRotateAnimator(arrowbtn, 180f, 0f).start();
+        } else {
+            createRotateAnimator(arrowbtn, 0f, 180f).start();
+        }
+        hiddenhours.toggle();
+    }
+
+    private ObjectAnimator createRotateAnimator(final View target, final float from, final float to) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(target, "rotation", from, to);
+        animator.setDuration(300);
+        animator.setInterpolator(Utils.createInterpolator(Utils.LINEAR_INTERPOLATOR));
+        return animator;
     }
 
     // Navigation Drawer

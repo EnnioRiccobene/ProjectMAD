@@ -134,6 +134,207 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/additionalInformation" />
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toBottomOf="@+id/editTextFoodCategory"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/orarilayout"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="8dp">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="showhoursdetails"            >
+
+                        <TextView
+                            android:id="@+id/hours"
+                            android:text="Opening hours"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#3d3d3d"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:drawableLeft="@drawable/ic_clock"
+                            android:drawablePadding="8dp"/>
+
+                        <TextView
+                            android:id="@+id/arrowbtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableLeft="@drawable/ic_sort_down"
+                            android:layout_marginStart="16dp"
+                            android:drawablePadding="8dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <com.github.aakira.expandablelayout.ExpandableRelativeLayout
+                    android:id="@+id/hiddenhours"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/orarilayout"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    app:ael_expanded="false"
+                    app:ael_duration="200"
+                    app:ael_interpolator="accelerate"
+                    app:ael_orientation="vertical"        >
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_weight="2"
+                            android:layout_width="8dp"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Monday"
+                                android:textColor="#3d3d3d"
+                                android:paddingStart="25dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tuesday"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"
+                                android:paddingStart="25dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Wednesday"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"
+                                android:paddingStart="25dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Thursday"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"
+                                android:paddingStart="25dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Friday"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"
+                                android:paddingStart="25dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Saturday"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"
+                                android:paddingStart="25dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sunday"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"
+                                android:paddingStart="25dp"/>
+
+                            <TextView
+                                android:id="@+id/modifyhours"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Modify hours"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#006db3"
+                                android:layout_marginTop="16dp"
+                                android:paddingStart="25dp"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_weight="1"
+                            android:layout_width="8dp"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/mondayhour"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Closed"
+                                android:textColor="#3d3d3d"
+                                />
+
+                            <TextView
+                                android:id="@+id/tuesdayhour"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Closed"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"/>
+
+                            <TextView
+                                android:id="@+id/wednesdayhour"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Closed"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"/>
+
+                            <TextView
+                                android:id="@+id/thursdayhour"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Closed"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"/>
+
+                            <TextView
+                                android:id="@+id/fridayhour"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Closed"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"/>
+
+                            <TextView
+                                android:id="@+id/saturdayhour"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Closed"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"/>
+
+                            <TextView
+                                android:id="@+id/sundayhour"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Closed"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"/>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+
+            </RelativeLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
