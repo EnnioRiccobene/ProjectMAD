@@ -157,7 +157,7 @@
 
                         <TextView
                             android:id="@+id/hours"
-                            android:text="Opening hours"
+                            android:text="@string/opening_hours"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#3d3d3d"
@@ -202,68 +202,76 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Monday"
+                                android:text="@string/monday"
                                 android:textColor="#3d3d3d"
-                                android:paddingStart="25dp"/>
+                                android:paddingStart="25dp"
+                                android:paddingEnd="25dp"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Tuesday"
+                                android:text="@string/tuesday"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"
-                                android:paddingStart="25dp"/>
+                                android:paddingStart="25dp"
+                                android:paddingEnd="25dp"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Wednesday"
+                                android:text="@string/wednesday"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"
-                                android:paddingStart="25dp"/>
+                                android:paddingStart="25dp"
+                                android:paddingEnd="25dp"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Thursday"
+                                android:text="@string/thursday"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"
-                                android:paddingStart="25dp"/>
+                                android:paddingStart="25dp"
+                                android:paddingEnd="25dp"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Friday"
+                                android:text="@string/friday"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"
-                                android:paddingStart="25dp"/>
+                                android:paddingStart="25dp"
+                                android:paddingEnd="25dp"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Saturday"
+                                android:text="@string/saturday"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"
-                                android:paddingStart="25dp"/>
+                                android:paddingStart="25dp"
+                                android:paddingEnd="25dp"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Sunday"
+                                android:text="@string/sunday"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"
-                                android:paddingStart="25dp"/>
+                                android:paddingStart="25dp"
+                                android:paddingEnd="25dp"/>
 
                             <TextView
                                 android:id="@+id/modifyhours"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Modify hours"
+                                android:text="@string/modify_hours"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="#006db3"
                                 android:layout_marginTop="16dp"
-                                android:paddingStart="25dp"/>
+                                android:paddingStart="25dp"
+                                android:paddingEnd="25dp"/>
 
                         </LinearLayout>
 
@@ -277,7 +285,7 @@
                                 android:id="@+id/mondayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Closed"
+                                android:text="@string/closed"
                                 android:textColor="#3d3d3d"
                                 />
 
@@ -285,15 +293,15 @@
                                 android:id="@+id/tuesdayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Closed"
-                                android:textColor="#3d3d3d"
-                                android:layout_marginTop="8dp"/>
+                                android:layout_marginTop="8dp"
+                                android:text="@string/closed"
+                                android:textColor="#3d3d3d" />
 
                             <TextView
                                 android:id="@+id/wednesdayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Closed"
+                                android:text="@string/closed"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"/>
 
@@ -301,7 +309,7 @@
                                 android:id="@+id/thursdayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Closed"
+                                android:text="@string/closed"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"/>
 
@@ -309,7 +317,7 @@
                                 android:id="@+id/fridayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Closed"
+                                android:text="@string/closed"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"/>
 
@@ -317,7 +325,7 @@
                                 android:id="@+id/saturdayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Closed"
+                                android:text="@string/closed"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"/>
 
@@ -325,7 +333,7 @@
                                 android:id="@+id/sundayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Closed"
+                                android:text="@string/closed"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"/>
 

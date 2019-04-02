@@ -37,4 +37,14 @@
     <string name="navigation_drawer_open">Apri navigation drawer</string>
     <string name="navigation_drawer_close">Chiudi navigation drawer</string>
     <string name="nav_header_desc">Navigation header</string>
+    <string name="opening_hours">Orari di apertura</string>
+    <string name="monday">Lunedì</string>
+    <string name="tuesday">Martedì</string>
+    <string name="wednesday">Mercoledì</string>
+    <string name="thursday">Giovedì</string>
+    <string name="friday">Venerdì</string>
+    <string name="saturday">Sabato</string>
+    <string name="sunday">Domenica</string>
+    <string name="modify_hours">Modifica orari</string>
+    <string name="closed">Chiuso</string>
 </resources>
