@@ -16,12 +16,11 @@ import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewStub;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import com.google.android.material.navigation.NavigationView;
 import com.madgroup.sdk.MyImageHandler;
@@ -392,6 +391,7 @@ public class MainActivity extends AppCompatActivity
                 personalImage.setImageDrawable(defaultImg);
                 editor.remove("PersonalImage");
                 editor.apply();
+                updateNavigatorPersonalIcon();
                 return true;
 
             default:
@@ -452,6 +452,7 @@ public class MainActivity extends AppCompatActivity
         String encoded = MyImageHandler.getInstance().fromBitmapToString(bitmap);
         editor.putString("PersonalImage", encoded);
         editor.apply();
+        updateNavigatorPersonalIcon();
     }
 
     private void restoreImageContent() {
@@ -508,8 +509,20 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // Set the photo of the Navigation Bar Icon (Need to be completed: refresh when new image is updated)
-//        ImageView nav_profile_icon = (ImageView) findViewById(R.id.nav_profile_icon);
-//        nav_profile_icon.setImageDrawable(personalImage.getDrawable());
+        updateNavigatorPersonalIcon();
+    }
 
+    public void updateNavigatorPersonalIcon(){
+        View headerView = navigationView.getHeaderView(0);
+        CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
+        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
+        if(!ImageBitmap.equals("NoImage")){
+            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+            nav_profile_icon.setImageBitmap(bitmap);
+        } else {
+            Drawable defaultImg = getResources().getDrawable(R.mipmap.ic_launcher_round);
+            nav_profile_icon.setImageDrawable(defaultImg);
+        }
     }
 }

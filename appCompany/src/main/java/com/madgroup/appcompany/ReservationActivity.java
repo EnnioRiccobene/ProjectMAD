@@ -5,11 +5,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -102,5 +107,20 @@ public class ReservationActivity extends AppCompatActivity implements
         String email = prefs.getString("Email", "");
         TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
         navEmail.setText(email);
+        updateNavigatorPersonalIcon();
+    }
+
+    public void updateNavigatorPersonalIcon(){
+        View headerView = navigationView.getHeaderView(0);
+        CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
+        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
+        if(!ImageBitmap.equals("NoImage")){
+            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+            nav_profile_icon.setImageBitmap(bitmap);
+        } else {
+            Drawable defaultImg = getResources().getDrawable(R.mipmap.ic_launcher_round);
+            nav_profile_icon.setImageDrawable(defaultImg);
+        }
     }
 }
