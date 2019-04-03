@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private CircleImageView personalImage;
     private EditText name;
     private EditText email;
-    private EditText password;
+    // private EditText password;
     private EditText phone;
     private EditText additionalInformation;
     private Boolean modifyingInfo;
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         personalImage = findViewById(R.id.imagePersonalPhoto);
         name = findViewById(R.id.editTextName);
         email = findViewById(R.id.editTextEmail);
-        password = findViewById(R.id.editTextPassword);
+        // password = findViewById(R.id.editTextPassword);
         phone = findViewById(R.id.editTextPhone);
         additionalInformation = findViewById(R.id.additionalInformation);
         modifyingInfo = false;
@@ -85,11 +85,13 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 if(!modifyingInfo){         // I pressed for modifying data
                     modifyingInfo = true;
                     setFieldClickable();
+                    Toast.makeText(getApplicationContext(), "Edit fields", Toast.LENGTH_SHORT).show();
                 }
                 else{                      // I pressed to come back
                     modifyingInfo = false;
                     setFieldUnclickable();
                     saveFields();
+                    Toast.makeText(getApplicationContext(), "Data saved", Toast.LENGTH_SHORT).show();
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private void setFieldUnclickable() {
         name.setEnabled(false);
         email.setEnabled(false);
-        password.setEnabled(false);
+        // password.setEnabled(false);
         phone.setEnabled(false);
         additionalInformation.setEnabled(false);
         personalImage.setEnabled(false);
@@ -125,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private void setFieldClickable() {
         name.setEnabled(true);
         email.setEnabled(true);
-        password.setEnabled(true);
+        // password.setEnabled(true);
         phone.setEnabled(true);
         additionalInformation.setEnabled(true);
         personalImage.setEnabled(true);
@@ -136,8 +138,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             name.setText(prefs.getString("Name", ""));
         if(prefs.contains("Email"))
             email.setText(prefs.getString("Email", ""));
-        if(prefs.contains("Password"))
-            password.setText(prefs.getString("Password", ""));
+        // if(prefs.contains("Password"))
+            // password.setText(prefs.getString("Password", ""));
         if(prefs.contains("Phone"))
             phone.setText(prefs.getString("Phone", ""));
         if(prefs.contains("Information"))
@@ -148,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private void saveFields() {
         editor.putString("Name",name.getText().toString());
         editor.putString("Email",email.getText().toString());
-        editor.putString("Password",password.getText().toString());
+        // editor.putString("Password",password.getText().toString());
         editor.putString("Phone",phone.getText().toString());
         editor.putString("Information",additionalInformation.getText().toString());
         editor.apply();
@@ -222,7 +224,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 // Set the default image
                 Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                 personalImage.setImageDrawable(defaultImg);
-                saveImageContent();
+                editor.remove("PersonalImage");
+                editor.apply();
                 return true;
 
             default:
@@ -286,7 +289,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
     private void restoreImageContent() {
-        if (prefs.contains("PersonalImage")) {
+        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
+        if(!ImageBitmap.equals("NoImage")){
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             personalImage.setImageBitmap(bitmap);
