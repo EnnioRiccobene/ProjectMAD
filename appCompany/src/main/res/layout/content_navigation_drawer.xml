@@ -271,7 +271,7 @@
                                 android:textColor="#006db3"
                                 android:layout_marginTop="16dp"
                                 android:paddingStart="25dp"
-                                android:paddingEnd="25dp" />
+                                android:paddingEnd="25dp"/>
 
                         </LinearLayout>
 
