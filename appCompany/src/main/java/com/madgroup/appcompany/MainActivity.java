@@ -79,6 +79,15 @@ public class MainActivity extends AppCompatActivity
     TextView hours;
     TextView arrowbtn;
     ExpandableLayout hiddenhours;
+    TextView modifyhours;
+    TextView mondayhour;
+    TextView tuesdayhour;
+    TextView wednesdayhour;
+    TextView thursdayhour;
+    TextView fridayhour;
+    TextView saturdayhour;
+    TextView sundayhour;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +97,14 @@ public class MainActivity extends AppCompatActivity
         hours = findViewById(R.id.hours);
         arrowbtn = findViewById(R.id.arrowbtn);
         hiddenhours = findViewById(R.id.hiddenhours);
+        modifyhours = findViewById(R.id.modifyhours);
+        mondayhour = findViewById(R.id.mondayhour);
+        tuesdayhour = findViewById(R.id.tuesdayhour);
+        wednesdayhour = findViewById(R.id.wednesdayhour);
+        thursdayhour = findViewById(R.id.thursdayhour);
+        fridayhour = findViewById(R.id.fridayhour);
+        saturdayhour = findViewById(R.id.saturdayhour);
+        sundayhour = findViewById(R.id.sundayhour);
 
         //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
         if(!hiddenhours.isExpanded()){
