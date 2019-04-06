@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.content.Intent;
@@ -21,6 +23,8 @@ import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
+
 
 public class DailyOfferActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
@@ -30,15 +34,39 @@ public class DailyOfferActivity extends AppCompatActivity implements
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
 
+    ArrayList<Dish> myList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_offer);
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
 
         // OVERRIDE DEL ONBACKPRESSED
         initializeNavigationDrawer();
+
+        Bitmap icon = BitmapFactory.decodeResource(this.getResources(), R.drawable.personicon);
+
+        myList.add(new Dish(0,"Pollo", 3, 1, "Curry",icon));
+        myList.add(new Dish(2,"Pollo2", 3.90f, 1, "Curry",icon));
+        myList.add(new Dish(0,"Pollo", 3, 1, "Curry",icon));
+        myList.add(new Dish(2,"Pollo2", 3, 1, "Curry",icon));
+        myList.add(new Dish(0,"Pollo", 3, 1, "Curry",icon));
+        myList.add(new Dish(2,"Pollo2", 3, 1, "Curry",icon));
+        myList.add(new Dish(0,"Pollo", 3, 1, "Curry",icon));
+        myList.add(new Dish(2,"Pollo2", 3, 1, "Curry",icon));
+
+        initDailyOfferRecyclerView();
+    }
+
+
+    private void initDailyOfferRecyclerView() {
+        RecyclerView recyclerView = this.findViewById(R.id.my_recycler_view);
+        DailyOfferRecyclerViewAdapter adapter = new DailyOfferRecyclerViewAdapter(this,  myList);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     // Navigation Drawer
