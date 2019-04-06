@@ -70,8 +70,10 @@
         android:textColor="#000"
         android:layout_toRightOf="@id/dish_name"
         android:layout_marginTop="0dp"
-        android:textSize="30sp"
+        android:layout_marginRight="15dp"
+        android:textSize="25sp"
         android:textAlignment="textEnd"
+        android:background="?android:attr/selectableItemBackground"
         />
 
 

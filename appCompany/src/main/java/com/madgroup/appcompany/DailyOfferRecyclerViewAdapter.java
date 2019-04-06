@@ -2,10 +2,13 @@ package com.madgroup.appcompany;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,10 +21,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 // Creo un ViewHolder (che contiene il layout della cella) e l'Adapter lo setto di tipo ViewHolder
 
-public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOfferRecyclerViewAdapter.ViewHolder>  {
+public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOfferRecyclerViewAdapter.ViewHolder>  implements PopupMenu.OnMenuItemClickListener{
 
     private ArrayList<Dish> dailyOfferList = new ArrayList<>();
     private Context mContext;
+    private static String POPUP_CONSTANT = "mPopup";
+    private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
+
 
     public DailyOfferRecyclerViewAdapter(Context mContext, ArrayList<Dish> dailyOfferList) {
         this.dailyOfferList = dailyOfferList;
@@ -38,7 +44,7 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
         viewHolder.dishName.setText(dailyOfferList.get(i).getName());
         viewHolder.dishPrice.setText(""+dailyOfferList.get(i).getPrice()+"€");
         viewHolder.dishQuantity.setText("Quantità disponibile: "+dailyOfferList.get(i).getAvailableQuantity());
@@ -56,7 +62,8 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
             @Override
             public void onClick(View v) {
                 Toast.makeText(mContext, "Selected menu with index: "+i, Toast.LENGTH_SHORT).show();
-
+                viewHolder.popupButton.setBackgroundColor(Color.TRANSPARENT);
+                showEditPopup(viewHolder.popupButton);
             }
         });
     }
@@ -87,4 +94,25 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
             popupButton = itemView.findViewById(R.id.popupButton);
         }
     }
+
+    public void showEditPopup(View v) {
+        PopupMenu popup = new PopupMenu(mContext, v);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.actions2);
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.itemEdit:
+
+            case R.id.itemRemove:
+
+            default:
+                return false;
+        }
+    }
+
 }
