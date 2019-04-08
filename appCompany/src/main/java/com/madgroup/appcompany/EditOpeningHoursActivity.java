@@ -24,7 +24,7 @@ public class EditOpeningHoursActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_opening_hours); //todo: errore, chash perché non in grado di avviare l'activity. Didn't find class "android.support.v7.widget.RecyclerView" on path: DexPathList[[zip file "/data/app/com.madgroup.appcompany-XMLwVpj7evaMa4bUQvwpew==/base.apk"
+        setContentView(R.layout.activity_edit_opening_hours);
 
         dayOldHourPreview = getIntent().getStringArrayListExtra(MainActivity.EXTRA_MESSAGE);
 

@@ -546,6 +546,7 @@ public class MainActivity extends AppCompatActivity
                     if(extrasBundle.containsKey(getResources().getString(R.string.Sunday))){
                         sundayhour.setText(extrasBundle.getString(getResources().getString(R.string.Sunday)));
                     }
+                    saveFields();
                 }
             }
         }
@@ -664,6 +665,5 @@ public class MainActivity extends AppCompatActivity
         startActivityForResult(intentHours, TEXT_REQUEST);
     }
 
-    //todo: rendere non cliccabile la parte relativa a "modifica orari" in base alla matita (fatto) e salvare i valori delle TextView (fatto ma non funziona. quando giro lo schermo ricarica l'xml con su scritto closed (o prende dal valore di default))
     //todo: aggiungere il menù nell'activity per la modifica degli orari con backbutton e conferma
 }
