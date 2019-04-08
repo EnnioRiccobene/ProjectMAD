@@ -1,5 +1,6 @@
 package com.madgroup.appcompany;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -38,6 +40,9 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // FloatingActionButton fc = findViewById(R.id.add_button);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_offer);
 
@@ -47,16 +52,19 @@ public class DailyOfferActivity extends AppCompatActivity implements
         // OVERRIDE DEL ONBACKPRESSED
         initializeNavigationDrawer();
 
-        Bitmap icon = BitmapFactory.decodeResource(this.getResources(), R.drawable.personicon);
+        Bitmap carbonaraIcon = BitmapFactory.decodeResource(this.getResources(), R.drawable.carbonara);
+        Bitmap gnocchiIcon = BitmapFactory.decodeResource(this.getResources(), R.drawable.gnocchi);
+        Bitmap lasagneIcon = BitmapFactory.decodeResource(this.getResources(), R.drawable.lasagne);
 
-        myList.add(new Dish(0,"Pollo", 3, 1, "Curry",icon));
-        myList.add(new Dish(2,"Pollo2", 3.90f, 1, "Curry",icon));
-        myList.add(new Dish(0,"Pollo", 3, 1, "Curry",icon));
-        myList.add(new Dish(2,"Pollo2", 3, 1, "Curry",icon));
-        myList.add(new Dish(0,"Pollo", 3, 1, "Curry",icon));
-        myList.add(new Dish(2,"Pollo2", 3, 1, "Curry",icon));
-        myList.add(new Dish(0,"Pollo", 3, 1, "Curry",icon));
-        myList.add(new Dish(2,"Pollo2", 3, 1, "Curry",icon));
+
+        myList.add(new Dish(0,"Spaghetti alla Carbonara", 5.5f, 5, "" +
+                "Guanciale, uova, pecorino, pepe nero.",carbonaraIcon));
+        myList.add(new Dish(1,"Gnocchi di patet", 5.90f, 19, "Patate, " +
+                "Farina, " +
+                "Uova, ", gnocchiIcon));
+        myList.add(new Dish(2,"Lasagne alla Bolognese", 8.5f, 3, "Ragù, Besciamella." +
+                "Olio extravergine d'oliva, " +
+                "Pepe nero, ", lasagneIcon));
 
         initDailyOfferRecyclerView();
     }

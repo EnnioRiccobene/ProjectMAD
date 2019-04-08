@@ -16,16 +16,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".DailyOfferActivity"></activity>
-        <activity android:name=".ReservationActivity" />
-        <activity
-            android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan">
+        <activity android:name=".DailyOfferActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+        <activity android:name=".ReservationActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:windowSoftInputMode="adjustPan">
+
         </activity>
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"

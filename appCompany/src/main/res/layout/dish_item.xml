@@ -1,41 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="6dp">
+
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dish_item_layout"
     android:padding="15dp">
-    
+
+
+
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:id="@+id/dish_photo"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@mipmap/ic_launcher"
+        app:civ_border_width="1dp"/>
+
+    <RelativeLayout
+        android:id="@+id/name_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/dish_photo"
+        android:layout_marginLeft="10dp"
+        >
+
+        <TextView
+            android:id="@+id/dish_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Nome piatto"
+            android:textColor="#000"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/popupButton"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_more"
+            android:layout_alignParentRight="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dish_price"
+            android:text="5€"
+            android:textColor="#000"
+            android:layout_below="@+id/dish_name"
+            android:layout_marginTop="3dp"
+            android:textSize="16sp"
+            />
+
+    </RelativeLayout>
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/dish_name"
-        android:text="Nome piatto"
-        android:textColor="#000"
-        android:layout_centerVertical="false"
-        android:layout_toRightOf="@id/dish_photo"
-        android:layout_marginTop="3dp"
-        android:layout_marginLeft="10dp"
-        android:textSize="20sp"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/dish_price"
-        android:text="5€"
-        android:textColor="#000"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/dish_photo"
-        android:layout_below="@id/dish_name"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="3dp"
-        android:textSize="25sp"
+        android:id="@+id/dish_description"
+        android:text="Ingredienti: fwoihiwndsuciewhbcuowbcowucbewuo"
+        android:textColor="#777"
+        android:layout_below="@id/dish_photo"
+        android:layout_marginTop="8dp"
+        android:textSize="13sp"
         />
 
     <TextView
@@ -46,37 +83,10 @@
         android:textColor="#777"
         android:layout_centerVertical="true"
         android:layout_below="@id/dish_description"
-        android:layout_marginLeft="0dp"
-        android:layout_marginTop="10dp"
-        android:textSize="15sp"
+        android:layout_marginTop="4dp"
+        android:textSize="13sp"
         />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/dish_description"
-        android:text="Ingredienti: fwoihiwndsuciewhbcuowbcowucbewuo"
-        android:textColor="#777"
-        android:layout_below="@id/dish_photo"
-        android:layout_marginTop="1dp"
-        android:textSize="18sp"
-        />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/popupButton"
-        android:text="&#8942;"
-        android:textColor="#000"
-        android:layout_toRightOf="@id/dish_name"
-        android:layout_marginTop="0dp"
-        android:layout_marginRight="15dp"
-        android:textSize="25sp"
-        android:textAlignment="textEnd"
-        android:background="?android:attr/selectableItemBackground"
-        />
-
-
-
 
 </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
