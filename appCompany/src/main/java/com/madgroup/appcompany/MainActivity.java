@@ -34,6 +34,7 @@ import com.yalantis.ucrop.UCrop;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.annotation.NonNull;
@@ -42,6 +43,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -76,6 +78,8 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
 
+    public static final int TEXT_REQUEST = 1;
+
     TextView hours;
     TextView arrowbtn;
     ExpandableLayout hiddenhours;
@@ -87,7 +91,10 @@ public class MainActivity extends AppCompatActivity
     TextView fridayhour;
     TextView saturdayhour;
     TextView sundayhour;
+    NestedScrollView nestedScrollView;
 
+    public static final String EXTRA_MESSAGE = "com.madgroup.appcompany.extra.MESSAGE";
+    private LinkedHashMap<String, String> hourValue = new LinkedHashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +112,8 @@ public class MainActivity extends AppCompatActivity
         fridayhour = findViewById(R.id.fridayhour);
         saturdayhour = findViewById(R.id.saturdayhour);
         sundayhour = findViewById(R.id.sundayhour);
+
+        nestedScrollView = findViewById(R.id.nestedScrollView);
 
         //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
         if(!hiddenhours.isExpanded()){
@@ -213,6 +222,7 @@ public class MainActivity extends AppCompatActivity
             createRotateAnimator(arrowbtn, 0f, 180f).start();
         }
         hiddenhours.toggle();
+//        nestedScrollView.scrollTo(0, view.getBottom()); todo: capire come far scrollare la vista verso il basso in automatico quando apro la view
     }
 
     private ObjectAnimator createRotateAnimator(final View target, final float from, final float to) {
@@ -483,6 +493,37 @@ public class MainActivity extends AppCompatActivity
             if (data!=null)
                 handleCropResult(data);
         }
+
+        //Gestione dei valiri di ritorno in caso di richiesta modifica orari
+        if (requestCode == TEXT_REQUEST) {
+            if (resultCode == RESULT_OK) {
+
+                Bundle extrasBundle = data.getExtras();
+                if(!extrasBundle.isEmpty()){
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Monday))){
+                        mondayhour.setText(extrasBundle.getString(getResources().getString(R.string.Monday)));
+                    }
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Tuesday))){
+                        tuesdayhour.setText(extrasBundle.getString(getResources().getString(R.string.Tuesday)));
+                    }
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Wednesday))){
+                        wednesdayhour.setText(extrasBundle.getString(getResources().getString(R.string.Wednesday)));
+                    }
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Thursday))){
+                        thursdayhour.setText(extrasBundle.getString(getResources().getString(R.string.Thursday)));
+                    }
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Friday))){
+                        fridayhour.setText(extrasBundle.getString(getResources().getString(R.string.Friday)));
+                    }
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Saturday))){
+                        saturdayhour.setText(extrasBundle.getString(getResources().getString(R.string.Saturday)));
+                    }
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Sunday))){
+                        sundayhour.setText(extrasBundle.getString(getResources().getString(R.string.Sunday)));
+                    }
+                }
+            }
+        }
     }
 
     //  Richiamata dopo il crop
@@ -563,4 +604,27 @@ public class MainActivity extends AppCompatActivity
 //        nav_profile_icon.setImageDrawable(personalImage.getDrawable());
 
     }
+
+    public void launchedithours(View view) {
+        Intent intentHours = new Intent(this, EditOpeningHoursActivity.class);
+        ArrayList<String> daysHours = new ArrayList<>();
+        daysHours.add(mondayhour.getText().toString());
+        daysHours.add(tuesdayhour.getText().toString());
+        daysHours.add(wednesdayhour.getText().toString());
+        daysHours.add(thursdayhour.getText().toString());
+        daysHours.add(fridayhour.getText().toString());
+        daysHours.add(saturdayhour.getText().toString());
+        daysHours.add(sundayhour.getText().toString());
+
+        SmartLogger.d("ProvaIntentSize: ", String.valueOf(daysHours.size()));
+        for (int i = 0; i < daysHours.size(); i++) {
+            SmartLogger.d("ProvaIntent: ", daysHours.get(i));
+        }
+
+        intentHours.putStringArrayListExtra(EXTRA_MESSAGE, daysHours);
+
+        startActivityForResult(intentHours, TEXT_REQUEST);
+    }
+
+    //todo: rendere non cliccabile la parte relativa a "modifica orari" in base alla matita e salvare i valori delle TextView
 }

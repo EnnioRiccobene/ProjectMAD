@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="8dp"
+    android:id="@+id/parent_layout">
+
+    <LinearLayout
+        android:id="@+id/fixedItemLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/dayCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lunedì"
+            android:layout_weight="2"/>
+
+        <TextView
+            android:id="@+id/dayPreviewHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Closed"
+            android:textColor="#3d3d3d"
+            android:gravity="end"
+            android:layout_marginEnd="24dp"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <com.github.aakira.expandablelayout.ExpandableRelativeLayout
+        android:id="@+id/hiddenbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fixedItemLayout"
+        android:padding="8dp"
+        app:ael_expanded="false"
+        app:ael_duration="200"
+        app:ael_interpolator="accelerate"
+        app:ael_orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/fixHoursLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:layout_below="@+id/spinnerItemLayout">
+
+            <CheckBox
+                android:id="@+id/openCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/open_24h"
+                android:layout_weight="1"
+                android:layout_marginStart="18dp"/>
+
+            <CheckBox
+                android:id="@+id/closedCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Closed"
+                android:layout_weight="1"/>
+
+            <CheckBox
+                android:id="@+id/othersCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/other_hours"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+    </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+
+    <com.github.aakira.expandablelayout.ExpandableRelativeLayout
+        android:id="@+id/hiddenhour"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/hiddenbox"
+        android:padding="8dp"
+        app:ael_expanded="false"
+        app:ael_duration="200"
+        app:ael_interpolator="accelerate"
+        app:ael_orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/spinnerItemLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <Spinner
+                android:id="@+id/startingHours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="25dp"
+                android:entries="@array/hours_list">
+
+            </Spinner>
+
+            <TextView
+                android:id="@+id/separator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" - "
+                android:layout_weight="2"
+                android:gravity="center"/>
+
+            <Spinner
+                android:id="@+id/endingHours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:entries="@array/hours_list">
+
+            </Spinner>
+
+        </LinearLayout>
+
+    </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+
+</RelativeLayout>

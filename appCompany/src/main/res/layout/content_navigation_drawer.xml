@@ -11,6 +11,7 @@
     <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -186,7 +187,7 @@
                     app:ael_expanded="false"
                     app:ael_duration="200"
                     app:ael_interpolator="accelerate"
-                    app:ael_orientation="vertical"        >
+                    app:ael_orientation="vertical">
 
                     <LinearLayout
                         android:orientation="horizontal"
@@ -202,7 +203,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/monday"
+                                android:text="@string/Monday"
                                 android:textColor="#3d3d3d"
                                 android:paddingStart="25dp"
                                 android:paddingEnd="25dp"/>
@@ -210,16 +211,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/tuesday"
-                                android:textColor="#3d3d3d"
-                                android:layout_marginTop="8dp"
-                                android:paddingStart="25dp"
-                                android:paddingEnd="25dp"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/wednesday"
+                                android:text="@string/Tuesday"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"
                                 android:paddingStart="25dp"
@@ -228,7 +220,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/thursday"
+                                android:text="@string/Wednesday"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"
                                 android:paddingStart="25dp"
@@ -237,7 +229,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/friday"
+                                android:text="@string/Thursday"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"
                                 android:paddingStart="25dp"
@@ -246,7 +238,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/saturday"
+                                android:text="@string/Friday"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"
                                 android:paddingStart="25dp"
@@ -255,7 +247,16 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/sunday"
+                                android:text="@string/Saturday"
+                                android:textColor="#3d3d3d"
+                                android:layout_marginTop="8dp"
+                                android:paddingStart="25dp"
+                                android:paddingEnd="25dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/Sunday"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"
                                 android:paddingStart="25dp"
@@ -271,7 +272,8 @@
                                 android:textColor="#006db3"
                                 android:layout_marginTop="16dp"
                                 android:paddingStart="25dp"
-                                android:paddingEnd="25dp"/>
+                                android:paddingEnd="25dp"
+                                android:onClick="launchedithours"/>
 
                         </LinearLayout>
 
@@ -285,7 +287,7 @@
                                 android:id="@+id/mondayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/closed"
+                                android:text="@string/Closed"
                                 android:textColor="#3d3d3d"
                                 />
 
@@ -294,14 +296,14 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:text="@string/closed"
+                                android:text="@string/Closed"
                                 android:textColor="#3d3d3d" />
 
                             <TextView
                                 android:id="@+id/wednesdayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/closed"
+                                android:text="@string/Closed"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"/>
 
@@ -309,7 +311,7 @@
                                 android:id="@+id/thursdayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/closed"
+                                android:text="@string/Closed"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"/>
 
@@ -317,7 +319,7 @@
                                 android:id="@+id/fridayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/closed"
+                                android:text="@string/Closed"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"/>
 
@@ -325,7 +327,7 @@
                                 android:id="@+id/saturdayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/closed"
+                                android:text="@string/Closed"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"/>
 
@@ -333,7 +335,7 @@
                                 android:id="@+id/sundayhour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/closed"
+                                android:text="@string/Closed"
                                 android:textColor="#3d3d3d"
                                 android:layout_marginTop="8dp"/>
 

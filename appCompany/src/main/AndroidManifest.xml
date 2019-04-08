@@ -19,6 +19,14 @@
         <activity android:name=".DailyOfferActivity"></activity>
         <activity android:name=".ReservationActivity" />
         <activity
+            android:name=".EditOpeningHoursActivity"
+            android:label="Opening hours"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.madgroup.appcompany.MainActivity" />
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>

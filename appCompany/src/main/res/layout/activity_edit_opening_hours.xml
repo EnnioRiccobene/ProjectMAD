@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditOpeningHoursActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/hoursrecycleview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:padding="16dp">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <!--todo spostare il button nell'appbar-->
+
+    <ImageView
+        android:id="@+id/confirmBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/hoursrecycleview"
+        android:src="@drawable/ic_action_confirm"
+        android:background="@color/colorPrimaryDark" />
+
+</RelativeLayout>
