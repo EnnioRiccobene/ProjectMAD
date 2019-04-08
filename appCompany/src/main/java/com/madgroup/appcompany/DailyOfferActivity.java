@@ -1,10 +1,13 @@
 package com.madgroup.appcompany;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.content.Intent;
@@ -19,7 +22,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.ArrayList;
 
 
 public class DailyOfferActivity extends AppCompatActivity implements
@@ -30,15 +36,45 @@ public class DailyOfferActivity extends AppCompatActivity implements
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
 
+    ArrayList<Dish> myList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // FloatingActionButton fc = findViewById(R.id.add_button);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_offer);
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
 
         // OVERRIDE DEL ONBACKPRESSED
         initializeNavigationDrawer();
+
+        Bitmap carbonaraIcon = BitmapFactory.decodeResource(this.getResources(), R.drawable.carbonara);
+        Bitmap gnocchiIcon = BitmapFactory.decodeResource(this.getResources(), R.drawable.gnocchi);
+        Bitmap lasagneIcon = BitmapFactory.decodeResource(this.getResources(), R.drawable.lasagne);
+
+
+        myList.add(new Dish(0,"Spaghetti alla Carbonara", 5.5f, 5, "" +
+                "Guanciale, uova, pecorino, pepe nero.",carbonaraIcon));
+        myList.add(new Dish(1,"Gnocchi di patet", 5.90f, 19, "Patate, " +
+                "Farina, " +
+                "Uova, ", gnocchiIcon));
+        myList.add(new Dish(2,"Lasagne alla Bolognese", 8.5f, 3, "Ragù, Besciamella." +
+                "Olio extravergine d'oliva, " +
+                "Pepe nero, ", lasagneIcon));
+
+        initDailyOfferRecyclerView();
+    }
+
+
+    private void initDailyOfferRecyclerView() {
+        RecyclerView recyclerView = this.findViewById(R.id.my_recycler_view);
+        DailyOfferRecyclerViewAdapter adapter = new DailyOfferRecyclerViewAdapter(this,  myList);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     // Navigation Drawer

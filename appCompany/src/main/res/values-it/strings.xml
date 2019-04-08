@@ -16,6 +16,8 @@
     <string name="camera">Fotocamera</string>
     <string name="gallery">Galleria</string>
     <string name="remove">Rimuovi</string>
+    <string name="edit">Modifica</string>
+
     <string name="gallerypermission">Abilita i permessi della galleria dalle impostazioni.</string>
     <string name="camerapermission">Abilita i permessi della fotocamera dalle impostazioni.</string>
 

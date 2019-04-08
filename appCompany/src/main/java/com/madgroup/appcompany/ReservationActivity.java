@@ -49,13 +49,13 @@ public class ReservationActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         if (id == R.id.nav_daily_offer) {
-            onBackPressed();
-
-        } else if (id == R.id.nav_reservations) {
             // Change activity to Reservations
-            Intent myIntent = new Intent(this, ReservationActivity.class);
+            Intent myIntent = new Intent(this, DailyOfferActivity.class);
             // myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(myIntent);
+
+        } else if (id == R.id.nav_reservations) {
+            onBackPressed();
 
         } else if (id == R.id.nav_profile) {
             // Change activity to Daily Offer
