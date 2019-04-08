@@ -2,12 +2,11 @@ package com.madgroup.appcompany;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -27,7 +26,7 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
     private Context mContext;
     private static String POPUP_CONSTANT = "mPopup";
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
-
+    private int currentIndex = -1;
 
     public DailyOfferRecyclerViewAdapter(Context mContext, ArrayList<Dish> dailyOfferList) {
         this.dailyOfferList = dailyOfferList;
@@ -61,9 +60,9 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         viewHolder.popupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "Selected menu with index: "+i, Toast.LENGTH_SHORT).show();
-                viewHolder.popupButton.setBackgroundColor(Color.TRANSPARENT);
-                showEditPopup(viewHolder.popupButton);
+                //Toast.makeText(mContext, "Selected menu with index: "+i, Toast.LENGTH_SHORT).show();
+                //viewHolder.popupButton.setBackgroundColor(Color.TRANSPARENT);
+                showEditPopup(viewHolder.popupButton, i);
             }
         });
     }
@@ -81,7 +80,7 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         TextView dishPrice;
         CircleImageView dishPhoto;
         TextView dishQuantity;
-        Button popupButton;
+        ImageView popupButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -93,9 +92,12 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
             dishQuantity = itemView.findViewById(R.id.dish_quantity);
             popupButton = itemView.findViewById(R.id.popupButton);
         }
+
+
     }
 
-    public void showEditPopup(View v) {
+    public void showEditPopup(View v, int index) {
+        currentIndex = index;
         PopupMenu popup = new PopupMenu(mContext, v);
         popup.setOnMenuItemClickListener(this);
         popup.inflate(R.menu.actions2);
@@ -107,12 +109,22 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         switch (item.getItemId()) {
 
             case R.id.itemEdit:
+                showEnnioDialog(currentIndex);
+                return true;
 
             case R.id.itemRemove:
+                dailyOfferList.remove(currentIndex);
+                notifyItemRemoved(currentIndex);
+                notifyItemRangeChanged(currentIndex, dailyOfferList.size());
+                return true;
 
             default:
                 return false;
         }
+    }
+
+    private void showEnnioDialog(int currentIndex) {
+        Toast.makeText(mContext, "Apri dialog. Index: "+currentIndex, Toast.LENGTH_SHORT).show();
     }
 
 }
