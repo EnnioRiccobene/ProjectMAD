@@ -308,6 +308,7 @@ public class MainActivity extends AppCompatActivity
         additionalInformation.setEnabled(false);
         personalImage.setEnabled(false);
         editCategory.setEnabled(false);
+        modifyhours.setEnabled(false);
     }
 
     private void setFieldClickable() {
@@ -319,6 +320,7 @@ public class MainActivity extends AppCompatActivity
         additionalInformation.setEnabled(true);
         personalImage.setEnabled(true);
         editCategory.setEnabled(true);
+        modifyhours.setEnabled(true);
     }
 
     private void loadFields() {
@@ -349,6 +351,20 @@ public class MainActivity extends AppCompatActivity
         }
         if (prefs.contains("EditCategory"))
             editCategory.setText(prefs.getString("EditCategory", ""));
+        if (prefs.contains("MondayHour"))
+            mondayhour.setText(prefs.getString("MondayHour", getResources().getString(R.string.Closed)));
+        if (prefs.contains("TuesdayHour"))
+            tuesdayhour.setText(prefs.getString("TuesdayHour", getResources().getString(R.string.Closed)));
+        if (prefs.contains("WednesdayHour"))
+            wednesdayhour.setText(prefs.getString("WednesdayHour", getResources().getString(R.string.Closed)));
+        if (prefs.contains("ThursdayHour"))
+            thursdayhour.setText(prefs.getString("ThursdayHour", getResources().getString(R.string.Closed)));
+        if (prefs.contains("FridayHour"))
+            fridayhour.setText(prefs.getString("FridayHour", getResources().getString(R.string.Closed)));
+        if (prefs.contains("SaturdayHour"))
+            saturdayhour.setText(prefs.getString("SaturdayHour", getResources().getString(R.string.Closed)));
+        if (prefs.contains("SundayHour"))
+            sundayhour.setText(prefs.getString("SundayHour", getResources().getString(R.string.Closed)));
         restoreImageContent();
     }
 
@@ -370,6 +386,13 @@ public class MainActivity extends AppCompatActivity
             editor.putInt("listItems_" + i, mUserItems.get(i));
         }
         editor.putString("EditCategory", editCategory.getText().toString());
+        editor.putString("MondayHour", mondayhour.getText().toString());
+        editor.putString("TuesdayHour", tuesdayhour.getText().toString());
+        editor.putString("WednesdayHour", wednesdayhour.getText().toString());
+        editor.putString("ThursdayHour", thursdayhour.getText().toString());
+        editor.putString("FridayHour", fridayhour.getText().toString());
+        editor.putString("SaturdayHour", saturdayhour.getText().toString());
+        editor.putString("SundayHour", sundayhour.getText().toString());
         editor.apply();
 
         // Set restaurant name and email on navigation header
@@ -626,5 +649,6 @@ public class MainActivity extends AppCompatActivity
         startActivityForResult(intentHours, TEXT_REQUEST);
     }
 
-    //todo: rendere non cliccabile la parte relativa a "modifica orari" in base alla matita e salvare i valori delle TextView
+    //todo: rendere non cliccabile la parte relativa a "modifica orari" in base alla matita (fatto) e salvare i valori delle TextView (fatto ma non funziona. quando giro lo schermo ricarica l'xml con su scritto closed (o prende dal valore di default))
+    //todo: aggiungere il menù nell'activity per la modifica degli orari con backbutton e conferma
 }
