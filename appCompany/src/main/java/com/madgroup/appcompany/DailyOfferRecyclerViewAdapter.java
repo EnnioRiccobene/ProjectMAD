@@ -1,16 +1,23 @@
 package com.madgroup.appcompany;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -109,7 +116,7 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         switch (item.getItemId()) {
 
             case R.id.itemEdit:
-                showEnnioDialog(currentIndex);
+                showDialog(currentIndex);
                 return true;
 
             case R.id.itemRemove:
@@ -123,8 +130,65 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         }
     }
 
-    private void showEnnioDialog(int currentIndex) {
-        Toast.makeText(mContext, "Apri dialog. Index: "+currentIndex, Toast.LENGTH_SHORT).show();
+    private void showDialog(final int currentIndex) {
+
+        Dish currentDish = dailyOfferList.get(currentIndex);
+
+        // custom dialog
+        final Dialog dialog = new Dialog(mContext);
+        dialog.setTitle(R.string.edit_dish);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.custom_dish_dialog);
+
+        ImageButton dialogDismiss = (ImageButton) dialog.findViewById(R.id.dialogDismiss);
+        ImageButton dialogConfirm = (ImageButton) dialog.findViewById(R.id.dialogConfirm);
+        final CircleImageView dishImage = (CircleImageView) dialog.findViewById(R.id.dishImage);
+        final EditText editDishName = (EditText) dialog.findViewById(R.id.editDishName);
+        final EditText editDishDescription = (EditText) dialog.findViewById(R.id.editDishDescription);
+        final EditText editDishQuantity = (EditText) dialog.findViewById(R.id.editDishQuantity);
+        final EditText editPrice = (EditText) dialog.findViewById(R.id.editPrice);
+        editPrice.addTextChangedListener(new NumberTextWatcher(editPrice, "#,###"));
+
+        editDishName.setText(currentDish.getName());
+        editDishDescription.setText(currentDish.getDescription());
+        editDishQuantity.setText(""+currentDish.getAvailableQuantity());
+        editPrice.setText((""+currentDish.getPrice()));
+        dishImage.setImageBitmap(currentDish.getPhoto());
+
+        dialogDismiss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialogConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String dishName = editDishName.getText().toString();
+                float dishPrice = 10;
+                        //Float.parseFloat(editPrice.getText().toString());
+                int dishQuantity = Integer.parseInt(editDishQuantity.getText().toString());
+                String dishDesc = editDishDescription.getText().toString();
+                Bitmap dishPhoto = ((BitmapDrawable) dishImage.getDrawable()).getBitmap();
+                //todo fare un parsing della stringa per togliere il simbolo dell'euro e tutto quello che non è float
+                //todo far funzionare il metodo per visualizzare l'editText come valuta
+                // TODO FARE I CONTROLLI
+                Dish currentDish = dailyOfferList.get(currentIndex);
+                currentDish.setName(dishName);
+                currentDish.setAvailableQuantity(dishQuantity);
+                currentDish.setDescription(dishDesc);
+                currentDish.setPhoto(dishPhoto);
+                currentDish.setPrice(dishPrice);
+                notifyItemChanged(currentIndex);
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
+
+
 
 }

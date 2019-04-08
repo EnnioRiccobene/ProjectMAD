@@ -53,6 +53,13 @@
     <string name="other_hours">Other hours</string>
     <string name="open_24h">Open 24h</string>
 
+
+    <string name="dish_name">Dish name</string>
+    <string name="dish_description">Description</string>
+    <string name="available_quantity">Available quantity</string>
+    <string name="dish_price">Price</string>
+    <string name="edit_dish">Your dish</string>
+
     <string-array name="hours_list">
         <item>00:00</item>
         <item>00:15</item>

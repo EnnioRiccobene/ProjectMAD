@@ -52,6 +52,16 @@
     <string name="other_hours">Altri orari</string>
     <string name="open_24h">Aperto 24h</string>
 
+
+
+    <string name="dish_name">Nome del piatto</string>
+    <string name="dish_description">Descrizione</string>
+    <string name="available_quantity">Quantità disponibile</string>
+    <string name="dish_price">Prezzo</string>
+    <string name="edit_dish">Il tuo piatto</string>
+
+
+
     <string-array name="hours_list">
         <item>00:00</item>
         <item>00:15</item>
