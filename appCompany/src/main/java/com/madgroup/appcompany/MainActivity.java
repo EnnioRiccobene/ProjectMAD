@@ -1,6 +1,7 @@
 package com.madgroup.appcompany;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +23,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.aakira.expandablelayout.ExpandableLayout;
+import com.github.aakira.expandablelayout.Utils;
 import com.google.android.material.navigation.NavigationView;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
@@ -30,6 +33,7 @@ import com.yalantis.ucrop.UCrop;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.annotation.NonNull;
@@ -38,6 +42,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -71,10 +76,48 @@ public class MainActivity extends AppCompatActivity
     public int iteration = 0;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
+
+    public static final int TEXT_REQUEST = 1;
+
+    TextView hours;
+    TextView arrowbtn;
+    ExpandableLayout hiddenhours;
+    TextView modifyhours;
+    TextView mondayhour;
+    TextView tuesdayhour;
+    TextView wednesdayhour;
+    TextView thursdayhour;
+    TextView fridayhour;
+    TextView saturdayhour;
+    TextView sundayhour;
+    NestedScrollView nestedScrollView;
+
+    public static final String EXTRA_MESSAGE = "com.madgroup.appcompany.extra.MESSAGE";
+    private LinkedHashMap<String, String> hourValue = new LinkedHashMap<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        hours = findViewById(R.id.hours);
+        arrowbtn = findViewById(R.id.arrowbtn);
+        hiddenhours = findViewById(R.id.hiddenhours);
+        modifyhours = findViewById(R.id.modifyhours);
+        mondayhour = findViewById(R.id.mondayhour);
+        tuesdayhour = findViewById(R.id.tuesdayhour);
+        wednesdayhour = findViewById(R.id.wednesdayhour);
+        thursdayhour = findViewById(R.id.thursdayhour);
+        fridayhour = findViewById(R.id.fridayhour);
+        saturdayhour = findViewById(R.id.saturdayhour);
+        sundayhour = findViewById(R.id.sundayhour);
+
+        nestedScrollView = findViewById(R.id.nestedScrollView);
+
+        //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
+        if(!hiddenhours.isExpanded()){
+            hiddenhours.collapse();
+        }
 
         editCategory = findViewById(R.id.editTextFoodCategory);
         listItems = getResources().getStringArray(R.array.food_categories);
@@ -170,6 +213,24 @@ public class MainActivity extends AppCompatActivity
             navEmail.setText(email.getText());
     }
 
+    //I seguenti due metodi sono per gestire l'animazione della freccia durante l'interazione con l'ExpandableLayout
+    public void showhoursdetails(View view) {
+        if (hiddenhours.isExpanded()) {
+            createRotateAnimator(arrowbtn, 180f, 0f).start();
+        } else {
+            createRotateAnimator(arrowbtn, 0f, 180f).start();
+        }
+        hiddenhours.toggle();
+//        nestedScrollView.scrollTo(0, view.getBottom()); todo: capire come far scrollare la vista verso il basso in automatico quando apro la view
+    }
+
+    private ObjectAnimator createRotateAnimator(final View target, final float from, final float to) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(target, "rotation", from, to);
+        animator.setDuration(300);
+        animator.setInterpolator(Utils.createInterpolator(Utils.LINEAR_INTERPOLATOR));
+        return animator;
+    }
+
     // Navigation Drawer
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -248,6 +309,7 @@ public class MainActivity extends AppCompatActivity
         additionalInformation.setEnabled(false);
         personalImage.setEnabled(false);
         editCategory.setEnabled(false);
+        modifyhours.setEnabled(false);
     }
 
     private void setFieldClickable() {
@@ -259,6 +321,7 @@ public class MainActivity extends AppCompatActivity
         additionalInformation.setEnabled(true);
         personalImage.setEnabled(true);
         editCategory.setEnabled(true);
+        modifyhours.setEnabled(true);
     }
 
     private void loadFields() {
@@ -289,6 +352,20 @@ public class MainActivity extends AppCompatActivity
         }
         if (prefs.contains("EditCategory"))
             editCategory.setText(prefs.getString("EditCategory", ""));
+        if (prefs.contains("MondayHour"))
+            mondayhour.setText(prefs.getString("MondayHour", getResources().getString(R.string.Closed)));
+        if (prefs.contains("TuesdayHour"))
+            tuesdayhour.setText(prefs.getString("TuesdayHour", getResources().getString(R.string.Closed)));
+        if (prefs.contains("WednesdayHour"))
+            wednesdayhour.setText(prefs.getString("WednesdayHour", getResources().getString(R.string.Closed)));
+        if (prefs.contains("ThursdayHour"))
+            thursdayhour.setText(prefs.getString("ThursdayHour", getResources().getString(R.string.Closed)));
+        if (prefs.contains("FridayHour"))
+            fridayhour.setText(prefs.getString("FridayHour", getResources().getString(R.string.Closed)));
+        if (prefs.contains("SaturdayHour"))
+            saturdayhour.setText(prefs.getString("SaturdayHour", getResources().getString(R.string.Closed)));
+        if (prefs.contains("SundayHour"))
+            sundayhour.setText(prefs.getString("SundayHour", getResources().getString(R.string.Closed)));
         restoreImageContent();
     }
 
@@ -310,6 +387,13 @@ public class MainActivity extends AppCompatActivity
             editor.putInt("listItems_" + i, mUserItems.get(i));
         }
         editor.putString("EditCategory", editCategory.getText().toString());
+        editor.putString("MondayHour", mondayhour.getText().toString());
+        editor.putString("TuesdayHour", tuesdayhour.getText().toString());
+        editor.putString("WednesdayHour", wednesdayhour.getText().toString());
+        editor.putString("ThursdayHour", thursdayhour.getText().toString());
+        editor.putString("FridayHour", fridayhour.getText().toString());
+        editor.putString("SaturdayHour", saturdayhour.getText().toString());
+        editor.putString("SundayHour", sundayhour.getText().toString());
         editor.apply();
 
         // Set restaurant name and email on navigation header
@@ -434,6 +518,37 @@ public class MainActivity extends AppCompatActivity
             if (data!=null)
                 handleCropResult(data);
         }
+
+        //Gestione dei valiri di ritorno in caso di richiesta modifica orari
+        if (requestCode == TEXT_REQUEST) {
+            if (resultCode == RESULT_OK) {
+
+                Bundle extrasBundle = data.getExtras();
+                if(!extrasBundle.isEmpty()){
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Monday))){
+                        mondayhour.setText(extrasBundle.getString(getResources().getString(R.string.Monday)));
+                    }
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Tuesday))){
+                        tuesdayhour.setText(extrasBundle.getString(getResources().getString(R.string.Tuesday)));
+                    }
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Wednesday))){
+                        wednesdayhour.setText(extrasBundle.getString(getResources().getString(R.string.Wednesday)));
+                    }
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Thursday))){
+                        thursdayhour.setText(extrasBundle.getString(getResources().getString(R.string.Thursday)));
+                    }
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Friday))){
+                        fridayhour.setText(extrasBundle.getString(getResources().getString(R.string.Friday)));
+                    }
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Saturday))){
+                        saturdayhour.setText(extrasBundle.getString(getResources().getString(R.string.Saturday)));
+                    }
+                    if(extrasBundle.containsKey(getResources().getString(R.string.Sunday))){
+                        sundayhour.setText(extrasBundle.getString(getResources().getString(R.string.Sunday)));
+                    }
+                }
+            }
+        }
     }
 
     //  Richiamata dopo il crop
@@ -527,4 +642,28 @@ public class MainActivity extends AppCompatActivity
             nav_profile_icon.setImageDrawable(defaultImg);
         }
     }
+
+    public void launchedithours(View view) {
+        Intent intentHours = new Intent(this, EditOpeningHoursActivity.class);
+        ArrayList<String> daysHours = new ArrayList<>();
+        daysHours.add(mondayhour.getText().toString());
+        daysHours.add(tuesdayhour.getText().toString());
+        daysHours.add(wednesdayhour.getText().toString());
+        daysHours.add(thursdayhour.getText().toString());
+        daysHours.add(fridayhour.getText().toString());
+        daysHours.add(saturdayhour.getText().toString());
+        daysHours.add(sundayhour.getText().toString());
+
+        SmartLogger.d("ProvaIntentSize: ", String.valueOf(daysHours.size()));
+        for (int i = 0; i < daysHours.size(); i++) {
+            SmartLogger.d("ProvaIntent: ", daysHours.get(i));
+        }
+
+        intentHours.putStringArrayListExtra(EXTRA_MESSAGE, daysHours);
+
+        startActivityForResult(intentHours, TEXT_REQUEST);
+    }
+
+    //todo: rendere non cliccabile la parte relativa a "modifica orari" in base alla matita (fatto) e salvare i valori delle TextView (fatto ma non funziona. quando giro lo schermo ricarica l'xml con su scritto closed (o prende dal valore di default))
+    //todo: aggiungere il menù nell'activity per la modifica degli orari con backbutton e conferma
 }
