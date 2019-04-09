@@ -21,6 +21,6 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <!--This is the main content of the screen-->
-    <include layout="@layout/content_navigation_drawer" />
+    <include layout="@layout/content_navigation_drawer_profile" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

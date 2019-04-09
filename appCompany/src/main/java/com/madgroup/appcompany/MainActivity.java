@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity
     public static final int TEXT_REQUEST = 1;
 
     TextView hours;
-    TextView arrowbtn;
+    ImageView arrowbtn;
     ExpandableLayout hiddenhours;
     TextView modifyhours;
     TextView mondayhour;
