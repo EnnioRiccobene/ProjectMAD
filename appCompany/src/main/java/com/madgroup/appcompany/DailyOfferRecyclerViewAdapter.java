@@ -15,9 +15,6 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -43,7 +40,7 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.dish_item, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.daily_offer_item, viewGroup, false);
         ViewHolder holder = new ViewHolder(view);
         return holder;
     }
@@ -107,7 +104,7 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         currentIndex = index;
         PopupMenu popup = new PopupMenu(mContext, v);
         popup.setOnMenuItemClickListener(this);
-        popup.inflate(R.menu.actions2);
+        popup.inflate(R.menu.daily_offer_item_menu);
         popup.show();
     }
 

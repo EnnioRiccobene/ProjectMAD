@@ -18,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -427,7 +426,7 @@ public class MainActivity extends AppCompatActivity
         }
         // This activity implements OnMenuItemClickListener
         popup.setOnMenuItemClickListener(this);
-        popup.inflate(R.menu.actions);
+        popup.inflate(R.menu.profile_camera_menu);
         popup.show();
     }
 

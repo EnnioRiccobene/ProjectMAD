@@ -73,7 +73,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/colorPrimary"
+                    android:background="@color/colorPrimaryDark"
                     android:layout_below="@id/recycler_view" />
 
                 <TextView
@@ -98,12 +98,13 @@
                     android:layout_marginBottom="18dp"
                     android:layout_marginRight="16dp"
                     android:textColor="#3d3d3d"
+                    android:text="3 €"
                     android:textSize="16sp" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/colorPrimary"
+                    android:background="@color/colorPrimaryDark"
                     android:layout_below="@id/totalPrice_bold"/>
 
                 <TextView
