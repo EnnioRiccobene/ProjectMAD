@@ -2,20 +2,22 @@ package com.madgroup.appcompany;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class EditOpeningHoursActivity extends AppCompatActivity {
     public static final String EXTRA_REPLY = "com.madgroup.appcompany.extra.REPLY";
-
-    private ImageView confirmBtn;
 
     private ArrayList<String> weekdayName = new ArrayList<>();
     private ArrayList<String> dayOldHourPreview = new ArrayList<>();
@@ -25,18 +27,17 @@ public class EditOpeningHoursActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_opening_hours);
-
         dayOldHourPreview = getIntent().getStringArrayListExtra(MainActivity.EXTRA_MESSAGE);
 
         initWeekDayName();
 
-        confirmBtn = findViewById(R.id.confirmBtn);
-        confirmBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                confirmChanges(hourValue);
-            }
-        });
+        // Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        toolbar.setTitle("");
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
     }
 
     private void initWeekDayName(){
@@ -83,5 +84,26 @@ public class EditOpeningHoursActivity extends AppCompatActivity {
         replyIntent.putExtras(bundle);
         setResult(RESULT_OK, replyIntent);
         finish();
+    }
+
+
+    // App Bar
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_opening_hours_menu, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.accept_schedule:
+                confirmChanges(hourValue);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

@@ -58,6 +58,7 @@ public class RecyclerViewHoursAdapter extends RecyclerView.Adapter<RecyclerViewH
     public void onBindViewHolder(@NonNull final RecyclerViewHoursAdapter.ViewHolder holder, int position) {
         holder.dayCheckBox.setText(weekdayName.get(position));
         holder.dayPreviewHours.setText(dayOldHourPreview.get(position));
+
         //Gestisco l'apertura e la chiusura delle expandable view con la corrispondente checkbox
         holder.dayCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".DetailedReservation">
+
+    <item
+        android:id="@+id/accept_schedule"
+        android:title="Accept"
+        android:icon="@drawable/ic_action_confirm"
+        app:showAsAction="always"/>
+
+</menu>

@@ -45,7 +45,6 @@ public class DetailedReservation extends AppCompatActivity {
         dishes.add(new Dish(4, "Polpette", 34, 60));
 
         // Compute Total price
-
         float localPrice = 0;
         for (Dish x:dishes)
             localPrice += x.getPrice() * x.getAvailableQuantity();
