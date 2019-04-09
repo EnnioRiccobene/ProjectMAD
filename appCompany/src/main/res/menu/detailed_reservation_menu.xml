@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".DetailedReservation">
+
+    <item
+        android:id="@+id/call_customer"
+        android:title="Call customer"/>
+
+    <item
+        android:id="@+id/reject_order"
+        android:title="Reject order" />
+
+</menu>

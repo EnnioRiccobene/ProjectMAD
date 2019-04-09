@@ -20,6 +20,13 @@ public class Dish {
         this.photo = photo;
     }
 
+    public Dish(int id, String name, float price, int availableQuantity) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.availableQuantity = availableQuantity;
+    }
+
     public int getId() {
         return id;
     }
@@ -67,6 +74,4 @@ public class Dish {
     public void setPhoto(Bitmap photo) {
         this.photo = photo;
     }
-
-
 }
