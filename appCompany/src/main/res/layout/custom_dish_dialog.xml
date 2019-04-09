@@ -17,17 +17,17 @@
             android:id="@+id/dialogDismiss"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_cancel"
+            android:src="@drawable/ic_cancel_white"
             android:background="@null"
             android:layout_marginEnd="8dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/edit_dish"
-            android:textStyle="bold"
-            android:textColor="#ffff"
-            android:textSize="20sp"/>
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/edit_dish"-->
+            <!--android:textStyle="bold"-->
+            <!--android:textColor="#ffff"-->
+            <!--android:textSize="20sp"/>-->
 
         <ImageButton
             android:id="@+id/dialogConfirm"
