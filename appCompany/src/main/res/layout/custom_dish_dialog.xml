@@ -46,7 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp"
+        android:padding="20dp"
         android:layout_below="@id/dialogDishToolbar">
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -64,7 +64,7 @@
             android:id="@+id/editDishName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
+            android:paddingTop="16dp"
             android:ems="10"
             android:hint="@string/dish_name"
             android:inputType="textPersonName" />
@@ -73,7 +73,7 @@
             android:id="@+id/editDishDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
+            android:paddingTop="16dp"
             android:ems="10"
             android:hint="@string/dish_description"
             android:inputType="textPersonName" />
@@ -82,7 +82,7 @@
             android:id="@+id/editDishQuantity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
+            android:paddingTop="16dp"
             android:ems="10"
             android:hint="@string/available_quantity"
             android:inputType="number" />
@@ -91,12 +91,10 @@
             android:id="@+id/editPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
+            android:paddingTop="16dp"
             android:ems="10"
             android:hint="@string/dish_price"
             android:inputType="numberDecimal" />
-
-
     </LinearLayout>
 
 </RelativeLayout>

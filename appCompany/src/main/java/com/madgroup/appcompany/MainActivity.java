@@ -81,15 +81,15 @@ public class MainActivity extends AppCompatActivity
 
     TextView hours;
     ImageView arrowbtn;
-    ExpandableLayout hiddenhours;
-    TextView modifyhours;
-    TextView mondayhour;
-    TextView tuesdayhour;
-    TextView wednesdayhour;
-    TextView thursdayhour;
-    TextView fridayhour;
-    TextView saturdayhour;
-    TextView sundayhour;
+    ExpandableLayout hiddenHours;
+    TextView modifyHours;
+    TextView mondayHour;
+    TextView tuesdayHour;
+    TextView wednesdayHour;
+    TextView thursdayHour;
+    TextView fridayHour;
+    TextView saturdayHour;
+    TextView sundayHour;
     NestedScrollView nestedScrollView;
 
     public static final String EXTRA_MESSAGE = "com.madgroup.appcompany.extra.MESSAGE";
@@ -102,21 +102,21 @@ public class MainActivity extends AppCompatActivity
 
         hours = findViewById(R.id.hours);
         arrowbtn = findViewById(R.id.arrowbtn);
-        hiddenhours = findViewById(R.id.hiddenhours);
-        modifyhours = findViewById(R.id.modifyhours);
-        mondayhour = findViewById(R.id.mondayhour);
-        tuesdayhour = findViewById(R.id.tuesdayhour);
-        wednesdayhour = findViewById(R.id.wednesdayhour);
-        thursdayhour = findViewById(R.id.thursdayhour);
-        fridayhour = findViewById(R.id.fridayhour);
-        saturdayhour = findViewById(R.id.saturdayhour);
-        sundayhour = findViewById(R.id.sundayhour);
+        hiddenHours = findViewById(R.id.hiddenhours);
+        modifyHours = findViewById(R.id.modifyhours);
+        mondayHour = findViewById(R.id.mondayhour);
+        tuesdayHour = findViewById(R.id.tuesdayhour);
+        wednesdayHour = findViewById(R.id.wednesdayhour);
+        thursdayHour = findViewById(R.id.thursdayhour);
+        fridayHour = findViewById(R.id.fridayhour);
+        saturdayHour = findViewById(R.id.saturdayhour);
+        sundayHour = findViewById(R.id.sundayhour);
 
         nestedScrollView = findViewById(R.id.nestedScrollView);
 
         //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
-        if(!hiddenhours.isExpanded()){
-            hiddenhours.collapse();
+        if(!hiddenHours.isExpanded()){
+            hiddenHours.collapse();
         }
 
         editCategory = findViewById(R.id.editTextFoodCategory);
@@ -214,13 +214,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     //I seguenti due metodi sono per gestire l'animazione della freccia durante l'interazione con l'ExpandableLayout
-    public void showhoursdetails(View view) {
-        if (hiddenhours.isExpanded()) {
+    public void showHoursDetails(View view) {
+        if (hiddenHours.isExpanded()) {
             createRotateAnimator(arrowbtn, 180f, 0f).start();
         } else {
             createRotateAnimator(arrowbtn, 0f, 180f).start();
         }
-        hiddenhours.toggle();
+        hiddenHours.toggle();
 //        nestedScrollView.scrollTo(0, view.getBottom()); todo: capire come far scrollare la vista verso il basso in automatico quando apro la view
     }
 
@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity
         additionalInformation.setEnabled(false);
         personalImage.setEnabled(false);
         editCategory.setEnabled(false);
-        modifyhours.setEnabled(false);
+        modifyHours.setEnabled(false);
     }
 
     private void setFieldClickable() {
@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity
         additionalInformation.setEnabled(true);
         personalImage.setEnabled(true);
         editCategory.setEnabled(true);
-        modifyhours.setEnabled(true);
+        modifyHours.setEnabled(true);
     }
 
     private void loadFields() {
@@ -353,19 +353,19 @@ public class MainActivity extends AppCompatActivity
         if (prefs.contains("EditCategory"))
             editCategory.setText(prefs.getString("EditCategory", ""));
         if (prefs.contains("MondayHour"))
-            mondayhour.setText(prefs.getString("MondayHour", getResources().getString(R.string.Closed)));
+            mondayHour.setText(prefs.getString("MondayHour", getResources().getString(R.string.Closed)));
         if (prefs.contains("TuesdayHour"))
-            tuesdayhour.setText(prefs.getString("TuesdayHour", getResources().getString(R.string.Closed)));
+            tuesdayHour.setText(prefs.getString("TuesdayHour", getResources().getString(R.string.Closed)));
         if (prefs.contains("WednesdayHour"))
-            wednesdayhour.setText(prefs.getString("WednesdayHour", getResources().getString(R.string.Closed)));
+            wednesdayHour.setText(prefs.getString("WednesdayHour", getResources().getString(R.string.Closed)));
         if (prefs.contains("ThursdayHour"))
-            thursdayhour.setText(prefs.getString("ThursdayHour", getResources().getString(R.string.Closed)));
+            thursdayHour.setText(prefs.getString("ThursdayHour", getResources().getString(R.string.Closed)));
         if (prefs.contains("FridayHour"))
-            fridayhour.setText(prefs.getString("FridayHour", getResources().getString(R.string.Closed)));
+            fridayHour.setText(prefs.getString("FridayHour", getResources().getString(R.string.Closed)));
         if (prefs.contains("SaturdayHour"))
-            saturdayhour.setText(prefs.getString("SaturdayHour", getResources().getString(R.string.Closed)));
+            saturdayHour.setText(prefs.getString("SaturdayHour", getResources().getString(R.string.Closed)));
         if (prefs.contains("SundayHour"))
-            sundayhour.setText(prefs.getString("SundayHour", getResources().getString(R.string.Closed)));
+            sundayHour.setText(prefs.getString("SundayHour", getResources().getString(R.string.Closed)));
         restoreImageContent();
     }
 
@@ -387,13 +387,13 @@ public class MainActivity extends AppCompatActivity
             editor.putInt("listItems_" + i, mUserItems.get(i));
         }
         editor.putString("EditCategory", editCategory.getText().toString());
-        editor.putString("MondayHour", mondayhour.getText().toString());
-        editor.putString("TuesdayHour", tuesdayhour.getText().toString());
-        editor.putString("WednesdayHour", wednesdayhour.getText().toString());
-        editor.putString("ThursdayHour", thursdayhour.getText().toString());
-        editor.putString("FridayHour", fridayhour.getText().toString());
-        editor.putString("SaturdayHour", saturdayhour.getText().toString());
-        editor.putString("SundayHour", sundayhour.getText().toString());
+        editor.putString("MondayHour", mondayHour.getText().toString());
+        editor.putString("TuesdayHour", tuesdayHour.getText().toString());
+        editor.putString("WednesdayHour", wednesdayHour.getText().toString());
+        editor.putString("ThursdayHour", thursdayHour.getText().toString());
+        editor.putString("FridayHour", fridayHour.getText().toString());
+        editor.putString("SaturdayHour", saturdayHour.getText().toString());
+        editor.putString("SundayHour", sundayHour.getText().toString());
         editor.apply();
 
         // Set restaurant name and email on navigation header
@@ -524,27 +524,29 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
 
                 Bundle extrasBundle = data.getExtras();
-                if(!extrasBundle.isEmpty()){
+
+                // Aggiunto il "&& extrasBundle != null" per evitare il crash dell'app
+                if(!extrasBundle.isEmpty() && extrasBundle != null){
                     if(extrasBundle.containsKey(getResources().getString(R.string.Monday))){
-                        mondayhour.setText(extrasBundle.getString(getResources().getString(R.string.Monday)));
+                        mondayHour.setText(extrasBundle.getString(getResources().getString(R.string.Monday)));
                     }
                     if(extrasBundle.containsKey(getResources().getString(R.string.Tuesday))){
-                        tuesdayhour.setText(extrasBundle.getString(getResources().getString(R.string.Tuesday)));
+                        tuesdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Tuesday)));
                     }
                     if(extrasBundle.containsKey(getResources().getString(R.string.Wednesday))){
-                        wednesdayhour.setText(extrasBundle.getString(getResources().getString(R.string.Wednesday)));
+                        wednesdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Wednesday)));
                     }
                     if(extrasBundle.containsKey(getResources().getString(R.string.Thursday))){
-                        thursdayhour.setText(extrasBundle.getString(getResources().getString(R.string.Thursday)));
+                        thursdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Thursday)));
                     }
                     if(extrasBundle.containsKey(getResources().getString(R.string.Friday))){
-                        fridayhour.setText(extrasBundle.getString(getResources().getString(R.string.Friday)));
+                        fridayHour.setText(extrasBundle.getString(getResources().getString(R.string.Friday)));
                     }
                     if(extrasBundle.containsKey(getResources().getString(R.string.Saturday))){
-                        saturdayhour.setText(extrasBundle.getString(getResources().getString(R.string.Saturday)));
+                        saturdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Saturday)));
                     }
                     if(extrasBundle.containsKey(getResources().getString(R.string.Sunday))){
-                        sundayhour.setText(extrasBundle.getString(getResources().getString(R.string.Sunday)));
+                        sundayHour.setText(extrasBundle.getString(getResources().getString(R.string.Sunday)));
                     }
                     saveFields();
                 }
@@ -647,13 +649,13 @@ public class MainActivity extends AppCompatActivity
     public void launchedithours(View view) {
         Intent intentHours = new Intent(this, EditOpeningHoursActivity.class);
         ArrayList<String> daysHours = new ArrayList<>();
-        daysHours.add(mondayhour.getText().toString());
-        daysHours.add(tuesdayhour.getText().toString());
-        daysHours.add(wednesdayhour.getText().toString());
-        daysHours.add(thursdayhour.getText().toString());
-        daysHours.add(fridayhour.getText().toString());
-        daysHours.add(saturdayhour.getText().toString());
-        daysHours.add(sundayhour.getText().toString());
+        daysHours.add(mondayHour.getText().toString());
+        daysHours.add(tuesdayHour.getText().toString());
+        daysHours.add(wednesdayHour.getText().toString());
+        daysHours.add(thursdayHour.getText().toString());
+        daysHours.add(fridayHour.getText().toString());
+        daysHours.add(saturdayHour.getText().toString());
+        daysHours.add(sundayHour.getText().toString());
 
         SmartLogger.d("ProvaIntentSize: ", String.valueOf(daysHours.size()));
         for (int i = 0; i < daysHours.size(); i++) {
