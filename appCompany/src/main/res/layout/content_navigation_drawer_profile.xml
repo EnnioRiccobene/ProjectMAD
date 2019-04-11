@@ -21,15 +21,14 @@
             android:fillViewport="true"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            tools:context=".MainActivity">
+            tools:context=".MainActivity"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin">
 
             <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/imagePersonalPhoto"
                 android:layout_width="156dp"
                 android:layout_height="156dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
                 android:onClick="showPopup"
                 app:civ_border_color="#FF000000"
                 app:civ_border_width="1dp"
@@ -46,13 +45,14 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imagePersonalPhoto">
+                app:layout_constraintTop_toBottomOf="@+id/imagePersonalPhoto"
+                android:layout_marginTop="12dp"
+                android:focusableInTouchMode="true">
 
                 <EditText
                     android:id="@+id/editTextName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="28dp"
                     android:layout_weight="1"
                     android:hint="@string/form_name"
                     android:inputType="textPersonName"
@@ -64,6 +64,7 @@
                 android:id="@+id/emailInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/nameInputLayout">
@@ -95,6 +96,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="12dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/emailInputLayout">
 
@@ -102,7 +104,6 @@
                     android:id="@+id/editTextPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/vertical_margin"
                     android:hint="@string/form_phone"
                     android:inputType="phone"
                     android:maxLength="12" />
@@ -114,6 +115,7 @@
                 android:id="@+id/addressInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/phoneInputLayout">
@@ -123,7 +125,6 @@
                     android:id="@+id/editTextAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/vertical_margin"
                     android:ems="10"
                     android:hint="@string/form_address"
                     android:inputType="textPostalAddress" />
@@ -133,6 +134,7 @@
                 android:id="@+id/additionalInformationInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/addressInputLayout">
@@ -141,7 +143,6 @@
                     android:id="@+id/additionalInformation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:gravity="top|start"
                     android:hint="@string/form_info"
                     android:inputType="textMultiLine"
@@ -156,7 +157,7 @@
                 android:id="@+id/editTextFoodCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/vertical_margin"
+                android:layout_marginTop="12dp"
                 android:ems="10"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
@@ -197,7 +198,8 @@
                             android:text="@string/opening_hours"
                             android:textColor="#3d3d3d"
                             android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:drawableTint="@color/colorPrimary"/>
 
                         <ImageView
                             android:id="@+id/arrowbtn"
@@ -206,7 +208,8 @@
                             android:layout_marginStart="16dp"
                             android:drawablePadding="8dp"
                             android:src="@drawable/ic_sort_down"
-                            android:tint="@color/colorPrimary" />
+                            android:tint="@color/colorPrimary"
+                            android:layout_gravity="center"/>
                     </LinearLayout>
                 </LinearLayout>
 

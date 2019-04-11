@@ -41,6 +41,8 @@ public class DailyOfferActivity extends AppCompatActivity implements
     private ActionBarDrawerToggle toggle;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
+    private RecyclerView recyclerView;
+    private DailyOfferRecyclerViewAdapter adapter;
 
     ArrayList<Dish> myList = new ArrayList<>();
 
@@ -62,6 +64,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
         Bitmap gnocchiIcon = BitmapFactory.decodeResource(this.getResources(), R.drawable.gnocchi);
 
 
+
         myList.add(new Dish(0,"Spaghetti alla Carbonara", 5.5f, 5, "" +
                 "Guanciale, uova, pecorino, pepe nero.",carbonaraIcon));
         myList.add(new Dish(1,"Gnocchi di patet", 5.90f, 19, "Patate, " +
@@ -74,13 +77,13 @@ public class DailyOfferActivity extends AppCompatActivity implements
         initDailyOfferRecyclerView();
     }
 
-    RecyclerView recyclerView;
-    DailyOfferRecyclerViewAdapter adapter;
+
     private void initDailyOfferRecyclerView() {
         recyclerView = this.findViewById(R.id.my_recycler_view);
         adapter = new DailyOfferRecyclerViewAdapter(this,  myList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
     }
 
     // Navigation Drawer
