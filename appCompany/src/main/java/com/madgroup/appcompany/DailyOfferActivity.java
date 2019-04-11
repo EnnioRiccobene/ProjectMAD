@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Base64;
@@ -33,10 +34,10 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
-
 public class DailyOfferActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
 
+    public static final int THUMBSIZE = 64;
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     private SharedPreferences prefs;
@@ -60,9 +61,8 @@ public class DailyOfferActivity extends AppCompatActivity implements
         // OVERRIDE DEL ONBACKPRESSED
         initializeNavigationDrawer();
 
-        Bitmap carbonaraIcon = BitmapFactory.decodeResource(this.getResources(), R.drawable.carbonara);
-        Bitmap gnocchiIcon = BitmapFactory.decodeResource(this.getResources(), R.drawable.gnocchi);
-
+        Bitmap carbonaraIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.carbonara), THUMBSIZE, THUMBSIZE);
+        Bitmap gnocchiIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.gnocchi), THUMBSIZE, THUMBSIZE);
 
 
         myList.add(new Dish(0,"Spaghetti alla Carbonara", 5.5f, 5, "" +
