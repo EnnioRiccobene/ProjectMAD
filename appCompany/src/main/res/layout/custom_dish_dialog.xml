@@ -58,7 +58,9 @@
             android:layout_gravity="center"
             android:paddingTop="8dp"
             app:civ_border_width="2dp"
-            app:civ_border_color="#ff3d3d3d" />
+            app:civ_border_color="#ff3d3d3d"
+            android:onClick="showPopup"
+            />
 
         <EditText
             android:id="@+id/editDishName"
