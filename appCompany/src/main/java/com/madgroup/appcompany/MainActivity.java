@@ -343,7 +343,7 @@ public class MainActivity extends AppCompatActivity
             int size = prefs.getInt("checkedItems_size", 0);
             for (int i = 0; i < size; i++) {
                 checkedItems[i] = prefs.getBoolean("checkedItems_" + i, false);
-                SmartLogger.d("LoadFields: array["+i+"] = " + checkedItems[i]);
+//                SmartLogger.d("LoadFields: array["+i+"] = " + checkedItems[i]);
             }
             int listsize = prefs.getInt("mUserItems_size", 0);
             for (int i = 0; i < listsize; i++) {
@@ -381,7 +381,7 @@ public class MainActivity extends AppCompatActivity
         editor.putInt("mUserItems_size", mUserItems.size());
         for(int i = 0; i < checkedItems.length; i++) {
             editor.putBoolean("checkedItems_" + i, checkedItems[i]);
-            SmartLogger.d("SaveFields: array["+i+"] = " + checkedItems[i]);
+//            SmartLogger.d("SaveFields: array["+i+"] = " + checkedItems[i]);
         }
         for(int i = 0; i < mUserItems.size(); i++){
             editor.putInt("listItems_" + i, mUserItems.get(i));

@@ -37,7 +37,7 @@ import java.util.ArrayList;
 public class DailyOfferActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
 
-    public static final int THUMBSIZE = 64;
+    public static final int THUMBSIZE = 50;
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     private SharedPreferences prefs;
@@ -58,7 +58,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
 
-        // OVERRIDE DEL ONBACKPRESSED
         initializeNavigationDrawer();
 
         Bitmap carbonaraIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.carbonara), THUMBSIZE, THUMBSIZE);

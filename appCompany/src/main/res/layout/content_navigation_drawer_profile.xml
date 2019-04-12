@@ -27,8 +27,8 @@
 
             <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/imagePersonalPhoto"
-                android:layout_width="156dp"
-                android:layout_height="156dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:onClick="showPopup"
                 app:civ_border_color="#FF000000"
                 app:civ_border_width="1dp"
