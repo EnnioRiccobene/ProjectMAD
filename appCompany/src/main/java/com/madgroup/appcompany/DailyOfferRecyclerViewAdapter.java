@@ -16,6 +16,8 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.blackcat.currencyedittext.CurrencyEditText;
+
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -143,8 +145,7 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         final EditText editDishName = (EditText) dialog.findViewById(R.id.editDishName);
         final EditText editDishDescription = (EditText) dialog.findViewById(R.id.editDishDescription);
         final EditText editDishQuantity = (EditText) dialog.findViewById(R.id.editDishQuantity);
-        final EditText editPrice = (EditText) dialog.findViewById(R.id.editPrice);
-        editPrice.addTextChangedListener(new NumberTextWatcher(editPrice, "#,###"));
+        final CurrencyEditText editPrice = dialog.findViewById(R.id.editPrice);
 
         editDishName.setText(currentDish.getName());
         editDishDescription.setText(currentDish.getDescription());

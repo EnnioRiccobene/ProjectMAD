@@ -233,13 +233,25 @@ public class DailyOfferActivity extends AppCompatActivity implements
                     floatStringVal = formattedVal.replace(".", "").replace(",", ".").replace("€", "").replaceAll("\\s","");
                     floatPrice = Float.parseFloat(floatStringVal);
                 }
-                currentDish = new Dish(1, editDishName.getText().toString(), floatPrice,
-                        Integer.parseInt(editDishQuantity.getText().toString()), editDishDescription.getText().toString(), bitmap);
 
-                myList.add(currentDish);
-                adapter.notifyItemInserted(myList.size()-1);
-                adapter.notifyItemRangeChanged(myList.size()-1, myList.size());
-                dialog.dismiss();
+
+                if (editDishName.getText().toString().isEmpty() || editDishQuantity.getText().toString().isEmpty()) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.requiredString), Toast.LENGTH_SHORT).show();
+                } else if (floatPrice==0) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.requiredPrice), Toast.LENGTH_SHORT).show();
+                } else {
+                    if(editDishDescription.getText().toString().isEmpty()) {
+                        currentDish = new Dish(1, editDishName.getText().toString(), floatPrice,
+                                Integer.parseInt(editDishQuantity.getText().toString()), "", bitmap);
+                    } else {
+                        currentDish = new Dish(1, editDishName.getText().toString(), floatPrice,
+                                Integer.parseInt(editDishQuantity.getText().toString()), editDishDescription.getText().toString(), bitmap);
+                    }
+                    myList.add(currentDish);
+                    adapter.notifyItemInserted(myList.size() - 1);
+                    adapter.notifyItemRangeChanged(myList.size() - 1, myList.size());
+                    dialog.dismiss();
+                }
 
             }
         });

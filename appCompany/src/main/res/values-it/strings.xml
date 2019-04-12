@@ -59,7 +59,8 @@
     <string name="available_quantity">Quantità disponibile</string>
     <string name="dish_price">Prezzo</string>
     <string name="edit_dish">Il tuo piatto</string>
-
+    <string name="requiredString">Inserisci campi obbligatori</string>
+    <string name="requiredPrice">Il prezzo non può essere zero.</string>
 
 
     <string-array name="hours_list">

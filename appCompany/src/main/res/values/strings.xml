@@ -59,6 +59,8 @@
     <string name="available_quantity">Available quantity</string>
     <string name="dish_price">Price</string>
     <string name="edit_dish">Your dish</string>
+    <string name="requiredString">Enter required fields</string>
+    <string name="requiredPrice">Price cannot be zero.</string>
 
     <string-array name="hours_list">
         <item>00:00</item>
