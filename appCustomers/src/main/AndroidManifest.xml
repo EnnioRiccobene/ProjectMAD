@@ -25,6 +25,21 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".SearchRestaurantActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".RestaurantMenuActivity"
+            android:parentActivityName=".SearchRestaurantActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.madgroup.madproject.SearchRestaurantActivity" />
+        </activity>
+        <activity android:name=".ShoppingChartActivity"
+            android:parentActivityName=".RestaurantMenuActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.madgroup.madproject.RestaurantMenuActivity" />
+        </activity>
+        <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
