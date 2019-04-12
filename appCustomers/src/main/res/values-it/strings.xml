@@ -14,4 +14,5 @@
     <string name="camerapermission">Abilita i permessi della fotocamera dalle impostazioni.</string>
     <string name="minimum_order">Ordine minimo:</string>
     <string name="delivery_cost">Costo di consegna:</string>
+    <string name="restaurant_name">Nome del ristorante</string>
 </resources>
