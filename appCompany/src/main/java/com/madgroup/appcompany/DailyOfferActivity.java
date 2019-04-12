@@ -29,6 +29,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blackcat.currencyedittext.CurrencyEditText;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -44,6 +45,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
     private SharedPreferences.Editor editor;
     private RecyclerView recyclerView;
     private DailyOfferRecyclerViewAdapter adapter;
+    private Dish currentDish;
 
     ArrayList<Dish> myList = new ArrayList<>();
 
@@ -200,8 +202,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
         final EditText editDishName = (EditText) dialog.findViewById(R.id.editDishName);
         final EditText editDishDescription = (EditText) dialog.findViewById(R.id.editDishDescription);
         final EditText editDishQuantity = (EditText) dialog.findViewById(R.id.editDishQuantity);
-        final EditText editPrice = (EditText) dialog.findViewById(R.id.editPrice);
-        editPrice.addTextChangedListener(new NumberTextWatcher(editPrice, "#,###"));
+        final CurrencyEditText editPrice = dialog.findViewById(R.id.editPrice);
 
         dialogDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -214,19 +215,32 @@ public class DailyOfferActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
 
-                //todo fare un parsing della stringa per togliere il simbolo dell'euro e tutto quello che non è float
-                //todo far funzionare il metodo per visualizzare l'editText come valuta
-                // TODO controllare che i campi non siano vuoti
-                String dishName = editDishName.getText().toString();
-                float dishPrice = 10;
-                //Float.parseFloat(editPrice.getText().toString());
-                int dishQuantity = Integer.parseInt(editDishQuantity.getText().toString());
-                String dishDesc = editDishDescription.getText().toString();
-                Bitmap dishPhoto = ((BitmapDrawable) dishImage.getDrawable()).getBitmap();
-                myList.add(new Dish(0,dishName, dishPrice, dishQuantity, dishDesc, dishPhoto));
+                Bitmap bitmap = ((BitmapDrawable) dishImage.getDrawable()).getBitmap();
+
+                String local = editPrice.getLocale().toString();
+                Long rawVal = editPrice.getRawValue();
+                String formattedVal = editPrice.formatCurrency(Long.toString(rawVal));
+                String floatStringVal = "";
+                float floatPrice = 0;
+
+                if(local.equals("en_US")){
+                    floatStringVal = formattedVal.replace(",", "").replace("$", "").replaceAll("\\s","");
+                    floatPrice = Float.parseFloat(floatStringVal);
+                } else if(local.equals("en_GB")){
+                    floatStringVal = formattedVal.replace(",", "").replace("£", "").replaceAll("\\s","");
+                    floatPrice = Float.parseFloat(floatStringVal);
+                } else if(local.equals("it_IT")){
+                    floatStringVal = formattedVal.replace(".", "").replace(",", ".").replace("€", "").replaceAll("\\s","");
+                    floatPrice = Float.parseFloat(floatStringVal);
+                }
+                currentDish = new Dish(1, editDishName.getText().toString(), floatPrice,
+                        Integer.parseInt(editDishQuantity.getText().toString()), editDishDescription.getText().toString(), bitmap);
+
+                myList.add(currentDish);
                 adapter.notifyItemInserted(myList.size()-1);
                 adapter.notifyItemRangeChanged(myList.size()-1, myList.size());
                 dialog.dismiss();
+
             }
         });
 
