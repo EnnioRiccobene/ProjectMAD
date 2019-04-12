@@ -136,6 +136,7 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         }
     }
 
+    // Dialog per la modifica di un piatto già esistente
     private void showDialog(final int currentIndex) {
 
         Dish currentDish = dailyOfferList.get(currentIndex);

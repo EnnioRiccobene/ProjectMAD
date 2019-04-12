@@ -111,7 +111,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
                 DailyOfferActivity.this.currentDialog = dialog;
             }
         };
-
     }
 
     // Navigation Drawer
@@ -215,6 +214,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    // Dialog per la creazione di un NUOVO piatto
     private void showDialog() {
         // custom dialog
         final Dialog dialog = new Dialog(this);
@@ -406,7 +406,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
             }
         }
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
