@@ -15,4 +15,19 @@
     <string name="minimum_order">Minimum order:</string>
     <string name="delivery_cost">Delivery cost:</string>
     <string name="restaurant_name">Restaurant name</string>
+
+    <!--Food Categories-->
+    <string name="All">All</string>
+    <string name="Pizza">Pizza</string>
+    <string name="Sandwiches">Sandwiches</string>
+    <string name="Kebab">Kebab</string>
+    <string name="Italian">Italian</string>
+    <string name="American">American</string>
+    <string name="Desserts">Desserts</string>
+    <string name="Fry">Fry</string>
+    <string name="Vegetarian">Vegetarian</string>
+    <string name="Asian">Asian</string>
+    <string name="Mediterranean">Mediterranean</string>
+    <string name="South_American">South American</string>
+
 </resources>
