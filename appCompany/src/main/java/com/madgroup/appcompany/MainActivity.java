@@ -26,6 +26,11 @@ import android.widget.Toast;
 import com.github.aakira.expandablelayout.ExpandableLayout;
 import com.github.aakira.expandablelayout.Utils;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
@@ -99,6 +104,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Getting the instance of Firebase
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         hours = findViewById(R.id.hours);
         arrowbtn = findViewById(R.id.arrowbtn);

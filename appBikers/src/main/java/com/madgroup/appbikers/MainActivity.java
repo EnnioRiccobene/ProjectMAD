@@ -26,6 +26,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import com.google.firebase.database.FirebaseDatabase;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
@@ -56,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Getting the instance of Firebase
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
