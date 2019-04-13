@@ -26,14 +26,13 @@
             android:id="@+id/name_button_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/restaurant_photo">
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/restaurant_photo">
 
             <TextView
                 android:id="@+id/restaurant_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Restaurant name"
                 android:textColor="#000"
                 android:textSize="16sp"
