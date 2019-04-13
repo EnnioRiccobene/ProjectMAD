@@ -82,7 +82,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
         adapter = new DailyOfferRecyclerViewAdapter(this,  myList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
     }
 
     // Navigation Drawer

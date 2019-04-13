@@ -15,17 +15,24 @@ import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import com.google.android.material.navigation.NavigationView;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
@@ -34,7 +41,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 
-public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
+public class MainActivity extends AppCompatActivity
+        implements PopupMenu.OnMenuItemClickListener,
+        NavigationView.OnNavigationItemSelectedListener{
 
     private CircleImageView personalImage;
     private EditText name;
@@ -55,7 +64,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_navigation_drawer);
+        ViewStub stub = (ViewStub)findViewById(R.id.stub);
+        stub.setInflatedId(R.id.inflatedActivity);
+        stub.setLayoutResource(R.layout.activity_main);
+        stub.inflate();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
@@ -74,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
         // Load saved information, if exist
         loadFields();
+
+        navigationDrawerInitialization();
+
     }
 
     // What happens if I click on a icon on the menu
@@ -106,6 +122,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     // What happens if I press back button
     @Override
     public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+            return;
+        }
+
         if(modifyingInfo){
             modifyingInfo = false;
             setFieldUnclickable();
@@ -324,5 +346,57 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 }
             }
         }
+    }
+    public void navigationDrawerInitialization(){
+        // Navigation Drawer Initialization
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        updateNavigatorInformation(navigationView);
+    }
+
+    public void updateNavigatorInformation(NavigationView navigationView){
+        View headerView = navigationView.getHeaderView(0);
+        CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
+        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
+        if(!ImageBitmap.equals("NoImage")){
+            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+            nav_profile_icon.setImageBitmap(bitmap);
+        } else {
+            Drawable defaultImg = getResources().getDrawable(R.mipmap.ic_launcher_round);
+            nav_profile_icon.setImageDrawable(defaultImg);
+        }
+
+        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
+        if(name.getText() != null)
+            navUsername.setText(name.getText());
+        TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
+        if(email.getText() != null)
+            navEmail.setText(email.getText());
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.nav_deliviries) {
+            Intent myIntent = new Intent(this, DeliveriesActivity.class);
+            // myIntent.putExtra("key", value); //Optional parameters
+            this.startActivity(myIntent);
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
