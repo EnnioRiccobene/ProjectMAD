@@ -197,6 +197,7 @@ public class ReservationActivity extends AppCompatActivity implements
 
         */
     }
+    //This functions are not used at this moment but it will help us in future to remove and change item
      public void removeItem(int position) {
         mReservationList.remove(position);
         mAdapter.notifyItemRemoved(position);
