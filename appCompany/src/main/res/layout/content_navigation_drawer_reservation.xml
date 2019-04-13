@@ -4,5 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DailyOfferActivity">
+    tools:context=".ReservationActivity"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/app_bar_navigation_drawer_reservation">
+
+    <!-- A RecyclerView with some commonly used attributes -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

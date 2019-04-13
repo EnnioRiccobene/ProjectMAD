@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="6dp">
+
+    <RelativeLayout
+        android:id="@+id/view_foreground"
+        android:background="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp">
+
+
+        <ImageView
+            android:id="@+id/status_biker"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@mipmap/ic_launcher"
+            />
+
+        <RelativeLayout
+            android:id="@+id/reservation_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/status_biker">
+
+            <TextView
+                android:id="@+id/text_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/address"
+                android:textColor="#000"
+                android:textSize="17sp"
+                android:textStyle="bold"/>
+
+
+            <TextView
+                android:id="@+id/lunch_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_address"
+                android:layout_marginTop="3dp"
+                android:text="@string/lunch_time"
+                android:textColor="#000"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/order_price"
+                android:text="@string/order_price"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/text_address"
+                android:textStyle="bold"
+                android:textSize="18sp"
+
+                />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+</androidx.cardview.widget.CardView>

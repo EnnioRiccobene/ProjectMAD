@@ -17,6 +17,11 @@
     <string name="gallery">Galleria</string>
     <string name="remove">Rimuovi</string>
     <string name="edit">Modifica</string>
+    <string name="address">Indirizzo</string>
+    <string name="lunch_time">Orario</string>
+    <string name="delete">Cancella</string>
+    <string name="action_settings">Aggiungi Azione</string>
+    <string name="order_price"> 19.99 €</string>
 
     <string name="gallerypermission">Abilita i permessi della galleria dalle impostazioni.</string>
     <string name="camerapermission">Abilita i permessi della fotocamera dalle impostazioni.</string>
