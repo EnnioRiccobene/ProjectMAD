@@ -1,75 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <LinearLayout
-        android:id="@+id/food_category_layout"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="showFoodCategorySelector"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/food_category_clickable"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawablePadding="8dp"
-            android:text="Food category"
-            android:textColor="#3d3d3d"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:drawableTint="@color/colorPrimary"/>
-
-        <ImageView
-            android:id="@+id/arrowbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:drawablePadding="8dp"
-            android:src="@drawable/ic_sort_down"
-            android:tint="@color/colorPrimary"
-            android:layout_gravity="center"/>
-    </LinearLayout>
-
-    <com.github.aakira.expandablelayout.ExpandableRelativeLayout
-        android:id="@+id/hiddenFoodCategories"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/food_category_layout"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        app:ael_duration="200"
-        app:ael_expanded="false"
-        app:ael_interpolator="accelerate"
-        app:ael_orientation="vertical"
-        android:layout_marginTop="8dp">
-
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        <RadioButton android:id="@+id/radio_pirates"
+        <LinearLayout
+            android:id="@+id/food_category_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="All"
-            android:onClick="onRadioButtonClicked"/>
+            android:onClick="showFoodCategorySelector"
+            android:orientation="horizontal">
 
-        </RadioGroup>
+            <TextView
+                android:id="@+id/food_category_clickable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/colorPrimary"
+                android:text="Food category"
+                android:textColor="#3d3d3d"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-    </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+            <ImageView
+                android:id="@+id/arrowbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:drawablePadding="8dp"
+                android:src="@drawable/ic_sort_down"
+                android:tint="@color/colorPrimary" />
+        </LinearLayout>
 
-    <CheckBox
-        android:id="@+id/freeDeliveryCheckBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Free delivery"
-        android:layout_below="@id/hiddenFoodCategories"
-        android:layout_marginTop="8dp"/>
+        <!--todo gestire espasione e collapse del layout-->
 
+        <com.github.aakira.expandablelayout.ExpandableRelativeLayout
+            android:id="@+id/hiddenFoodCategories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/food_category_layout"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            app:ael_duration="200"
+            app:ael_expanded="false"
+            app:ael_interpolator="accelerate"
+            app:ael_orientation="vertical">
 
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-</RelativeLayout>
+                <RadioButton
+                    android:id="@+id/radio_all"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/All" />
+
+                <RadioButton
+                    android:id="@+id/radio_pizza"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/Pizza" />
+
+                <RadioButton
+                    android:id="@+id/radio_sandwiches"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/Sandwiches" />
+
+                <RadioButton
+                    android:id="@+id/radio_kebab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/Kebab" />
+
+                <RadioButton
+                    android:id="@+id/radio_italian"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/Italian" />
+
+                <RadioButton
+                    android:id="@+id/radio_american"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/American" />
+
+                <RadioButton
+                    android:id="@+id/radio_desserts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/Desserts" />
+
+                <RadioButton
+                    android:id="@+id/radio_fry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/Fry" />
+
+                <RadioButton
+                    android:id="@+id/radio_vegetarian"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/Vegetarian" />
+
+                <RadioButton
+                    android:id="@+id/radio_asian"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/Asian" />
+
+                <RadioButton
+                    android:id="@+id/radio_mediterranean"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/Mediterranean" />
+
+                <RadioButton
+                    android:id="@+id/radio_south_american"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/South_American" />
+
+            </RadioGroup>
+
+        </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+
+        <CheckBox
+            android:id="@+id/freeDeliveryCheckBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/hiddenFoodCategories"
+            android:text="Free delivery" />
+
+    </RelativeLayout>
+
+</androidx.core.widget.NestedScrollView>
