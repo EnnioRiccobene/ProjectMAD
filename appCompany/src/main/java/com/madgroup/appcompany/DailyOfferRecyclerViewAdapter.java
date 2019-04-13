@@ -30,6 +30,9 @@ import com.yalantis.ucrop.UCrop;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -49,7 +52,6 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
     private int currentIndex = -1;
     public DailyOfferActivity.AdapterHandler adapterhandler;
 
-
     public DailyOfferRecyclerViewAdapter(Context mContext, ArrayList<Dish> dailyOfferList) {
         this.dailyOfferList = dailyOfferList;
         this.mContext = mContext;
@@ -67,7 +69,9 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
         viewHolder.dishName.setText(dailyOfferList.get(i).getName());
-        viewHolder.dishPrice.setText(""+dailyOfferList.get(i).getPrice()+"€");
+        // Rappresentazione con due cifre decimali
+        BigDecimal dishPrice = new BigDecimal(dailyOfferList.get(i).getPrice()).setScale(2, RoundingMode.HALF_UP);
+        viewHolder.dishPrice.setText(""+dishPrice+"€");
         viewHolder.dishQuantity.setText("Quantità disponibile: "+dailyOfferList.get(i).getAvailableQuantity());
         viewHolder.dishDescription.setText(dailyOfferList.get(i).getDescription());
         viewHolder.dishPhoto.setImageBitmap(dailyOfferList.get(i).getPhoto());
@@ -105,8 +109,6 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
             dishQuantity = itemView.findViewById(R.id.dish_quantity);
             popupButton = itemView.findViewById(R.id.popupButton);
         }
-
-
     }
 
     public void showEditPopup(View v, int index) {
@@ -162,8 +164,10 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
 
         editDishName.setText(currentDish.getName());
         editDishDescription.setText(currentDish.getDescription());
-        editDishQuantity.setText(""+currentDish.getAvailableQuantity());
-        editPrice.setText((""+currentDish.getPrice()));
+        editDishQuantity.setText(""+currentDish.getAvailableQuantity());//editPrice.setText((""+currentDish.getPrice()));
+        // Prezzo in rappresentazione decimale con due cifre dopo la virgola
+        BigDecimal dishPrice = new BigDecimal(currentDish.getPrice()).setScale(2, RoundingMode.HALF_UP);
+        editPrice.setText(""+dishPrice);
         dishImage.setImageBitmap(currentDish.getPhoto());
 
         dialogDismiss.setOnClickListener(new View.OnClickListener() {
@@ -201,7 +205,6 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
                 } else {
                     if (editDishDescription.getText().toString().isEmpty()) {
                         int dishQuantity = Integer.parseInt(editDishQuantity.getText().toString());
-                        String dishDesc = editDishDescription.getText().toString();
                         Bitmap dishPhoto = ((BitmapDrawable) dishImage.getDrawable()).getBitmap();
 
                         Dish currentDish = dailyOfferList.get(currentIndex);
