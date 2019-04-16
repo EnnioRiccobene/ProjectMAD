@@ -30,4 +30,8 @@
     <string name="Mediterranean">Mediterranean</string>
     <string name="South_American">South American</string>
 
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="free_delivery">Free delivery</string>
+
 </resources>

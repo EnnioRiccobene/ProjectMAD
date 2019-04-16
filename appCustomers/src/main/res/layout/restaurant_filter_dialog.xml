@@ -160,7 +160,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/hiddenFoodCategories"
-                android:text="Free delivery" />
+                android:text="@string/free_delivery" />
 
         </RelativeLayout>
 
@@ -172,7 +172,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/dialogScroll"
         android:layout_alignParentStart="true"
-        android:text="Cancel"
+        android:text="@string/cancel"
         android:textStyle="bold"
         android:textSize="16sp"
         android:textColor="@color/colorAccent"/>
@@ -183,7 +183,7 @@
         android:layout_below="@id/dialogScroll"
         android:layout_alignParentEnd="true"
         android:gravity="end"
-        android:text="OK"
+        android:text="@string/ok"
         android:textStyle="bold"
         android:textSize="16sp"
         android:textColor="@color/colorAccent"/>

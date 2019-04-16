@@ -30,4 +30,8 @@
     <string name="Mediterranean">Mediterraneano</string>
     <string name="South_American">Sud Americano</string>
 
+    <string name="cancel">Annulla</string>
+    <string name="ok">Conferma</string>
+    <string name="free_delivery">Consegna gratuita</string>
+
 </resources>
