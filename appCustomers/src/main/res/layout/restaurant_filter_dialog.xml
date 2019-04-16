@@ -1,177 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialogScroll"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:clipToPadding="false">
 
-    <androidx.core.widget.NestedScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/dialogScroll"
-        android:layout_marginBottom="16dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+
+        <TextView
+            android:id="@+id/food_category_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="8dp"
+            android:drawableTint="@color/colorPrimary"
+            android:text="Food category"
+            android:textColor="#3d3d3d"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/radio_group_food_category"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/food_category_layout"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
-            <LinearLayout
-                android:id="@+id/food_category_layout"
+            <RadioButton
+                android:id="@+id/radio_all"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:text="@string/All" />
 
-                <TextView
-                    android:id="@+id/food_category_clickable"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawablePadding="8dp"
-                    android:drawableTint="@color/colorPrimary"
-                    android:text="Food category"
-                    android:textColor="#3d3d3d"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:id="@+id/arrowbtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="16dp"
-                    android:drawablePadding="8dp"
-                    android:src="@drawable/ic_sort_down"
-                    android:tint="@color/colorPrimary" />
-            </LinearLayout>
-
-            <com.github.aakira.expandablelayout.ExpandableRelativeLayout
-                android:id="@+id/hiddenFoodCategories"
+            <RadioButton
+                android:id="@+id/radio_pizza"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/food_category_layout"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                app:ael_duration="200"
-                app:ael_expanded="false"
-                app:ael_interpolator="accelerate"
-                app:ael_orientation="vertical">
+                android:text="@string/Pizza" />
 
-                <RadioGroup
-                    android:id="@+id/radio_group_food_category"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <RadioButton
-                        android:id="@+id/radio_all"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/All" />
-
-                    <RadioButton
-                        android:id="@+id/radio_pizza"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/Pizza" />
-
-                    <RadioButton
-                        android:id="@+id/radio_sandwiches"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/Sandwiches" />
-
-                    <RadioButton
-                        android:id="@+id/radio_kebab"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/Kebab" />
-
-                    <RadioButton
-                        android:id="@+id/radio_italian"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/Italian" />
-
-                    <RadioButton
-                        android:id="@+id/radio_american"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/American" />
-
-                    <RadioButton
-                        android:id="@+id/radio_desserts"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/Desserts" />
-
-                    <RadioButton
-                        android:id="@+id/radio_fry"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/Fry" />
-
-                    <RadioButton
-                        android:id="@+id/radio_vegetarian"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/Vegetarian" />
-
-                    <RadioButton
-                        android:id="@+id/radio_asian"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/Asian" />
-
-                    <RadioButton
-                        android:id="@+id/radio_mediterranean"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/Mediterranean" />
-
-                    <RadioButton
-                        android:id="@+id/radio_south_american"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/South_American" />
-
-                </RadioGroup>
-
-            </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
-
-            <CheckBox
-                android:id="@+id/freeDeliveryCheckBox"
+            <RadioButton
+                android:id="@+id/radio_sandwiches"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/hiddenFoodCategories"
-                android:text="@string/free_delivery" />
+                android:text="@string/Sandwiches" />
 
-        </RelativeLayout>
+            <RadioButton
+                android:id="@+id/radio_kebab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Kebab" />
 
-    </androidx.core.widget.NestedScrollView>
+            <RadioButton
+                android:id="@+id/radio_italian"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Italian" />
 
-    <TextView
-        android:id="@+id/dialogCancel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/dialogScroll"
-        android:layout_alignParentStart="true"
-        android:text="@string/cancel"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="@color/colorAccent" />
-    <TextView
-        android:id="@+id/dialogConfirm"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/dialogScroll"
-        android:layout_alignParentEnd="true"
-        android:gravity="end"
-        android:text="@string/ok"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="@color/colorAccent" />
+            <RadioButton
+                android:id="@+id/radio_american"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/American" />
 
-</RelativeLayout>
+            <RadioButton
+                android:id="@+id/radio_desserts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Desserts" />
+
+            <RadioButton
+                android:id="@+id/radio_fry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Fry" />
+
+            <RadioButton
+                android:id="@+id/radio_vegetarian"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Vegetarian" />
+
+            <RadioButton
+                android:id="@+id/radio_asian"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Asian" />
+
+            <RadioButton
+                android:id="@+id/radio_mediterranean"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Mediterranean" />
+
+            <RadioButton
+                android:id="@+id/radio_south_american"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/South_American" />
+
+        </RadioGroup>
+
+
+        <View
+            android:id="@+id/line_dialog_1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/radio_group_food_category"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/colorPrimary" />
+
+        <CheckBox
+            android:id="@+id/freeDeliveryCheckBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/line_dialog_1"
+            android:layout_marginBottom="8dp"
+            android:text="@string/free_delivery" />
+
+        <TextView
+            android:id="@+id/dialogCancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/freeDeliveryCheckBox"
+            android:layout_alignParentStart="true"
+            android:text="@string/cancel"
+            android:textColor="@color/colorAccent"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/dialogConfirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/freeDeliveryCheckBox"
+            android:layout_alignParentEnd="true"
+            android:gravity="end"
+            android:text="@string/ok"
+            android:textColor="@color/colorAccent"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -33,12 +33,20 @@ public class RecycleViewRestaurantAdapter extends RecyclerView.Adapter<RecycleVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RestaurantViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RestaurantViewHolder holder, final int position) {
         holder.restaurant_name.setText(restaurantsList.get(position).getName());
         holder.food_category.setText(restaurantsList.get(position).getFoodCategory());
         holder.minimum_order_amount.setText(restaurantsList.get(position).getMinOrder());
         holder.delivery_cost_amount.setText(restaurantsList.get(position).getDeliveryCost());
         holder.restaurant_photo.setImageBitmap(restaurantsList.get(position).getPhoto());
+
+        holder.cardLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Avvio la seguente Activity
+                RestaurantMenuActivity.start(mContext, restaurantsList.get(position));
+            }
+        });
     }
 
     @Override

@@ -76,8 +76,6 @@ public class SearchRestaurantActivity extends AppCompatActivity {
 
         TextView dialogDismiss = dialog.findViewById(R.id.dialogCancel);
         TextView dialogConfirm = dialog.findViewById(R.id.dialogConfirm);
-        final ExpandableRelativeLayout hiddenFoodCategories = dialog.findViewById(R.id.hiddenFoodCategories);
-        final ImageView arrowbtn = dialog.findViewById(R.id.arrowbtn);
         LinearLayout food_category_layout = dialog.findViewById(R.id.food_category_layout);
         RadioGroup radioGroupFoodCategory = dialog.findViewById(R.id.radio_group_food_category);
         RadioButton radioAll = dialog.findViewById(R.id.radio_all);
@@ -93,23 +91,6 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         RadioButton radioMediterranean = dialog.findViewById(R.id.radio_mediterranean);
         RadioButton radioSouthAmerican = dialog.findViewById(R.id.radio_south_american);
         final CheckBox freeDeliveryCheckbox = dialog.findViewById(R.id.freeDeliveryCheckBox);
-
-        //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
-        if (!hiddenFoodCategories.isExpanded()) {
-            hiddenFoodCategories.collapse();
-        }
-
-        food_category_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (hiddenFoodCategories.isExpanded()) {
-                    createRotateAnimator(arrowbtn, 180f, 0f).start();
-                } else {
-                    createRotateAnimator(arrowbtn, 0f, 180f).start();
-                }
-                hiddenFoodCategories.toggle();
-            }
-        });
 
         radioGroupFoodCategory.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -146,6 +127,8 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         dialogDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                restaurantCategory = null;
+                //todo annullare anche il filtro del costo di consegna
                 dialog.dismiss();
             }
         });
@@ -168,6 +151,8 @@ public class SearchRestaurantActivity extends AppCompatActivity {
 
         dialog.show();
     }
+
+    //todo, occuparsi del comportamento della searchView che popoli l'arrayList di ristoranti in base al nome digitato
 
     private void initRecycleView() {
         //todo temporanea, poi prendere dal db
@@ -196,10 +181,4 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private ObjectAnimator createRotateAnimator(final View target, final float from, final float to) {
-        ObjectAnimator animator = ObjectAnimator.ofFloat(target, "rotation", from, to);
-        animator.setDuration(300);
-        animator.setInterpolator(Utils.createInterpolator(Utils.LINEAR_INTERPOLATOR));
-        return animator;
-    }
 }

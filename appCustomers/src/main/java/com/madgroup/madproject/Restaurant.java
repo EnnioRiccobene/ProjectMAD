@@ -1,8 +1,10 @@
 package com.madgroup.madproject;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Restaurant {
+public class Restaurant implements Parcelable {
 
     private int id;
     private String name;
@@ -66,6 +68,8 @@ public class Restaurant {
         this.saturdayOpeningHours = saturdayOpeningHours;
         this.sundayOpeningHours = sundayOpeningHours;
     }
+
+
 
     public int getId() {
         return id;
@@ -194,4 +198,60 @@ public class Restaurant {
     public void setSundayOpeningHours(String sundayOpeningHours) {
         this.sundayOpeningHours = sundayOpeningHours;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.phoneNumber);
+        dest.writeString(this.address);
+        dest.writeString(this.info);
+        dest.writeString(this.foodCategory);
+        dest.writeParcelable(this.photo, flags);
+        dest.writeString(this.minOrder);
+        dest.writeString(this.deliveryCost);
+        dest.writeString(this.mondayOpeningHours);
+        dest.writeString(this.tuesdayOpeningHours);
+        dest.writeString(this.wednesdayOpeningHours);
+        dest.writeString(this.thursdayOpeningHours);
+        dest.writeString(this.fridayOpeningHours);
+        dest.writeString(this.saturdayOpeningHours);
+        dest.writeString(this.sundayOpeningHours);
+    }
+
+    protected Restaurant(Parcel in) {
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.phoneNumber = in.readString();
+        this.address = in.readString();
+        this.info = in.readString();
+        this.foodCategory = in.readString();
+        this.photo = in.readParcelable(Bitmap.class.getClassLoader());
+        this.minOrder = in.readString();
+        this.deliveryCost = in.readString();
+        this.mondayOpeningHours = in.readString();
+        this.tuesdayOpeningHours = in.readString();
+        this.wednesdayOpeningHours = in.readString();
+        this.thursdayOpeningHours = in.readString();
+        this.fridayOpeningHours = in.readString();
+        this.saturdayOpeningHours = in.readString();
+        this.sundayOpeningHours = in.readString();
+    }
+
+    public static final Parcelable.Creator<Restaurant> CREATOR = new Parcelable.Creator<Restaurant>() {
+        @Override
+        public Restaurant createFromParcel(Parcel source) {
+            return new Restaurant(source);
+        }
+
+        @Override
+        public Restaurant[] newArray(int size) {
+            return new Restaurant[size];
+        }
+    };
 }
