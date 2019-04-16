@@ -32,7 +32,7 @@ public class SearchRestaurantActivity extends AppCompatActivity {
     private ImageButton btnSearch;
     private ImageButton btnFilter;
     private SearchView searchRestaurant;
-    private String restaurantCategory;
+    private String restaurantCategory = null;
 
     private ArrayList<Restaurant> searchedRestaurantList = new ArrayList<>();
 
@@ -92,7 +92,7 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         RadioButton radioAsian = dialog.findViewById(R.id.radio_asian);
         RadioButton radioMediterranean = dialog.findViewById(R.id.radio_mediterranean);
         RadioButton radioSouthAmerican = dialog.findViewById(R.id.radio_south_american);
-        CheckBox freeDeliveryCheckbox = dialog.findViewById(R.id.freeDeliveryCheckBox);
+        final CheckBox freeDeliveryCheckbox = dialog.findViewById(R.id.freeDeliveryCheckBox);
 
         //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
         if (!hiddenFoodCategories.isExpanded()) {
@@ -143,8 +143,6 @@ public class SearchRestaurantActivity extends AppCompatActivity {
             }
         });
 
-        //todo gestire click sul checkbox
-
         dialogDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,6 +154,14 @@ public class SearchRestaurantActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //todo gestire comportamento interno, filtri, interagire con il db per fare una query, ripopolare l'arrayList di ristoranti in base ai filtri e aggiornare la pagina principale
+                if(restaurantCategory != null){
+                    //todo
+                }
+
+                if(freeDeliveryCheckbox.isChecked()){
+                    //todo gestire click sul checkbox
+                }
+
                 dialog.dismiss();
             }
         });
