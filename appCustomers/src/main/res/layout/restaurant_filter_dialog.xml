@@ -24,7 +24,6 @@
                 android:id="@+id/food_category_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="showFoodCategorySelector"
                 android:orientation="horizontal">
 
                 <TextView
@@ -64,6 +63,7 @@
                 app:ael_orientation="vertical">
 
                 <RadioGroup
+                    android:id="@+id/radio_group_food_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -71,84 +71,72 @@
                         android:id="@+id/radio_all"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
                         android:text="@string/All" />
 
                     <RadioButton
                         android:id="@+id/radio_pizza"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
                         android:text="@string/Pizza" />
 
                     <RadioButton
                         android:id="@+id/radio_sandwiches"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
                         android:text="@string/Sandwiches" />
 
                     <RadioButton
                         android:id="@+id/radio_kebab"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
                         android:text="@string/Kebab" />
 
                     <RadioButton
                         android:id="@+id/radio_italian"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
                         android:text="@string/Italian" />
 
                     <RadioButton
                         android:id="@+id/radio_american"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
                         android:text="@string/American" />
 
                     <RadioButton
                         android:id="@+id/radio_desserts"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
                         android:text="@string/Desserts" />
 
                     <RadioButton
                         android:id="@+id/radio_fry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
                         android:text="@string/Fry" />
 
                     <RadioButton
                         android:id="@+id/radio_vegetarian"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
                         android:text="@string/Vegetarian" />
 
                     <RadioButton
                         android:id="@+id/radio_asian"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
                         android:text="@string/Asian" />
 
                     <RadioButton
                         android:id="@+id/radio_mediterranean"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
                         android:text="@string/Mediterranean" />
 
                     <RadioButton
                         android:id="@+id/radio_south_american"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
                         android:text="@string/South_American" />
 
                 </RadioGroup>
@@ -175,7 +163,7 @@
         android:text="@string/cancel"
         android:textStyle="bold"
         android:textSize="16sp"
-        android:textColor="@color/colorAccent"/>
+        android:textColor="@color/colorAccent" />
     <TextView
         android:id="@+id/dialogConfirm"
         android:layout_width="match_parent"
@@ -186,6 +174,6 @@
         android:text="@string/ok"
         android:textStyle="bold"
         android:textSize="16sp"
-        android:textColor="@color/colorAccent"/>
+        android:textColor="@color/colorAccent" />
 
 </RelativeLayout>

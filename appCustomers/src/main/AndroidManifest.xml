@@ -18,15 +18,22 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".MainActivity"
             android:windowSoftInputMode="adjustPan">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity
+            android:name=".SearchRestaurantActivity"
+            android:windowSoftInputMode="adjustPan"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".SearchRestaurantActivity"
-            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".RestaurantMenuActivity"
             android:parentActivityName=".SearchRestaurantActivity">
             <meta-data

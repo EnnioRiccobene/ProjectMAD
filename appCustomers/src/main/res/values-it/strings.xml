@@ -33,5 +33,6 @@
     <string name="cancel">Annulla</string>
     <string name="ok">Conferma</string>
     <string name="free_delivery">Consegna gratuita</string>
+    <string name="filter_restaurants">Filtra i ristoranti</string>
 
 </resources>

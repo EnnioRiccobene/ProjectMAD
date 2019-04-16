@@ -38,7 +38,7 @@ public class RecycleViewRestaurantAdapter extends RecyclerView.Adapter<RecycleVi
         holder.food_category.setText(restaurantsList.get(position).getFoodCategory());
         holder.minimum_order_amount.setText(restaurantsList.get(position).getMinOrder());
         holder.delivery_cost_amount.setText(restaurantsList.get(position).getDeliveryCost());
-//        holder.restaurant_photo.
+        holder.restaurant_photo.setImageBitmap(restaurantsList.get(position).getPhoto());
     }
 
     @Override
