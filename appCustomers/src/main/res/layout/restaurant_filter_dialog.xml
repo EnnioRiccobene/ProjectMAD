@@ -48,8 +48,6 @@
                     android:tint="@color/colorPrimary" />
             </LinearLayout>
 
-            <!--todo gestire espasione e collapse del layout-->
-
             <com.github.aakira.expandablelayout.ExpandableRelativeLayout
                 android:id="@+id/hiddenFoodCategories"
                 android:layout_width="match_parent"
