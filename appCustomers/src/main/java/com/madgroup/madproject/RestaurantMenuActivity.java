@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import com.madgroup.sdk.SmartLogger;
 
+import java.util.ArrayList;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,10 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 public class RestaurantMenuActivity extends AppCompatActivity {
 
     private Restaurant restaurant;
+    ArrayList<Dish> menu = new ArrayList<>();
 
-    public static void start(Context context, Restaurant restaurant){
+    public static void start(Context context, int restaurantId){
         Intent starter = new Intent(context, RestaurantMenuActivity.class);
-        starter.putExtra("Restaurant", restaurant);
+        starter.putExtra("Restaurant", restaurantId);
         context.startActivity(starter);
     }
 
@@ -33,10 +36,10 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     }
 
     private void getIncomingIntent(){
-
         if(getIntent().hasExtra("Restaurant")){
-            restaurant = getIntent().getParcelableExtra("Restaurant");
-            SmartLogger.d("intent_ristorante", restaurant.getName().toString());
+            restaurant.setId(getIntent().getIntExtra("Restaurant", 0));
+            //todo: una volta ottenuto l'id del ristorante tramite intent, fare una query al database per ottenere i campi del ristorante con quell'id (photo, Name, foodcategories, orari di apertura, ordine minimo e costo consegna)
+            //todo: poi fare un'altra queri al db per ottenere tutti i piatti del ristorante con quell'id e riempire l'ArrayList di Dish per la recycleview
         }
     }
 }

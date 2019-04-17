@@ -26,14 +26,14 @@ public class RecycleViewRestaurantAdapter extends RecyclerView.Adapter<RecycleVi
 
     @NonNull
     @Override
-    public RestaurantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecycleViewRestaurantAdapter.RestaurantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.restaurant_item, parent, false);
         RestaurantViewHolder holder = new RestaurantViewHolder(view);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RestaurantViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull RecycleViewRestaurantAdapter.RestaurantViewHolder holder, final int position) {
         holder.restaurant_name.setText(restaurantsList.get(position).getName());
         holder.food_category.setText(restaurantsList.get(position).getFoodCategory());
         holder.minimum_order_amount.setText(restaurantsList.get(position).getMinOrder());
@@ -44,7 +44,7 @@ public class RecycleViewRestaurantAdapter extends RecyclerView.Adapter<RecycleVi
             @Override
             public void onClick(View v) {
                 //Avvio la seguente Activity
-                RestaurantMenuActivity.start(mContext, restaurantsList.get(position));
+                RestaurantMenuActivity.start(mContext, restaurantsList.get(position).getId());
             }
         });
     }
