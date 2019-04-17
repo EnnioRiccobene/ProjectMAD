@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="6dp"
-    app:cardElevation="6dp">
-
+    app:cardElevation="6dp"
+    android:id="@+id/cardViewDish">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -77,12 +77,12 @@
             android:text="Ingredients list"
             android:textSize="13sp" />
 
+        <!--todo: gestire espansione e contrazione del layout in base al click sul + e al valore della variabile quantità != 0-->
         <com.github.aakira.expandablelayout.ExpandableRelativeLayout
             android:id="@+id/expandable_dish_quantity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/dish_ingredients_list"
-
             app:ael_expanded="false"
             app:ael_duration="200"
             app:ael_interpolator="accelerate"
@@ -97,6 +97,7 @@
                 android:layout_marginBottom="8dp"/>
 
             <RelativeLayout
+                android:id="@+id/relative_quantity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"

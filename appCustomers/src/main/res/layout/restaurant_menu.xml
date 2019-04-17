@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/restaurant_header_layout"
@@ -33,7 +32,7 @@
                 android:text="Restaurant name"
                 android:textColor="#000"
                 android:textSize="16sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/food_category"
@@ -51,19 +50,283 @@
             android:id="@+id/line_menu_1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/colorPrimary"
             android:layout_below="@id/name_header_layout"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp"
+            android:background="@color/colorPrimary" />
+
+        <ImageView
+            android:id="@+id/image_deliver"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/line_menu_1"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end"
+            android:src="@drawable/ic_scooter" />
+
+        <TextView
+            android:id="@+id/minimum_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/line_menu_1"
+            android:layout_marginTop="8dp"
+            android:text="@string/minimum_order"
+            android:textColor="#777"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/minimum_order_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/line_menu_1"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toEndOf="@id/minimum_order"
+            android:text="10€"
+            android:textColor="#777"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/delivery_cost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/minimum_order"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="4dp"
+            android:text="@string/delivery_cost"
+            android:textColor="#777"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/delivery_cost_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/minimum_order"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_toEndOf="@id/delivery_cost"
+            android:text="2€"
+            android:textColor="#777"
+            android:textSize="12sp" />
+
+        <View
+            android:id="@+id/line_menu_2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/image_deliver"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/colorPrimary" />
+
+        <!--todo: gestire espansione e contrazione del layout e cambiare i valori in base al db-->
+        <RelativeLayout
+            android:id="@+id/oraarirelativelayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/line_menu_2"
+            android:layout_marginBottom="6dp">
+
+            <LinearLayout
+                android:id="@+id/orarilinearlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="showHoursDetails"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/hours"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/ic_clock"
+                        android:drawablePadding="8dp"
+                        android:drawableTint="@color/colorPrimary"
+                        android:text="@string/opening_hours"
+                        android:textColor="#3d3d3d"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/arrowbtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="16dp"
+                        android:drawablePadding="8dp"
+                        android:src="@drawable/ic_sort_down"
+                        android:tint="@color/colorPrimary" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.github.aakira.expandablelayout.ExpandableRelativeLayout
+                android:id="@+id/hiddenhours"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/orarilinearlayout"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                app:ael_duration="200"
+                app:ael_expanded="false"
+                app:ael_interpolator="accelerate"
+                app:ael_orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="25dp"
+                            android:paddingEnd="25dp"
+                            android:text="@string/Monday"
+                            android:textColor="#3d3d3d" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:paddingStart="25dp"
+                            android:paddingEnd="25dp"
+                            android:text="@string/Tuesday"
+                            android:textColor="#3d3d3d" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:paddingStart="25dp"
+                            android:paddingEnd="25dp"
+                            android:text="@string/Wednesday"
+                            android:textColor="#3d3d3d" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:paddingStart="25dp"
+                            android:paddingEnd="25dp"
+                            android:text="@string/Thursday"
+                            android:textColor="#3d3d3d" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:paddingStart="25dp"
+                            android:paddingEnd="25dp"
+                            android:text="@string/Friday"
+                            android:textColor="#3d3d3d" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:paddingStart="25dp"
+                            android:paddingEnd="25dp"
+                            android:text="@string/Saturday"
+                            android:textColor="#3d3d3d" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:paddingStart="25dp"
+                            android:paddingEnd="25dp"
+                            android:text="@string/Sunday"
+                            android:textColor="#3d3d3d" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/mondayhour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/Closed"
+                            android:textColor="#3d3d3d" />
+
+                        <TextView
+                            android:id="@+id/tuesdayhour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/Closed"
+                            android:textColor="#3d3d3d" />
+
+                        <TextView
+                            android:id="@+id/wednesdayhour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/Closed"
+                            android:textColor="#3d3d3d" />
+
+                        <TextView
+                            android:id="@+id/thursdayhour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/Closed"
+                            android:textColor="#3d3d3d" />
+
+                        <TextView
+                            android:id="@+id/fridayhour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/Closed"
+                            android:textColor="#3d3d3d" />
+
+                        <TextView
+                            android:id="@+id/saturdayhour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/Closed"
+                            android:textColor="#3d3d3d" />
+
+                        <TextView
+                            android:id="@+id/sundayhour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/Closed"
+                            android:textColor="#3d3d3d" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/MenuView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/oraarirelativelayout"
             android:text="Menù"
-            android:layout_below="@id/line_menu_1"
-            android:textStyle="bold"
-            android:textSize="18sp"/>
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"

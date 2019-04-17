@@ -35,4 +35,17 @@
     <string name="free_delivery">Free delivery</string>
     <string name="filter_restaurants">Filter restaurants</string>
 
+    <string name="opening_hours">Opening hours</string>
+    <string name="Monday">Monday</string>
+    <string name="Tuesday">Tuesday</string>
+    <string name="Wednesday">Wednesday</string>
+    <string name="Thursday">Thursday</string>
+    <string name="Friday">Friday</string>
+    <string name="Saturday">Saturday</string>
+    <string name="Sunday">Sunday</string>
+    <string name="modify_hours">Edit hours</string>
+    <string name="Closed">Closed</string>
+    <string name="other_hours">Other hours</string>
+    <string name="open_24h">Open 24h</string>
+
 </resources>

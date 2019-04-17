@@ -43,9 +43,9 @@ public class RecyclerViewHoursAdapter extends RecyclerView.Adapter<RecyclerViewH
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.edit_hours_items, parent, false);
         ViewHolder holder = new ViewHolder(view);
 
-        if (!holder.hiddenhour.isExpanded()) {
-            holder.hiddenhour.collapse();
-        }
+//        if (!holder.hiddenhour.isExpanded()) {
+//            holder.hiddenhour.collapse();
+//        }
 
         if (!holder.hiddenbox.isExpanded()) {
             holder.hiddenbox.collapse();

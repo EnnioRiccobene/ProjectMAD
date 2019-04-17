@@ -35,4 +35,17 @@
     <string name="free_delivery">Consegna gratuita</string>
     <string name="filter_restaurants">Filtra i ristoranti</string>
 
+    <string name="opening_hours">Orari di apertura</string>
+    <string name="Monday">Lunedì</string>
+    <string name="Tuesday">Martedì</string>
+    <string name="Wednesday">Mercoledì</string>
+    <string name="Thursday">Giovedì</string>
+    <string name="Friday">Venerdì</string>
+    <string name="Saturday">Sabato</string>
+    <string name="Sunday">Domenica</string>
+    <string name="modify_hours">Modifica orari</string>
+    <string name="Closed">Chiuso</string>
+    <string name="other_hours">Altri orari</string>
+    <string name="open_24h">Aperto 24h</string>
+
 </resources>
