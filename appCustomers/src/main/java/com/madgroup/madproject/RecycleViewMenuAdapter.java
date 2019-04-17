@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RecycleViewMenuAdapter extends RecyclerView.Adapter<RecycleViewMenuAdapter.MenuViewHolder>{
-
+//todo: poi nella pagina menù aggiungere i piatti con dishQuantity != 0  a un intent da mandare all'activity carrello (magari metterli qua in un array list di piatti ordinati e poi creare l'oggetto ordine da mandare al carrello)
     private ArrayList<Dish> menu = new ArrayList<>();
     Context mContext;
 
@@ -40,7 +40,7 @@ public class RecycleViewMenuAdapter extends RecyclerView.Adapter<RecycleViewMenu
         final int[] orderedQuantity = {0};
         holder.dishPhoto.setImageBitmap(menu.get(position).getPhoto());
         holder.dishName.setText(menu.get(position).getName());
-        holder.dishPrice.setText(menu.get(position).getPrice());//gestire la edittext del prezzo come fatto nell'app company
+//        holder.dishPrice.setText(menu.get(position).getPrice());//gestire la edittext del prezzo come fatto nell'app company
         holder.dishIngredientsList.setText(menu.get(position).getDescription());
         holder.dishQuantity.setText(orderedQuantity[0]);
 
@@ -51,10 +51,27 @@ public class RecycleViewMenuAdapter extends RecyclerView.Adapter<RecycleViewMenu
                 orderedQuantity[0]++;
                 holder.dishQuantity.setText(orderedQuantity[0]);
 
+                //prima aggiunta del piatto all'ordine
                 if (!holder.expandableDishQuantity.isExpanded()) {
                     holder.expandableDishQuantity.expand();
                 }
 
+            }
+        });
+
+        holder.reduceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                orderedQuantity[0]--;
+                holder.dishQuantity.setText(orderedQuantity[0]);
+
+                //piatto rimosso dall'ordine
+                if (holder.expandableDishQuantity.isExpanded()) {
+                    if(orderedQuantity[0] == 0){
+                        holder.expandableDishQuantity.collapse();
+                    }
+                }
             }
         });
     }
