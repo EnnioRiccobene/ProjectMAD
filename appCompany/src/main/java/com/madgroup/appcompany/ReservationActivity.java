@@ -1,47 +1,41 @@
 package com.madgroup.appcompany;
 
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import android.app.Dialog;
+import android.animation.ObjectAnimator;
+import android.animation.StateListAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
 public class ReservationActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener,
+        reservationTab1.OnFragmentInteractionListener,
+        reservationTab2.OnFragmentInteractionListener,
+        reservationTab3.OnFragmentInteractionListener{
     private RecyclerView mRecyclerView;
     private ReservationAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -52,12 +46,18 @@ public class ReservationActivity extends AppCompatActivity implements
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
 
+    private TabLayout tabLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reservation);
-        createReservationList();
-        buildRecyclerView();
+
+        initializeTabs();
+
+        // createPendingReservationList();
+        // buildRecyclerView();
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
 
@@ -65,6 +65,7 @@ public class ReservationActivity extends AppCompatActivity implements
         initializeNavigationDrawer();
 
     }
+
     // Navigation Drawer
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -148,66 +149,6 @@ public class ReservationActivity extends AppCompatActivity implements
         }
     }
 
-    // Add new item at ReservationList specifying 4 element: status_biker , text_address, lunch_time, order_price
-    public void createReservationList(){
-        mReservationList = new ArrayList<>();
-        mReservationList.add(new Reservation(R.drawable.green_bike, "Via Moretta 2", "18:45", "19.99 €"));
-        mReservationList.add(new Reservation(R.drawable.red_bike, "Piazza Sabotino 8","19:00", "18.95 €" ));
-        mReservationList.add(new Reservation(R.drawable.red_bike,"Via Villarbasse 12" , "20:45", "12.50 €"));
-        mReservationList.add(new Reservation(R.drawable.green_bike, "Corso Rosselli 15", "21:00", "11.90 €"));
-        mReservationList.add(new Reservation(R.drawable.red_bike, "Address5","Delivery Time", "1090.00 €" ));
-        mReservationList.add(new Reservation(R.drawable.red_bike,"Address6" , "Delivery Time", "100.90 € "));
-        mReservationList.add(new Reservation(R.drawable.green_bike, "Address7", "Delivery Time", "Price €"));
-        mReservationList.add(new Reservation(R.drawable.red_bike, "Address8","Delivery Time" , "Price €"));
-        mReservationList.add(new Reservation(R.drawable.red_bike,"Address9" , "Delivery Time", "Price €"));
-        mReservationList.add(new Reservation(R.drawable.green_bike, "Address10", "Delivery Time", "Price €"));
-        mReservationList.add(new Reservation(R.drawable.red_bike, "Address11","Delivery Time", "Price €" ));
-        mReservationList.add(new Reservation(R.drawable.red_bike,"Address12" , "Delivery Time", "Price €"));
-    }
-
-    // The following function set up the RecyclerView
-    public void buildRecyclerView() {
-        mRecyclerView = findViewById(R.id.recyclerView);
-        //rootLayout = (CoordinatorLayout)findViewById(R.id.rootLayout);
-        mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new ReservationAdapter(mReservationList);
-
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-       // mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-
-        mAdapter.setOnItemClickListener(new ReservationAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                Intent openPage= new Intent(ReservationActivity.this, DetailedReservation.class);
-                startActivity(openPage);
-                //changeItem(position,"Clicked!");
-            }
-             //This Function is useful if we want to delete an item in the list
-            @Override
-            public void onDeleteClick(int position) {
-                removeItem(position);
-            }
-        });
-
-        /*ItemTouchHelper.SimpleCallback itemTouchHelperCallBack
-                = new RecyclerItemTouchHelper(0,ItemTouchHelper.LEFT ,this );
-        new ItemTouchHelper(itemTouchHelperCallBack).attachToRecyclerView(mRecyclerView);
-
-        */
-    }
-    //This functions are not used at this moment but it will help us in future to remove and change item
-     public void removeItem(int position) {
-        mReservationList.remove(position);
-        mAdapter.notifyItemRemoved(position);
-    }
-
-    public void changeItem(int position, String text) {
-        mReservationList.get(position).changeText1(text);
-        mAdapter.notifyItemChanged(position);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -230,5 +171,43 @@ public class ReservationActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    // Tabs
+    public void initializeTabs(){
+        // Remove black line under toolbar
+        StateListAnimator stateListAnimator = new StateListAnimator();
+        stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(findViewById(android.R.id.content), "elevation", 0));
+        findViewById(R.id.appBarLayout).setStateListAnimator(stateListAnimator);
 
+        // Add tabs
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.reservationViewPager);
+        reservationPageAdapter myPagerAdapter = new reservationPageAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(myPagerAdapter);
+        tabLayout = (TabLayout) findViewById(R.id.tablayout);
+        tabLayout.setupWithViewPager(viewPager);
+
+        // Add actions on tab selected/reselected/unselected
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+        });
+
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 }

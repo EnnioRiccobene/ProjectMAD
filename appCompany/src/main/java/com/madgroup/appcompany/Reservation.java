@@ -1,35 +1,105 @@
 package com.madgroup.appcompany;
 
-public class Reservation {
-    private int mImageResource;
+import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+
+public class Reservation implements Serializable {
+
+
+    // TODO: Aggiungere successivamente classe Customer con tutte le informazioni necessarie dell'utente (nome, cognome, telefono)
+    private String orderID;
+    private ArrayList<orderedDish> orderedDishList;
     private String address;
-    private String delivery_time;
+    private String deliveryTime;
     private String price;
+    private Integer status;
+    private String notes;
 
-    public Reservation(int imageResource, String text1, String text2, String text3){
-        mImageResource = imageResource;
-        address = text1;
-        delivery_time = text2;
-        price = text3;
+//    Status
+//    0: Da confermare/rifiutare        Tab1
+//    1: Confermato. Da consegnare      Tab2
+//    2: Consegnato e concluso          Tab3
+//    3: Rifiutato                      Tab3 or Nothing
+//    ? Need to add "Rider Called" status ?
 
+
+    public Reservation() {
     }
-    public void changeText1(String text){
+
+    public Reservation(String address, String deliveryTime, Integer status, String price) {
+        this.address = address;
+        this.deliveryTime = deliveryTime;
+        this.status = status;
+        this.price = price;
+    }
+
+    public String getOrderID() {
+        return orderID;
+    }
+
+    public void setOrderID(String orderID) {
+        this.orderID = orderID;
+    }
+
+    public Reservation(ArrayList<orderedDish> orderedDishList, String address, String deliveryTime, Integer status) {
+        this.orderedDishList = orderedDishList;
+        this.address = address;
+        this.deliveryTime = deliveryTime;
+        this.status= status;
+        // Compute total Price
+        float x = 0;
+        for (orderedDish element : orderedDishList)
+            x += element.getPrice() * element.getQuantity();
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setMinimumFractionDigits(2);
+        price = df.format(x);
+    }
+
+    public Reservation(String text1, String text2, String text3) {
+        address = text1;
+        deliveryTime = text2;
+        price = text3;
+    }
+
+
+
+    public ArrayList<orderedDish> getOrderedDishList() {
+        return orderedDishList;
+    }
+
+    public void setOrderedDishList(ArrayList<orderedDish> orderedDishList) {
+        this.orderedDishList = orderedDishList;
+    }
+
+    public Reservation(String text1, String text2, String text3, boolean confirmed) {
+        address = text1;
+        deliveryTime = text2;
+        price = text3;
+    }
+
+    public void changeText1(String text) {
         address = text;
     }
 
-    public int getmImageResource(){
-        return mImageResource;
-    }
-
-    public String getAddress(){
+    public String getAddress() {
         return address;
     }
 
-    public String getDelivery_time(){
-        return delivery_time;
+    public String getDeliveryTime() {
+        return deliveryTime;
     }
-        public String getPrice() {
+
+    public String getPrice() {
         return price;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }
 

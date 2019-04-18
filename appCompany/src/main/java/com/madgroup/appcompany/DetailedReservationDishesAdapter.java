@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 public class DetailedReservationDishesAdapter extends
         RecyclerView.Adapter<DetailedReservationDishesAdapter.ViewHolder>{
 
+    private Reservation reservation;
+    private ArrayList<orderedDish> orderedDishes;
     private ArrayList<Dish> dishes;
     Context mContext;
 
@@ -43,13 +46,14 @@ public class DetailedReservationDishesAdapter extends
         }
     }
 
-    public DetailedReservationDishesAdapter(ArrayList<Dish> dishes) {
-        this.dishes= dishes;
+    public DetailedReservationDishesAdapter(Reservation reservation) {
+        this.reservation = reservation;
+        this.orderedDishes = reservation.getOrderedDishList();
     }
 
     @Override
     public int getItemCount() {
-        return dishes.size();
+        return reservation.getOrderedDishList().size();
     }
 
     @NonNull
@@ -63,10 +67,13 @@ public class DetailedReservationDishesAdapter extends
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Dish dish = dishes.get(position);
+        orderedDish dish = orderedDishes.get(position);
+
         holder.dishName.setText(dish.getName());
-        holder.dishQuantity.setText(String.valueOf("x " + dish.getAvailableQuantity()));
-        float price = dish.getPrice() * dish.getAvailableQuantity();
-        holder.dishPrice.setText(String.valueOf(price) + " €");
+        holder.dishQuantity.setText(String.valueOf("x " + dish.getQuantity()));
+        float price = dish.getPrice() * dish.getQuantity();
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setMinimumFractionDigits(2);
+        holder.dishPrice.setText(df.format(price) + " €");
     }
 }

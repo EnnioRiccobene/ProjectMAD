@@ -24,7 +24,7 @@
                 android:value="com.madgroup.appcompany.ReservationActivity" />
         </activity>
         <activity android:name=".DailyOfferActivity" />
-        <activity android:name=".ReservationActivity" />
+        <activity android:name=".ReservationActivity"></activity>
         <activity
             android:name=".EditOpeningHoursActivity"
             android:label="Opening hours"
@@ -41,7 +41,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
         <activity

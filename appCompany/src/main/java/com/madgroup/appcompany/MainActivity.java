@@ -26,6 +26,11 @@ import android.widget.Toast;
 import com.github.aakira.expandablelayout.ExpandableLayout;
 import com.github.aakira.expandablelayout.Utils;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
@@ -99,6 +104,66 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        createPendingReservationList();
+
+        // START DATABASE TEST
+
+
+//        ArrayList<orderedDish> orderedDishList = new ArrayList<orderedDish>();
+//        orderedDishList.add(new orderedDish("Food1", 2, 6.4f));
+//        orderedDishList.add(new orderedDish("Food2", 6, 10.4f));
+//        orderedDishList.add(new orderedDish("Food3", 3, 6f));
+//        orderedDishList.add(new orderedDish("Food4", 5, 9.4f));
+//        orderedDishList.add(new orderedDish("Food5", 7, 1.5f));
+//
+//        // Compute total Price
+//        float x = 0;
+//        for (orderedDish element : orderedDishList)
+//            x += element.getPrice() * element.getQuantity();
+//        DecimalFormat df = new DecimalFormat("#.##");
+//        df.setMinimumFractionDigits(2);
+//        String price = df.format(x);
+//
+//        ArrayList<Reservation> mReservationList = new ArrayList<>();
+//        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 2, price));
+//        mReservationList.add(new Reservation("Piazza Sabotino 8","19:00", 3, price));
+//        mReservationList.add(new Reservation("Via Villarbasse 12" , "20:45", 2, price));
+//        mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 2, price));
+//        mReservationList.add(new Reservation("Address5","Delivery Time", 2, price));
+//        mReservationList.add(new Reservation("Address6" , "Delivery Time", 2, price));
+//        mReservationList.add(new Reservation("Address7", "Delivery Time", 2, price));
+//        mReservationList.add(new Reservation("Address8","Delivery Time" , 3, price));
+//        mReservationList.add(new Reservation("Address9" , "Delivery Time", 3, price));
+//        mReservationList.add(new Reservation("Address10", "Delivery Time", 2, price));
+//        mReservationList.add(new Reservation("Address11","Delivery Time", 2, price));
+//        mReservationList.add(new Reservation("Address12" , "Delivery Time", 2, price));
+//
+//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+//        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("History");
+//        DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood");
+//
+//        for (Reservation element : mReservationList) {
+//            String orderID = pendingReservationRef.push().getKey();
+//            element.setOrderID(orderID);
+//            pendingReservationRef.child(orderID).setValue(element);
+//            orderedFoodRef.child(orderID).setValue(orderedDishList);
+//        }
+
+
+
+
+
+
+
+
+
+
+
+
+        // END DATABASE TEST
+
+
 
         hours = findViewById(R.id.hours);
         arrowbtn = findViewById(R.id.arrowbtn);
@@ -668,4 +733,40 @@ public class MainActivity extends AppCompatActivity
     }
 
     //todo: aggiungere il menù nell'activity per la modifica degli orari con backbutton e conferma
+
+
+
+
+
+
+
+
+    public void createPendingReservationList() {
+        reservationTab1.pendingReservation = new ArrayList<>();
+
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
+        pendingReservationRef.keepSynced(true);
+//        DatabaseReference orderedFoodRef = database.child("Company").child("OrderedFood");
+
+        pendingReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                SmartLogger.d("Getting data");
+                SmartLogger.d(String.valueOf(dataSnapshot.getChildrenCount()));
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Reservation post = postSnapshot.getValue(Reservation.class);
+                    SmartLogger.d("Get Data " + post.getOrderID());
+                    reservationTab1.pendingReservation.add(post);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
 }
