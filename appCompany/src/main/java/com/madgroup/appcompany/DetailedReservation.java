@@ -8,61 +8,43 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.madgroup.sdk.SmartLogger;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class DetailedReservation extends AppCompatActivity {
 
-    TextView dishesText;
-    private RecyclerView recyclerView;
-    private ArrayList<orderedDish> dishList;
-    private DetailedReservationDishesAdapter dAdapter;
+
     private TextView totalPrice;
-    private ImageView confirm;
+    private TextView address;
+    private TextView lunchTime;
+    private TextView notes;
+
+    private RecyclerView recyclerView;
+    private DetailedReservationDishesAdapter dAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed_reservation);
         Reservation reservation = (Reservation) getIntent().getSerializableExtra("Reservation");
-
-        totalPrice = findViewById(R.id.totalPrice);
+        ArrayList<OrderedDish> orderedFood = (ArrayList<OrderedDish>) getIntent().getSerializableExtra("OrderedFood");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        toolbar.setTitle("Order number 123");
-
-        // ARRAY DI PROVA
-        dishList = reservation.getOrderedDishList();
-
-        //        ArrayList<Dish> dishes = new ArrayList<>();
-//        dishes.add(new Dish(0, "Pollo al curry", 34, 30));
-//        dishes.add(new Dish(1, "Carbonara", 34, 2));
-//        dishes.add(new Dish(2, "Cacio e pepe", 34, 35));
-//        dishes.add(new Dish(3, "Insalta", 34, 10));
-//        dishes.add(new Dish(4, "Polpette", 34, 60));
-
-        totalPrice.setText(reservation.getPrice() + " €");
+        toolbar.setTitle("Order number " + reservation.getOrderID());
 
         // RECYCLERVIEW
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        dAdapter = new DetailedReservationDishesAdapter(reservation);
-        dishesText = findViewById(R.id.dishesText);
+        dAdapter = new DetailedReservationDishesAdapter(orderedFood);
+
         // Make it unscrollable
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext()){
             @Override
@@ -73,6 +55,19 @@ public class DetailedReservation extends AppCompatActivity {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(dAdapter);
+
+        // Fields
+        totalPrice = findViewById(R.id.totalPrice);
+        totalPrice.setText(reservation.getPrice() + " €");
+        address = findViewById(R.id.address);
+        address.setText(reservation.getAddress());
+        lunchTime = findViewById(R.id.time);
+        lunchTime.setText(reservation.getDeliveryTime());
+        notes = findViewById(R.id.notes);
+        if(reservation.getNotes() != null)
+            notes.setText(reservation.getNotes());
+
+
 
 
 //        confirm = findViewById(R.id.detailed_reservation_confirm_button);

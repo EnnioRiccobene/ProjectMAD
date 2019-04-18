@@ -166,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/notes_bold"
                     android:layout_toRightOf="@+id/notes_bold"
-                    android:text="senza formaggio"
+                    android:text="/"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
 

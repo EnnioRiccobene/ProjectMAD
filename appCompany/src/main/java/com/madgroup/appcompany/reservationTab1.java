@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,6 +15,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
@@ -146,10 +152,32 @@ public class reservationTab1 extends Fragment {
         SmartLogger.d("Size = " + pendingReservation.size());
         mAdapter.setOnItemClickListener(new ReservationAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                Intent openPage = new Intent(getActivity(), DetailedReservation.class);
-                openPage.putExtra("Reservation", pendingReservation.get(position));
-                startActivity(openPage);
+            public void onItemClick(final int position) {
+                // Scarico dal DB orderedFood
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("OrderedFood");
+                String orderID = pendingReservation.get(position).getOrderID();
+                pendingReservationRef.child(orderID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ArrayList<OrderedDish> orderedFood = new ArrayList<>();
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            OrderedDish post = postSnapshot.getValue(OrderedDish.class);
+                            orderedFood.add(post);
+                        }
+                        SmartLogger.d(String.valueOf(orderedFood.size()));
+                        Intent openPage = new Intent(getActivity(), DetailedReservation.class);
+                        openPage.putExtra("Reservation", pendingReservation.get(position));
+                        openPage.putExtra("OrderedFood", orderedFood);
+                        startActivity(openPage);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
             }
 
             //This Function is useful if we want to delete an item in the list

@@ -1,17 +1,10 @@
 package com.madgroup.appcompany;
 
-import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -22,10 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class DetailedReservationDishesAdapter extends
         RecyclerView.Adapter<DetailedReservationDishesAdapter.ViewHolder>{
 
-    private Reservation reservation;
-    private ArrayList<orderedDish> orderedDishes;
-    private ArrayList<Dish> dishes;
-    Context mContext;
+    private ArrayList<OrderedDish> orderedDishes;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -46,14 +36,13 @@ public class DetailedReservationDishesAdapter extends
         }
     }
 
-    public DetailedReservationDishesAdapter(Reservation reservation) {
-        this.reservation = reservation;
-        this.orderedDishes = reservation.getOrderedDishList();
+    public DetailedReservationDishesAdapter(ArrayList<OrderedDish> orderedDishes) {
+        this.orderedDishes = orderedDishes;
     }
 
     @Override
     public int getItemCount() {
-        return reservation.getOrderedDishList().size();
+        return orderedDishes.size();
     }
 
     @NonNull
@@ -67,7 +56,7 @@ public class DetailedReservationDishesAdapter extends
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        orderedDish dish = orderedDishes.get(position);
+        OrderedDish dish = orderedDishes.get(position);
 
         holder.dishName.setText(dish.getName());
         holder.dishQuantity.setText(String.valueOf("x " + dish.getQuantity()));

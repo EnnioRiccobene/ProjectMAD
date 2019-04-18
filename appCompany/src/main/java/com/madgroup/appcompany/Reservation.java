@@ -9,11 +9,20 @@ public class Reservation implements Serializable {
 
     // TODO: Aggiungere successivamente classe Customer con tutte le informazioni necessarie dell'utente (nome, cognome, telefono)
     private String orderID;
-    private ArrayList<orderedDish> orderedDishList;
+    private ArrayList<OrderedDish> orderedDishList;
     private String address;
     private String deliveryTime;
     private String price;
     private Integer status;
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
     private String notes;
 
 //    Status
@@ -42,14 +51,14 @@ public class Reservation implements Serializable {
         this.orderID = orderID;
     }
 
-    public Reservation(ArrayList<orderedDish> orderedDishList, String address, String deliveryTime, Integer status) {
+    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, Integer status) {
         this.orderedDishList = orderedDishList;
         this.address = address;
         this.deliveryTime = deliveryTime;
         this.status= status;
         // Compute total Price
         float x = 0;
-        for (orderedDish element : orderedDishList)
+        for (OrderedDish element : orderedDishList)
             x += element.getPrice() * element.getQuantity();
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
@@ -64,11 +73,11 @@ public class Reservation implements Serializable {
 
 
 
-    public ArrayList<orderedDish> getOrderedDishList() {
+    public ArrayList<OrderedDish> getOrderedDishList() {
         return orderedDishList;
     }
 
-    public void setOrderedDishList(ArrayList<orderedDish> orderedDishList) {
+    public void setOrderedDishList(ArrayList<OrderedDish> orderedDishList) {
         this.orderedDishList = orderedDishList;
     }
 

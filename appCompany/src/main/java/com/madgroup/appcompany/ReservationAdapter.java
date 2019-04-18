@@ -12,6 +12,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -84,8 +87,8 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
 
     public ReservationAdapter(ArrayList<Reservation> exampleList) {
         mExampleList = exampleList;
-
     }
+
     @NonNull
     @Override
     public ReservationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -97,7 +100,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ReservationViewHolder holder, int position) {
-        Reservation currentItem = mExampleList.get(position);
+        final Reservation currentItem = mExampleList.get(position);
         final int index = position;
         switch (currentItem.getStatus()){
             case 0:
@@ -106,8 +109,18 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
                 holder.mImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(v.getContext(), String.valueOf(index), Toast.LENGTH_SHORT).show();
+                        // Elimino dalle pending e inserisco nelle accepted. Prima dal database, poi nella lista
+                        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
+                        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted");
+                        String orderID = currentItem.getOrderID();
+                        currentItem.setStatus(1);
+                        pendingReservationRef.child(orderID).removeValue();
+                        acceptedReservationRef.child(orderID).setValue(currentItem);
+                        Toast.makeText(v.getContext(), orderID, Toast.LENGTH_LONG).show();
                         removeItem(index);
+                        reservationTab2.acceptedReservation.add(currentItem);
+                        reservationTab2.mAdapter.notifyItemInserted(reservationTab2.acceptedReservation.size());
                     }
                 });
                 break;

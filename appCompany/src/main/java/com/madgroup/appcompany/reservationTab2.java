@@ -42,8 +42,8 @@ public class reservationTab2 extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private ArrayList<Reservation> acceptedReservation;
-    private ReservationAdapter mAdapter;
+    static public ArrayList<Reservation> acceptedReservation;
+    static public ReservationAdapter mAdapter;
     private RecyclerView mRecyclerView;
 
     private OnFragmentInteractionListener mListener;

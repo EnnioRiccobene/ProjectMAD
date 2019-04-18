@@ -110,16 +110,16 @@ public class MainActivity extends AppCompatActivity
         // START DATABASE TEST
 
 
-//        ArrayList<orderedDish> orderedDishList = new ArrayList<orderedDish>();
-//        orderedDishList.add(new orderedDish("Food1", 2, 6.4f));
-//        orderedDishList.add(new orderedDish("Food2", 6, 10.4f));
-//        orderedDishList.add(new orderedDish("Food3", 3, 6f));
-//        orderedDishList.add(new orderedDish("Food4", 5, 9.4f));
-//        orderedDishList.add(new orderedDish("Food5", 7, 1.5f));
+//        ArrayList<OrderedDish> orderedDishList = new ArrayList<OrderedDish>();
+//        orderedDishList.add(new OrderedDish("Food1", 2, 6.4f));
+//        orderedDishList.add(new OrderedDish("Food2", 6, 10.4f));
+//        orderedDishList.add(new OrderedDish("Food3", 3, 6f));
+//        orderedDishList.add(new OrderedDish("Food4", 5, 9.4f));
+//        orderedDishList.add(new OrderedDish("Food5", 7, 1.5f));
 //
 //        // Compute total Price
 //        float x = 0;
-//        for (orderedDish element : orderedDishList)
+//        for (OrderedDish element : orderedDishList)
 //            x += element.getPrice() * element.getQuantity();
 //        DecimalFormat df = new DecimalFormat("#.##");
 //        df.setMinimumFractionDigits(2);

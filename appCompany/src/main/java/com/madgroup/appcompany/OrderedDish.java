@@ -2,12 +2,15 @@ package com.madgroup.appcompany;
 
 import java.io.Serializable;
 
-public class orderedDish implements Serializable {
+public class OrderedDish implements Serializable {
     private String name;
     private Integer quantity;
     private float price;
 
-    public orderedDish(String name, Integer quantity, float price) {
+    public OrderedDish() {
+    }
+
+    public OrderedDish(String name, Integer quantity, float price) {
         this.name = name;
         this.quantity = quantity;
         this.price = price;
