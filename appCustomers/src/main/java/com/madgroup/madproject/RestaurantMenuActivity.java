@@ -96,7 +96,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     }
 
     private void initRecicleView(){
-        //todo temporanea, poi prendere dal db
+        //todo temporanea, poi prendere dal db e usare il costruttore che mette anche le foto
         menu.add(new Dish(1, "Margherita", 5, 30));
         menu.add(new Dish(1, "Capricciosa", 7.5f, 30));
         menu.add(new Dish(1, "Quattro salumi", 7, 30));
