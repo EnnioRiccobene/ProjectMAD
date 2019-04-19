@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,6 +46,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     TextView fridayHours;
     TextView saturdayHours;
     TextView sundayHours;
+    ImageButton imageButtonCart;
 
     public static void start(Context context, int restaurantId){
         Intent starter = new Intent(context, RestaurantMenuActivity.class);
@@ -71,6 +73,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         fridayHours = findViewById(R.id.fridayhour);
         saturdayHours = findViewById(R.id.saturdayhour);
         sundayHours = findViewById(R.id.sundayhour);
+        imageButtonCart = findViewById(R.id.imageButtonCart);
 
         //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
         if(!hiddenHours.isExpanded()){
@@ -83,6 +86,13 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         //todo:aggiungere button carrello al layout e qui fare il clickListener
 
         initRecicleView();
+
+        imageButtonCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //todo: costruire l'oggetto prenotazione e mandare l'intent per avviare l'activity carrello
+            }
+        });
     }
 
     private void getIncomingIntent(){
@@ -96,7 +106,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     }
 
     private void initRecicleView(){
-        //todo temporanea, poi prendere dal db e usare il costruttore che mette anche le foto
+        //todo temporanea, poi prendere dal db e usare il costruttore che mette anche le fotounb'
         menu.add(new Dish(1, "Margherita", 5, 30));
         menu.add(new Dish(1, "Capricciosa", 7.5f, 30));
         menu.add(new Dish(1, "Quattro salumi", 7, 30));
