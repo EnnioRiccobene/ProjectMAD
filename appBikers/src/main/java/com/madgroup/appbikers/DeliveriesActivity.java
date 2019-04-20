@@ -114,8 +114,10 @@ public class DeliveriesActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         if (id == R.id.nav_deliviries) {
-            Intent myIntent = new Intent(this, DeliveriesActivity.class);
-            // myIntent.putExtra("key", value); //Optional parameters
+            onBackPressed();
+        }
+        else if(id == R.id.nav_profile){
+            Intent myIntent = new Intent(this, MainActivity.class);
             this.startActivity(myIntent);
         }
 

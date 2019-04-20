@@ -2,21 +2,14 @@ package com.madgroup.appbikers;
 
 public class Delivery {
 
+    private String restaurantName;
     private String restaurantAddress;
     private String customerAddress;
     private String paymentMethod;
-    private String restaurantName;
     private float price;
     private String customerPhone;
-    private String RestaurantPhone;
+    private String restaurantPhone;
 
-    public String getRestaurantName() {
-        return restaurantName;
-    }
-
-    public void setRestaurantName(String restaurantName) {
-        this.restaurantName = restaurantName;
-    }
 
     public Delivery(String restaurantName, String restaurantAddress, String customerAddress, String paymentMethod) {
         this.restaurantName = restaurantName;
@@ -49,9 +42,17 @@ public class Delivery {
         return paymentMethod;
     }
 
-    public int calculateDistance(String customerAddress, String restaurantAddress){
-        int n = (int)(Math.random()*100);
+    public int calculateDistance(String customerAddress, String restaurantAddress) {
+        int n = (int) (Math.random() * 100);
 
         return n;
+    }
+
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
     }
 }

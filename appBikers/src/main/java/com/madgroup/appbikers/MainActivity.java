@@ -33,12 +33,16 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity
@@ -90,6 +94,18 @@ public class MainActivity extends AppCompatActivity
 
         navigationDrawerInitialization();
 
+
+
+
+        // START DATABASE TEST
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference riderRef = database.getReference().child("Rider");
+        ArrayList<RiderProfile> profiles = new ArrayList<>();
+
+
+
+        // END DATABASE TEST
     }
 
     // What happens if I click on a icon on the menu
