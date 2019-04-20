@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
 
@@ -44,8 +45,8 @@ public class reservationTab3 extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private ArrayList<Reservation> historyReservation;
-    private ReservationAdapter mAdapter;
+    static public ArrayList<Reservation> historyReservation;
+    static public ReservationAdapter mAdapter;
     private RecyclerView mRecyclerView;
 
     public reservationTab3() {
@@ -88,7 +89,8 @@ public class reservationTab3 extends Fragment {
         buildRecyclerView(view);
 
         // Inflate the layout for this fragment
-        return view;    }
+        return view;
+    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -144,10 +146,31 @@ public class reservationTab3 extends Fragment {
 
         mAdapter.setOnItemClickListener(new ReservationAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                Intent openPage= new Intent(getActivity(), DetailedReservation.class);
-                openPage.putExtra("Reservation", historyReservation.get(position));
-                startActivity(openPage);
+            public void onItemClick(final int position) {
+                // Scarico dal DB orderedFood
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("OrderedFood");
+                String orderID = historyReservation.get(position).getOrderID();
+                pendingReservationRef.child(orderID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ArrayList<OrderedDish> orderedFood = new ArrayList<>();
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            OrderedDish post = postSnapshot.getValue(OrderedDish.class);
+                            orderedFood.add(post);
+                        }
+                        SmartLogger.d(String.valueOf(orderedFood.size()));
+                        Intent openPage = new Intent(getActivity(), DetailedReservation.class);
+                        openPage.putExtra("Reservation", historyReservation.get(position));
+                        openPage.putExtra("OrderedFood", orderedFood);
+                        startActivity(openPage);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
             //This Function is useful if we want to delete an item in the list
             @Override
@@ -173,6 +196,7 @@ public class reservationTab3 extends Fragment {
     }
 
     public void createReservationList() {
+        SmartLogger.d("CREAZIONE HISTORY RESERVATION TAB 3");
         historyReservation = new ArrayList<>();
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();

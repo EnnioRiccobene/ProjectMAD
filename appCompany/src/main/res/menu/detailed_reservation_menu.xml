@@ -4,12 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".DetailedReservation">
 
-    <!--<item-->
-        <!--android:id="@+id/call_customer"-->
-        <!--android:title="Call customer"/>-->
-
-    <!--<item-->
-        <!--android:id="@+id/reject_order"-->
-        <!--android:title="Reject order" />-->
-
+    <item
+        android:id="@+id/reject_order"
+        android:title="Reject order"
+        android:icon="@drawable/ic_rubbish_bin"
+        app:showAsAction="always"/>
 </menu>

@@ -10,12 +10,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -25,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.ReservationViewHolder> {
 
-    private ArrayList<Reservation> mExampleList;
+    private ArrayList<Reservation> reservationList;
     private OnItemClickListener mListener;
     private Context context;
 
@@ -85,8 +86,8 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         }
     }
 
-    public ReservationAdapter(ArrayList<Reservation> exampleList) {
-        mExampleList = exampleList;
+    public ReservationAdapter(ArrayList<Reservation> reservationList) {
+        this.reservationList = reservationList;
     }
 
     @NonNull
@@ -100,7 +101,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ReservationViewHolder holder, int position) {
-        final Reservation currentItem = mExampleList.get(position);
+        final Reservation currentItem = reservationList.get(position);
         final int index = position;
         switch (currentItem.getStatus()){
             case 0:
@@ -109,18 +110,8 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
                 holder.mImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Elimino dalle pending e inserisco nelle accepted. Prima dal database, poi nella lista
-                        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
-                        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted");
-                        String orderID = currentItem.getOrderID();
-                        currentItem.setStatus(1);
-                        pendingReservationRef.child(orderID).removeValue();
-                        acceptedReservationRef.child(orderID).setValue(currentItem);
-                        Toast.makeText(v.getContext(), orderID, Toast.LENGTH_LONG).show();
-                        removeItem(index);
-                        reservationTab2.acceptedReservation.add(currentItem);
-                        reservationTab2.mAdapter.notifyItemInserted(reservationTab2.acceptedReservation.size());
+                        SmartLogger.d(String.valueOf(index));
+                        acceptReservation(currentItem, index);
                     }
                 });
                 break;
@@ -130,16 +121,19 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
                 holder.mImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(v.getContext(), "Rider Called", Toast.LENGTH_SHORT).show();
+                        callRider(currentItem, index);
                     }
                 });
                 break;
             case 2:
-                holder.mImageView.setImageResource(R.drawable.ic_circled_confirm);
+                holder.mImageView.setImageResource(R.drawable.ic_hourglass);
                 ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimary)));
-
                 break;
             case 3:
+                holder.mImageView.setImageResource(R.drawable.ic_circled_confirm);
+                ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimary)));
+                break;
+            case 4:
                 holder.mImageView.setImageResource(R.drawable.ic_circled_reject);
                 ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.red)));
                 break;
@@ -147,23 +141,50 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
 
         holder.mTextView1.setText(currentItem.getAddress());
         holder.mTextView2.setText(currentItem.getDeliveryTime());
-        holder.mTextView3.setText(currentItem.getPrice());
+        holder.mTextView3.setText(currentItem.getPrice() + " €");
     }
 
     @Override
     public int getItemCount() {
-        return mExampleList.size();
+        return reservationList.size();
     }
 
     public void removeItem (int position){
-        mExampleList.remove(position);
+        reservationList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, getItemCount() - position);
     }
 
     public void restoreItem (Reservation item, int position){
-        mExampleList.add(position,item);
+        reservationList.add(position,item);
         notifyItemInserted(position);
     }
-}
 
+    // Elimino dalle pending e inserisco nelle accepted. Prima dal database, poi nella lista
+    public void acceptReservation(Reservation currentItem, int index){
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
+        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted");
+        String orderID = currentItem.getOrderID();
+        currentItem.setStatus(1);
+        pendingReservationRef.child(orderID).removeValue();
+        acceptedReservationRef.child(orderID).setValue(currentItem);
+        removeItem(index);
+        reservationTab2.acceptedReservation.add(currentItem);
+        reservationTab2.mAdapter.notifyItemInserted(reservationTab2.acceptedReservation.size());
+    }
+
+    // Modifico lo status della query accepted. Prima dal database, poi nella lista
+    public void callRider(Reservation currentItem, int index){
+        String orderID = currentItem.getOrderID();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(orderID);
+        currentItem.setStatus(2);
+        HashMap<String, Object> statusUpdate = new HashMap<>();
+        statusUpdate.put("status", 2);
+        acceptedReservationRef.updateChildren(statusUpdate);
+        reservationTab2.mAdapter.notifyItemChanged(index);
+        // Add the search rider part
+    }
+
+}

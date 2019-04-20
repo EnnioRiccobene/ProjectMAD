@@ -49,11 +49,9 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        // FloatingActionButton fc = findViewById(R.id.add_button);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_offer);
+        this.setTitle("Daily Offer");
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();

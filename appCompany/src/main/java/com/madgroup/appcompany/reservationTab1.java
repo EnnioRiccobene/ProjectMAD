@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,6 +24,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
+
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -43,6 +46,8 @@ public class reservationTab1 extends Fragment {
     static public ArrayList<Reservation> pendingReservation;
     private ReservationAdapter mAdapter;
     private RecyclerView mRecyclerView;
+    private int lastPositionClicked;
+    private static final int CONFIRM_OR_REJECT_CODE = 1;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -88,7 +93,6 @@ public class reservationTab1 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_reservation_tab1, container, false);
 //        createPendingReservationList();
         buildRecyclerView(view);
-        SmartLogger.d("View Built");
 
         // Inflate the layout for this fragment
         return view;
@@ -149,7 +153,6 @@ public class reservationTab1 extends Fragment {
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         // mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         mAdapter.notifyDataSetChanged();
-        SmartLogger.d("Size = " + pendingReservation.size());
         mAdapter.setOnItemClickListener(new ReservationAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(final int position) {
@@ -165,11 +168,11 @@ public class reservationTab1 extends Fragment {
                             OrderedDish post = postSnapshot.getValue(OrderedDish.class);
                             orderedFood.add(post);
                         }
-                        SmartLogger.d(String.valueOf(orderedFood.size()));
+                        lastPositionClicked = position;
                         Intent openPage = new Intent(getActivity(), DetailedReservation.class);
                         openPage.putExtra("Reservation", pendingReservation.get(position));
                         openPage.putExtra("OrderedFood", orderedFood);
-                        startActivity(openPage);
+                        startActivityForResult(openPage, CONFIRM_OR_REJECT_CODE);
                     }
 
                     @Override
@@ -196,13 +199,57 @@ public class reservationTab1 extends Fragment {
 
     public void removeItem(int position) {
         pendingReservation.remove(position);
-        mRecyclerView.removeViewAt(position);
-        mAdapter.notifyItemRemoved(position);
-        mAdapter.notifyItemRangeChanged(position, pendingReservation.size());
-
-//        reservationList.remove(position);
+        mAdapter.notifyDataSetChanged();
 //        mAdapter.notifyItemRemoved(position);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CONFIRM_OR_REJECT_CODE && data != null){
+            if(resultCode == RESULT_OK){
+                String result = data.getStringExtra("Result");
+                if(result.equals("Confirmed")){
+                    acceptReservation(lastPositionClicked);
+                } else if(result.equals("Rejected")){
+                    rejectReservation(lastPositionClicked);
+                }
+            }
+        }
+    }
+
+    // Elimino dalle pending e inserisco nelle accepted. Prima dal database, poi nella lista
+    public void acceptReservation(int index){
+        Reservation currentItem = pendingReservation.get(index);
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
+        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted");
+        String orderID = currentItem.getOrderID();
+        currentItem.setStatus(ReservationActivity.ACCEPTED_RESERVATION_CODE);
+        pendingReservationRef.child(orderID).removeValue();
+        acceptedReservationRef.child(orderID).setValue(currentItem);
+        removeItem(index);
+        if(reservationTab2.acceptedReservation != null && reservationTab2.mAdapter != null){
+            reservationTab2.acceptedReservation.add(currentItem);
+            reservationTab2.mAdapter.notifyItemInserted(reservationTab2.acceptedReservation.size());
+        }
+    }
+
+    //TODO
+    public void rejectReservation(int index){
+        Reservation currentItem = pendingReservation.get(index);
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
+        DatabaseReference historyReservationRef = database.child("Company").child("Reservation").child("History");
+        String orderID = currentItem.getOrderID();
+        currentItem.setStatus(ReservationActivity.HISTORY_REJECT_RESERVATION_CODE);
+        pendingReservationRef.child(orderID).removeValue();
+        historyReservationRef.child(orderID).setValue(currentItem);
+        removeItem(index);
+        if(reservationTab3.historyReservation != null && reservationTab3.mAdapter != null) {
+            reservationTab3.historyReservation.add(currentItem);
+            reservationTab3.mAdapter.notifyItemInserted(reservationTab3.historyReservation.size());
+        }
+    }
 
 }

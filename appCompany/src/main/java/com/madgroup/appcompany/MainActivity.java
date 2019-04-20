@@ -37,6 +37,7 @@ import com.yalantis.ucrop.UCrop;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity
     public int iteration = 0;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
+    private static final int CONFIRM_OR_REJECT_CODE = 1;
 
     public static final int TEXT_REQUEST = 1;
 
@@ -104,65 +106,14 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.setTitle("Profile");
 
-        createPendingReservationList();
 
         // START DATABASE TEST
-
-
-//        ArrayList<OrderedDish> orderedDishList = new ArrayList<OrderedDish>();
-//        orderedDishList.add(new OrderedDish("Food1", 2, 6.4f));
-//        orderedDishList.add(new OrderedDish("Food2", 6, 10.4f));
-//        orderedDishList.add(new OrderedDish("Food3", 3, 6f));
-//        orderedDishList.add(new OrderedDish("Food4", 5, 9.4f));
-//        orderedDishList.add(new OrderedDish("Food5", 7, 1.5f));
-//
-//        // Compute total Price
-//        float x = 0;
-//        for (OrderedDish element : orderedDishList)
-//            x += element.getPrice() * element.getQuantity();
-//        DecimalFormat df = new DecimalFormat("#.##");
-//        df.setMinimumFractionDigits(2);
-//        String price = df.format(x);
-//
-//        ArrayList<Reservation> mReservationList = new ArrayList<>();
-//        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 2, price));
-//        mReservationList.add(new Reservation("Piazza Sabotino 8","19:00", 3, price));
-//        mReservationList.add(new Reservation("Via Villarbasse 12" , "20:45", 2, price));
-//        mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 2, price));
-//        mReservationList.add(new Reservation("Address5","Delivery Time", 2, price));
-//        mReservationList.add(new Reservation("Address6" , "Delivery Time", 2, price));
-//        mReservationList.add(new Reservation("Address7", "Delivery Time", 2, price));
-//        mReservationList.add(new Reservation("Address8","Delivery Time" , 3, price));
-//        mReservationList.add(new Reservation("Address9" , "Delivery Time", 3, price));
-//        mReservationList.add(new Reservation("Address10", "Delivery Time", 2, price));
-//        mReservationList.add(new Reservation("Address11","Delivery Time", 2, price));
-//        mReservationList.add(new Reservation("Address12" , "Delivery Time", 2, price));
-//
-//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("History");
-//        DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood");
-//
-//        for (Reservation element : mReservationList) {
-//            String orderID = pendingReservationRef.push().getKey();
-//            element.setOrderID(orderID);
-//            pendingReservationRef.child(orderID).setValue(element);
-//            orderedFoodRef.child(orderID).setValue(orderedDishList);
-//        }
-
-
-
-
-
-
-
-
-
-
-
-
+        populateDatabaseWithDummyValues();
         // END DATABASE TEST
 
+        createPendingReservationList();
 
 
         hours = findViewById(R.id.hours);
@@ -752,11 +703,8 @@ public class MainActivity extends AppCompatActivity
         pendingReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                SmartLogger.d("Getting data");
-                SmartLogger.d(String.valueOf(dataSnapshot.getChildrenCount()));
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Reservation post = postSnapshot.getValue(Reservation.class);
-                    SmartLogger.d("Get Data " + post.getOrderID());
                     reservationTab1.pendingReservation.add(post);
                 }
             }
@@ -766,6 +714,99 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+    }
+
+
+    public void populateDatabaseWithDummyValues(){
+        ArrayList<OrderedDish> orderedDishList = new ArrayList<>();
+        orderedDishList.add(new OrderedDish("Food1", 2, 6.4f));
+        orderedDishList.add(new OrderedDish("Food2", 6, 10.4f));
+        orderedDishList.add(new OrderedDish("Food3", 3, 6f));
+        orderedDishList.add(new OrderedDish("Food4", 5, 9.4f));
+        orderedDishList.add(new OrderedDish("Food5", 7, 1.5f));
+
+        // Compute total Price
+        float x = 0;
+        for (OrderedDish element : orderedDishList)
+            x += element.getPrice() * element.getQuantity();
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setMinimumFractionDigits(2);
+        String price = df.format(x);
+
+        ArrayList<Reservation> mReservationList = new ArrayList<>();
+        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 0, price));
+        mReservationList.add(new Reservation("Piazza Sabotino 8","19:00", 0, price));
+        mReservationList.add(new Reservation("Via Villarbasse 12" , "20:45", 0, price));
+        mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 0, price));
+        mReservationList.add(new Reservation("Address5","Delivery Time", 0, price));
+        mReservationList.add(new Reservation("Address6" , "Delivery Time", 0, price));
+        mReservationList.add(new Reservation("Address7", "Delivery Time", 0, price));
+        mReservationList.add(new Reservation("Address8","Delivery Time" , 0, price));
+        mReservationList.add(new Reservation("Address9" , "Delivery Time", 0, price));
+        mReservationList.add(new Reservation("Address10", "Delivery Time", 0, price));
+        mReservationList.add(new Reservation("Address11","Delivery Time", 0, price));
+        mReservationList.add(new Reservation("Address12" , "Delivery Time", 0, price));
+
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child("Company").child("Reservation").removeValue();
+        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
+        DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood");
+
+        for (Reservation element : mReservationList) {
+            String orderID = pendingReservationRef.push().getKey();
+            element.setOrderID(orderID);
+            pendingReservationRef.child(orderID).setValue(element);
+            orderedFoodRef.child(orderID).setValue(orderedDishList);
+        }
+
+//        mReservationList.clear();
+//        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 1, price));
+//        mReservationList.add(new Reservation("Piazza Sabotino 8","19:00", 2, price));
+//        mReservationList.add(new Reservation("Via Villarbasse 12" , "20:45", 1, price));
+//        mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 1, price));
+//        mReservationList.add(new Reservation("Address5","Delivery Time", 1, price));
+//        mReservationList.add(new Reservation("Address6" , "Delivery Time", 1, price));
+//        mReservationList.add(new Reservation("Address7", "Delivery Time", 2, price));
+//        mReservationList.add(new Reservation("Address8","Delivery Time" , 1, price));
+//        mReservationList.add(new Reservation("Address9" , "Delivery Time", 1, price));
+//        mReservationList.add(new Reservation("Address10", "Delivery Time", 1, price));
+//        mReservationList.add(new Reservation("Address11","Delivery Time", 1, price));
+//        mReservationList.add(new Reservation("Address12" , "Delivery Time", 1, price));
+//
+//
+//        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted");
+//
+//        for (Reservation element : mReservationList) {
+//            String orderID = pendingReservationRef.push().getKey();
+//            element.setOrderID(orderID);
+//            acceptedReservationRef.child(orderID).setValue(element);
+//        }
+
+
+//        mReservationList.clear();
+//        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 3, price));
+//        mReservationList.add(new Reservation("Piazza Sabotino 8","19:00", 3, price));
+//        mReservationList.add(new Reservation("Via Villarbasse 12" , "20:45", 3, price));
+//        mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 3, price));
+//        mReservationList.add(new Reservation("Address5","Delivery Time", 3, price));
+//        mReservationList.add(new Reservation("Address6" , "Delivery Time", 4, price));
+//        mReservationList.add(new Reservation("Address7", "Delivery Time", 3, price));
+//        mReservationList.add(new Reservation("Address8","Delivery Time" , 3, price));
+//        mReservationList.add(new Reservation("Address9" , "Delivery Time", 4, price));
+//        mReservationList.add(new Reservation("Address10", "Delivery Time", 4, price));
+//        mReservationList.add(new Reservation("Address11","Delivery Time", 4, price));
+//        mReservationList.add(new Reservation("Address12" , "Delivery Time", 3, price));
+//
+//
+//        DatabaseReference historyReservationRef = database.child("Company").child("Reservation").child("History");
+//
+//        for (Reservation element : mReservationList) {
+//            String orderID = pendingReservationRef.push().getKey();
+//            element.setOrderID(orderID);
+//            historyReservationRef.child(orderID).setValue(element);
+//        }
+
+
     }
 
 

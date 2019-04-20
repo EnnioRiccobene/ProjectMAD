@@ -14,23 +14,14 @@ public class Reservation implements Serializable {
     private String deliveryTime;
     private String price;
     private Integer status;
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
     private String notes;
 
 //    Status
 //    0: Da confermare/rifiutare        Tab1
-//    1: Confermato. Da consegnare      Tab2
-//    2: Consegnato e concluso          Tab3
-//    3: Rifiutato                      Tab3 or Nothing
-//    ? Need to add "Rider Called" status ?
+//    1: Confermato. Da preparare       Tab2
+//    2: Rider chiamate. In attesa      Tab2
+//    3: Consegnato e concluso          Tab3
+//    4: Rifiutato                      Tab3
 
 
     public Reservation() {
@@ -41,14 +32,6 @@ public class Reservation implements Serializable {
         this.deliveryTime = deliveryTime;
         this.status = status;
         this.price = price;
-    }
-
-    public String getOrderID() {
-        return orderID;
-    }
-
-    public void setOrderID(String orderID) {
-        this.orderID = orderID;
     }
 
     public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, Integer status) {
@@ -65,13 +48,19 @@ public class Reservation implements Serializable {
         price = df.format(x);
     }
 
+    public String getOrderID() {
+        return orderID;
+    }
+
+    public void setOrderID(String orderID) {
+        this.orderID = orderID;
+    }
+
     public Reservation(String text1, String text2, String text3) {
         address = text1;
         deliveryTime = text2;
         price = text3;
     }
-
-
 
     public ArrayList<OrderedDish> getOrderedDishList() {
         return orderedDishList;
@@ -110,5 +99,15 @@ public class Reservation implements Serializable {
     public void setStatus(Integer status) {
         this.status = status;
     }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+
 }
 

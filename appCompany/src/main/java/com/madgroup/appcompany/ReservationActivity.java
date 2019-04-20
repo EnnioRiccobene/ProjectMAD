@@ -1,6 +1,8 @@
 package com.madgroup.appcompany;
 
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -28,6 +30,11 @@ import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -46,6 +53,12 @@ public class ReservationActivity extends AppCompatActivity implements
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
 
+    public final static int PENDING_RESERVATION_CODE = 0;
+    public final static int ACCEPTED_RESERVATION_CODE = 1;
+    public final static int CALLED_RESERVATION_CODE = 2;
+    public final static int HISTORY_ACCEPTED_RESERVATION_CODE = 3;
+    public final static int HISTORY_REJECT_RESERVATION_CODE = 4;
+
     private TabLayout tabLayout;
 
     @Override
@@ -54,9 +67,7 @@ public class ReservationActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_reservation);
 
         initializeTabs();
-
-        // createPendingReservationList();
-        // buildRecyclerView();
+        this.setTitle("Reservations");
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
@@ -164,7 +175,18 @@ public class ReservationActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.reservation_reload) {
+            switch (tabLayout.getSelectedTabPosition()){
+                case 0:
+
+                    break;
+                case 1:
+
+                    break;
+                case 2:
+
+                    break;
+            }
             return true;
         }
 
@@ -208,6 +230,22 @@ public class ReservationActivity extends AppCompatActivity implements
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    // TODO
+    public void reloadReservationList() {
+
+//        reservationTab1.pendingReservation = new ArrayList<>();
+//        reservationTab2.acceptedReservation = new ArrayList<>();
+//        reservationTab3.historyReservation = new ArrayList<>();
+//
+//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+//        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
+//        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted");
+//        DatabaseReference hisotryReservationRef = database.child("Company").child("Reservation").child("History");
+        // RIEMPIERE LE LISTE E AGGIORNARE LE RECYCLER VIEW
+
 
     }
 }
