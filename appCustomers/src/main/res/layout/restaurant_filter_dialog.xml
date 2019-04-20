@@ -14,7 +14,7 @@
 
 
         <TextView
-            android:id="@+id/food_category_layout"
+            android:id="@+id/food_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="8dp"
@@ -28,7 +28,7 @@
             android:id="@+id/radio_group_food_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/food_category_layout"
+            android:layout_below="@+id/food_category"
             android:paddingTop="8dp"
             android:paddingBottom="8dp">
 
@@ -36,7 +36,8 @@
                 android:id="@+id/radio_all"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/All" />
+                android:text="@string/All"
+                android:checked="true"/>
 
             <RadioButton
                 android:id="@+id/radio_pizza"
