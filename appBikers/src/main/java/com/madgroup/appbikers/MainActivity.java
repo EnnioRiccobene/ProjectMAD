@@ -33,8 +33,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
@@ -93,7 +96,7 @@ public class MainActivity extends AppCompatActivity
         loadFields();
 
         navigationDrawerInitialization();
-
+//        createPendingDeliveryList();
 
 
 
@@ -468,4 +471,29 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void createPendingDeliveryList() {
+        DeliveryPendingTab1.deliveriesList = new ArrayList<>();
+
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference pendingDeliveryRef = database.child("Rider").child("Delivery").child("Pending");
+        pendingDeliveryRef.keepSynced(true);
+//        DatabaseReference orderedFoodRef = database.child("Company").child("OrderedFood");
+
+        pendingDeliveryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Delivery post = postSnapshot.getValue(Delivery.class);
+                    DeliveryPendingTab1.deliveriesList.add(post);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 }
