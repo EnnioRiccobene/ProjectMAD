@@ -3,18 +3,21 @@ package com.madgroup.appbikers;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import android.animation.ObjectAnimator;
+import android.animation.StateListAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Base64;
@@ -24,19 +27,15 @@ import android.view.ViewStub;
 import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
 
-import java.util.ArrayList;
+public class DeliveryActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        DeliveryPendingTab1.OnFragmentInteractionListener,
+        DeliveryHistoryTab2.OnFragmentInteractionListener{
 
-public class DeliveriesActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener{
-
-    private RecyclerView recyclerView;
-    private DeliveriesAdapter adapter;
-    private ArrayList<Delivery> deliveriesList = new ArrayList<>();
-    private CardView cardView;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,25 +45,11 @@ public class DeliveriesActivity extends AppCompatActivity implements
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_deliveries);
         stub.inflate();
-
-        cardView = findViewById(R.id.deliveryItemCardView);
-        recyclerView = this.findViewById(R.id.deliveryRecycleView);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
-
-        deliveriesList.add(new Delivery("Da Tano", "Via del pollo 99", "Via 123", "Cash"));
-        deliveriesList.add(new Delivery("Da Michele", "Via della gallina 99", "Via 123", "Cash"));
-        deliveriesList.add(new Delivery("Da Manfredi", "Via della pizza 99", "Via 123", "Cash"));
-        deliveriesList.add(new Delivery("Da Raffaele", "Via 99", "Via 123", "Cash"));
-
-        initDeliveriesRecyclerView();
+        this.setTitle("Deliveries");
+        initializeTabs();
         navigationDrawerInitialization();
-    }
-
-    private void initDeliveriesRecyclerView() {
-        adapter = new DeliveriesAdapter(this,  deliveriesList);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
 
@@ -124,6 +109,45 @@ public class DeliveriesActivity extends AppCompatActivity implements
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    // Tabs
+    public void initializeTabs(){
+        // Remove black line under toolbar
+        StateListAnimator stateListAnimator = new StateListAnimator();
+        stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(findViewById(android.R.id.content), "elevation", 0));
+        findViewById(R.id.appBarLayout).setStateListAnimator(stateListAnimator);
+
+        // Add tabs
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        DeliveryPageAdapter myPagerAdapter = new DeliveryPageAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(myPagerAdapter);
+        TabLayout tablayout = (TabLayout) findViewById(R.id.tabLayout);
+        tablayout.setupWithViewPager(viewPager);
+
+        // Add actions on tab selected/reselected/unselected
+        tablayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+        });
+
+    }
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
 }

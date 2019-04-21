@@ -2,6 +2,7 @@ package com.madgroup.appbikers;
 
 public class Delivery {
 
+    private String orderID;
     private String restaurantName;
     private String restaurantAddress;
     private String customerAddress;
@@ -9,6 +10,7 @@ public class Delivery {
     private float price;
     private String customerPhone;
     private String restaurantPhone;
+
 
 
     public Delivery(String restaurantName, String restaurantAddress, String customerAddress, String paymentMethod) {
@@ -54,5 +56,13 @@ public class Delivery {
 
     public void setRestaurantName(String restaurantName) {
         this.restaurantName = restaurantName;
+    }
+
+    public String getOrderID() {
+        return orderID;
+    }
+
+    public void setOrderID(String orderID) {
+        this.orderID = orderID;
     }
 }

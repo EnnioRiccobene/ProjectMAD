@@ -9,7 +9,6 @@ public class RiderProfile implements Serializable {
     private String additionalInformation;
 
     public RiderProfile() {
-
     }
 
     public RiderProfile(String name, String email, String phoneNumber, String additionalInformation) {
@@ -17,6 +16,12 @@ public class RiderProfile implements Serializable {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.additionalInformation = additionalInformation;
+    }
+
+    public RiderProfile(String name, String email, String phoneNumber) {
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getName() {

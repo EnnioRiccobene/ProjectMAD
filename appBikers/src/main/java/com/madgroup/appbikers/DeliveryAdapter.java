@@ -5,6 +5,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -14,28 +15,26 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class DeliveriesAdapter
-        extends RecyclerView.Adapter<DeliveriesAdapter.ViewHolder> {
+public class DeliveryAdapter
+        extends RecyclerView.Adapter<DeliveryAdapter.ViewHolder> {
 
-    private ArrayList<Delivery> deliveriesList = new ArrayList<>();
-    private Context mContext;
+    private ArrayList<Delivery> deliveriesList;
 
-    public DeliveriesAdapter(Context mContext, ArrayList<Delivery> deliveriesList) {
+    public DeliveryAdapter(ArrayList<Delivery> deliveriesList) {
         this.deliveriesList = deliveriesList;
-        this.mContext = mContext;
     }
 
     @NonNull
     @Override
-    public DeliveriesAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public DeliveryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.delivery_item, viewGroup, false);
-        DeliveriesAdapter.ViewHolder holder = new DeliveriesAdapter.ViewHolder(view);
+        DeliveryAdapter.ViewHolder holder = new DeliveryAdapter.ViewHolder(view);
         return holder;
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull final DeliveriesAdapter.ViewHolder viewHolder, final int i) {
+    public void onBindViewHolder(@NonNull final DeliveryAdapter.ViewHolder viewHolder, final int i) {
         viewHolder.restaurantName.setText(deliveriesList.get(i).getRestaurantName());
         viewHolder.restaurantAddress.setText(deliveriesList.get(i).getRestaurantAddress());
         viewHolder.distance.setText(String.valueOf(deliveriesList.get(i).calculateDistance("123", "123")) + " mt");

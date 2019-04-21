@@ -39,16 +39,15 @@ import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-
 
 public class MainActivity extends AppCompatActivity
         implements PopupMenu.OnMenuItemClickListener,
         NavigationView.OnNavigationItemSelectedListener{
 
+    private static String currentUser;
     private CircleImageView personalImage;
     private EditText name;
     private EditText email;
@@ -73,6 +72,7 @@ public class MainActivity extends AppCompatActivity
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_main);
         stub.inflate();
+        currentUser = "email1";
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
@@ -98,14 +98,67 @@ public class MainActivity extends AppCompatActivity
 
 
         // START DATABASE TEST
+//
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference riderRef = database.getReference().child("Rider");
+//        DatabaseReference pendingRef = riderRef.child("Delivery").child("Pending");
+//        DatabaseReference profileRef = riderRef.child("Profile");
+//
+//        ArrayList<RiderProfile> profiles = new ArrayList<>();
+//        profiles.add(new RiderProfile("Name1", "email1", "1"));
+//        profiles.add(new RiderProfile("Name2", "email2", "2"));
+//        profiles.add(new RiderProfile("Name3", "email3", "3"));
+//        profiles.add(new RiderProfile("Name4", "email4", "4"));
+//
+//        for (RiderProfile element:profiles) {
+//            profileRef.child(element.getEmail()).setValue(element);
+//        }
+//
+//        ArrayList<Delivery> deliveries = new ArrayList<>();
+//        deliveries.add(new Delivery("Da Tano", "Via del pollo 99", "Via 123", "Cash"));
+//        deliveries.add(new Delivery("Da Michele", "Via della gallina 99", "Via 123", "Cash"));
+//        deliveries.add(new Delivery("Da Manfredi", "Via della pizza 99", "Via 123", "Cash"));
+//        deliveries.add(new Delivery("Da Raffaele", "Via 99", "Via 123", "Cash"));
+//
+//        for (Delivery element:deliveries) {
+//            String orderID = pendingRef.child(currentUser).push().getKey();
+//        }
+//
+//
+//
+//        DeliveryPendingTab1.deliveriesList = new ArrayList<>();
+//        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Tano", "Via del pollo 99", "Via 123", "Cash"));
+//        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Michele", "Via della gallina 99", "Via 123", "Cash"));
+//        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Manfredi", "Via della pizza 99", "Via 123", "Cash"));
+//        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Raffaele", "Via 99", "Via 123", "Cash"));
+//
+//        for (Delivery element : DeliveryPendingTab1.deliveriesList) {
+//            String orderID = riderRef.child("Delivery").child("Pending").push().getKey();
+//            element.setOrderID(orderID);
+//            pendingRef.setValue(element);
+//        }
+//
+//        DeliveryHistoryTab2.deliveriesList = new ArrayList<>();
+//        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Tano", "Via del pollo 99", "Via 123", "Cash"));
+//        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Michele", "Via della gallina 99", "Via 123", "Cash"));
+//        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Manfredi", "Via della pizza 99", "Via 123", "Cash"));
+//        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Raffaele", "Via 99", "Via 123", "Cash"));
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference riderRef = database.getReference().child("Rider");
-        ArrayList<RiderProfile> profiles = new ArrayList<>();
+        DeliveryPendingTab1.deliveriesList = new ArrayList<>();
+        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Tano", "Via del pollo 99", "Via 123", "Cash"));
+        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Michele", "Via della gallina 99", "Via 123", "Cash"));
+        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Manfredi", "Via della pizza 99", "Via 123", "Cash"));
+        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Raffaele", "Via 99", "Via 123", "Cash"));
 
+        DeliveryHistoryTab2.deliveriesList = new ArrayList<>();
+        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Tano", "Via del pollo 99", "Via 123", "Cash"));
+        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Michele", "Via della gallina 99", "Via 123", "Cash"));
+        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Manfredi", "Via della pizza 99", "Via 123", "Cash"));
+        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Raffaele", "Via 99", "Via 123", "Cash"));
 
 
         // END DATABASE TEST
+
     }
 
     // What happens if I click on a icon on the menu
@@ -406,7 +459,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_deliviries) {
-            Intent myIntent = new Intent(this, DeliveriesActivity.class);
+            Intent myIntent = new Intent(this, DeliveryActivity.class);
             // myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(myIntent);
         }
