@@ -7,6 +7,15 @@ public class RiderProfile implements Serializable {
     private String email;
     private String phoneNumber;
     private String additionalInformation;
+    private boolean active;
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     public RiderProfile() {
     }
