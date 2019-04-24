@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.profilelibrary.RiderProfile;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -106,7 +107,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ReservationViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ReservationViewHolder holder, int position) {
         final Reservation currentItem = reservationList.get(position);
         final int index = position;
         switch (currentItem.getStatus()){
@@ -181,7 +182,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
     }
 
     // Modifico lo status della query accepted. Prima dal database, poi nella lista
-    public void callRider(Reservation currentItem, int index){
+    public void callRider(final Reservation currentItem, int index){
         String orderID = currentItem.getOrderID();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(orderID);
@@ -193,28 +194,28 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
 
         // Rider search part
 
-//        DatabaseReference riderRef = database.child("Rider").child("Profile");
-//        Query query = riderRef.orderByChild("Active").equalTo(1);
-//        query.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if(dataSnapshot.exists()){
-//                    Random rand = new Random();
-//                    int nActiveProfiles = rand.nextInt((int)dataSnapshot.getChildrenCount());
-//                    Iterator itr = dataSnapshot.getChildren().iterator();
-//                    for(int i = 0; i < nActiveProfiles; i++)
-//                        itr.next();
-//                    DataSnapshot childSnapshot = (DataSnapshot) itr.next();
-//                    RiderProfile choosenRider = childSnapshot.getValue(RiderProfile.class);
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+        final DatabaseReference riderRef = database.child("Rider").child("Profile");
+        Query query = riderRef.orderByChild("Active").equalTo(1);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Random rand = new Random();
+                    int nActiveProfiles = rand.nextInt((int)dataSnapshot.getChildrenCount());
+                    Iterator itr = dataSnapshot.getChildren().iterator();
+                    for(int i = 0; i < nActiveProfiles; i++)
+                        itr.next();
+                    DataSnapshot childSnapshot = (DataSnapshot) itr.next();
+                    RiderProfile choosenRider = childSnapshot.getValue(RiderProfile.class);
+                    riderRef.child("Delivery").child("Pending").child(choosenRider.getEmail()).setValue(currentItem);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
