@@ -11,12 +11,18 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -184,7 +190,32 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         statusUpdate.put("status", 2);
         acceptedReservationRef.updateChildren(statusUpdate);
         reservationTab2.mAdapter.notifyItemChanged(index);
-        // Add the search rider part
+
+        // Rider search part
+
+//        DatabaseReference riderRef = database.child("Rider").child("Profile");
+//        Query query = riderRef.orderByChild("Active").equalTo(1);
+//        query.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if(dataSnapshot.exists()){
+//                    Random rand = new Random();
+//                    int nActiveProfiles = rand.nextInt((int)dataSnapshot.getChildrenCount());
+//                    Iterator itr = dataSnapshot.getChildren().iterator();
+//                    for(int i = 0; i < nActiveProfiles; i++)
+//                        itr.next();
+//                    DataSnapshot childSnapshot = (DataSnapshot) itr.next();
+//                    RiderProfile choosenRider = childSnapshot.getValue(RiderProfile.class);
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+
     }
 
 }
