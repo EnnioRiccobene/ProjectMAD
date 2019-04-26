@@ -15,8 +15,6 @@ public class Reservation implements Serializable {
     private Integer status;
     private String notes;
 
-    //todo: reinserire status, in automatico uguale a 0
-
     public Reservation() {
     }
 
