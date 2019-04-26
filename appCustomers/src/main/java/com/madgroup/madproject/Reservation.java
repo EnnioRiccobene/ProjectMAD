@@ -12,7 +12,10 @@ public class Reservation implements Serializable {
     private String address;
     private String deliveryTime;
     private String price;
+    private Integer status;
     private String notes;
+
+    //todo: reinserire status, in automatico uguale a 0
 
     public Reservation() {
     }
@@ -21,12 +24,14 @@ public class Reservation implements Serializable {
         this.address = address;
         this.deliveryTime = deliveryTime;
         this.price = price;
+        this.status = 0;
     }
 
-    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, Integer status) {
+    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime) {
         this.orderedDishList = orderedDishList;
         this.address = address;
         this.deliveryTime = deliveryTime;
+        this.status = 0;
         // Compute total Price
         float x = 0;
         for (OrderedDish element : orderedDishList)
@@ -78,7 +83,28 @@ public class Reservation implements Serializable {
         return notes;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setDeliveryTime(String deliveryTime) {
+        this.deliveryTime = deliveryTime;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
 }
