@@ -1,4 +1,4 @@
-package com.example.profilelibrary;
+package com.madgroup.sdk;
 
 import java.io.Serializable;
 
