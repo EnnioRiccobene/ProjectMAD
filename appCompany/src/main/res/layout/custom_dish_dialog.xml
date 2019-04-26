@@ -58,7 +58,9 @@
             android:layout_gravity="center"
             android:paddingTop="8dp"
             app:civ_border_width="2dp"
-            app:civ_border_color="#ff3d3d3d" />
+            app:civ_border_color="#ff3d3d3d"
+            android:onClick="showPopup"
+            />
 
         <EditText
             android:id="@+id/editDishName"
@@ -73,10 +75,13 @@
             android:id="@+id/editDishDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="16dp"
+            android:paddingTop="8dp"
             android:ems="10"
             android:hint="@string/dish_description"
-            android:inputType="textPersonName" />
+            android:inputType="textMultiLine"
+            android:minLines="1"
+            android:maxLines="3"
+            android:maxLength="100"/>
 
         <EditText
             android:id="@+id/editDishQuantity"
@@ -87,14 +92,15 @@
             android:hint="@string/available_quantity"
             android:inputType="number" />
 
-        <EditText
+        <com.blackcat.currencyedittext.CurrencyEditText
             android:id="@+id/editPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="16dp"
+            android:paddingTop="8dp"
             android:ems="10"
             android:hint="@string/dish_price"
-            android:inputType="numberDecimal" />
+            android:inputType="numberDecimal"
+            app:decimal_digits="2"/>
     </LinearLayout>
 
 </RelativeLayout>
