@@ -806,8 +806,6 @@ public class MainActivity extends AppCompatActivity
 //            historyReservationRef.child(orderID).setValue(element);
 //        }
 
-
     }
-
 
 }

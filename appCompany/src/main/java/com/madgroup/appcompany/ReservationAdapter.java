@@ -174,8 +174,10 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted");
         String orderID = currentItem.getOrderID();
         currentItem.setStatus(1);
+        // Iniziare qui transazione
         pendingReservationRef.child(orderID).removeValue();
         acceptedReservationRef.child(orderID).setValue(currentItem);
+        // Finire qui transazione
         removeItem(index);
         reservationTab2.acceptedReservation.add(currentItem);
         reservationTab2.mAdapter.notifyItemInserted(reservationTab2.acceptedReservation.size());
