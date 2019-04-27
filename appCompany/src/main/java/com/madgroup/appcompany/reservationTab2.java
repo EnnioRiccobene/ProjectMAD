@@ -200,7 +200,7 @@ public class reservationTab2 extends Fragment {
         acceptedReservation = new ArrayList<>();
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Accepted");
+        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Accepted").child(MainActivity.currentUser);
         pendingReservationRef.keepSynced(true);
 //        DatabaseReference orderedFoodRef = database.child("Company").child("OrderedFood");
 

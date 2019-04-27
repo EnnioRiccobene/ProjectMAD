@@ -174,10 +174,10 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted");
         String orderID = currentItem.getOrderID();
         currentItem.setStatus(1);
-        // Iniziare qui transazione
-        pendingReservationRef.child(orderID).removeValue();
-        acceptedReservationRef.child(orderID).setValue(currentItem);
-        // Finire qui transazione
+        // Iniziare qui transazione ???
+        pendingReservationRef.child("email1").child(orderID).removeValue();
+        acceptedReservationRef.child("email1").child(orderID).setValue(currentItem);
+        // Finire qui transazione   ???
         removeItem(index);
         reservationTab2.acceptedReservation.add(currentItem);
         reservationTab2.mAdapter.notifyItemInserted(reservationTab2.acceptedReservation.size());
@@ -187,7 +187,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
     public void callRider(final Reservation currentItem, int index){
         String orderID = currentItem.getOrderID();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(orderID);
+        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child("email1").child(orderID);
         currentItem.setStatus(2);
         HashMap<String, Object> statusUpdate = new HashMap<>();
         statusUpdate.put("status", 2);

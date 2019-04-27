@@ -32,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.MyImageHandler;
+import com.madgroup.sdk.RestaurantProfile;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
 
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity
     private boolean[] checkedItems;
     private ArrayList<Integer> mUserItems = new ArrayList<>();
     private int categoriesCount = 0;
-
+    static public String currentUser;
     private CircleImageView personalImage;
     private EditText name;
     private EditText email;
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity
 
 
         // START DATABASE TEST
+        currentUser = "email1";     // DOPO MODIFICARE CON SAVE PREFERENCES
         populateDatabaseWithDummyValues();
         // END DATABASE TEST
 
@@ -696,7 +698,7 @@ public class MainActivity extends AppCompatActivity
         reservationTab1.pendingReservation = new ArrayList<>();
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
+        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
         pendingReservationRef.keepSynced(true);
 //        DatabaseReference orderedFoodRef = database.child("Company").child("OrderedFood");
 
@@ -718,6 +720,21 @@ public class MainActivity extends AppCompatActivity
 
 
     public void populateDatabaseWithDummyValues(){
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child("Company").removeValue();
+
+        ArrayList<RestaurantProfile> mRestaurantList = new ArrayList<>();
+        mRestaurantList.add(new RestaurantProfile("Name1", "111", "Via malta", "email1", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
+        mRestaurantList.add(new RestaurantProfile("Name2", "222", "Via malta", "email2", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
+        mRestaurantList.add(new RestaurantProfile("Name3", "333", "Via malta", "email3", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
+        mRestaurantList.add(new RestaurantProfile("Name4", "444", "Via malta", "email4", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
+        DatabaseReference profileRef = database.child("Company").child("Profile");
+
+        for (RestaurantProfile element : mRestaurantList) {
+            String email = element.getEmail();
+            profileRef.child(email).setValue(element);
+        }
+
         ArrayList<OrderedDish> orderedDishList = new ArrayList<>();
         orderedDishList.add(new OrderedDish("Food1", 2, 6.4f));
         orderedDishList.add(new OrderedDish("Food2", 6, 10.4f));
@@ -742,22 +759,18 @@ public class MainActivity extends AppCompatActivity
         mReservationList.add(new Reservation("Address6" , "Delivery Time", 0, price));
         mReservationList.add(new Reservation("Address7", "Delivery Time", 0, price));
         mReservationList.add(new Reservation("Address8","Delivery Time" , 0, price));
-        mReservationList.add(new Reservation("Address9" , "Delivery Time", 0, price));
-        mReservationList.add(new Reservation("Address10", "Delivery Time", 0, price));
-        mReservationList.add(new Reservation("Address11","Delivery Time", 0, price));
-        mReservationList.add(new Reservation("Address12" , "Delivery Time", 0, price));
 
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        database.child("Company").child("Reservation").removeValue();
         DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
         DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood");
 
-        for (Reservation element : mReservationList) {
-            String orderID = pendingReservationRef.push().getKey();
-            element.setOrderID(orderID);
-            pendingReservationRef.child(orderID).setValue(element);
-            orderedFoodRef.child(orderID).setValue(orderedDishList);
-        }
+        for(int i = 1; i < 5; i++){
+            for (Reservation element : mReservationList) {
+                String orderID = pendingReservationRef.push().getKey();
+                element.setOrderID(orderID);
+                pendingReservationRef.child("email" + i).child(orderID).setValue(element);
+                orderedFoodRef.child(orderID).setValue(orderedDishList);
+            }
+    }
 
 //        mReservationList.clear();
 //        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 1, price));
