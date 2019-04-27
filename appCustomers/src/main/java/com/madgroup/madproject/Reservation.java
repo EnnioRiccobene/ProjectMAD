@@ -39,6 +39,21 @@ public class Reservation implements Serializable {
         price = df.format(x);
     }
 
+    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes) {
+        this.orderedDishList = orderedDishList;
+        this.address = address;
+        this.deliveryTime = deliveryTime;
+        this.notes = notes;
+        this.status = 0;
+        // Compute total Price
+        float x = 0;
+        for (OrderedDish element : orderedDishList)
+            x += element.getPrice() * element.getQuantity();
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setMinimumFractionDigits(2);
+        price = df.format(x);
+    }
+
     public String getOrderID() {
         return orderID;
     }

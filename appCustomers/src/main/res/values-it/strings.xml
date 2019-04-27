@@ -47,5 +47,11 @@
     <string name="Closed">Chiuso</string>
     <string name="other_hours">Altri orari</string>
     <string name="open_24h">Aperto 24h</string>
+    <string name="ordered_dishes">Piatti ordinati</string>
+    <string name="subtotal">Subtotale: </string>
+    <string name="address">Indirizzo: </string>
+    <string name="lunch_time">Orario di consegna: </string>
+    <string name="notes">Note: </string>
+    <string name="confirm_order">Conferma Ordine</string>
 
 </resources>

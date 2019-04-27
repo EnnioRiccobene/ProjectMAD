@@ -40,7 +40,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.madgroup.madproject.SearchRestaurantActivity" />
         </activity>
-        <activity android:name=".ShoppingChartActivity"
+        <activity android:name=".ShoppingCartActivity"
             android:parentActivityName=".RestaurantMenuActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -9,17 +9,16 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.aakira.expandablelayout.ExpandableLayout;
-import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
-import com.github.aakira.expandablelayout.Utils;
-import com.madgroup.sdk.SmartLogger;
-
-import java.util.ArrayList;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.github.aakira.expandablelayout.ExpandableLayout;
+import com.github.aakira.expandablelayout.Utils;
+
+import java.util.ArrayList;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -81,9 +80,6 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         }
 
         getIncomingIntent();
-        //todo: prendere i valori dall'id e settare i componenti della pagina
-
-        //todo:aggiungere button carrello al layout e qui fare il clickListener
 
         initRecicleView();
 
@@ -91,6 +87,8 @@ public class RestaurantMenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //todo: costruire l'oggetto prenotazione e mandare l'intent per avviare l'activity carrello
+                //todo: serve l'Array di OrderedDish da mettere nel costruttore di reservation insieme a address, notes e delivery_time. Poi a parte mandare anche il costo di consegna
+                //todo: aggiungere una dialog per inserire delle note da mettere nell'oggetto reservation
             }
         });
     }
@@ -106,7 +104,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     }
 
     private void initRecicleView(){
-        //todo temporanea, poi prendere dal db e usare il costruttore che mette anche le fotounb'
+        //todo temporanea, poi prendere dal db e usare il costruttore che mette anche le foto'
         menu.add(new Dish(1, "Margherita", 5, 30));
         menu.add(new Dish(1, "Capricciosa", 7.5f, 30));
         menu.add(new Dish(1, "Quattro salumi", 7, 30));
