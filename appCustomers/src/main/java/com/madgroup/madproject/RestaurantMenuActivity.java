@@ -1,12 +1,15 @@
 package com.madgroup.madproject;
 
 import android.animation.ObjectAnimator;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -30,6 +33,10 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
     private Restaurant restaurant;
     ArrayList<Dish> menu = new ArrayList<>();
+    private ArrayList<OrderedDish> orderedDishes = new ArrayList<>();
+    private String address;
+    private String notes = "";
+    private String deliveryTime;
 
     CircleImageView restaurantPhoto;
     TextView restaurantName;
@@ -79,6 +86,8 @@ public class RestaurantMenuActivity extends AppCompatActivity {
             hiddenHours.collapse();
         }
 
+        address = "Via di prova";//todo: la via dovrà essere prelevata con una query al db sull'indirizzo del customer
+
         getIncomingIntent();
 
         initRecicleView();
@@ -88,7 +97,9 @@ public class RestaurantMenuActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //todo: costruire l'oggetto prenotazione e mandare l'intent per avviare l'activity carrello
                 //todo: serve l'Array di OrderedDish da mettere nel costruttore di reservation insieme a address, notes e delivery_time. Poi a parte mandare anche il costo di consegna
-                //todo: aggiungere una dialog per inserire delle note da mettere nell'oggetto reservation
+                //todo: aggiungere una dialog per inserire delle note e gli orari di consegna da mettere nell'oggetto reservation
+
+                showDialog();
             }
         });
     }
@@ -114,7 +125,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         menu.add(new Dish(1, "Burrata", 10, 30));
 
         RecyclerView recyclerView = findViewById(R.id.menu_recycleView);
-        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(this, menu);
+        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(this, menu, orderedDishes);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -133,5 +144,39 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         animator.setDuration(300);
         animator.setInterpolator(Utils.createInterpolator(Utils.LINEAR_INTERPOLATOR));
         return animator;
+    }
+
+    private void showDialog() {
+        // custom dialog
+        final Dialog dialog = new Dialog(this);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.reservation_details_dialog);
+
+        final EditText reservationNotes = (EditText) dialog.findViewById(R.id.reservation_notes);
+        final Spinner reservationDeliveryHours = (Spinner) dialog.findViewById(R.id.reservationDeliveryHours);
+        TextView dialogDismiss = (TextView) dialog.findViewById(R.id.back_button);
+        TextView dialogConfirm = (TextView) dialog.findViewById(R.id.confirm_button);
+
+        dialogDismiss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialogConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                deliveryTime = reservationDeliveryHours.getSelectedItem().toString();
+                notes = reservationNotes.getText().toString();
+                Reservation currentReservation = new Reservation(orderedDishes, address, deliveryTime, notes);
+                //todo: fare intent e avviare activity carrello
+                ShoppingCartActivity.start(RestaurantMenuActivity.this, currentReservation, deliveryTime, notes);
+
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 }

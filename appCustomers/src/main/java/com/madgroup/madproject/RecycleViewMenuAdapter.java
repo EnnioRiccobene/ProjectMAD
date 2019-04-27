@@ -17,14 +17,16 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class RecycleViewMenuAdapter extends RecyclerView.Adapter<RecycleViewMenuAdapter.MenuViewHolder>{ //todo: errore crash
+public class RecycleViewMenuAdapter extends RecyclerView.Adapter<RecycleViewMenuAdapter.MenuViewHolder>{
 
-//todo: poi nella pagina menù aggiungere i piatti con dishQuantity != 0  a un intent da mandare all'activity carrello (magari metterli qua in un array list di piatti ordinati e poi creare l'oggetto ordine da mandare al carrello)
+//todo: poi nella pagina menù aggiungere un intent da mandare all'activity carrello (creare l'oggetto ordine da mandare al carrello)
     private ArrayList<Dish> menu = new ArrayList<>();
+    private ArrayList<OrderedDish> orderedDishes = new ArrayList<>();
     Context mContext;
 
-    public RecycleViewMenuAdapter(Context mContext, ArrayList<Dish> menu) {
+    public RecycleViewMenuAdapter(Context mContext, ArrayList<Dish> menu, ArrayList<OrderedDish> orderedDishes) {
         this.menu = menu;
+        this.orderedDishes = orderedDishes;
         this.mContext = mContext;
     }
 
@@ -49,6 +51,7 @@ public class RecycleViewMenuAdapter extends RecyclerView.Adapter<RecycleViewMenu
 //        holder.dishPrice.setText(menu.get(position).getPrice());//todo: gestire la edittext del prezzo come fatto nell'app company
         holder.dishIngredientsList.setText(menu.get(position).getDescription());
         holder.dishQuantity.setText(String.valueOf(orderedQuantity[0]));
+        final OrderedDish currentDish = new OrderedDish(menu.get(position).getName(), 0, menu.get(position).getPrice());
 
         //todo: fare controllo sull'available quantity del piatto (forse va controllato il db)
         holder.incrementButton.setOnClickListener(new View.OnClickListener() {
@@ -57,6 +60,16 @@ public class RecycleViewMenuAdapter extends RecyclerView.Adapter<RecycleViewMenu
 
                 orderedQuantity[0]++;
                 holder.dishQuantity.setText(String.valueOf(orderedQuantity[0]));
+
+                //Aggiungo il piatto ordinato all'arraylist o ne incremento la quantità
+                if(orderedDishes.contains(currentDish)){
+                    int index = orderedDishes.indexOf(currentDish);
+                    currentDish.setQuantity(orderedQuantity[0]);
+                    orderedDishes.get(index).setQuantity(currentDish.getQuantity());
+                } else {
+                    currentDish.setQuantity(orderedQuantity[0]);//la quantità è 1
+                    orderedDishes.add(currentDish);
+                }
 
                 //prima aggiunta del piatto all'ordine
                 if (!holder.expandableDishQuantity.isExpanded()) {
@@ -72,6 +85,15 @@ public class RecycleViewMenuAdapter extends RecyclerView.Adapter<RecycleViewMenu
 
                 orderedQuantity[0]--;
                 holder.dishQuantity.setText(String.valueOf(orderedQuantity[0]));
+                if(orderedDishes.contains(currentDish)){
+                    currentDish.setQuantity(orderedQuantity[0]);
+                    int index = orderedDishes.indexOf(currentDish);
+                    orderedDishes.get(index).setQuantity(currentDish.getQuantity());
+                    //Rimuovo il piatto ordinato dall'ArrayList
+                    if(orderedDishes.get(index).getQuantity() == 0){
+                        orderedDishes.remove(index);
+                    }
+                }
 
                 //piatto rimosso dall'ordine
                 if (holder.expandableDishQuantity.isExpanded()) {
