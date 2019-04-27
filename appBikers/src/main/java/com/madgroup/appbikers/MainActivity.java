@@ -33,6 +33,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity
         implements PopupMenu.OnMenuItemClickListener,
         NavigationView.OnNavigationItemSelectedListener{
 
-    private static String currentUser;
+    public static String currentUser;
     private CircleImageView personalImage;
     private EditText name;
     private EditText email;
@@ -96,27 +97,27 @@ public class MainActivity extends AppCompatActivity
         loadFields();
 
         navigationDrawerInitialization();
-//        createPendingDeliveryList();
+        createPendingDeliveryList();
 
 
 
         // START DATABASE TEST
-//
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference riderRef = database.getReference().child("Rider");
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference riderRef = database.getReference().child("Rider");
 //        DatabaseReference pendingRef = riderRef.child("Delivery").child("Pending");
-//        DatabaseReference profileRef = riderRef.child("Profile");
-//
-//        ArrayList<RiderProfile> profiles = new ArrayList<>();
-//        profiles.add(new RiderProfile("Name1", "email1", "1"));
-//        profiles.add(new RiderProfile("Name2", "email2", "2"));
-//        profiles.add(new RiderProfile("Name3", "email3", "3"));
-//        profiles.add(new RiderProfile("Name4", "email4", "4"));
-//
-//        for (RiderProfile element:profiles) {
-//            profileRef.child(element.getEmail()).setValue(element);
-//        }
-//
+        DatabaseReference profileRef = riderRef.child("Profile");
+
+        ArrayList<RiderProfile> profiles = new ArrayList<>();
+        profiles.add(new RiderProfile("Name1", "email1", "1"));
+        profiles.add(new RiderProfile("Name2", "email2", "2"));
+        profiles.add(new RiderProfile("Name3", "email3", "3"));
+        profiles.add(new RiderProfile("Name4", "email4", "4"));
+
+        for (RiderProfile element:profiles) {
+            profileRef.child(element.getEmail()).setValue(element);
+        }
+
 //        ArrayList<Delivery> deliveries = new ArrayList<>();
 //        deliveries.add(new Delivery("Da Tano", "Via del pollo 99", "Via 123", "Cash"));
 //        deliveries.add(new Delivery("Da Michele", "Via della gallina 99", "Via 123", "Cash"));
@@ -147,17 +148,17 @@ public class MainActivity extends AppCompatActivity
 //        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Manfredi", "Via della pizza 99", "Via 123", "Cash"));
 //        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Raffaele", "Via 99", "Via 123", "Cash"));
 
-        DeliveryPendingTab1.deliveriesList = new ArrayList<>();
-        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Tano", "Via del pollo 99", "Via 123", "Cash"));
-        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Michele", "Via della gallina 99", "Via 123", "Cash"));
-        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Manfredi", "Via della pizza 99", "Via 123", "Cash"));
-        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Raffaele", "Via 99", "Via 123", "Cash"));
-
-        DeliveryHistoryTab2.deliveriesList = new ArrayList<>();
-        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Tano", "Via del pollo 99", "Via 123", "Cash"));
-        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Michele", "Via della gallina 99", "Via 123", "Cash"));
-        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Manfredi", "Via della pizza 99", "Via 123", "Cash"));
-        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Raffaele", "Via 99", "Via 123", "Cash"));
+//        DeliveryPendingTab1.deliveriesList = new ArrayList<>();
+//        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Tano", "Via del pollo 99", "Via 123", "Cash"));
+//        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Michele", "Via della gallina 99", "Via 123", "Cash"));
+//        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Manfredi", "Via della pizza 99", "Via 123", "Cash"));
+//        DeliveryPendingTab1.deliveriesList.add(new Delivery("Da Raffaele", "Via 99", "Via 123", "Cash"));
+//
+//        DeliveryHistoryTab2.deliveriesList = new ArrayList<>();
+//        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Tano", "Via del pollo 99", "Via 123", "Cash"));
+//        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Michele", "Via della gallina 99", "Via 123", "Cash"));
+//        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Manfredi", "Via della pizza 99", "Via 123", "Cash"));
+//        DeliveryHistoryTab2.deliveriesList.add(new Delivery("Da Raffaele", "Via 99", "Via 123", "Cash"));
 
 
         // END DATABASE TEST
@@ -476,7 +477,7 @@ public class MainActivity extends AppCompatActivity
         DeliveryPendingTab1.deliveriesList = new ArrayList<>();
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference pendingDeliveryRef = database.child("Rider").child("Delivery").child("Pending");
+        DatabaseReference pendingDeliveryRef = database.child("Rider").child("Delivery").child("Pending").child(currentUser);
         pendingDeliveryRef.keepSynced(true);
 //        DatabaseReference orderedFoodRef = database.child("Company").child("OrderedFood");
 
@@ -494,6 +495,32 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-    }
 
+        pendingDeliveryRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                SmartLogger.d("NOTIFICATION: DATA ADDED");
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 }

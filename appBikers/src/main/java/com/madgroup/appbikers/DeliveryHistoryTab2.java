@@ -84,6 +84,7 @@ public class DeliveryHistoryTab2 extends Fragment {
         // Inflate the layout for this fragment
 //        createHistoryDeliveryList();
         View view =  inflater.inflate(R.layout.fragment_history_tab2, container, false);
+        createHistoryDeliveryList();
         buildRecyclerView(view);
         return view;
     }
@@ -184,7 +185,7 @@ public class DeliveryHistoryTab2 extends Fragment {
         deliveriesList = new ArrayList<>();
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference pendingReservationRef = database.child("Rider").child("Delivery").child("History");
+        DatabaseReference pendingReservationRef = database.child("Rider").child("Delivery").child("History").child(MainActivity.currentUser);
         pendingReservationRef.keepSynced(true);
 //        DatabaseReference orderedFoodRef = database.child("Company").child("OrderedFood");
 
