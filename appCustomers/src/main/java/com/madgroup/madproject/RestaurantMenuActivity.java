@@ -37,6 +37,8 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     private String address;
     private String notes = "";
     private String deliveryTime;
+    private String delivery_cost_amount;
+    private String minimumOrder;
 
     CircleImageView restaurantPhoto;
     TextView restaurantName;
@@ -170,9 +172,11 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
                 deliveryTime = reservationDeliveryHours.getSelectedItem().toString();
                 notes = reservationNotes.getText().toString();
+                delivery_cost_amount = deliveryCostAmount.getText().toString();
+                minimumOrder = minimumOrderAmount.getText().toString();
                 Reservation currentReservation = new Reservation(orderedDishes, address, deliveryTime, notes);
-                //todo: fare intent e avviare activity carrello
-                ShoppingCartActivity.start(RestaurantMenuActivity.this, currentReservation, deliveryTime, notes);
+
+                ShoppingCartActivity.start(RestaurantMenuActivity.this, currentReservation, deliveryTime, notes, delivery_cost_amount, minimumOrder);
 
                 dialog.dismiss();
             }

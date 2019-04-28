@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -34,6 +35,8 @@ public class ShoppingCartReservationAdapter extends RecyclerView.Adapter<Shoppin
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setMinimumFractionDigits(2);
         OrderedDish dish = dishes.get(position);
         holder.dishName.setText(dish.getName());
         holder.dishQuantity.setText(String.valueOf("x " + dish.getQuantity()));
@@ -45,7 +48,7 @@ public class ShoppingCartReservationAdapter extends RecyclerView.Adapter<Shoppin
         } else if(current.equals("en_GB")){
             currency = " £";
         }
-        holder.dishPrice.setText(String.valueOf(price) + currency);
+        holder.dishPrice.setText(String.valueOf(df.format(price))+ currency);
     }
 
     @Override

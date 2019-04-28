@@ -26,16 +26,82 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-
         tools:context=".ShoppingCartActivity">
         <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+
+        <RelativeLayout
+            android:id="@+id/emptyCartLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:padding="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/emptyImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_launcher_foreground"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/emptyText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="The cart is empty"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_below="@id/emptyImage"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/notEnoughCartLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:padding="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/notEnoughImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_launcher_foreground"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/notEnoughText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Minimum amount of the order isn't reached"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_below="@id/notEnoughImage"/>
+
+        </RelativeLayout>
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp">
+            tools:layout_editor_absoluteY="0dp"
+            android:visibility="visible">
 
             <RelativeLayout
                 android:id="@+id/dishesLayout"
