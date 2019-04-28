@@ -80,16 +80,16 @@ public class ShoppingCartActivity extends AppCompatActivity {
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
 
-        subtotalPrice.setText(currentReservation.getPrice() + currency);
+        subtotalPrice.setText(currentReservation.getPrice().replace(",", ".") + currency);
         address.setText(currentReservation.getAddress());
         time.setText(deliveryTime);
         notes.setText(note);
         String deliverCost = deliveryCostAmount.replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s","");
-        float total = Float.valueOf(deliverCost) + Float.valueOf(currentReservation.getPrice().replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s",""));
+        float total = Float.valueOf(deliverCost) + Float.valueOf(currentReservation.getPrice().replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s",""));
         deliveryPrice.setText(String.valueOf(df.format(Float.valueOf(deliverCost)))+ currency);
         totalPrice.setText(String.valueOf(df.format(total))+ currency);
 
-        float minOrder = Float.valueOf(minimumOrder.replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s",""));
+        float minOrder = Float.valueOf(minimumOrder.replace("€", "").replace(",", ".").replace("£", "").replace("$", "").replaceAll("\\s",""));
 
         //setto la visibilità del layout corretto a seconda dello stato del carrello
         if(currentReservation.getOrderedDishList().isEmpty()){
