@@ -77,7 +77,6 @@
             android:text="Ingredients list"
             android:textSize="13sp" />
 
-        <!--todo: gestire espansione e contrazione del layout in base al click sul + e al valore della variabile quantità != 0-->
         <com.github.aakira.expandablelayout.ExpandableRelativeLayout
             android:id="@+id/expandable_dish_quantity"
             android:layout_width="match_parent"

@@ -76,7 +76,7 @@ public class SearchRestaurantActivity extends AppCompatActivity {
 
         TextView dialogDismiss = dialog.findViewById(R.id.dialogCancel);
         TextView dialogConfirm = dialog.findViewById(R.id.dialogConfirm);
-        TextView food_category = dialog.findViewById(R.id.food_category); //todo:correggere errore crash
+        TextView food_category = dialog.findViewById(R.id.food_category);
         RadioGroup radioGroupFoodCategory = dialog.findViewById(R.id.radio_group_food_category);
         RadioButton radioAll = dialog.findViewById(R.id.radio_all);
         RadioButton radioPizza = dialog.findViewById(R.id.radio_pizza);

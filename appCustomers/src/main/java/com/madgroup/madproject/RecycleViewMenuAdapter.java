@@ -19,7 +19,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RecycleViewMenuAdapter extends RecyclerView.Adapter<RecycleViewMenuAdapter.MenuViewHolder>{
 
-//todo: poi nella pagina menù aggiungere un intent da mandare all'activity carrello (creare l'oggetto ordine da mandare al carrello)
     private ArrayList<Dish> menu = new ArrayList<>();
     private ArrayList<OrderedDish> orderedDishes = new ArrayList<>();
     Context mContext;

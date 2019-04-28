@@ -97,10 +97,6 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         imageButtonCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //todo: costruire l'oggetto prenotazione e mandare l'intent per avviare l'activity carrello
-                //todo: serve l'Array di OrderedDish da mettere nel costruttore di reservation insieme a address, notes e delivery_time. Poi a parte mandare anche il costo di consegna
-                //todo: aggiungere una dialog per inserire delle note e gli orari di consegna da mettere nell'oggetto reservation
-
                 showDialog();
             }
         });

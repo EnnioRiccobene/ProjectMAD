@@ -6,7 +6,6 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!--todo settare la visibilità al click sull'icona nell'appbar-->
     <SearchView
         android:id="@+id/searchWidget"
         android:layout_width="match_parent"
