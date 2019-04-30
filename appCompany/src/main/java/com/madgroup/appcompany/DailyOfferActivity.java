@@ -46,6 +46,8 @@ import com.yalantis.ucrop.UCrop;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 public class DailyOfferActivity extends AppCompatActivity implements
@@ -85,12 +87,12 @@ public class DailyOfferActivity extends AppCompatActivity implements
         Bitmap gnocchiIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.gnocchi), THUMBSIZE, THUMBSIZE);
 
 
-        myList.add(new Dish(0,"Spaghetti alla Carbonara", 5.5f, 5, "" +
+        myList.add(new Dish(0,"Spaghetti alla Carbonara", 5.50f, 5, "" +
                 "Guanciale, uova, pecorino, pepe nero.",carbonaraIcon));
         myList.add(new Dish(1,"Gnocchi di patet", 5.90f, 19, "Patate, " +
                 "Farina, " +
                 "Uova, ", gnocchiIcon));
-        myList.add(new Dish(2,"Lasagne alla Bolognese", 8.5f, 3, "Ragù, Besciamella." +
+        myList.add(new Dish(2,"Lasagne alla Bolognese", 8.50f, 3, "Ragù, Besciamella." +
                 "Olio extravergine d'oliva, " +
                 "Pepe nero, ", gnocchiIcon));
 
@@ -111,7 +113,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
                 DailyOfferActivity.this.currentDialog = dialog;
             }
         };
-
     }
 
     // Navigation Drawer
@@ -215,6 +216,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    // Dialog per la creazione di un NUOVO piatto
     private void showDialog() {
         // custom dialog
         final Dialog dialog = new Dialog(this);
@@ -270,6 +272,8 @@ public class DailyOfferActivity extends AppCompatActivity implements
                         currentDish = new Dish(1, editDishName.getText().toString(), floatPrice,
                                 Integer.parseInt(editDishQuantity.getText().toString()), "", bitmap);
                     } else {
+                        BigDecimal dishPrice = new BigDecimal(currentDish.getPrice()).setScale(2, RoundingMode.HALF_UP);
+
                         currentDish = new Dish(1, editDishName.getText().toString(), floatPrice,
                                 Integer.parseInt(editDishQuantity.getText().toString()), editDishDescription.getText().toString(), bitmap);
                     }
@@ -406,7 +410,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
             }
         }
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
