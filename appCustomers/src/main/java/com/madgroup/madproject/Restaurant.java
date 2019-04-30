@@ -12,7 +12,7 @@ public class Restaurant implements Parcelable {
     private String address;
     private String info;
     private String foodCategory;
-    private Bitmap photo;
+    private String photo;
     private String minOrder;  //todo aggiungerlo al profilo company
     private String deliveryCost; //todo aggiungerlo al profilo company
     private String mondayOpeningHours;
@@ -23,8 +23,11 @@ public class Restaurant implements Parcelable {
     private String saturdayOpeningHours;
     private String sundayOpeningHours;
 
+    public Restaurant() {
+    }
+
     public Restaurant(int id, String name, String phoneNumber, String address, String info,
-                      String foodCategory, Bitmap photo, String minOrder, String deliveryCost,
+                      String foodCategory, String photo, String minOrder, String deliveryCost,
                       String mondayOpeningHours, String tuesdayOpeningHours,
                       String wednesdayOpeningHours, String thursdayOpeningHours,
                       String fridayOpeningHours, String saturdayOpeningHours,
@@ -48,7 +51,7 @@ public class Restaurant implements Parcelable {
     }
 
     public Restaurant(int id, String name, String phoneNumber, String address, String foodCategory,
-                      Bitmap photo, String minOrder, String deliveryCost, String mondayOpeningHours,
+                      String photo, String minOrder, String deliveryCost, String mondayOpeningHours,
                       String tuesdayOpeningHours, String wednesdayOpeningHours,
                       String thursdayOpeningHours, String fridayOpeningHours,
                       String saturdayOpeningHours, String sundayOpeningHours) {
@@ -119,11 +122,11 @@ public class Restaurant implements Parcelable {
         this.foodCategory = foodCategory;
     }
 
-    public Bitmap getPhoto() {
+    public String getPhoto() {
         return photo;
     }
 
-    public void setPhoto(Bitmap photo) {
+    public void setPhoto(String photo) {
         this.photo = photo;
     }
 
@@ -212,7 +215,7 @@ public class Restaurant implements Parcelable {
         dest.writeString(this.address);
         dest.writeString(this.info);
         dest.writeString(this.foodCategory);
-        dest.writeParcelable(this.photo, flags);
+//        dest.writeParcelable(this.photo, flags);
         dest.writeString(this.minOrder);
         dest.writeString(this.deliveryCost);
         dest.writeString(this.mondayOpeningHours);

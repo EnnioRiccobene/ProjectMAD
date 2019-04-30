@@ -1,29 +1,35 @@
 package com.madgroup.madproject;
 
-import android.animation.ObjectAnimator;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
-import com.github.aakira.expandablelayout.Utils;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SearchRestaurantActivity extends AppCompatActivity {
@@ -35,11 +41,45 @@ public class SearchRestaurantActivity extends AppCompatActivity {
     private String restaurantCategory = null;
 
     private ArrayList<Restaurant> searchedRestaurantList = new ArrayList<>();
+    private DatabaseReference restaurantRef;
+
+    RecyclerView recyclerView;
+    Context mContext;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searchrestaurant);
+
+        // Getting the instance of Firebase
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        restaurantRef = database.getReference().child("Company").child("Profile");
+
+        mContext = this;
+//todo: questo inserimento di ristoranti nel db è temporaneo, in questa activity devo solo leggere
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.personicon);
+        Restaurant r1 = new Restaurant(1, "Da Saro", "0695555555", "Via X, Acireale", "panini", "Photo", "10€",
+                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
+                "Chiuso", "Chiuso");
+        Restaurant r2 = new Restaurant(1, "Napples Pizza", "0695555555", "Via X, Acireale", "pizza", "Photo", "10€",
+                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
+                "Chiuso", "Chiuso");
+        Restaurant r3 = new Restaurant(1, "Horace Kebab", "0695555555", "Via X, Acireale", "Kebab", "photo", "10€",
+                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
+                "Chiuso", "Chiuso");
+        Restaurant r4 = new Restaurant(1, "Greek Lab", "0695555555", "Via X, Acireale", "Mediterranea", "photo", "10€",
+                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
+                "Chiuso", "Chiuso");
+        Restaurant r5 = new Restaurant(1, "Acqua e farina", "0695555555", "Via X, Acireale", "Pizza, Fritti", "photo", "10€",
+                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
+                "Chiuso", "Chiuso");
+
+        restaurantRef.setValue("email1");
+        restaurantRef.child("email1").setValue(r1);
+        restaurantRef.child("email2").setValue(r2);
+        restaurantRef.child("email3").setValue(r3);
+        restaurantRef.child("email4").setValue(r4);
+        restaurantRef.child("email5").setValue(r5);
 
         photo = findViewById(R.id.restaurant_photo);
         btnSearch = findViewById(R.id.imageButtonSearch);
@@ -64,7 +104,78 @@ public class SearchRestaurantActivity extends AppCompatActivity {
             }
         });
 
-        initRecycleView();
+        recyclerView = findViewById(R.id.restaurantsrecycleview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        FirebaseRecyclerOptions<Restaurant> options =
+                new FirebaseRecyclerOptions.Builder<Restaurant>()
+                        .setQuery(restaurantRef, Restaurant.class)
+                        .build();
+
+        FirebaseRecyclerAdapter<Restaurant, FindRestaurantViewHolder> adapter =
+                new FirebaseRecyclerAdapter<Restaurant, FindRestaurantViewHolder>(options) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull FindRestaurantViewHolder holder, final int position, @NonNull final Restaurant model) {
+                        holder.restaurant_name.setText(model.getName());
+                        holder.food_category.setText(model.getFoodCategory());
+                        holder.minimum_order_amount.setText(model.getMinOrder());
+                        holder.delivery_cost_amount.setText(model.getDeliveryCost());
+//                        holder.restaurant_photo.setImageBitmap(R.drawable.); todo: prendere l'immagine dal database
+
+                        holder.cardLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //Avvio la seguente Activity
+                                RestaurantMenuActivity.start(mContext, model.getId());
+                            }
+                        });
+                    }
+
+                    @NonNull
+                    @Override
+                    public FindRestaurantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.restaurant_item, parent, false);
+                        FindRestaurantViewHolder viewHolder = new FindRestaurantViewHolder(view);
+                        return viewHolder;
+                    }
+                };
+
+        recyclerView.setAdapter(adapter);
+        adapter.startListening();
+    }
+
+    public static class FindRestaurantViewHolder extends RecyclerView.ViewHolder {
+
+        CardView cardLayout;
+        RelativeLayout restaurant_item_layout;
+        CircleImageView restaurant_photo;
+        RelativeLayout name_button_layout;
+        TextView restaurant_name;
+        TextView food_category;
+        TextView minimum_order;
+        TextView minimum_order_amount;
+        TextView delivery_cost;
+        TextView delivery_cost_amount;
+
+        public FindRestaurantViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            cardLayout = itemView.findViewById(R.id.cardLayout);
+            restaurant_item_layout = itemView.findViewById(R.id.restaurant_item_layout);
+            restaurant_photo = itemView.findViewById(R.id.restaurant_photo);
+            name_button_layout = itemView.findViewById(R.id.name_button_layout);
+            restaurant_name = itemView.findViewById(R.id.restaurant_name);
+            food_category = itemView.findViewById(R.id.food_category);
+            minimum_order = itemView.findViewById(R.id.minimum_order);
+            minimum_order_amount = itemView.findViewById(R.id.minimum_order_amount);
+            delivery_cost = itemView.findViewById(R.id.delivery_cost);
+            delivery_cost_amount = itemView.findViewById(R.id.delivery_cost_amount);
+        }
     }
 
     private void showFilterDialog() {
@@ -137,11 +248,11 @@ public class SearchRestaurantActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //todo gestire comportamento interno, filtri, interagire con il db per fare una query, ripopolare l'arrayList di ristoranti in base ai filtri e aggiornare la pagina principale
-                if(restaurantCategory != null){
+                if (restaurantCategory != null) {
                     //todo
                 }
 
-                if(freeDeliveryCheckbox.isChecked()){
+                if (freeDeliveryCheckbox.isChecked()) {
                     //todo gestire click sul checkbox
                 }
 
@@ -153,32 +264,5 @@ public class SearchRestaurantActivity extends AppCompatActivity {
     }
 
     //todo, occuparsi del comportamento della searchView che popoli l'arrayList di ristoranti in base al nome digitato
-
-    private void initRecycleView() {
-        //todo temporanea, poi prendere dal db
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.personicon);
-//        Bitmap bitmap = (Bitmap) getResources().getDrawable(R.drawable.personicon, null);   //((BitmapDrawable) photo.getDrawable()).getBitmap();
-        searchedRestaurantList.add(new Restaurant(1, "Da Saro", "0695555555", "Via X, Acireale", "panini", bitmap, "10€",
-                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
-                "Chiuso", "Chiuso"));
-        searchedRestaurantList.add(new Restaurant(1, "Napples Pizza", "0695555555", "Via X, Acireale", "pizza", bitmap, "10€",
-                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
-                "Chiuso", "Chiuso"));
-        searchedRestaurantList.add(new Restaurant(1, "Horace Kebab", "0695555555", "Via X, Acireale", "Kebab", bitmap, "10€",
-                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
-                "Chiuso", "Chiuso"));
-        searchedRestaurantList.add(new Restaurant(1, "Greek Lab", "0695555555", "Via X, Acireale", "Mediterranea", bitmap, "10€",
-                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
-                "Chiuso", "Chiuso"));
-        searchedRestaurantList.add(new Restaurant(1, "Acqua e farina", "0695555555", "Via X, Acireale", "Pizza, Fritti", bitmap, "10€",
-                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
-                "Chiuso", "Chiuso"));
-
-
-        RecyclerView recyclerView = findViewById(R.id.restaurantsrecycleview);
-        RecycleViewRestaurantAdapter adapter = new RecycleViewRestaurantAdapter(this, searchedRestaurantList);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
 
 }
