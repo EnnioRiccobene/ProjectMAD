@@ -1,13 +1,18 @@
 package com.madgroup.madproject;
 
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
@@ -15,6 +20,7 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,9 +31,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -42,6 +58,9 @@ public class SearchRestaurantActivity extends AppCompatActivity {
 
     private ArrayList<Restaurant> searchedRestaurantList = new ArrayList<>();
     private DatabaseReference restaurantRef;
+    private StorageReference mStorageRef;
+    private DatabaseReference mDatabaseRef; //di prova
+    private Uri mImageUri;
 
     RecyclerView recyclerView;
     Context mContext;
@@ -54,6 +73,11 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         // Getting the instance of Firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         restaurantRef = database.getReference().child("Company").child("Profile");
+
+        mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads");
+
+        uploadFile();
 
         mContext = this;
 //todo: questo inserimento di ristoranti nel db è temporaneo, in questa activity devo solo leggere
@@ -106,6 +130,67 @@ public class SearchRestaurantActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.restaurantsrecycleview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    //Il metodo serve a prendere l'estensione dell'immagine
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
+    }
+
+    //todo: metodo di prova per mettere le immagini nello storage e ricavarne l'uri da scrivere nel db. Poi metterlo in libreria, passangogli il percorso dove salvare l'uri nel db
+    private void uploadFile() {
+
+        //todo: al momento l'immagine è presa da drawable, poi si dovrà prendere da fotocamera e libreria
+        //https://firebase.google.com/docs/storage/android/upload-files
+        Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
+        Bitmap bitmap = ((BitmapDrawable)defaultImg).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] data = stream.toByteArray();
+
+        final StorageReference fileReference = mStorageRef.child(System.currentTimeMillis() + ".bmp");
+
+        UploadTask uploadTask = fileReference.putBytes(data); // Salvo l'immagine nello storage
+
+        /* Gestione successo e insuccesso */
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                Toast.makeText(SearchRestaurantActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(SearchRestaurantActivity.this, "Upload Successful", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        /* Ricavo Uri e lo inserisco nel db */
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+                // Continue with the task to get the download URL
+                return fileReference.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult(); // URI Dell'immagine
+                    mDatabaseRef.setValue(downloadUri.toString());
+
+                } else {
+                    // Handle failures
+                    // ...
+                }
+            }
+        });
     }
 
     @Override
