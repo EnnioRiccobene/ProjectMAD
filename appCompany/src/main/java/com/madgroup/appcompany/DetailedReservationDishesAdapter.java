@@ -1,18 +1,12 @@
 package com.madgroup.appcompany;
 
-import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
-
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -21,8 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class DetailedReservationDishesAdapter extends
         RecyclerView.Adapter<DetailedReservationDishesAdapter.ViewHolder>{
 
-    private ArrayList<Dish> dishes;
-    Context mContext;
+    private ArrayList<OrderedDish> orderedDishes;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -43,13 +36,13 @@ public class DetailedReservationDishesAdapter extends
         }
     }
 
-    public DetailedReservationDishesAdapter(ArrayList<Dish> dishes) {
-        this.dishes= dishes;
+    public DetailedReservationDishesAdapter(ArrayList<OrderedDish> orderedDishes) {
+        this.orderedDishes = orderedDishes;
     }
 
     @Override
     public int getItemCount() {
-        return dishes.size();
+        return orderedDishes.size();
     }
 
     @NonNull
@@ -63,10 +56,13 @@ public class DetailedReservationDishesAdapter extends
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Dish dish = dishes.get(position);
+        OrderedDish dish = orderedDishes.get(position);
+
         holder.dishName.setText(dish.getName());
-        holder.dishQuantity.setText(String.valueOf("x " + dish.getAvailableQuantity()));
-        float price = dish.getPrice() * dish.getAvailableQuantity();
-        holder.dishPrice.setText(String.valueOf(price) + " €");
+        holder.dishQuantity.setText(String.valueOf("x " + dish.getQuantity()));
+        float price = dish.getPrice() * dish.getQuantity();
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setMinimumFractionDigits(2);
+        holder.dishPrice.setText(df.format(price) + " €");
     }
 }

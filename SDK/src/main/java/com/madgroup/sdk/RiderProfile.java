@@ -20,11 +20,11 @@ public class RiderProfile implements Serializable {
     public RiderProfile() {
     }
 
-    public RiderProfile(String name, String email, String phoneNumber, String additionalInformation) {
+    public RiderProfile(String name, String email, String phoneNumber, boolean active) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.additionalInformation = additionalInformation;
+        this.active = active;
     }
 
     public RiderProfile(String name, String email, String phoneNumber) {

@@ -10,14 +10,16 @@ public class Delivery {
     private float price;
     private String customerPhone;
     private String restaurantPhone;
+    private String deliveryTime;
 
 
 
-    public Delivery(String restaurantName, String restaurantAddress, String customerAddress, String paymentMethod) {
+    public Delivery(String restaurantName, String restaurantAddress, String customerAddress, String paymentMethod, String deliveryTime) {
         this.restaurantName = restaurantName;
         this.restaurantAddress = restaurantAddress;
         this.customerAddress = customerAddress;
         this.paymentMethod = paymentMethod;
+        this.deliveryTime = deliveryTime;
     }
 
     public void setRestaurantAddress(String restaurantAddress) {

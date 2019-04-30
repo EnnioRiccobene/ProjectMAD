@@ -1,38 +1,73 @@
 package com.madgroup.appcompany;
 
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import android.animation.ObjectAnimator;
+import android.animation.StateListAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Base64;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class ReservationActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener,
+        reservationTab1.OnFragmentInteractionListener,
+        reservationTab2.OnFragmentInteractionListener,
+        reservationTab3.OnFragmentInteractionListener{
+    private RecyclerView mRecyclerView;
+    private ReservationAdapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private ArrayList<Reservation> mReservationList;
 
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
 
+    public final static int PENDING_RESERVATION_CODE = 0;
+    public final static int ACCEPTED_RESERVATION_CODE = 1;
+    public final static int CALLED_RESERVATION_CODE = 2;
+    public final static int HISTORY_ACCEPTED_RESERVATION_CODE = 3;
+    public final static int HISTORY_REJECT_RESERVATION_CODE = 4;
+
+    private TabLayout tabLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reservation);
+
+        initializeTabs();
+        this.setTitle("Reservations");
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
@@ -41,6 +76,7 @@ public class ReservationActivity extends AppCompatActivity implements
         initializeNavigationDrawer();
 
     }
+
     // Navigation Drawer
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -122,5 +158,94 @@ public class ReservationActivity extends AppCompatActivity implements
             Drawable defaultImg = getResources().getDrawable(R.mipmap.ic_launcher_round);
             nav_profile_icon.setImageDrawable(defaultImg);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.reservation_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.reservation_reload) {
+            switch (tabLayout.getSelectedTabPosition()){
+                case 0:
+
+                    break;
+                case 1:
+
+                    break;
+                case 2:
+
+                    break;
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Tabs
+    public void initializeTabs(){
+        // Remove black line under toolbar
+        StateListAnimator stateListAnimator = new StateListAnimator();
+        stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(findViewById(android.R.id.content), "elevation", 0));
+        findViewById(R.id.appBarLayout).setStateListAnimator(stateListAnimator);
+
+        // Add tabs
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.reservationViewPager);
+        reservationPageAdapter myPagerAdapter = new reservationPageAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(myPagerAdapter);
+        tabLayout = (TabLayout) findViewById(R.id.tablayout);
+        tabLayout.setupWithViewPager(viewPager);
+
+        // Add actions on tab selected/reselected/unselected
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+        });
+
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    // TODO
+    public void reloadReservationList() {
+
+//        reservationTab1.pendingReservation = new ArrayList<>();
+//        reservationTab2.acceptedReservation = new ArrayList<>();
+//        reservationTab3.historyReservation = new ArrayList<>();
+//
+//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+//        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
+//        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted");
+//        DatabaseReference hisotryReservationRef = database.child("Company").child("Reservation").child("History");
+        // RIEMPIERE LE LISTE E AGGIORNARE LE RECYCLER VIEW
+
+
     }
 }

@@ -1,10 +1,16 @@
 package com.madgroup.appcompany;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,22 +21,34 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.blackcat.currencyedittext.CurrencyEditText;
+import com.madgroup.sdk.MyImageHandler;
+import com.madgroup.sdk.SmartLogger;
+import com.yalantis.ucrop.UCrop;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 // Creo un ViewHolder (che contiene il layout della cella) e l'Adapter lo setto di tipo ViewHolder
 
-public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOfferRecyclerViewAdapter.ViewHolder>  implements PopupMenu.OnMenuItemClickListener{
+public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOfferRecyclerViewAdapter.ViewHolder>
+        implements PopupMenu.OnMenuItemClickListener {
 
     private ArrayList<Dish> dailyOfferList = new ArrayList<>();
     private Context mContext;
-    private static String POPUP_CONSTANT = "mPopup";
-    private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
     private int currentIndex = -1;
+    public DailyOfferActivity.AdapterHandler adapterhandler;
+
 
     public DailyOfferRecyclerViewAdapter(Context mContext, ArrayList<Dish> dailyOfferList) {
         this.dailyOfferList = dailyOfferList;
@@ -54,18 +72,9 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         viewHolder.dishDescription.setText(dailyOfferList.get(i).getDescription());
         viewHolder.dishPhoto.setImageBitmap(dailyOfferList.get(i).getPhoto());
 
-//        viewHolder.layout.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(mContext, ""+i, Toast.LENGTH_SHORT).show();
-//            }
-//        });
-
         viewHolder.popupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(mContext, "Selected menu with index: "+i, Toast.LENGTH_SHORT).show();
-                //viewHolder.popupButton.setBackgroundColor(Color.TRANSPARENT);
                 showEditPopup(viewHolder.popupButton, i);
             }
         });
@@ -127,6 +136,7 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         }
     }
 
+    // Dialog per la modifica di un piatto già esistente
     private void showDialog(final int currentIndex) {
 
         Dish currentDish = dailyOfferList.get(currentIndex);
@@ -137,14 +147,18 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.custom_dish_dialog);
 
+        // Modifico il campo currentDialog di DailyOfferActivity
+        if (this.adapterhandler != null) {
+            this.adapterhandler.setCurrentDialog(dialog);
+        }
+
         ImageButton dialogDismiss = (ImageButton) dialog.findViewById(R.id.dialogDismiss);
         ImageButton dialogConfirm = (ImageButton) dialog.findViewById(R.id.dialogConfirm);
         final CircleImageView dishImage = (CircleImageView) dialog.findViewById(R.id.dishImage);
         final EditText editDishName = (EditText) dialog.findViewById(R.id.editDishName);
         final EditText editDishDescription = (EditText) dialog.findViewById(R.id.editDishDescription);
         final EditText editDishQuantity = (EditText) dialog.findViewById(R.id.editDishQuantity);
-        final EditText editPrice = (EditText) dialog.findViewById(R.id.editPrice);
-        editPrice.addTextChangedListener(new NumberTextWatcher(editPrice, "#,###"));
+        final CurrencyEditText editPrice = dialog.findViewById(R.id.editPrice);
 
         editDishName.setText(currentDish.getName());
         editDishDescription.setText(currentDish.getDescription());
@@ -163,29 +177,59 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
             @Override
             public void onClick(View v) {
 
-                String dishName = editDishName.getText().toString();
-                float dishPrice = 10;
-                        //Float.parseFloat(editPrice.getText().toString());
-                int dishQuantity = Integer.parseInt(editDishQuantity.getText().toString());
-                String dishDesc = editDishDescription.getText().toString();
-                Bitmap dishPhoto = ((BitmapDrawable) dishImage.getDrawable()).getBitmap();
-                //todo fare un parsing della stringa per togliere il simbolo dell'euro e tutto quello che non è float
-                //todo far funzionare il metodo per visualizzare l'editText come valuta
-                // TODO FARE I CONTROLLI
-                Dish currentDish = dailyOfferList.get(currentIndex);
-                currentDish.setName(dishName);
-                currentDish.setAvailableQuantity(dishQuantity);
-                currentDish.setDescription(dishDesc);
-                currentDish.setPhoto(dishPhoto);
-                currentDish.setPrice(dishPrice);
-                notifyItemChanged(currentIndex);
-                dialog.dismiss();
+                String local = editPrice.getLocale().toString();
+                Long rawVal = editPrice.getRawValue();
+                String formattedVal = editPrice.formatCurrency(Long.toString(rawVal));
+                String floatStringVal = "";
+                float floatPrice = 0;
+
+                if(local.equals("en_US")){
+                    floatStringVal = formattedVal.replace(",", "").replace("$", "").replaceAll("\\s","");
+                    floatPrice = Float.parseFloat(floatStringVal);
+                } else if(local.equals("en_GB")){
+                    floatStringVal = formattedVal.replace(",", "").replace("£", "").replaceAll("\\s","");
+                    floatPrice = Float.parseFloat(floatStringVal);
+                } else if(local.equals("it_IT")){
+                    floatStringVal = formattedVal.replace(".", "").replace(",", ".").replace("€", "").replaceAll("\\s","");
+                    floatPrice = Float.parseFloat(floatStringVal);
+                }
+
+                if (editDishName.getText().toString().isEmpty() || editDishQuantity.getText().toString().isEmpty()) {
+                    Toast.makeText(mContext, mContext.getString(R.string.requiredString), Toast.LENGTH_SHORT).show();
+                } else if (floatPrice==0) {
+                    Toast.makeText(mContext, mContext.getString(R.string.requiredPrice), Toast.LENGTH_SHORT).show();
+                } else {
+                    if (editDishDescription.getText().toString().isEmpty()) {
+                        int dishQuantity = Integer.parseInt(editDishQuantity.getText().toString());
+                        String dishDesc = editDishDescription.getText().toString();
+                        Bitmap dishPhoto = ((BitmapDrawable) dishImage.getDrawable()).getBitmap();
+
+                        Dish currentDish = dailyOfferList.get(currentIndex);
+                        currentDish.setName(editDishName.getText().toString());
+                        currentDish.setAvailableQuantity(dishQuantity);
+                        currentDish.setDescription("");
+                        currentDish.setPhoto(dishPhoto);
+                        currentDish.setPrice(floatPrice);
+                    } else {
+                        int dishQuantity = Integer.parseInt(editDishQuantity.getText().toString());
+                        String dishDesc = editDishDescription.getText().toString();
+                        Bitmap dishPhoto = ((BitmapDrawable) dishImage.getDrawable()).getBitmap();
+
+                        Dish currentDish = dailyOfferList.get(currentIndex);
+                        currentDish.setName(editDishName.getText().toString());
+                        currentDish.setAvailableQuantity(dishQuantity);
+                        currentDish.setDescription(dishDesc);
+                        currentDish.setPhoto(dishPhoto);
+                        currentDish.setPrice(floatPrice);
+
+                        notifyItemChanged(currentIndex);
+                        dialog.dismiss();
+                    }
+                }
             }
         });
 
         dialog.show();
     }
-
-
 
 }

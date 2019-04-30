@@ -8,9 +8,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,42 +21,33 @@ import java.util.ArrayList;
 
 public class DetailedReservation extends AppCompatActivity {
 
-    TextView dishesText;
-    private RecyclerView recyclerView;
-    private ArrayList<Dish> dishes;
-    private DetailedReservationDishesAdapter dAdapter;
+    private ImageView confirmButton;
     private TextView totalPrice;
+    private TextView address;
+    private TextView lunchTime;
+    private TextView notes;
+    private Reservation reservation;
+    private RecyclerView recyclerView;
+    private DetailedReservationDishesAdapter dAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed_reservation);
+        reservation = (Reservation) getIntent().getSerializableExtra("Reservation");
+        ArrayList<OrderedDish> orderedFood = (ArrayList<OrderedDish>) getIntent().getSerializableExtra("OrderedFood");
 
-        totalPrice = findViewById(R.id.totalPrice);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.detailed_reservation_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        toolbar.setTitle("Order number 123");
-
-        // ARRAY DI PROVA
-        dishes = new ArrayList<>();
-        dishes.add(new Dish(0, "Pollo al curry", 34, 30));
-        dishes.add(new Dish(1, "Carbonara", 34, 2));
-        dishes.add(new Dish(2, "Cacio e pepe", 34, 35));
-        dishes.add(new Dish(3, "Insalta", 34, 10));
-        dishes.add(new Dish(4, "Polpette", 34, 60));
-
-        // Compute Total price
-        float localPrice = 0;
-        for (Dish x:dishes)
-            localPrice += x.getPrice() * x.getAvailableQuantity();
-        totalPrice.setText(String.valueOf(localPrice) + " €");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        this.setTitle("Detailed Reservation");
 
         // RECYCLERVIEW
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        dAdapter = new DetailedReservationDishesAdapter(dishes);
-        dishesText = findViewById(R.id.dishesText);
+        dAdapter = new DetailedReservationDishesAdapter(orderedFood);
+
         // Make it unscrollable
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext()){
             @Override
@@ -65,11 +59,35 @@ public class DetailedReservation extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(dAdapter);
 
+        // Fields
+        confirmButton = findViewById(R.id.detailed_reservation_confirm_button);
+        totalPrice = findViewById(R.id.totalPrice);
+        totalPrice.setText(reservation.getPrice() + " €");
+        address = findViewById(R.id.address);
+        address.setText(reservation.getAddress());
+        lunchTime = findViewById(R.id.time);
+        lunchTime.setText(reservation.getDeliveryTime());
+        notes = findViewById(R.id.notes);
+        if(reservation.getNotes() != null)
+            notes.setText(reservation.getNotes());
+        if(reservation.getStatus() != 0)
+            confirmButton.setVisibility(View.GONE);
+
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent replyIntent = new Intent();
+                replyIntent.putExtra("Result", "Confirmed");
+                setResult(RESULT_OK, replyIntent);
+                finish();
+            }
+        });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detailed_reservation_menu, menu);
+        if(reservation.getStatus() == 0)
+            getMenuInflater().inflate(R.menu.detailed_reservation_menu, menu);
         return true;
     }
 
@@ -78,14 +96,16 @@ public class DetailedReservation extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-            case R.id.call_customer:
-
-                return true;
             case R.id.reject_order:
-
+                Intent replyIntent = new Intent();
+                replyIntent.putExtra("Result", "Rejected");
+                setResult(RESULT_OK, replyIntent);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 }

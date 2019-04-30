@@ -1,1 +1,1 @@
-include ':appCustomers', ':appBikers', ':appCompany', ':SDK'
+include ':appCustomers', ':appBikers', ':appCompany', ':SDK', ':profileLibrary'

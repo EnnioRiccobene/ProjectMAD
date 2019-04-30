@@ -17,7 +17,9 @@
     <string name="gallery">Gallery</string>
     <string name="remove">Remove</string>
     <string name="edit">Edit</string>
-
+    <string name="address">Address</string>
+    <string name="lunch_time">Lunch:time</string>
+    <string name="delete">Delete</string>
     <string name="gallerypermission">Allow the Gallery usage in settings to use this funcionality.</string>
     <string name="camerapermission">Allow the camera usage in settings to use this funcionality.</string>
 
@@ -52,6 +54,7 @@
     <string name="Closed">Closed</string>
     <string name="other_hours">Other hours</string>
     <string name="open_24h">Open 24h</string>
+    <string name="order_price"> 19.99 €</string>
 
 
     <string name="dish_name">Dish name</string>
@@ -59,6 +62,9 @@
     <string name="available_quantity">Available quantity</string>
     <string name="dish_price">Price</string>
     <string name="edit_dish">Your dish</string>
+    <string name="action_settings">Add Action</string>
+    <string name="requiredString">Enter required fields</string>
+    <string name="requiredPrice">Price cannot be zero.</string>
 
     <string-array name="hours_list">
         <item>00:00</item>
@@ -158,4 +164,5 @@
         <item>23:30</item>
         <item>23:45</item>
     </string-array>
+
 </resources>

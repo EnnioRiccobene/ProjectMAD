@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="6dp">
+
+    <RelativeLayout
+        android:id="@+id/view_foreground"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:padding="15dp">
+
+        <TextView
+            android:id="@+id/text_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/address"
+            android:textColor="#000"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/lunch_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_address"
+            android:layout_marginTop="3dp"
+            android:text="@string/lunch_time"
+            android:textColor="#000"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/order_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lunch_time"
+            android:layout_marginTop="3dp"
+            android:text="@string/order_price"
+            android:textStyle="bold"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/status_biker"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_action_confirm"/>
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
+
+
+    <!--&lt;!&ndash;<ImageView&ndash;&gt;&lt;!&ndash;android:id="@+id/status_biker"&ndash;&gt;&lt;!&ndash;android:layout_width="50dp"&ndash;&gt;&lt;!&ndash;android:layout_height="50dp"&ndash;&gt;&lt;!&ndash;android:src="@mipmap/ic_launcher"&ndash;&gt;&lt;!&ndash;/>&ndash;&gt;-->
+
+    <!--&lt;!&ndash;<RelativeLayout&ndash;&gt;&lt;!&ndash;android:id="@+id/reservation_layout"&ndash;&gt;&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;&lt;!&ndash;android:layout_marginStart="10dp"&ndash;&gt;&lt;!&ndash;android:layout_toEndOf="@id/status_biker">&ndash;&gt;-->
+
+    <!--&lt;!&ndash;<TextView&ndash;&gt;&lt;!&ndash;android:id="@+id/text_address"&ndash;&gt;&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;&lt;!&ndash;android:layout_weight="1"&ndash;&gt;&lt;!&ndash;android:text="@string/address"&ndash;&gt;&lt;!&ndash;android:textColor="#000"&ndash;&gt;&lt;!&ndash;android:textSize="17sp"&ndash;&gt;&lt;!&ndash;android:textStyle="bold"/>&ndash;&gt;-->
+
+    <!--&lt;!&ndash;<TextView&ndash;&gt;&lt;!&ndash;android:id="@+id/lunch_time"&ndash;&gt;&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;&lt;!&ndash;android:layout_below="@+id/text_address"&ndash;&gt;&lt;!&ndash;android:layout_marginTop="3dp"&ndash;&gt;&lt;!&ndash;android:text="@string/lunch_time"&ndash;&gt;&lt;!&ndash;android:textColor="#000"&ndash;&gt;&lt;!&ndash;android:textSize="15sp" />&ndash;&gt;-->
+
+    <!--&lt;!&ndash;<TextView&ndash;&gt;&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;&lt;!&ndash;android:id="@+id/order_price"&ndash;&gt;&lt;!&ndash;android:text="@string/order_price"&ndash;&gt;&lt;!&ndash;android:layout_alignParentEnd="true"&ndash;&gt;&lt;!&ndash;android:layout_below="@+id/text_address"&ndash;&gt;&lt;!&ndash;android:textStyle="bold"&ndash;&gt;&lt;!&ndash;android:textSize="18sp" />&ndash;&gt;-->
+
+    <!--</RelativeLayout>-->
+
+
+    <!-- Lista senza cardview --><!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--android:orientation="vertical">-->
+
+    <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--android:id="@+id/view_foreground"--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--android:background="@android:color/white"--><!--android:padding="15dp">-->
+
+    <!--<TextView--><!--android:id="@+id/text_address"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:layout_weight="1"--><!--android:text="@string/address"--><!--android:textColor="#000"--><!--android:textSize="17sp"--><!--android:textStyle="bold" />-->
+
+    <!--<TextView--><!--android:id="@+id/lunch_time"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:layout_below="@+id/text_address"--><!--android:layout_marginTop="3dp"--><!--android:text="@string/lunch_time"--><!--android:textColor="#000"--><!--android:textSize="15sp" />-->
+
+    <!--<TextView--><!--android:id="@+id/order_price"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:layout_below="@+id/lunch_time"--><!--android:layout_marginTop="3dp"--><!--android:text="@string/order_price"--><!--android:textColor="#000"--><!--android:textSize="15sp" />-->
+
+    <!--<ImageView--><!--android:id="@+id/status_biker"--><!--android:layout_width="50dp"--><!--android:layout_height="50dp"--><!--android:layout_alignParentEnd="true"--><!--android:layout_centerInParent="true"--><!--android:src="@drawable/ic_launcher"--><!--android:tint="@color/colorPrimary" />-->
+
+
+    <!--</RelativeLayout>-->
+
+    <!--<View--><!--android:layout_width="match_parent"--><!--android:layout_height="1dp"--><!--android:background="@color/colorPrimaryDark" />-->
+
+    <!--</LinearLayout>-->

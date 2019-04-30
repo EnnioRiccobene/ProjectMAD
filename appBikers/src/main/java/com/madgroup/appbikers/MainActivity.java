@@ -40,6 +40,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.MyImageHandler;
+import com.madgroup.sdk.RiderProfile;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
 
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity
     private static String POPUP_CONSTANT = "mPopup";
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
     public int iteration = 0;
-
+    private ChildEventListener childEventListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,10 +110,10 @@ public class MainActivity extends AppCompatActivity
         DatabaseReference profileRef = riderRef.child("Profile");
 
         ArrayList<RiderProfile> profiles = new ArrayList<>();
-        profiles.add(new RiderProfile("Name1", "email1", "1"));
-        profiles.add(new RiderProfile("Name2", "email2", "2"));
-        profiles.add(new RiderProfile("Name3", "email3", "3"));
-        profiles.add(new RiderProfile("Name4", "email4", "4"));
+        profiles.add(new RiderProfile("Name1", "email1", "1", true));
+        profiles.add(new RiderProfile("Name2", "email2", "2", false));
+        profiles.add(new RiderProfile("Name3", "email3", "3", false));
+        profiles.add(new RiderProfile("Name4", "email4", "4", false));
 
         for (RiderProfile element:profiles) {
             profileRef.child(element.getEmail()).setValue(element);
@@ -482,11 +483,13 @@ public class MainActivity extends AppCompatActivity
 //        DatabaseReference orderedFoodRef = database.child("Company").child("OrderedFood");
 
         pendingDeliveryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Delivery post = postSnapshot.getValue(Delivery.class);
-                    DeliveryPendingTab1.deliveriesList.add(post);
+                    String customerAddress = (String)postSnapshot.child("address").getValue();
+                    String deliveryTime = (String)postSnapshot.child("deliveryTime").getValue();
+                    DeliveryPendingTab1.deliveriesList.add(new Delivery("restaurantName", "restaurantAddress", customerAddress, "card", deliveryTime));
                 }
             }
 
@@ -495,8 +498,9 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-
-        pendingDeliveryRef.addChildEventListener(new ChildEventListener() {
+        if(childEventListener != null)
+            return;
+        childEventListener = pendingDeliveryRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 SmartLogger.d("NOTIFICATION: DATA ADDED");
@@ -522,5 +526,6 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
     }
 }
