@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,6 +20,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.aakira.expandablelayout.ExpandableLayout;
 import com.github.aakira.expandablelayout.Utils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -55,8 +61,10 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     TextView saturdayHours;
     TextView sundayHours;
     ImageButton imageButtonCart;
+    private DatabaseReference restaurantRef;
+    private String idRestaurant;
 
-    public static void start(Context context, int restaurantId){
+    public static void start(Context context, String restaurantId){
         Intent starter = new Intent(context, RestaurantMenuActivity.class);
         starter.putExtra("Restaurant", restaurantId);
         context.startActivity(starter);
@@ -88,9 +96,12 @@ public class RestaurantMenuActivity extends AppCompatActivity {
             hiddenHours.collapse();
         }
 
-        address = "Via di prova";//todo: la via dovrà essere prelevata con una query al db sull'indirizzo del customer
-
         getIncomingIntent();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        restaurantRef = database.getReference().child("Company").child("Profile").child(idRestaurant);
+
+        address = "Via di prova";//todo: la via dovrà essere prelevata con una query al db sull'indirizzo del customer
 
         initRecicleView();
 
@@ -100,11 +111,41 @@ public class RestaurantMenuActivity extends AppCompatActivity {
                 showDialog();
             }
         });
+
+        restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Restaurant currentRestaurant = dataSnapshot.getValue(Restaurant.class);
+//                restaurantPhoto
+                restaurantName.setText(currentRestaurant.getName());
+                foodCategories.setText(currentRestaurant.getFoodCategory());
+                minimumOrderAmount.setText(currentRestaurant.getMinOrder());
+                deliveryCostAmount.setText(currentRestaurant.getDeliveryCost());
+                mondayHours.setText(currentRestaurant.getMondayOpeningHours());
+                tuesdayHours.setText(currentRestaurant.getTuesdayOpeningHours());
+                wednesdayHours.setText(currentRestaurant.getWednesdayOpeningHours());
+                thursdayHours.setText(currentRestaurant.getThursdayOpeningHours());
+                fridayHours.setText(currentRestaurant.getFridayOpeningHours());
+                saturdayHours.setText(currentRestaurant.getSaturdayOpeningHours());
+                sundayHours.setText(currentRestaurant.getSundayOpeningHours());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
     }
 
     private void getIncomingIntent(){
         if(getIntent().hasExtra("Restaurant")){
-            int idRestaurant = getIntent().getIntExtra("Restaurant", 0);
+            idRestaurant = getIntent().getStringExtra("Restaurant");
 //            restaurant.setId(idRestaurant);//l'oggetto restaurant non è stato costruito e non ho gli attributi per farlo oltre all'id
 
             //todo: una volta ottenuto l'id del ristorante tramite intent, fare una query al database per ottenere i campi del ristorante con quell'id (photo, Name, foodcategories, orari di apertura, ordine minimo e costo consegna)

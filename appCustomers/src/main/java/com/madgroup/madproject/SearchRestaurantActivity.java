@@ -58,19 +58,19 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         mContext = this;
 //todo: questo inserimento di ristoranti nel db è temporaneo, in questa activity devo solo leggere
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.personicon);
-        Restaurant r1 = new Restaurant(1, "Da Saro", "0695555555", "Via X, Acireale", "panini", "Photo", "10€",
+        Restaurant r1 = new Restaurant("email1", "Da Saro", "0695555555", "Via X, Acireale", "panini", "Photo", "10€",
                 "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
-        Restaurant r2 = new Restaurant(1, "Napples Pizza", "0695555555", "Via X, Acireale", "pizza", "Photo", "10€",
+        Restaurant r2 = new Restaurant("email2", "Napples Pizza", "0695555555", "Via X, Acireale", "pizza", "Photo", "10€",
                 "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
-        Restaurant r3 = new Restaurant(1, "Horace Kebab", "0695555555", "Via X, Acireale", "Kebab", "photo", "10€",
+        Restaurant r3 = new Restaurant("email3", "Horace Kebab", "0695555555", "Via X, Acireale", "Kebab", "photo", "10€",
                 "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
-        Restaurant r4 = new Restaurant(1, "Greek Lab", "0695555555", "Via X, Acireale", "Mediterranea", "photo", "10€",
+        Restaurant r4 = new Restaurant("email4", "Greek Lab", "0695555555", "Via X, Acireale", "Mediterranea", "photo", "10€",
                 "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
-        Restaurant r5 = new Restaurant(1, "Acqua e farina", "0695555555", "Via X, Acireale", "Pizza, Fritti", "photo", "10€",
+        Restaurant r5 = new Restaurant("email5", "Acqua e farina", "0695555555", "Via X, Acireale", "Pizza, Fritti", "photo", "10€",
                 "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
 

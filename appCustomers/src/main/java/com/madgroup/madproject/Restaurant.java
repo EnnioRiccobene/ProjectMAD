@@ -6,7 +6,7 @@ import android.os.Parcelable;
 
 public class Restaurant implements Parcelable {
 
-    private int id;
+    private String id;
     private String name;
     private String phoneNumber;
     private String address;
@@ -26,7 +26,7 @@ public class Restaurant implements Parcelable {
     public Restaurant() {
     }
 
-    public Restaurant(int id, String name, String phoneNumber, String address, String info,
+    public Restaurant(String id, String name, String phoneNumber, String address, String info,
                       String foodCategory, String photo, String minOrder, String deliveryCost,
                       String mondayOpeningHours, String tuesdayOpeningHours,
                       String wednesdayOpeningHours, String thursdayOpeningHours,
@@ -50,7 +50,7 @@ public class Restaurant implements Parcelable {
         this.sundayOpeningHours = sundayOpeningHours;
     }
 
-    public Restaurant(int id, String name, String phoneNumber, String address, String foodCategory,
+    public Restaurant(String id, String name, String phoneNumber, String address, String foodCategory,
                       String photo, String minOrder, String deliveryCost, String mondayOpeningHours,
                       String tuesdayOpeningHours, String wednesdayOpeningHours,
                       String thursdayOpeningHours, String fridayOpeningHours,
@@ -74,11 +74,11 @@ public class Restaurant implements Parcelable {
 
 
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -209,7 +209,7 @@ public class Restaurant implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
+        dest.writeString(this.id);
         dest.writeString(this.name);
         dest.writeString(this.phoneNumber);
         dest.writeString(this.address);
@@ -228,7 +228,7 @@ public class Restaurant implements Parcelable {
     }
 
     protected Restaurant(Parcel in) {
-        this.id = in.readInt();
+        this.id = in.readString();
         this.name = in.readString();
         this.phoneNumber = in.readString();
         this.address = in.readString();
