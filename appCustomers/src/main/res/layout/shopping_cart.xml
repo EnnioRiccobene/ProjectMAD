@@ -206,7 +206,7 @@
                     android:layout_below="@+id/delivery_cost_order"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="20dp"
-                    android:text="@string/delivery_cost"
+                    android:text="@string/total"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp"
                     android:textStyle="bold" />
