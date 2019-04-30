@@ -4,6 +4,9 @@ import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -18,14 +21,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Registry;
+import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.module.AppGlideModule;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.github.aakira.expandablelayout.ExpandableLayout;
 import com.github.aakira.expandablelayout.Utils;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -99,7 +112,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         getIncomingIntent();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        restaurantRef = database.getReference().child("Company").child("Profile").child(idRestaurant);
+        restaurantRef = database.getReference().child("Company").child("Profile").child(idRestaurant);//todo: crash sul restaurantid quando torno indietro dal carrello
 
         address = "Via di prova";//todo: la via dovrà essere prelevata con una query al db sull'indirizzo del customer
 
@@ -128,6 +141,25 @@ public class RestaurantMenuActivity extends AppCompatActivity {
                 fridayHours.setText(currentRestaurant.getFridayOpeningHours());
                 saturdayHours.setText(currentRestaurant.getSaturdayOpeningHours());
                 sundayHours.setText(currentRestaurant.getSundayOpeningHours());
+
+                StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/projectmad-18b01.appspot.com/o/uploads%2Fdish.png?alt=media&token=37431f23-81a7-4d57-8686-4b93640b29ad");
+
+//                GlideApp.with(RestaurantMenuActivity.this).load(storageReference).into(restaurantPhoto);
+
+                final long ONE_MEGABYTE = 1024 * 1024;
+                storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        // Data for "images/island.jpg" is returns, use this as needed
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        restaurantPhoto.setImageBitmap(bitmap);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
             }
 
             @Override

@@ -15,8 +15,10 @@
             android:id="@+id/restaurant_photo"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@mipmap/ic_launcher"
+
             app:civ_border_width="1dp" />
+        <!--android:src="@mipmap/ic_launcher"-->
+
 
         <RelativeLayout
             android:id="@+id/name_header_layout"
