@@ -2,6 +2,7 @@ package com.madgroup.madproject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,13 +24,17 @@ public class ShoppingCartActivity extends AppCompatActivity {
     TextView subtotalPrice;
     TextView deliveryPrice;
     TextView totalPrice;
+    TextView name;
     TextView address;
+    TextView phone;
     TextView time;
     TextView notes;
     TextView confirm_button;
     RelativeLayout notEnoughCartLayout;
     RelativeLayout emptyCartLayout;
     NestedScrollView nestedScrollView2;
+
+    private SharedPreferences prefs;
 
     private Reservation currentReservation;
     private String deliveryTime;
@@ -56,7 +61,9 @@ public class ShoppingCartActivity extends AppCompatActivity {
         subtotalPrice = findViewById(R.id.subtotalPrice);
         deliveryPrice = findViewById(R.id.deliveryPrice);
         totalPrice = findViewById(R.id.totalPrice);
+        name = findViewById(R.id.name);
         address = findViewById(R.id.address);
+        phone = findViewById(R.id.phone);
         time = findViewById(R.id.time);
         notes = findViewById(R.id.notes);
         confirm_button = findViewById(R.id.confirm_button);
@@ -82,8 +89,12 @@ public class ShoppingCartActivity extends AppCompatActivity {
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
 
+        prefs = getSharedPreferences("MyData", MODE_PRIVATE);
+
         subtotalPrice.setText(currentReservation.getPrice().replace(",", ".") + currency);
-        address.setText(currentReservation.getAddress());
+        name.setText(prefs.getString("Name", ""));
+        address.setText(prefs.getString("Address", ""));
+        phone.setText(prefs.getString("Phone", ""));
         time.setText(deliveryTime);
         notes.setText(note);
         String deliverCost = deliveryCostAmount.replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s","");

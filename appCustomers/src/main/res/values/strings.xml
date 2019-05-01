@@ -54,6 +54,8 @@
     <string name="notes">Notes: </string>
     <string name="confirm_order">Confirm Order</string>
     <string name="total">Total</string>
+    <string name="name">Name:</string>
+    <string name="phone_number">Phone number:</string>
 
     <string-array name="hours_list">
         <item>As soon as possible</item>

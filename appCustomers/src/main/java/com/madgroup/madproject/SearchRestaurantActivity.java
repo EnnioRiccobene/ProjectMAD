@@ -1,8 +1,11 @@
 package com.madgroup.madproject;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -31,26 +34,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.ObservableSnapshotArray;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.madgroup.sdk.SmartLogger;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -61,6 +58,8 @@ public class SearchRestaurantActivity extends AppCompatActivity {
     private ImageButton btnFilter;
     private SearchView searchRestaurant;
     private String restaurantCategory = null;
+
+    private SharedPreferences prefs;
 
     private ArrayList<Restaurant> searchedRestaurantList = new ArrayList<>();
     private DatabaseReference restaurantRef;
@@ -249,10 +248,27 @@ public class SearchRestaurantActivity extends AppCompatActivity {
 //                        holder.restaurant_photo.setImageBitmap(R.drawable.); todo: prendere l'immagine dal database
 
                         holder.cardLayout.setOnClickListener(new View.OnClickListener() {
+                            @SuppressLint("ShowToast")
                             @Override
                             public void onClick(View v) {
-                                //Avvio la seguente Activity
-                                RestaurantMenuActivity.start(mContext, model.getId());
+
+                                prefs = getSharedPreferences("MyData", MODE_PRIVATE);
+
+                                if (prefs.getString("Name", "").isEmpty() ||
+                                        prefs.getString("Email", "").isEmpty() ||
+                                        prefs.getString("Phone", "").isEmpty() ||
+                                        prefs.getString("Address", "").isEmpty()) {
+
+                                    //Il profilo è da riempire
+//                                    Toast.makeText(SearchRestaurantActivity.this, "Your profile is not complete", Toast.LENGTH_LONG);
+                                    Intent homepage = new Intent(SearchRestaurantActivity.this, MainActivity.class);
+                                    startActivity(homepage);
+
+                                } else {
+                                    //il profilo è pieno e c'è in save preference
+                                    //Avvio la seguente Activity
+                                    RestaurantMenuActivity.start(mContext, model.getId());
+                                }
                             }
                         });
                     }
