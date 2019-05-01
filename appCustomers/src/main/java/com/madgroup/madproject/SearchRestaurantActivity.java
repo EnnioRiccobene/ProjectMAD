@@ -136,6 +136,30 @@ public class SearchRestaurantActivity extends AppCompatActivity {
             }
         });
 
+        searchRestaurant.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                Query applyQuery = restaurantRef.orderByChild("name").startAt(query).endAt(query + "\uf8ff");
+                options = new FirebaseRecyclerOptions.Builder<Restaurant>()
+                        .setQuery(applyQuery, Restaurant.class)
+                        .build();
+                onStart();
+                return false;
+
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Query applyQuery = restaurantRef.orderByChild("name").startAt(newText).endAt(newText + "\uf8ff");
+                options = new FirebaseRecyclerOptions.Builder<Restaurant>()
+                        .setQuery(applyQuery, Restaurant.class)
+                        .build();
+                onStart();
+                return true;
+            }
+        });
+
         recyclerView = findViewById(R.id.restaurantsrecycleview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
