@@ -109,6 +109,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         this.setTitle("Profile");
 
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child("Company").child("abc").setValue("Hello World!");
+
 
         // START DATABASE TEST
         currentUser = "email1";     // DOPO MODIFICARE CON SAVE PREFERENCES
@@ -692,18 +695,12 @@ public class MainActivity extends AppCompatActivity
 
 
 
-
-
-
-
-
     public void createPendingReservationList() {
         reservationTab1.pendingReservation = new ArrayList<>();
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
         pendingReservationRef.keepSynced(true);
-//        DatabaseReference orderedFoodRef = database.child("Company").child("OrderedFood");
 
         pendingReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
