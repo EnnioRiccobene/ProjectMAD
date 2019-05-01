@@ -1,6 +1,7 @@
 package com.madgroup.madproject;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -19,13 +20,32 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,6 +57,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
+    private static final int RC_SIGN_IN = 3;
     private CircleImageView personalImage;
     private EditText name;
     private EditText email;
@@ -53,15 +74,20 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private static String POPUP_CONSTANT = "mPopup";
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
     public int iteration = 0;
+    private FirebaseDatabase database;
+    private FirebaseStorage storage;
+    private boolean isDefaultImage;
 
+
+    @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         // Getting the instance of Firebase
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-
+        database = FirebaseDatabase.getInstance();
+        storage = FirebaseStorage.getInstance();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
@@ -79,11 +105,72 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
         // Set all field to unclickable
         setFieldUnclickable();
+        isDefaultImage = true;
+
+        if (prefs.contains("currentUser")) {
+            // Utente già loggato
+            loadFieldsFromFirebase();
+        } else {
+            startLogin();
+        }
 
         // Load saved information, if exist
         loadFields();
 
     }
+
+    private void loadFieldsFromFirebase() {
+
+        database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Customer customer = dataSnapshot.getValue(Customer.class); // Leggo le informazioni dal DB
+
+                        if (customer!=null) {
+                            // Utente già registrato: setto i campi
+                            name.setText(customer.getName());
+                            phone.setText(customer.getPhone());
+                            address.setText(customer.getAddress());
+                            additionalInformation.setText(customer.getInfo());
+                            email.setText(customer.getEmail());
+                        } else {
+                            // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            Customer currentUser = new Customer(user.getDisplayName(), user.getEmail(),
+                                    "","","","");
+                            String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            database.getReference("Users").child(currentUid).setValue(currentUser);
+                            name.setText(user.getDisplayName());
+                            email.setText(user.getEmail());
+                        }
+
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+    }
+
+
+
+    private void startLogin() {
+        // Choose authentication providers
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build()
+        );
+
+        // Create and launch sign-in intent
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setIsSmartLockEnabled(false)
+                        .setAvailableProviders(providers)
+                        .setLogo(R.drawable.personicon)
+                        .build(),
+                RC_SIGN_IN);
+    }
+
 
     // What happens if I click on a icon on the menu
     @Override
@@ -100,6 +187,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                     modifyingInfo = false;
                     setFieldUnclickable();
                     saveFields();
+                    //saveFieldsOnFirebase();
+                    //saveProfilePicOnFirebase(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
                     Toast.makeText(getApplicationContext(), "Data saved", Toast.LENGTH_SHORT).show();
                 }
         }
@@ -170,6 +259,14 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         editor.apply();
     }
 
+    private void saveFieldsOnFirebase() {
+        Customer currentUser = new Customer(name.getText().toString(), email.getText().toString(),
+                phone.getText().toString(),address.getText().toString(),additionalInformation.getText().toString(),"");
+        String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        database.getReference("Users").child(currentUid).setValue(currentUser);
+    }
+
+
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         try {
@@ -238,6 +335,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 // Set the default image
                 Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                 personalImage.setImageDrawable(defaultImg);
+                isDefaultImage = true;
                 editor.remove("PersonalImage");
                 editor.apply();
                 return true;
@@ -257,6 +355,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             Bundle extras = data.getExtras();
             Bitmap bitmap = (Bitmap) extras.get("data");
             personalImage.setImageBitmap(bitmap);
+            isDefaultImage = false;
             saveImageContent();
         }
 
@@ -280,6 +379,25 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             if (data!=null)
                 handleCropResult(data);
         }
+        if (requestCode == RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            if (resultCode == RESULT_OK) {
+                // Successfully signed in
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                editor.putString("currentUser", user.getUid());
+                editor.apply();
+
+                loadFieldsFromFirebase();
+
+            } else {
+                if (response==null) {
+                    // Back button pressed
+                } else {
+                    Toast.makeText(this, "Error: "+ Objects.requireNonNull(response.getError()).getErrorCode(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 
 //  Richiamata dopo il crop
@@ -288,6 +406,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         if (uri != null) {
             try {
                 personalImage.setImageURI(uri);
+                isDefaultImage = false;
                 saveImageContent();
             } catch (Exception e) {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -308,9 +427,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             personalImage.setImageBitmap(bitmap);
+            isDefaultImage = false;
         } else {
             Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
             personalImage.setImageDrawable(defaultImg);
+            isDefaultImage = true;
         }
     }
 
@@ -339,4 +460,107 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         }
     }
+
+    /* Salva l'immagine nello storage con relativo link nel database; se l'immagine è di default carico solo una stringa vuota sul db */
+    private void saveProfilePicOnFirebase(Bitmap bitmap) {
+
+        if (isDefaultImage) {
+            database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .child("image").setValue("");
+            return;
+        }
+
+        //https://firebase.google.com/docs/storage/android/upload-files
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] data = stream.toByteArray();
+
+        final StorageReference fileReference = storage.getReference("profile_pics").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        final UploadTask uploadTask = fileReference.putBytes(data); // Salvo l'immagine nello storage
+
+        /* Gestione successo e insuccesso */
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+
+                // Handle unsuccessful uploads
+                Toast.makeText(MainActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                //Toast.makeText(MainActivity.this, "Upload Successful", Toast.LENGTH_LONG).show();
+
+                /* Ricavo Uri e lo inserisco nel db */
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw Objects.requireNonNull(task.getException());
+                        }
+                        // Continue with the task to get the download URL
+                        return fileReference.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult(); // URI Dell'immagine
+                            database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .child("image").setValue(downloadUri.toString());
+                        } else {
+                            // Handle failures
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void getProfilePicFromFirebase() {
+
+        database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("image")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String imageUri = dataSnapshot.getValue(String.class);
+                        if (imageUri.equals("")) {
+                            // Immagine di default
+                            Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
+                            personalImage.setImageDrawable(defaultImg);
+                            isDefaultImage = true;
+                        }
+                        else {
+                            // Scarico l'immagine
+                            final long ONE_MEGABYTE = 1024 * 1024;
+                            StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUri);
+                            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                @Override
+                                public void onSuccess(byte[] bytes) {
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                    personalImage.setImageBitmap(bitmap);
+                                    isDefaultImage = false;
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    // Handle any errors
+                                }
+                            });
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+    }
+
 }

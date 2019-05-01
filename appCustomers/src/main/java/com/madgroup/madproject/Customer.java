@@ -9,24 +9,29 @@ public class Customer implements Serializable {
     private String phone;
     private String address;
     private String info;
+    private String imageUri;
 
-    public Customer(String name, String email, String phone, String address, String info) {
+    public Customer(){}
+
+    public Customer(String name, String email, String phone, String address, String info, String imageUri) {
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.address = address;
         this.info = info;
-    }
-
-    public Customer(String name, String phone, String address, String info) {
-        this.name = name;
-        this.phone = phone;
-        this.address = address;
-        this.info = info;
+        this.imageUri = imageUri;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
     }
 
     public void setName(String name) {
