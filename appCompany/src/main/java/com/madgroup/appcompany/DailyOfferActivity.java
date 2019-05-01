@@ -87,12 +87,12 @@ public class DailyOfferActivity extends AppCompatActivity implements
         Bitmap gnocchiIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.gnocchi), THUMBSIZE, THUMBSIZE);
 
 
-        myList.add(new Dish(0,"Spaghetti alla Carbonara", 5.50f, 5, "" +
+        myList.add(new Dish("0","Spaghetti alla Carbonara", 5.50f, 5, "" +
                 "Guanciale, uova, pecorino, pepe nero.",carbonaraIcon));
-        myList.add(new Dish(1,"Gnocchi di patet", 5.90f, 19, "Patate, " +
+        myList.add(new Dish("1","Gnocchi di patet", 5.90f, 19, "Patate, " +
                 "Farina, " +
                 "Uova, ", gnocchiIcon));
-        myList.add(new Dish(2,"Lasagne alla Bolognese", 8.50f, 3, "Ragù, Besciamella." +
+        myList.add(new Dish("2","Lasagne alla Bolognese", 8.50f, 3, "Ragù, Besciamella." +
                 "Olio extravergine d'oliva, " +
                 "Pepe nero, ", gnocchiIcon));
 
@@ -269,12 +269,12 @@ public class DailyOfferActivity extends AppCompatActivity implements
                     Toast.makeText(getApplicationContext(), getString(R.string.requiredPrice), Toast.LENGTH_SHORT).show();
                 } else {
                     if(editDishDescription.getText().toString().isEmpty()) {
-                        currentDish = new Dish(1, editDishName.getText().toString(), floatPrice,
+                        currentDish = new Dish("1", editDishName.getText().toString(), floatPrice,
                                 Integer.parseInt(editDishQuantity.getText().toString()), "", bitmap);
                     } else {
                         BigDecimal dishPrice = new BigDecimal(currentDish.getPrice()).setScale(2, RoundingMode.HALF_UP);
 
-                        currentDish = new Dish(1, editDishName.getText().toString(), floatPrice,
+                        currentDish = new Dish("1", editDishName.getText().toString(), floatPrice,
                                 Integer.parseInt(editDishQuantity.getText().toString()), editDishDescription.getText().toString(), bitmap);
                     }
                     myList.add(currentDish);
