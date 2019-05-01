@@ -86,7 +86,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
         address.setText(currentReservation.getAddress());
         time.setText(deliveryTime);
         notes.setText(note);
-        String deliverCost = deliveryCostAmount.replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s","");
+        String deliverCost = deliveryCostAmount.replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s","");
         float total = Float.valueOf(deliverCost) + Float.valueOf(currentReservation.getPrice().replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s",""));
         deliveryPrice.setText(String.valueOf(df.format(Float.valueOf(deliverCost)))+ currency);
         totalPrice.setText(String.valueOf(df.format(total))+ currency);
