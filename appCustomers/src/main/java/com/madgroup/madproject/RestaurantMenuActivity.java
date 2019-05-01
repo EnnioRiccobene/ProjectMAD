@@ -112,7 +112,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         getIncomingIntent();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        restaurantRef = database.getReference().child("Company").child("Profile").child(idRestaurant);//todo: crash sul restaurantid quando torno indietro dal carrello
+        restaurantRef = database.getReference().child("Company").child("Profile").child(idRestaurant);
 
         address = "Via di prova";//todo: la via dovrà essere prelevata con una query al db sull'indirizzo del customer
 

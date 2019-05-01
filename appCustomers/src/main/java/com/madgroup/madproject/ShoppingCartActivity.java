@@ -3,9 +3,11 @@ package com.madgroup.madproject;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -124,5 +126,15 @@ public class ShoppingCartActivity extends AppCompatActivity {
             deliveryCostAmount = getIntent().getStringExtra("DeliveryCost");
             minimumOrder = getIntent().getStringExtra("MinimumOrder");
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return true;
     }
 }
