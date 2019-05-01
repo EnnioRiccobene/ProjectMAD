@@ -22,6 +22,7 @@ public class Restaurant implements Parcelable {
     private String fridayOpeningHours;
     private String saturdayOpeningHours;
     private String sundayOpeningHours;
+    private String fCategoryANDdCost;
 
     public Restaurant() {
     }
@@ -48,6 +49,7 @@ public class Restaurant implements Parcelable {
         this.fridayOpeningHours = fridayOpeningHours;
         this.saturdayOpeningHours = saturdayOpeningHours;
         this.sundayOpeningHours = sundayOpeningHours;
+        this.fCategoryANDdCost = foodCategory + "_" + deliveryCost.replace(".", "").replace(",", "");
     }
 
     public Restaurant(String id, String name, String phoneNumber, String address, String foodCategory,
@@ -70,9 +72,12 @@ public class Restaurant implements Parcelable {
         this.fridayOpeningHours = fridayOpeningHours;
         this.saturdayOpeningHours = saturdayOpeningHours;
         this.sundayOpeningHours = sundayOpeningHours;
+        this.fCategoryANDdCost = foodCategory + "_" + deliveryCost;
     }
 
-
+    public String getfCategoryANDdCost() {
+        return fCategoryANDdCost;
+    }
 
     public String getId() {
         return id;

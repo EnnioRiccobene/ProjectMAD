@@ -31,20 +31,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.ObservableSnapshotArray;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.madgroup.sdk.SmartLogger;
 
 import java.io.ByteArrayOutputStream;
-import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -61,6 +67,8 @@ public class SearchRestaurantActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef; //di prova
     private Uri mImageUri;
+
+    private FirebaseRecyclerOptions<Restaurant> options;
 
     RecyclerView recyclerView;
     Context mContext;
@@ -82,10 +90,10 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         mContext = this;
 //todo: questo inserimento di ristoranti nel db è temporaneo, in questa activity devo solo leggere
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.personicon);
-        Restaurant r1 = new Restaurant("email1", "Da Saro", "0695555555", "Via X, Acireale", "panini", "Photo", "10€",
+        Restaurant r1 = new Restaurant("email1", "Da Saro", "0695555555", "Via X, Acireale", "Panini", "Photo", "10€",
                 "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
-        Restaurant r2 = new Restaurant("email2", "Napples Pizza", "0695555555", "Via X, Acireale", "pizza", "Photo", "10€",
+        Restaurant r2 = new Restaurant("email2", "Napples Pizza", "0695555555", "Via X, Acireale", "Pizza", "Photo", "10€",
                 "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
         Restaurant r3 = new Restaurant("email3", "Horace Kebab", "0695555555", "Via X, Acireale", "Kebab", "photo", "10€",
@@ -95,7 +103,7 @@ public class SearchRestaurantActivity extends AppCompatActivity {
                 "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
         Restaurant r5 = new Restaurant("email5", "Acqua e farina", "0695555555", "Via X, Acireale", "Pizza, Fritti", "photo", "10€",
-                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
+                "0,00 €", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
 
         restaurantRef.setValue("email1");
@@ -130,6 +138,10 @@ public class SearchRestaurantActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.restaurantsrecycleview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        options = new FirebaseRecyclerOptions.Builder<Restaurant>()
+                .setQuery(restaurantRef, Restaurant.class)
+                .build();
     }
 
     //Il metodo serve a prendere l'estensione dell'immagine
@@ -145,7 +157,7 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         //todo: al momento l'immagine è presa da drawable, poi si dovrà prendere da fotocamera e libreria
         //https://firebase.google.com/docs/storage/android/upload-files
         Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
-        Bitmap bitmap = ((BitmapDrawable)defaultImg).getBitmap();
+        Bitmap bitmap = ((BitmapDrawable) defaultImg).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] data = stream.toByteArray();
@@ -197,10 +209,10 @@ public class SearchRestaurantActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        FirebaseRecyclerOptions<Restaurant> options =
-                new FirebaseRecyclerOptions.Builder<Restaurant>()
-                        .setQuery(restaurantRef, Restaurant.class)
-                        .build();
+//        FirebaseRecyclerOptions<Restaurant> options =
+//                new FirebaseRecyclerOptions.Builder<Restaurant>()
+//                        .setQuery(restaurantRef, Restaurant.class)
+//                        .build();
 
         FirebaseRecyclerAdapter<Restaurant, FindRestaurantViewHolder> adapter =
                 new FirebaseRecyclerAdapter<Restaurant, FindRestaurantViewHolder>(options) {
@@ -332,16 +344,51 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         dialogConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //todo gestire comportamento interno, filtri, interagire con il db per fare una query, ripopolare l'arrayList di ristoranti in base ai filtri e aggiornare la pagina principale
+
+                Query applyQuery;
+
                 if (restaurantCategory != null) {
-                    //todo
+
+                    if ((!restaurantCategory.equals("All")) && (!restaurantCategory.equals("Qualsiasi"))) {
+
+                        //restaurantRef arriva fino a profile
+                        String queryText = restaurantCategory;
+                        applyQuery = restaurantRef.orderByChild("foodCategory").startAt(queryText).endAt(queryText + "\uf8ff");
+
+                        if (freeDeliveryCheckbox.isChecked()) {
+
+                            applyQuery = restaurantRef.orderByChild("fCategoryANDdCost").startAt(queryText).endAt(queryText + "_000\uf8ff");
+                        }
+
+                    } else {
+
+                        applyQuery = restaurantRef;
+
+                        if (freeDeliveryCheckbox.isChecked()) {
+
+                            applyQuery = restaurantRef.orderByChild("deliveryCost").startAt("0").endAt("00" + "\uf8ff");
+                        }
+                    }
+                    options = new FirebaseRecyclerOptions.Builder<Restaurant>()
+                            .setQuery(applyQuery, Restaurant.class)
+                            .build();
+                } else {
+
+                    applyQuery = restaurantRef;
+
+                    if (freeDeliveryCheckbox.isChecked()) {
+
+                        applyQuery = restaurantRef.orderByChild("deliveryCost").startAt("0").endAt("00" + "\uf8ff");
+                    }
+
+                    options = new FirebaseRecyclerOptions.Builder<Restaurant>()
+                            .setQuery(applyQuery, Restaurant.class)
+                            .build();
                 }
 
-                if (freeDeliveryCheckbox.isChecked()) {
-                    //todo gestire click sul checkbox
-                }
-
+                restaurantCategory = null;
                 dialog.dismiss();
+                onStart();
             }
         });
 
