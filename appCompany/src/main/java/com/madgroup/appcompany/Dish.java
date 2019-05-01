@@ -4,14 +4,14 @@ import android.graphics.Bitmap;
 
 public class Dish {
 
-    private int id;
+    private String id;
     private String name;
     private float price;
     private int availableQuantity;
     private String description;
     private Bitmap photo;
 
-    public Dish(int id, String name, float price, int availableQuantity, String description, Bitmap photo) {
+    public Dish(String id, String name, float price, int availableQuantity, String description, Bitmap photo) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -20,18 +20,18 @@ public class Dish {
         this.photo = photo;
     }
 
-    public Dish(int id, String name, float price, int availableQuantity) {
+    public Dish(String id, String name, float price, int availableQuantity) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.availableQuantity = availableQuantity;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

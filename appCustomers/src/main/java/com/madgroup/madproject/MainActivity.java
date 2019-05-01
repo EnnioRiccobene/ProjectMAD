@@ -89,7 +89,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = getSharedPreferences("MyData", MODE_PRIVATE);
         editor = prefs.edit();
 
         // Defining EditText

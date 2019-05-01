@@ -1,8 +1,11 @@
 package com.madgroup.madproject;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -38,12 +41,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.net.URI;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -56,11 +59,15 @@ public class SearchRestaurantActivity extends AppCompatActivity {
     private SearchView searchRestaurant;
     private String restaurantCategory = null;
 
+    private SharedPreferences prefs;
+
     private ArrayList<Restaurant> searchedRestaurantList = new ArrayList<>();
     private DatabaseReference restaurantRef;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef; //di prova
     private Uri mImageUri;
+
+    private FirebaseRecyclerOptions<Restaurant> options;
 
     RecyclerView recyclerView;
     Context mContext;
@@ -82,10 +89,10 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         mContext = this;
 //todo: questo inserimento di ristoranti nel db è temporaneo, in questa activity devo solo leggere
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.personicon);
-        Restaurant r1 = new Restaurant("email1", "Da Saro", "0695555555", "Via X, Acireale", "panini", "Photo", "10€",
+        Restaurant r1 = new Restaurant("email1", "Da Saro", "0695555555", "Via X, Acireale", "Panini", "Photo", "10€",
                 "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
-        Restaurant r2 = new Restaurant("email2", "Napples Pizza", "0695555555", "Via X, Acireale", "pizza", "Photo", "10€",
+        Restaurant r2 = new Restaurant("email2", "Napples Pizza", "0695555555", "Via X, Acireale", "Pizza", "Photo", "10€",
                 "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
         Restaurant r3 = new Restaurant("email3", "Horace Kebab", "0695555555", "Via X, Acireale", "Kebab", "photo", "10€",
@@ -95,7 +102,7 @@ public class SearchRestaurantActivity extends AppCompatActivity {
                 "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
         Restaurant r5 = new Restaurant("email5", "Acqua e farina", "0695555555", "Via X, Acireale", "Pizza, Fritti", "photo", "10€",
-                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
+                "0,00 €", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
                 "Chiuso", "Chiuso");
 
         restaurantRef.setValue("email1");
@@ -128,8 +135,36 @@ public class SearchRestaurantActivity extends AppCompatActivity {
             }
         });
 
+        searchRestaurant.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                Query applyQuery = restaurantRef.orderByChild("name").startAt(query).endAt(query + "\uf8ff");
+                options = new FirebaseRecyclerOptions.Builder<Restaurant>()
+                        .setQuery(applyQuery, Restaurant.class)
+                        .build();
+                onStart();
+                return false;
+
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Query applyQuery = restaurantRef.orderByChild("name").startAt(newText).endAt(newText + "\uf8ff");
+                options = new FirebaseRecyclerOptions.Builder<Restaurant>()
+                        .setQuery(applyQuery, Restaurant.class)
+                        .build();
+                onStart();
+                return true;
+            }
+        });
+
         recyclerView = findViewById(R.id.restaurantsrecycleview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        options = new FirebaseRecyclerOptions.Builder<Restaurant>()
+                .setQuery(restaurantRef, Restaurant.class)
+                .build();
     }
 
     //Il metodo serve a prendere l'estensione dell'immagine
@@ -145,7 +180,7 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         //todo: al momento l'immagine è presa da drawable, poi si dovrà prendere da fotocamera e libreria
         //https://firebase.google.com/docs/storage/android/upload-files
         Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
-        Bitmap bitmap = ((BitmapDrawable)defaultImg).getBitmap();
+        Bitmap bitmap = ((BitmapDrawable) defaultImg).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] data = stream.toByteArray();
@@ -197,10 +232,10 @@ public class SearchRestaurantActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        FirebaseRecyclerOptions<Restaurant> options =
-                new FirebaseRecyclerOptions.Builder<Restaurant>()
-                        .setQuery(restaurantRef, Restaurant.class)
-                        .build();
+//        FirebaseRecyclerOptions<Restaurant> options =
+//                new FirebaseRecyclerOptions.Builder<Restaurant>()
+//                        .setQuery(restaurantRef, Restaurant.class)
+//                        .build();
 
         FirebaseRecyclerAdapter<Restaurant, FindRestaurantViewHolder> adapter =
                 new FirebaseRecyclerAdapter<Restaurant, FindRestaurantViewHolder>(options) {
@@ -213,10 +248,27 @@ public class SearchRestaurantActivity extends AppCompatActivity {
 //                        holder.restaurant_photo.setImageBitmap(R.drawable.); todo: prendere l'immagine dal database
 
                         holder.cardLayout.setOnClickListener(new View.OnClickListener() {
+                            @SuppressLint("ShowToast")
                             @Override
                             public void onClick(View v) {
-                                //Avvio la seguente Activity
-                                RestaurantMenuActivity.start(mContext, model.getId());
+
+                                prefs = getSharedPreferences("MyData", MODE_PRIVATE);
+
+                                if (prefs.getString("Name", "").isEmpty() ||
+                                        prefs.getString("Email", "").isEmpty() ||
+                                        prefs.getString("Phone", "").isEmpty() ||
+                                        prefs.getString("Address", "").isEmpty()) {
+
+                                    //Il profilo è da riempire
+//                                    Toast.makeText(SearchRestaurantActivity.this, "Your profile is not complete", Toast.LENGTH_LONG);
+                                    Intent homepage = new Intent(SearchRestaurantActivity.this, MainActivity.class);
+                                    startActivity(homepage);
+
+                                } else {
+                                    //il profilo è pieno e c'è in save preference
+                                    //Avvio la seguente Activity
+                                    RestaurantMenuActivity.start(mContext, model.getId());
+                                }
                             }
                         });
                     }
@@ -332,16 +384,51 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         dialogConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //todo gestire comportamento interno, filtri, interagire con il db per fare una query, ripopolare l'arrayList di ristoranti in base ai filtri e aggiornare la pagina principale
+
+                Query applyQuery;
+
                 if (restaurantCategory != null) {
-                    //todo
+
+                    if ((!restaurantCategory.equals("All")) && (!restaurantCategory.equals("Qualsiasi"))) {
+
+                        //restaurantRef arriva fino a profile
+                        String queryText = restaurantCategory;
+                        applyQuery = restaurantRef.orderByChild("foodCategory").startAt(queryText).endAt(queryText + "\uf8ff");
+
+                        if (freeDeliveryCheckbox.isChecked()) {
+
+                            applyQuery = restaurantRef.orderByChild("fCategoryANDdCost").startAt(queryText).endAt(queryText + "_000\uf8ff");
+                        }
+
+                    } else {
+
+                        applyQuery = restaurantRef;
+
+                        if (freeDeliveryCheckbox.isChecked()) {
+
+                            applyQuery = restaurantRef.orderByChild("deliveryCost").startAt("0").endAt("00" + "\uf8ff");
+                        }
+                    }
+                    options = new FirebaseRecyclerOptions.Builder<Restaurant>()
+                            .setQuery(applyQuery, Restaurant.class)
+                            .build();
+                } else {
+
+                    applyQuery = restaurantRef;
+
+                    if (freeDeliveryCheckbox.isChecked()) {
+
+                        applyQuery = restaurantRef.orderByChild("deliveryCost").startAt("0").endAt("00" + "\uf8ff");
+                    }
+
+                    options = new FirebaseRecyclerOptions.Builder<Restaurant>()
+                            .setQuery(applyQuery, Restaurant.class)
+                            .build();
                 }
 
-                if (freeDeliveryCheckbox.isChecked()) {
-                    //todo gestire click sul checkbox
-                }
-
+                restaurantCategory = null;
                 dialog.dismiss();
+                onStart();
             }
         });
 

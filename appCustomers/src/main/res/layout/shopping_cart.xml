@@ -231,10 +231,33 @@
                     android:layout_below="@id/totalPrice_bold"/>
 
                 <TextView
-                    android:id="@+id/address_bold"
+                    android:id="@+id/name_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/totalPrice_bold"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/name"
+                    android:textColor="#3d3d3d"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/name_bold"
+                    android:layout_toEndOf="@+id/name_bold"
+                    android:text="Name"
+                    android:textColor="#3d3d3d"
+                    android:textSize="16sp" />
+
+
+                <TextView
+                    android:id="@+id/address_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/name_bold"
                     android:layout_marginTop="16dp"
                     android:text="@string/address"
                     android:textColor="#3d3d3d"
@@ -253,10 +276,32 @@
                     android:textSize="16sp" />
 
                 <TextView
-                    android:id="@+id/time_bold"
+                    android:id="@+id/phone_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/address_bold"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/phone_number"
+                    android:textColor="#3d3d3d"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/phone_bold"
+                    android:layout_toEndOf="@+id/phone_bold"
+                    android:text="Phone Number"
+                    android:textColor="#3d3d3d"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/time_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/phone_bold"
                     android:layout_marginTop="16dp"
                     android:text="@string/lunch_time"
                     android:textColor="#3d3d3d"
