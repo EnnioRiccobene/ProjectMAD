@@ -22,7 +22,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <!--This is the main content of the screen-->
-    <!--<include layout="@layout/content_navigation_drawer_profile" />-->
+    <!--<include layout="@layout/activity_profile" />-->
     <ViewStub
         android:id="@+id/stub"
         android:layout_width="match_parent"

@@ -1,14 +1,11 @@
 package com.madgroup.appcompany;
 
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -31,14 +28,6 @@ import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.madgroup.sdk.SmartLogger;
-
-import java.util.ArrayList;
 
 public class ReservationActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -64,7 +53,7 @@ public class ReservationActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         ViewStub stub = (ViewStub)findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
-        stub.setLayoutResource(R.layout.content_navigation_drawer_reservation);
+        stub.setLayoutResource(R.layout.activity_reservation);
         stub.inflate();
 
         initializeTabs();

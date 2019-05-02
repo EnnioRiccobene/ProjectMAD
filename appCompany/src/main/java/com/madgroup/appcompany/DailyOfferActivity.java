@@ -2,7 +2,6 @@ package com.madgroup.appcompany;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -39,7 +38,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
@@ -75,7 +73,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         ViewStub stub = (ViewStub)findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
-        stub.setLayoutResource(R.layout.content_navigation_drawer_daily_offer);
+        stub.setLayoutResource(R.layout.activity_daily_offer);
         stub.inflate();
         this.setTitle("Daily Offer");
 
