@@ -3,15 +3,14 @@ package com.madgroup.appcompany;
 import android.graphics.Bitmap;
 
 public class Dish {
-
-    private String id;
+    private int id;
     private String name;
     private float price;
     private int availableQuantity;
     private String description;
     private Bitmap photo;
 
-    public Dish(String id, String name, float price, int availableQuantity, String description, Bitmap photo) {
+    public Dish(int id, String name, float price, int availableQuantity, String description, Bitmap photo) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -20,18 +19,18 @@ public class Dish {
         this.photo = photo;
     }
 
-    public Dish(String id, String name, float price, int availableQuantity) {
+    public Dish(int id, String name, float price, int availableQuantity) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.availableQuantity = availableQuantity;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

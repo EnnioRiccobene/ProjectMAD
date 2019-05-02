@@ -11,7 +11,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -321,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements
                     MyImageHandler.getInstance().startCamera(this);
                 } else {
                     if (userPreviousDeniedRequest) {
-                        Toast.makeText(getApplicationContext(), getString(R.string.camerapermission), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.cameraPermission), Toast.LENGTH_SHORT).show();
                     } else {
                         ActivityCompat.requestPermissions(this,
                                 new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSIONS_CODE);
@@ -340,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements
                     MyImageHandler.getInstance().startGallery(this);
                 } else {
                     if (userPreviousDeniedGalleryRequest) {
-                        Toast.makeText(getApplicationContext(), getString(R.string.gallerypermission), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.galleryPermission), Toast.LENGTH_SHORT).show();
                     } else {
                         ActivityCompat.requestPermissions(this,
                                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, GALLERY_PERMISSIONS_CODE);
@@ -463,7 +462,7 @@ public class MainActivity extends AppCompatActivity implements
                     MyImageHandler.getInstance().startCamera(this);
                 } else {
                     // permission denied!
-                    Toast.makeText(getApplicationContext(), getString(R.string.camerapermission), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.cameraPermission), Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -472,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements
                     MyImageHandler.getInstance().startGallery(this);
                 } else {
                     // permission denied!
-                    Toast.makeText(getApplicationContext(), getString(R.string.gallerypermission), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.galleryPermission), Toast.LENGTH_SHORT).show();
                 }
             }
         }
