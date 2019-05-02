@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
         editor.putString("currentUser", "email1");
-        currentUser = "email1";     // DOPO MODIFICARE CON SAVE PREFERENCES
+        editor.apply();
 
         // Defining EditText
         personalImage = findViewById(R.id.imagePersonalPhoto);

@@ -31,6 +31,7 @@ import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
@@ -71,7 +72,11 @@ public class DailyOfferActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_daily_offer);
+        setContentView(R.layout.activity_main);
+        ViewStub stub = (ViewStub)findViewById(R.id.stub);
+        stub.setInflatedId(R.id.inflatedActivity);
+        stub.setLayoutResource(R.layout.content_navigation_drawer_daily_offer);
+        stub.inflate();
         this.setTitle("Daily Offer");
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);

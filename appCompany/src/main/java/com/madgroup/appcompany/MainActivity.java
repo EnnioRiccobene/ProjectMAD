@@ -17,6 +17,7 @@ import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -109,6 +110,10 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ViewStub stub = (ViewStub)findViewById(R.id.stub);
+        stub.setInflatedId(R.id.inflatedActivity);
+        stub.setLayoutResource(R.layout.content_navigation_drawer_profile);
+        stub.inflate();
         this.setTitle("Profile");
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
@@ -116,6 +121,7 @@ public class MainActivity extends AppCompatActivity
         // START DATABASE TEST
         editor.putString("currentUser", "email1");
         currentUser = "email1";     // DOPO MODIFICARE CON SAVE PREFERENCES
+        editor.apply();
         populateDatabaseWithDummyValues();
         // END DATABASE TEST
 

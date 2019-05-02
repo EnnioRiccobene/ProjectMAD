@@ -26,6 +26,7 @@ import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
@@ -35,6 +36,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
 
@@ -59,13 +61,18 @@ public class ReservationActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reservation);
+        setContentView(R.layout.activity_main);
+        ViewStub stub = (ViewStub)findViewById(R.id.stub);
+        stub.setInflatedId(R.id.inflatedActivity);
+        stub.setLayoutResource(R.layout.content_navigation_drawer_reservation);
+        stub.inflate();
 
         initializeTabs();
         this.setTitle("Reservations");
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
+
 
         // OVERRIDE DEL ONBACKPRESSED
         initializeNavigationDrawer();
@@ -190,6 +197,7 @@ public class ReservationActivity extends AppCompatActivity implements
 
     // Tabs
     public void initializeTabs(){
+
         // Remove black line under toolbar
         StateListAnimator stateListAnimator = new StateListAnimator();
         stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(findViewById(android.R.id.content), "elevation", 0));

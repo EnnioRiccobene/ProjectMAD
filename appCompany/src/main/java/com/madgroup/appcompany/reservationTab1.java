@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
 
@@ -96,6 +97,7 @@ public class reservationTab1 extends Fragment {
                              Bundle savedInstanceState) {
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         currentUser = prefs.getString("currentUser", "noUser");
+        SmartLogger.d(currentUser);
         View view = inflater.inflate(R.layout.fragment_reservation_tab, container, false);
         buildRecyclerView(view);
 
