@@ -2,28 +2,42 @@ package com.madgroup.appcompany;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.RiderProfile;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
-
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Random;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,10 +56,9 @@ public class reservationTab2 extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-    static public ArrayList<Reservation> acceptedReservation;
-    static public ReservationAdapter mAdapter;
     private RecyclerView mRecyclerView;
+    private SharedPreferences prefs;
+    private String currentUser;
 
     private OnFragmentInteractionListener mListener;
 
@@ -84,12 +97,14 @@ public class reservationTab2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-         View view = inflater.inflate(R.layout.fragment_reservation_tab1, container, false);
-         createReservationList();
-         buildRecyclerView(view);
+        View view = inflater.inflate(R.layout.fragment_reservation_tab, container, false);
+        // createReservationList();
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        currentUser = prefs.getString("currentUser", "noUser");
+        buildRecyclerView(view);
 
-         // Inflate the layout for this fragment
-         return view;
+        // Inflate the layout for this fragment
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -134,84 +149,88 @@ public class reservationTab2 extends Fragment {
     // The following function set up the RecyclerView
     public void buildRecyclerView(View view) {
 
-        mRecyclerView = view.findViewById(R.id.reservationRecyclerViewTab1);
-        //rootLayout = (CoordinatorLayout)findViewById(R.id.rootLayout);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        mAdapter = new ReservationAdapter(acceptedReservation);
-
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        // mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-
-        mAdapter.setOnItemClickListener(new ReservationAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(final int position) {
-                // Scarico dal DB orderedFood
-                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("OrderedFood");
-                String orderID = acceptedReservation.get(position).getOrderID();
-                pendingReservationRef.child(orderID).addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference acceptedRef = FirebaseDatabase.getInstance().getReference().child("Company").child("Reservation").child("Accepted").child(currentUser);
+        FirebaseRecyclerOptions<Reservation> options = new FirebaseRecyclerOptions.Builder<Reservation>()
+                .setQuery(acceptedRef, Reservation.class)
+                .build();
+        final FirebaseRecyclerAdapter<Reservation, ReservationViewHolder> adapter =
+                new FirebaseRecyclerAdapter<Reservation, ReservationViewHolder>(options) {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        ArrayList<OrderedDish> orderedFood = new ArrayList<>();
-                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                            OrderedDish post = postSnapshot.getValue(OrderedDish.class);
-                            orderedFood.add(post);
+                    protected void onBindViewHolder(@NonNull ReservationViewHolder holder, int i, @NonNull final Reservation currentItem) {
+                        final int index = i;
+                        switch (currentItem.getStatus()) {
+                            case 1:
+                                holder.mImageView.setImageResource(R.drawable.ic_call);
+                                ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                                holder.mImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        callRider(currentItem, index);
+                                    }
+                                });
+                                break;
+                            case 2:
+                                holder.mImageView.setImageResource(R.drawable.ic_hourglass);
+                                ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                                break;
                         }
-                        SmartLogger.d(String.valueOf(orderedFood.size()));
-                        Intent openPage = new Intent(getActivity(), DetailedReservation.class);
-                        openPage.putExtra("Reservation", acceptedReservation.get(position));
-                        openPage.putExtra("OrderedFood", orderedFood);
-                        startActivity(openPage);
+                        holder.mTextView1.setText(currentItem.getAddress());
+                        holder.mTextView2.setText(currentItem.getDeliveryTime());
+                        holder.mTextView3.setText(currentItem.getPrice() + " €");
                     }
 
+                    @NonNull
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    public ReservationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.reservation_item, parent, false);
+                        ReservationViewHolder evh = new ReservationViewHolder(v);
+                        return evh;
                     }
-                });
-            }
-            //This Function is useful if we want to delete an item in the list
-            @Override
-            public void onDeleteClick(int position) {
-                removeItem(position);
-            }
-        });
+                };
 
-        /*ItemTouchHelper.SimpleCallback itemTouchHelperCallBack
-                = new RecyclerItemTouchHelper(0,ItemTouchHelper.LEFT ,this );
-        new ItemTouchHelper(itemTouchHelperCallBack).attachToRecyclerView(mRecyclerView);
-
-        */
-    }
-    public void removeItem(int position) {
-        acceptedReservation.remove(position);
-        mRecyclerView.removeViewAt(position);
-        mAdapter.notifyItemRemoved(position);
-        mAdapter.notifyItemRangeChanged(position, acceptedReservation.size());
-
-//        mReservationList.remove(position);
-//        mAdapter.notifyItemRemoved(position);
+        mRecyclerView = view.findViewById(R.id.reservationRecyclerViewTab);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(adapter);
+        adapter.startListening();
     }
 
-    public void createReservationList() {
-        SmartLogger.d("CREAZIONE ACCEPTED RESERVATION TAB 2");
-        acceptedReservation = new ArrayList<>();
-
+    public void callRider(final Reservation currentItem, int index) {
+        String orderID = currentItem.getOrderID();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Accepted").child(MainActivity.currentUser);
-        pendingReservationRef.keepSynced(true);
-//        DatabaseReference orderedFoodRef = database.child("Company").child("OrderedFood");
+        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser).child(orderID);
+        currentItem.setStatus(2);
+        HashMap<String, Object> statusUpdate = new HashMap<>();
+        statusUpdate.put("status", 2);
+        acceptedReservationRef.updateChildren(statusUpdate);
 
-        pendingReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        // Rider search part
+        final DatabaseReference riderRef = database.child("Rider").child("Profile");
+        final DatabaseReference deliveriesRef = database.child("Rider").child("Delivery");
+        Query query = riderRef.orderByChild("active").equalTo(true);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Reservation post = postSnapshot.getValue(Reservation.class);
-                    acceptedReservation.add(post);
+                if (dataSnapshot.exists()) {
+                    if ((int) dataSnapshot.getChildrenCount() == 0)
+                        return;
+                    Random rand = new Random();
+                    int nActiveProfiles = rand.nextInt((int) dataSnapshot.getChildrenCount());
+                    Iterator itr = dataSnapshot.getChildren().iterator();
+                    SmartLogger.d("Active Profiles: " + (int) dataSnapshot.getChildrenCount() + "\nRandomNumber: " + nActiveProfiles);
+                    for (int i = 0; i < nActiveProfiles; i++)
+                        itr.next();
+                    DataSnapshot childSnapshot = (DataSnapshot) itr.next();
+                    RiderProfile choosenRider = childSnapshot.getValue(RiderProfile.class);
+                    // Creating Delivery Item
+                    HashMap<String, String> Delivery = new HashMap<>();
+                    Delivery.put("restaurantName", currentItem.getAddress());
+                    Delivery.put("restaurantAddress", currentItem.getAddress());
+                    Delivery.put("customerAddress", currentItem.getAddress());
+                    Delivery.put("orderID", currentItem.getOrderID());
+                    Delivery.put("deliveryTime", currentItem.getDeliveryTime());
+                    deliveriesRef.child("Pending").child(choosenRider.getEmail()).child(currentItem.getOrderID()).setValue(Delivery);
                 }
-                mAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -219,5 +238,23 @@ public class reservationTab2 extends Fragment {
 
             }
         });
+
+    }
+
+    public static class ReservationViewHolder extends RecyclerView.ViewHolder {
+        public ImageView mImageView;
+        public TextView mTextView1;  // Address
+        public TextView mTextView2;  // Lunch_time
+        public TextView mTextView3;  // Price
+        public RelativeLayout viewForeground;
+
+        public ReservationViewHolder(@NonNull View itemView) {
+            super(itemView);
+            mImageView = itemView.findViewById(R.id.status_biker);
+            mTextView1 = itemView.findViewById(R.id.text_address);
+            mTextView2 = itemView.findViewById(R.id.lunch_time);
+            mTextView3 = itemView.findViewById(R.id.order_price);
+            viewForeground = itemView.findViewById(R.id.view_foreground);
+        }
     }
 }

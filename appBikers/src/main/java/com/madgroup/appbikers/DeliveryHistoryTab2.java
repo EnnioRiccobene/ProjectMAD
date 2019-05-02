@@ -1,26 +1,36 @@
 package com.madgroup.appbikers;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
+
+import static com.madgroup.appbikers.MainActivity.currentUser;
 
 
 /**
@@ -43,7 +53,8 @@ public class DeliveryHistoryTab2 extends Fragment {
 
     static public ArrayList<Delivery> deliveriesList;
     private RecyclerView recyclerView;
-    private DeliveryAdapter adapter;
+    private SharedPreferences prefs;
+    private String currentUser;
 
     private OnFragmentInteractionListener mListener;
 
@@ -82,9 +93,12 @@ public class DeliveryHistoryTab2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-//        createHistoryDeliveryList();
         View view =  inflater.inflate(R.layout.fragment_history_tab2, container, false);
-        createHistoryDeliveryList();
+        // createHistoryDeliveryList();
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        currentUser = prefs.getString("currentUser", "noUser");
+        if(currentUser.equals("noUser"))
+            SmartLogger.e("Error noUser");
         buildRecyclerView(view);
         return view;
     }
@@ -129,18 +143,64 @@ public class DeliveryHistoryTab2 extends Fragment {
     }
 
     public void buildRecyclerView(View view){
-        recyclerView = view.findViewById(R.id.historyDeliveryRecycleView);
-        //rootLayout = (CoordinatorLayout)findViewById(R.id.rootLayout);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        adapter = new DeliveryAdapter(deliveriesList);
 
+        DatabaseReference pendingRef = FirebaseDatabase.getInstance().getReference().child("Rider").child("Delivery").child("History").child(currentUser);
+        FirebaseRecyclerOptions<Delivery> options = new FirebaseRecyclerOptions.Builder<Delivery>()
+                .setQuery(pendingRef, Delivery.class)
+                .build();
+        final FirebaseRecyclerAdapter<Delivery, ViewHolder> adapter =
+                new FirebaseRecyclerAdapter<Delivery, ViewHolder>(options) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull ViewHolder holder, int i, @NonNull final Delivery currentItem) {
+                        holder.restaurantName.setText(currentItem.getRestaurantName());
+                        holder.restaurantAddress.setText(currentItem.getRestaurantAddress());
+                        holder.distance.setText(currentItem.calculateDistance("123", "123") + " mt");
+                        holder.customerAddress.setText(currentItem.getCustomerAddress());
+                        holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Set action on click
+
+                            }
+                        });
+                    }
+
+                    @NonNull
+                    @Override
+                    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        View view = LayoutInflater.from(getContext()).inflate(R.layout.delivery_item, parent, false);
+                        ViewHolder holder = new ViewHolder(view);
+                        return holder;
+                    }
+                };
+
+        recyclerView = view.findViewById(R.id.historyDeliveryRecycleView);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(adapter);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        // mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        adapter.notifyDataSetChanged();
+        adapter.startListening();
 
 
+
+
+
+
+
+
+
+
+//        recyclerView = view.findViewById(R.id.historyDeliveryRecycleView);
+//        //rootLayout = (CoordinatorLayout)findViewById(R.id.rootLayout);
+//        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+//        adapter = new DeliveryAdapter(deliveriesList);
+//
+//        recyclerView.setLayoutManager(mLayoutManager);
+//        recyclerView.setAdapter(adapter);
+//        recyclerView.setItemAnimator(new DefaultItemAnimator());
+//        // mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+//        adapter.notifyDataSetChanged();
+//
+//
 //
 //        adapter.setOnItemClickListener(new DeliveryAdapter.OnItemClickListener() {
 //            @Override
@@ -181,28 +241,49 @@ public class DeliveryHistoryTab2 extends Fragment {
     }
 
 
-    public void createHistoryDeliveryList() {
-        deliveriesList = new ArrayList<>();
+//    public void createHistoryDeliveryList() {
+//        deliveriesList = new ArrayList<>();
+//
+//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+//        DatabaseReference pendingReservationRef = database.child("Rider").child("Delivery").child("History").child(currentUser);
+//        pendingReservationRef.keepSynced(true);
+////        DatabaseReference orderedFoodRef = database.child("Company").child("OrderedFood");
+//
+//        pendingReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+//                    Delivery post = postSnapshot.getValue(Delivery.class);
+//                    deliveriesList.add(post);
+//                }
+//                adapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference pendingReservationRef = database.child("Rider").child("Delivery").child("History").child(MainActivity.currentUser);
-        pendingReservationRef.keepSynced(true);
-//        DatabaseReference orderedFoodRef = database.child("Company").child("OrderedFood");
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
-        pendingReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Delivery post = postSnapshot.getValue(Delivery.class);
-                    deliveriesList.add(post);
-                }
-                adapter.notifyDataSetChanged();
-            }
+        CardView deliveryItemCardView;
+        RelativeLayout relativeLayout;
+        TextView restaurantName;
+        TextView restaurantAddress;
+        TextView distance;
+        TextView customerAddress;
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            deliveryItemCardView = itemView.findViewById(R.id.deliveryItemCardView);
+            relativeLayout = itemView.findViewById(R.id.deliveryItemLayout);
+            restaurantName = itemView.findViewById(R.id.restaurantName);
+            restaurantAddress = itemView.findViewById(R.id.restaurantAddress);
+            distance = itemView.findViewById(R.id.distance);
+            customerAddress = itemView.findViewById(R.id.customerAddress);
+        }
 
-            }
-        });
     }
 }

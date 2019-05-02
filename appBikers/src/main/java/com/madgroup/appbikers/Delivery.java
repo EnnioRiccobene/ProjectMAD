@@ -13,6 +13,8 @@ public class Delivery {
     private String deliveryTime;
 
 
+    public Delivery() {
+    }
 
     public Delivery(String restaurantName, String restaurantAddress, String customerAddress, String paymentMethod, String deliveryTime) {
         this.restaurantName = restaurantName;

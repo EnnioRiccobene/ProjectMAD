@@ -16,7 +16,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
+
+import static com.madgroup.appcompany.MainActivity.currentUser;
 
 
 public class DetailedReservation extends AppCompatActivity {
@@ -39,7 +44,6 @@ public class DetailedReservation extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.detailed_reservation_toolbar);
         setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         this.setTitle("Detailed Reservation");
@@ -76,9 +80,14 @@ public class DetailedReservation extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent replyIntent = new Intent();
-                replyIntent.putExtra("Result", "Confirmed");
-                setResult(RESULT_OK, replyIntent);
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
+                DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser);
+                String orderID = reservation.getOrderID();
+                reservation.setStatus(ReservationActivity.ACCEPTED_RESERVATION_CODE);
+                pendingReservationRef.child(orderID).removeValue();
+                acceptedReservationRef.child(orderID).setValue(reservation);
+
                 finish();
             }
         });
@@ -97,9 +106,13 @@ public class DetailedReservation extends AppCompatActivity {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.reject_order:
-                Intent replyIntent = new Intent();
-                replyIntent.putExtra("Result", "Rejected");
-                setResult(RESULT_OK, replyIntent);
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
+                DatabaseReference historyReservationRef = database.child("Company").child("Reservation").child("History").child(currentUser);
+                String orderID = reservation.getOrderID();
+                reservation.setStatus(ReservationActivity.HISTORY_REJECT_RESERVATION_CODE);
+                pendingReservationRef.child(orderID).removeValue();
+                historyReservationRef.child(orderID).setValue(reservation);
                 finish();
                 return true;
             default:

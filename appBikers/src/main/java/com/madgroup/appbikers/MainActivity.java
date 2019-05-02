@@ -30,6 +30,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.google.android.material.navigation.NavigationView;
@@ -50,7 +51,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements PopupMenu.OnMenuItemClickListener,
-        NavigationView.OnNavigationItemSelectedListener{
+        NavigationView.OnNavigationItemSelectedListener {
 
     public static String currentUser;
     private CircleImageView personalImage;
@@ -69,11 +70,12 @@ public class MainActivity extends AppCompatActivity
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
     public int iteration = 0;
     private ChildEventListener childEventListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_drawer);
-        ViewStub stub = (ViewStub)findViewById(R.id.stub);
+        ViewStub stub = (ViewStub) findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_main);
         stub.inflate();
@@ -81,6 +83,8 @@ public class MainActivity extends AppCompatActivity
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
+        editor.putString("currentUser", "email1");
+        currentUser = "email1";     // DOPO MODIFICARE CON SAVE PREFERENCES
 
         // Defining EditText
         personalImage = findViewById(R.id.imagePersonalPhoto);
@@ -98,9 +102,7 @@ public class MainActivity extends AppCompatActivity
         loadFields();
 
         navigationDrawerInitialization();
-        createPendingDeliveryList();
-
-
+        createChildEventListener();
 
         // START DATABASE TEST
 
@@ -115,7 +117,7 @@ public class MainActivity extends AppCompatActivity
         profiles.add(new RiderProfile("Name3", "email3", "3", false));
         profiles.add(new RiderProfile("Name4", "email4", "4", false));
 
-        for (RiderProfile element:profiles) {
+        for (RiderProfile element : profiles) {
             profileRef.child(element.getEmail()).setValue(element);
         }
 
@@ -169,15 +171,14 @@ public class MainActivity extends AppCompatActivity
     // What happens if I click on a icon on the menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             // Edit icon
             case R.id.editIcon:
-                if(!modifyingInfo){         // I pressed for modifying data
+                if (!modifyingInfo) {         // I pressed for modifying data
                     modifyingInfo = true;
                     setFieldClickable();
                     Toast.makeText(getApplicationContext(), "Edit fields", Toast.LENGTH_SHORT).show();
-                }
-                else{                      // I pressed to come back
+                } else {                      // I pressed to come back
                     modifyingInfo = false;
                     setFieldUnclickable();
                     saveFields();
@@ -193,6 +194,14 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference pendingDeliveryRef = database.child("Rider").child("Delivery").child("Pending").child(currentUser);
+        pendingDeliveryRef.removeEventListener(childEventListener);
+    }
+
     // What happens if I press back button
     @Override
     public void onBackPressed() {
@@ -202,7 +211,7 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-        if(modifyingInfo){
+        if (modifyingInfo) {
             modifyingInfo = false;
             setFieldUnclickable();
             saveFields();
@@ -230,25 +239,25 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void loadFields() {
-        if(prefs.contains("Name"))
+        if (prefs.contains("Name"))
             name.setText(prefs.getString("Name", ""));
-        if(prefs.contains("Email"))
+        if (prefs.contains("Email"))
             email.setText(prefs.getString("Email", ""));
         // if(prefs.contains("Password"))
-            // password.setText(prefs.getString("Password", ""));
-        if(prefs.contains("Phone"))
+        // password.setText(prefs.getString("Password", ""));
+        if (prefs.contains("Phone"))
             phone.setText(prefs.getString("Phone", ""));
-        if(prefs.contains("Information"))
+        if (prefs.contains("Information"))
             additionalInformation.setText(prefs.getString("Information", ""));
         restoreImageContent();
     }
 
     private void saveFields() {
-        editor.putString("Name",name.getText().toString());
-        editor.putString("Email",email.getText().toString());
+        editor.putString("Name", name.getText().toString());
+        editor.putString("Email", email.getText().toString());
         // editor.putString("Password",password.getText().toString());
-        editor.putString("Phone",phone.getText().toString());
-        editor.putString("Information",additionalInformation.getText().toString());
+        editor.putString("Phone", phone.getText().toString());
+        editor.putString("Information", additionalInformation.getText().toString());
         editor.apply();
     }
 
@@ -285,7 +294,7 @@ public class MainActivity extends AppCompatActivity
                 boolean userPreviousDeniedRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.CAMERA);
 
-                if (cameraPermission== PackageManager.PERMISSION_GRANTED) {
+                if (cameraPermission == PackageManager.PERMISSION_GRANTED) {
                     MyImageHandler.getInstance().startCamera(this);
                 } else {
                     if (userPreviousDeniedRequest) {
@@ -304,7 +313,7 @@ public class MainActivity extends AppCompatActivity
                 boolean userPreviousDeniedGalleryRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.READ_EXTERNAL_STORAGE);
 
-                if (readStoragePermission==PackageManager.PERMISSION_GRANTED) {
+                if (readStoragePermission == PackageManager.PERMISSION_GRANTED) {
                     MyImageHandler.getInstance().startGallery(this);
                 } else {
                     if (userPreviousDeniedGalleryRequest) {
@@ -359,7 +368,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
         if (requestCode == UCrop.REQUEST_CROP) {
-            if (data!=null)
+            if (data != null)
                 handleCropResult(data);
         }
     }
@@ -386,7 +395,7 @@ public class MainActivity extends AppCompatActivity
 
     private void restoreImageContent() {
         String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-        if(!ImageBitmap.equals("NoImage")){
+        if (!ImageBitmap.equals("NoImage")) {
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             personalImage.setImageBitmap(bitmap);
@@ -421,7 +430,8 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-    public void navigationDrawerInitialization(){
+
+    public void navigationDrawerInitialization() {
         // Navigation Drawer Initialization
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -437,11 +447,11 @@ public class MainActivity extends AppCompatActivity
         updateNavigatorInformation(navigationView);
     }
 
-    public void updateNavigatorInformation(NavigationView navigationView){
+    public void updateNavigatorInformation(NavigationView navigationView) {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-        if(!ImageBitmap.equals("NoImage")){
+        if (!ImageBitmap.equals("NoImage")) {
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             nav_profile_icon.setImageBitmap(bitmap);
@@ -451,10 +461,10 @@ public class MainActivity extends AppCompatActivity
         }
 
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
-        if(name.getText() != null)
+        if (name.getText() != null)
             navUsername.setText(name.getText());
-        TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
-        if(email.getText() != null)
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
+        if (email.getText() != null)
             navEmail.setText(email.getText());
     }
 
@@ -474,32 +484,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void createPendingDeliveryList() {
-        DeliveryPendingTab1.deliveriesList = new ArrayList<>();
-
+    public void createChildEventListener() {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference pendingDeliveryRef = database.child("Rider").child("Delivery").child("Pending").child(currentUser);
-        pendingDeliveryRef.keepSynced(true);
-//        DatabaseReference orderedFoodRef = database.child("Company").child("OrderedFood");
 
-        pendingDeliveryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    String customerAddress = (String)postSnapshot.child("address").getValue();
-                    String deliveryTime = (String)postSnapshot.child("deliveryTime").getValue();
-                    DeliveryPendingTab1.deliveriesList.add(new Delivery("restaurantName", "restaurantAddress", customerAddress, "card", deliveryTime));
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        if(childEventListener != null)
-            return;
         childEventListener = pendingDeliveryRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {

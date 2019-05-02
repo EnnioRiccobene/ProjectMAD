@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.github.aakira.expandablelayout.ExpandableLayout;
 import com.github.aakira.expandablelayout.Utils;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.FirebaseError;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,11 +54,12 @@ import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, PopupMenu.OnMenuItemClickListener{
+        implements NavigationView.OnNavigationItemSelectedListener, PopupMenu.OnMenuItemClickListener {
 
     private EditText editCategory;
     private String[] listItems;
@@ -108,18 +110,14 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.setTitle("Profile");
-
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        database.child("Company").child("abc").setValue("Hello World!");
-
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = prefs.edit();
 
         // START DATABASE TEST
+        editor.putString("currentUser", "email1");
         currentUser = "email1";     // DOPO MODIFICARE CON SAVE PREFERENCES
         populateDatabaseWithDummyValues();
         // END DATABASE TEST
-
-        createPendingReservationList();
-
 
         hours = findViewById(R.id.hours);
         arrowbtn = findViewById(R.id.arrowbtn);
@@ -136,7 +134,7 @@ public class MainActivity extends AppCompatActivity
         nestedScrollView = findViewById(R.id.nestedScrollView);
 
         //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
-        if(!hiddenHours.isExpanded()){
+        if (!hiddenHours.isExpanded()) {
             hiddenHours.collapse();
         }
 
@@ -161,7 +159,7 @@ public class MainActivity extends AppCompatActivity
                             } else {
                                 checkedItems[position] = false;
                                 Toast.makeText(getApplicationContext(), getString(R.string.toast_checkbox_limit), Toast.LENGTH_SHORT).show();
-                                ((AlertDialog)dialog).getListView().setItemChecked(position, false);    // Do not select the 4th
+                                ((AlertDialog) dialog).getListView().setItemChecked(position, false);    // Do not select the 4th
                             }
                         } else if (mUserItems.contains(position)) {
                             int a = mUserItems.indexOf(position);
@@ -203,9 +201,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        editor = prefs.edit();
-
         // Defining EditText
         personalImage = findViewById(R.id.imagePersonalPhoto);
         name = findViewById(R.id.editTextName);
@@ -227,10 +222,10 @@ public class MainActivity extends AppCompatActivity
         // Set restaurant name and email on navigation header
         View headerView = navigationView.getHeaderView(0);
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
-        if(name.getText() != null)
+        if (name.getText() != null)
             navUsername.setText(name.getText());
-        TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
-        if(email.getText() != null)
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
+        if (email.getText() != null)
             navEmail.setText(email.getText());
     }
 
@@ -309,8 +304,8 @@ public class MainActivity extends AppCompatActivity
     // What happens if I press back button
     @Override
     public void onBackPressed() {
-        DrawerLayout layout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        if(layout.isDrawerOpen(GravityCompat.START)){
+        DrawerLayout layout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (layout.isDrawerOpen(GravityCompat.START)) {
             layout.closeDrawer(GravityCompat.START);
             return;
         }
@@ -354,7 +349,7 @@ public class MainActivity extends AppCompatActivity
         if (prefs.contains("Email"))
             email.setText(prefs.getString("Email", ""));
         // if (prefs.contains("Password"))
-            // password.setText(prefs.getString("Password", ""));
+        // password.setText(prefs.getString("Password", ""));
         if (prefs.contains("Phone"))
             phone.setText(prefs.getString("Phone", ""));
         if (prefs.contains("Address"))
@@ -363,7 +358,7 @@ public class MainActivity extends AppCompatActivity
             additionalInformation.setText(prefs.getString("Information", ""));
         if (prefs.contains("FoodCounter"))
             categoriesCount = prefs.getInt("FoodCounter", 0);
-        if (prefs.contains("checkedItems_size")){
+        if (prefs.contains("checkedItems_size")) {
             int size = prefs.getInt("checkedItems_size", 0);
             for (int i = 0; i < size; i++) {
                 checkedItems[i] = prefs.getBoolean("checkedItems_" + i, false);
@@ -403,11 +398,11 @@ public class MainActivity extends AppCompatActivity
         editor.putInt("FoodCounter", categoriesCount);
         editor.putInt("checkedItems_size", checkedItems.length);
         editor.putInt("mUserItems_size", mUserItems.size());
-        for(int i = 0; i < checkedItems.length; i++) {
+        for (int i = 0; i < checkedItems.length; i++) {
             editor.putBoolean("checkedItems_" + i, checkedItems[i]);
 //            SmartLogger.d("SaveFields: array["+i+"] = " + checkedItems[i]);
         }
-        for(int i = 0; i < mUserItems.size(); i++){
+        for (int i = 0; i < mUserItems.size(); i++) {
             editor.putInt("listItems_" + i, mUserItems.get(i));
         }
         editor.putString("EditCategory", editCategory.getText().toString());
@@ -427,7 +422,7 @@ public class MainActivity extends AppCompatActivity
         navUsername.setText(username);
 
         String email = prefs.getString("Email", "");
-        TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
         navEmail.setText(email);
     }
 
@@ -464,7 +459,7 @@ public class MainActivity extends AppCompatActivity
                 boolean userPreviousDeniedRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.CAMERA);
 
-                if (cameraPermission== PackageManager.PERMISSION_GRANTED) {
+                if (cameraPermission == PackageManager.PERMISSION_GRANTED) {
                     MyImageHandler.getInstance().startCamera(this);
                 } else {
                     if (userPreviousDeniedRequest) {
@@ -483,7 +478,7 @@ public class MainActivity extends AppCompatActivity
                 boolean userPreviousDeniedGalleryRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.READ_EXTERNAL_STORAGE);
 
-                if (readStoragePermission==PackageManager.PERMISSION_GRANTED) {
+                if (readStoragePermission == PackageManager.PERMISSION_GRANTED) {
                     MyImageHandler.getInstance().startGallery(this);
                 } else {
                     if (userPreviousDeniedGalleryRequest) {
@@ -539,7 +534,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
         if (requestCode == UCrop.REQUEST_CROP) {
-            if (data!=null)
+            if (data != null)
                 handleCropResult(data);
         }
 
@@ -550,26 +545,26 @@ public class MainActivity extends AppCompatActivity
                 Bundle extrasBundle = data.getExtras();
 
                 // Aggiunto il "&& extrasBundle != null" per evitare il crash dell'app
-                if(!extrasBundle.isEmpty() && extrasBundle != null){
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Monday))){
+                if (!extrasBundle.isEmpty() && extrasBundle != null) {
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Monday))) {
                         mondayHour.setText(extrasBundle.getString(getResources().getString(R.string.Monday)));
                     }
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Tuesday))){
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Tuesday))) {
                         tuesdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Tuesday)));
                     }
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Wednesday))){
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Wednesday))) {
                         wednesdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Wednesday)));
                     }
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Thursday))){
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Thursday))) {
                         thursdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Thursday)));
                     }
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Friday))){
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Friday))) {
                         fridayHour.setText(extrasBundle.getString(getResources().getString(R.string.Friday)));
                     }
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Saturday))){
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Saturday))) {
                         saturdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Saturday)));
                     }
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Sunday))){
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Sunday))) {
                         sundayHour.setText(extrasBundle.getString(getResources().getString(R.string.Sunday)));
                     }
                     saveFields();
@@ -601,7 +596,7 @@ public class MainActivity extends AppCompatActivity
 
     private void restoreImageContent() {
         String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-        if(!ImageBitmap.equals("NoImage")){
+        if (!ImageBitmap.equals("NoImage")) {
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             personalImage.setImageBitmap(bitmap);
@@ -637,7 +632,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void initializeNavigationDrawer(){
+    public void initializeNavigationDrawer() {
 
         // Navigation Drawer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -656,11 +651,11 @@ public class MainActivity extends AppCompatActivity
         updateNavigatorPersonalIcon();
     }
 
-    public void updateNavigatorPersonalIcon(){
+    public void updateNavigatorPersonalIcon() {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-        if(!ImageBitmap.equals("NoImage")){
+        if (!ImageBitmap.equals("NoImage")) {
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             nav_profile_icon.setImageBitmap(bitmap);
@@ -694,32 +689,7 @@ public class MainActivity extends AppCompatActivity
     //todo: aggiungere il menù nell'activity per la modifica degli orari con backbutton e conferma
 
 
-
-    public void createPendingReservationList() {
-        reservationTab1.pendingReservation = new ArrayList<>();
-
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
-        pendingReservationRef.keepSynced(true);
-
-        pendingReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Reservation post = postSnapshot.getValue(Reservation.class);
-                    reservationTab1.pendingReservation.add(post);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-
-    public void populateDatabaseWithDummyValues(){
+    public void populateDatabaseWithDummyValues() {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         database.child("Company").removeValue();
 
@@ -752,72 +722,25 @@ public class MainActivity extends AppCompatActivity
 
         ArrayList<Reservation> mReservationList = new ArrayList<>();
         mReservationList.add(new Reservation("Via Moretta 2", "18:45", 0, price));
-        mReservationList.add(new Reservation("Piazza Sabotino 8","19:00", 0, price));
-        mReservationList.add(new Reservation("Via Villarbasse 12" , "20:45", 0, price));
+        mReservationList.add(new Reservation("Piazza Sabotino 8", "19:00", 0, price));
+        mReservationList.add(new Reservation("Via Villarbasse 12", "20:45", 0, price));
         mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 0, price));
-        mReservationList.add(new Reservation("Address5","Delivery Time", 0, price));
-        mReservationList.add(new Reservation("Address6" , "Delivery Time", 0, price));
+        mReservationList.add(new Reservation("Address5", "Delivery Time", 0, price));
+        mReservationList.add(new Reservation("Address6", "Delivery Time", 0, price));
         mReservationList.add(new Reservation("Address7", "Delivery Time", 0, price));
-        mReservationList.add(new Reservation("Address8","Delivery Time" , 0, price));
+        mReservationList.add(new Reservation("Address8", "Delivery Time", 0, price));
 
         DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
         DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood");
 
-        for(int i = 1; i < 5; i++){
+        for (int i = 1; i < 5; i++) {
             for (Reservation element : mReservationList) {
                 String orderID = pendingReservationRef.push().getKey();
                 element.setOrderID(orderID);
                 pendingReservationRef.child("email" + i).child(orderID).setValue(element);
                 orderedFoodRef.child(orderID).setValue(orderedDishList);
             }
-    }
-
-//        mReservationList.clear();
-//        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 1, price));
-//        mReservationList.add(new Reservation("Piazza Sabotino 8","19:00", 2, price));
-//        mReservationList.add(new Reservation("Via Villarbasse 12" , "20:45", 1, price));
-//        mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 1, price));
-//        mReservationList.add(new Reservation("Address5","Delivery Time", 1, price));
-//        mReservationList.add(new Reservation("Address6" , "Delivery Time", 1, price));
-//        mReservationList.add(new Reservation("Address7", "Delivery Time", 2, price));
-//        mReservationList.add(new Reservation("Address8","Delivery Time" , 1, price));
-//        mReservationList.add(new Reservation("Address9" , "Delivery Time", 1, price));
-//        mReservationList.add(new Reservation("Address10", "Delivery Time", 1, price));
-//        mReservationList.add(new Reservation("Address11","Delivery Time", 1, price));
-//        mReservationList.add(new Reservation("Address12" , "Delivery Time", 1, price));
-//
-//
-//        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted");
-//
-//        for (Reservation element : mReservationList) {
-//            String orderID = pendingReservationRef.push().getKey();
-//            element.setOrderID(orderID);
-//            acceptedReservationRef.child(orderID).setValue(element);
-//        }
-
-
-//        mReservationList.clear();
-//        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 3, price));
-//        mReservationList.add(new Reservation("Piazza Sabotino 8","19:00", 3, price));
-//        mReservationList.add(new Reservation("Via Villarbasse 12" , "20:45", 3, price));
-//        mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 3, price));
-//        mReservationList.add(new Reservation("Address5","Delivery Time", 3, price));
-//        mReservationList.add(new Reservation("Address6" , "Delivery Time", 4, price));
-//        mReservationList.add(new Reservation("Address7", "Delivery Time", 3, price));
-//        mReservationList.add(new Reservation("Address8","Delivery Time" , 3, price));
-//        mReservationList.add(new Reservation("Address9" , "Delivery Time", 4, price));
-//        mReservationList.add(new Reservation("Address10", "Delivery Time", 4, price));
-//        mReservationList.add(new Reservation("Address11","Delivery Time", 4, price));
-//        mReservationList.add(new Reservation("Address12" , "Delivery Time", 3, price));
-//
-//
-//        DatabaseReference historyReservationRef = database.child("Company").child("Reservation").child("History");
-//
-//        for (Reservation element : mReservationList) {
-//            String orderID = pendingReservationRef.push().getKey();
-//            element.setOrderID(orderID);
-//            historyReservationRef.child(orderID).setValue(element);
-//        }
+        }
 
     }
 

@@ -43,11 +43,6 @@ public class ReservationActivity extends AppCompatActivity implements
         reservationTab1.OnFragmentInteractionListener,
         reservationTab2.OnFragmentInteractionListener,
         reservationTab3.OnFragmentInteractionListener{
-    private RecyclerView mRecyclerView;
-    private ReservationAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private ArrayList<Reservation> mReservationList;
-
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     private SharedPreferences prefs;

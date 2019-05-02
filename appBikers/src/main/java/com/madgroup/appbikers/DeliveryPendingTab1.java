@@ -1,12 +1,15 @@
 package com.madgroup.appbikers;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,8 +17,16 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+
 
 
 /**
@@ -35,7 +46,8 @@ public class DeliveryPendingTab1 extends Fragment {
     static public ArrayList<Delivery> deliveriesList;
 
     private RecyclerView recyclerView;
-    private DeliveryAdapter adapter;
+    private SharedPreferences prefs;
+    private String currentUser;
 
 
     // TODO: Rename and change types of parameters
@@ -80,7 +92,9 @@ public class DeliveryPendingTab1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_pending_tab1, container, false);
+        View view = inflater.inflate(R.layout.fragment_pending_tab1, container, false);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        currentUser = prefs.getString("currentUser", "noUser");
         buildRecyclerView(view);
         return view;
     }
@@ -124,17 +138,56 @@ public class DeliveryPendingTab1 extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void buildRecyclerView(View view){
-        recyclerView = view.findViewById(R.id.pendingDeliveryRecycleView);
-        //rootLayout = (CoordinatorLayout)findViewById(R.id.rootLayout);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        adapter = new DeliveryAdapter(deliveriesList);
+    public void buildRecyclerView(View view) {
 
+        DatabaseReference pendingRef = FirebaseDatabase.getInstance().getReference().child("Rider").child("Delivery").child("Pending").child(currentUser);
+        FirebaseRecyclerOptions<Delivery> options = new FirebaseRecyclerOptions.Builder<Delivery>()
+                .setQuery(pendingRef, Delivery.class)
+                .build();
+        final FirebaseRecyclerAdapter<Delivery, ViewHolder> adapter =
+                new FirebaseRecyclerAdapter<Delivery, ViewHolder>(options) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull ViewHolder holder, int i, @NonNull final Delivery currentItem) {
+                        holder.restaurantName.setText(currentItem.getRestaurantName());
+                        holder.restaurantAddress.setText(currentItem.getRestaurantAddress());
+                        holder.distance.setText(currentItem.calculateDistance("123", "123") + " mt");
+                        holder.customerAddress.setText(currentItem.getCustomerAddress());
+
+                        holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Set action on click
+
+                            }
+                        });
+                    }
+
+                    @NonNull
+                    @Override
+                    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        View view = LayoutInflater.from(getContext()).inflate(R.layout.delivery_item, parent, false);
+                        ViewHolder holder = new ViewHolder(view);
+                        return holder;
+                    }
+                };
+
+        recyclerView = view.findViewById(R.id.pendingDeliveryRecycleView);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(adapter);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        // mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        adapter.notifyDataSetChanged();
+        adapter.startListening();
+
+
+//        recyclerView = view.findViewById(R.id.pendingDeliveryRecycleView);
+//        //rootLayout = (CoordinatorLayout)findViewById(R.id.rootLayout);
+//        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+//        adapter = new DeliveryAdapter(deliveriesList);
+//
+//        recyclerView.setLayoutManager(mLayoutManager);
+//        recyclerView.setAdapter(adapter);
+//        recyclerView.setItemAnimator(new DefaultItemAnimator());
+//        // mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+//        adapter.notifyDataSetChanged();
 
 
 //
@@ -174,5 +227,25 @@ public class DeliveryPendingTab1 extends Fragment {
 //                removeItem(position);
 //            }
 //        });
+    }
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        CardView deliveryItemCardView;
+        RelativeLayout relativeLayout;
+        TextView restaurantName;
+        TextView restaurantAddress;
+        TextView distance;
+        TextView customerAddress;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            deliveryItemCardView = itemView.findViewById(R.id.deliveryItemCardView);
+            relativeLayout = itemView.findViewById(R.id.deliveryItemLayout);
+            restaurantName = itemView.findViewById(R.id.restaurantName);
+            restaurantAddress = itemView.findViewById(R.id.restaurantAddress);
+            distance = itemView.findViewById(R.id.distance);
+            customerAddress = itemView.findViewById(R.id.customerAddress);
+        }
+
     }
 }
