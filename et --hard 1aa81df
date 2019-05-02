@@ -1,0 +1,42 @@
+[33m1aa81df[m[33m ([m[1;36mHEAD -> [m[1;32mlateralNavigationFragments[m[33m)[m HEAD@{0}: checkout: moving from appRiderDeliveryView to lateralNavigationFragments
+[33me584945[m[33m ([m[1;32mappRiderDeliveryView[m[33m)[m HEAD@{1}: checkout: moving from lateralNavigationFragments to appRiderDeliveryView
+[33m1aa81df[m[33m ([m[1;36mHEAD -> [m[1;32mlateralNavigationFragments[m[33m)[m HEAD@{2}: checkout: moving from appRiderDeliveryView to lateralNavigationFragments
+[33me584945[m[33m ([m[1;32mappRiderDeliveryView[m[33m)[m HEAD@{3}: checkout: moving from lateralNavigationFragments to appRiderDeliveryView
+[33m1aa81df[m[33m ([m[1;36mHEAD -> [m[1;32mlateralNavigationFragments[m[33m)[m HEAD@{4}: commit: Added callRider function.
+[33mcab402f[m HEAD@{5}: checkout: moving from appRiderDeliveryView to lateralNavigationFragments
+[33me584945[m[33m ([m[1;32mappRiderDeliveryView[m[33m)[m HEAD@{6}: commit: Minor changes
+[33m5a4c91b[m HEAD@{7}: checkout: moving from lateralNavigationFragments to appRiderDeliveryView
+[33mcab402f[m HEAD@{8}: commit: Minor changes
+[33md07512b[m HEAD@{9}: checkout: moving from appRiderDeliveryView to lateralNavigationFragments
+[33m5a4c91b[m HEAD@{10}: commit: Minor changes
+[33m4659cf3[m HEAD@{11}: checkout: moving from lateralNavigationFragments to appRiderDeliveryView
+[33md07512b[m HEAD@{12}: checkout: moving from appRiderDeliveryView to lateralNavigationFragments
+[33m4659cf3[m HEAD@{13}: commit: Minor changes
+[33me70f93a[m HEAD@{14}: checkout: moving from lateralNavigationFragments to appRiderDeliveryView
+[33md07512b[m HEAD@{15}: checkout: moving from appRiderDeliveryView to lateralNavigationFragments
+[33me70f93a[m HEAD@{16}: commit: RiderProfile created
+[33m67c67c5[m HEAD@{17}: checkout: moving from lateralNavigationFragments to appRiderDeliveryView
+[33md07512b[m HEAD@{18}: commit: 3 TAB funzionanti.
+[33m00bc606[m HEAD@{19}: commit: Reservation activity e Detailed Reservation Activity: comunicanti
+[33mf16342d[m HEAD@{20}: commit: Database integration
+[33m50e5304[m[33m ([m[1;31morigin/LAB2-ReservationsbyCiccio[m[33m, [m[1;32mLAB2-ReservationsbyCiccio[m[33m)[m HEAD@{21}: checkout: moving from LAB2-ReservationsbyCiccio to lateralNavigationFragments
+[33m50e5304[m[33m ([m[1;31morigin/LAB2-ReservationsbyCiccio[m[33m, [m[1;32mLAB2-ReservationsbyCiccio[m[33m)[m HEAD@{22}: checkout: moving from master to LAB2-ReservationsbyCiccio
+[33mb85c4d1[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m HEAD@{23}: merge origin/master: Fast-forward
+[33m7998a0e[m HEAD@{24}: checkout: moving from appRiderDeliveryView to master
+[33m67c67c5[m HEAD@{25}: commit: Implementata la lista delle consegne del rider
+[33m7998a0e[m HEAD@{26}: checkout: moving from master to appRiderDeliveryView
+[33m7998a0e[m HEAD@{27}: pull --progress --no-stat -v --progress origin master: Merge made by the 'recursive' strategy.
+[33m53c5655[m HEAD@{28}: commit: Icon updated
+[33mee7fc5e[m HEAD@{29}: commit: FPS drop resolved
+[33m41c7d86[m HEAD@{30}: commit: Minor changes
+[33mcd3559d[m HEAD@{31}: commit: Aggiunti TextInputLayout nelle text edit del profilo: da aggiungere nelle altre text edit (dialog)
+[33m28a5852[m HEAD@{32}: commit: Icona dell'orario da TextView a ImageView, così si può applicare la proprietà Tint e modificare il colore dell'icona a seconda del tema
+[33m2591594[m HEAD@{33}: commit: Minor changes
+[33m797c2ef[m HEAD@{34}: commit: Minor changes
+[33m44b6626[m HEAD@{35}: commit: Aggiunta toolBar alla EditOpeningHoursActivity
+[33mc839ff4[m HEAD@{36}: commit: Versione stabile del DetailedReservation (quando si seleziona un'ordine)
+[33m6582a08[m HEAD@{37}: merge origin/master: Fast-forward
+[33mdea9e47[m[33m ([m[1;32mdetailedReservation[m[33m)[m HEAD@{38}: reset: moving to HEAD
+[33mdea9e47[m[33m ([m[1;32mdetailedReservation[m[33m)[m HEAD@{39}: checkout: moving from detailedReservation to master
+[33mdea9e47[m[33m ([m[1;32mdetailedReservation[m[33m)[m HEAD@{40}: checkout: moving from master to detailedReservation
+[33mdea9e47[m[33m ([m[1;32mdetailedReservation[m[33m)[m HEAD@{41}: clone: from https://github.com/EnnioRiccobene/ProjectMAD
