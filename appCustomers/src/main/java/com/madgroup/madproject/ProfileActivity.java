@@ -64,7 +64,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class MainActivity extends AppCompatActivity implements
+public class ProfileActivity extends AppCompatActivity implements
         PopupMenu.OnMenuItemClickListener,
         NavigationView.OnNavigationItemSelectedListener{
 
@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements
     @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_drawer);
         ViewStub stub = (ViewStub)findViewById(R.id.stub);
@@ -150,6 +151,13 @@ public class MainActivity extends AppCompatActivity implements
                             additionalInformation.setText(customer.getInfo());
                             email.setText(customer.getEmail());
 
+                            // Aggiorno le shared prefs
+                            editor.putString("Name", customer.getName());
+                            editor.putString("Email", customer.getEmail());
+                            editor.putString("Phone", customer.getPhone());
+                            editor.putString("Address", customer.getAddress());
+                            editor.apply();
+
                         } else {
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -159,6 +167,10 @@ public class MainActivity extends AppCompatActivity implements
                             database.getReference("Users").child(currentUid).setValue(currentUser);
                             name.setText(user.getDisplayName());
                             email.setText(user.getEmail());
+                            // Aggiorno le shared prefs
+                            editor.putString("Name", user.getDisplayName());
+                            editor.putString("Email", user.getEmail());
+                            editor.apply();
                         }
 
                     }
@@ -185,6 +197,21 @@ public class MainActivity extends AppCompatActivity implements
                         .setLogo(R.drawable.personicon)
                         .build(),
                 RC_SIGN_IN);
+    }
+
+    private void startLogout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        editor.clear();
+                        editor.apply();
+                        //startLogin();
+                        Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
+                        startActivity(intent);
+                    }
+                });
     }
 
 
@@ -294,6 +321,13 @@ public class MainActivity extends AppCompatActivity implements
                 phone.getText().toString(),address.getText().toString(),additionalInformation.getText().toString());
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         database.getReference("Users").child(currentUid).setValue(currentUser);
+        // Aggiorno le shared prefs
+        editor.putString("Name", name.getText().toString());
+        editor.putString("Email", email.getText().toString());
+        editor.putString("Phone", phone.getText().toString());
+        editor.putString("Address", address.getText().toString());
+        editor.apply();
+
     }
 
 
@@ -507,7 +541,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
-                Toast.makeText(MainActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -638,6 +672,7 @@ public class MainActivity extends AppCompatActivity implements
             onBackPressed();
         } else if (id == R.id.nav_logout) {
             // LogoutFunction
+            startLogout();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

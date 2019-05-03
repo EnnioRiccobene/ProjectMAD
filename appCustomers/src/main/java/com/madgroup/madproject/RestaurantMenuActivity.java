@@ -75,7 +75,6 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     TextView fridayHours;
     TextView saturdayHours;
     TextView sundayHours;
-    ImageButton imageButtonCart;
     private DatabaseReference restaurantRef;
     private String idRestaurant;
 
@@ -118,13 +117,6 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         address = "Via di prova";//todo: la via dovrà essere prelevata con una query al db sull'indirizzo del customer
 
         initRecicleView();
-
-        imageButtonCart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDialog();
-            }
-        });
 
         restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -259,6 +251,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.shoppingCart:
+                showDialog();
                 break;
         }
             return super.onOptionsItemSelected(item);

@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,6 +40,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.Continuation;
@@ -58,6 +58,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -77,6 +79,8 @@ public class SearchRestaurantActivity extends AppCompatActivity
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef; //di prova
     private Uri mImageUri;
+    private SharedPreferences.Editor editor;
+
 
     private FirebaseRecyclerOptions<Restaurant> options;
 
@@ -100,7 +104,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads");
 
-        uploadFile();
+        //uploadFile();
 
         mContext = this;
 //todo: questo inserimento di ristoranti nel db è temporaneo, in questa activity devo solo leggere
@@ -268,14 +272,14 @@ public class SearchRestaurantActivity extends AppCompatActivity
 
                                 prefs = getSharedPreferences("MyData", MODE_PRIVATE);
 
-                                if (prefs.getString("Name", "").isEmpty() ||
+                                if (    prefs.getString("Name", "").isEmpty() ||
                                         prefs.getString("Email", "").isEmpty() ||
                                         prefs.getString("Phone", "").isEmpty() ||
                                         prefs.getString("Address", "").isEmpty()) {
 
                                     //Il profilo è da riempire
 //                                    Toast.makeText(SearchRestaurantActivity.this, "Your profile is not complete", Toast.LENGTH_LONG);
-                                    Intent homepage = new Intent(SearchRestaurantActivity.this, MainActivity.class);
+                                    Intent homepage = new Intent(SearchRestaurantActivity.this, ProfileActivity.class);
                                     startActivity(homepage);
 
                                 } else {
@@ -528,16 +532,37 @@ public class SearchRestaurantActivity extends AppCompatActivity
         if (id == R.id.nav_search_restaurant) {
             onBackPressed();
         } else if (id == R.id.nav_profile) {
-            Intent myIntent = new Intent(this, MainActivity.class);
+            Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);
 
         } else if (id == R.id.nav_logout) {
             // LogoutFunction
+            startLogout();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+    private void startLogout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        prefs = getSharedPreferences("MyData", MODE_PRIVATE);
+                        editor = prefs.edit();
+
+                        editor.clear();
+                        editor.apply();
+                        //startLogin();
+                        Intent intent = new Intent(SearchRestaurantActivity.this, ProfileActivity.class);
+                        startActivity(intent);
+                    }
+                });
+    }
+
 
     @Override
     public void onBackPressed() {
