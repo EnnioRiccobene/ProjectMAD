@@ -93,20 +93,13 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        prefs = getSharedPreferences("MyData", MODE_PRIVATE);
-        editor = prefs.edit();
-
-        if (!prefs.contains("currentUser")) {
-            // Utente non loggato
-            startLogin();
-        }
-
         setContentView(R.layout.activity_navigation_drawer);
         ViewStub stub = (ViewStub)findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_main);
         stub.inflate();
+        prefs = getSharedPreferences("MyData", MODE_PRIVATE);
+        editor = prefs.edit();
         initializeNavigationDrawer();
         // Getting the instance of Firebase
         database = FirebaseDatabase.getInstance();
@@ -126,11 +119,17 @@ public class MainActivity extends AppCompatActivity implements
         setFieldUnclickable();
         isDefaultImage = true;
 
-        loadFieldsFromFirebase();
-        downloadProfilePic();
+        if (prefs.contains("currentUser")) {
+            // Utente già loggato
+            loadFieldsFromFirebase();
+            downloadProfilePic();
+        } else {
+            startLogin();
+        }
 
         // Load saved information, if exist
         //loadFields();
+
     }
     private void loadFieldsFromFirebase() {
 
