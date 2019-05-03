@@ -47,9 +47,10 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
      *
      * @param options
      */
-    public DailyOfferRecyclerViewAdapter(@NonNull FirebaseRecyclerOptions<Dish> options, DatabaseReference dishRef) {
+    public DailyOfferRecyclerViewAdapter(@NonNull FirebaseRecyclerOptions<Dish> options, DatabaseReference dishRef, Context mContext) {
         super(options);
         this.dishRef = dishRef;
+        this.mContext = mContext;
     }
 
     @Override
@@ -222,7 +223,9 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
         editDishDescription.setText(currentDish.getDescription());
         editDishQuantity.setText(""+currentDish.getAvailableQuantity());//editPrice.setText((""+currentDish.getPrice()));
         // Prezzo in rappresentazione decimale con due cifre dopo la virgola
-        BigDecimal dishPrice = new BigDecimal(currentDish.getPrice()).setScale(2, RoundingMode.HALF_UP);
+        float dishFprice = Float.valueOf(currentDish.getPrice().replace(",", ".").replace("", "")
+                .replace("€", "").replace("$", "").replaceAll("\\s",""));
+        BigDecimal dishPrice = new BigDecimal(dishFprice).setScale(2, RoundingMode.HALF_UP);
         editPrice.setText(""+dishPrice);
         dishImage.setImageBitmap(currentDish.getPhoto());
 

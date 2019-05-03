@@ -131,7 +131,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
 
         recyclerView = this.findViewById(R.id.my_recycler_view);
-        adapter = new DailyOfferRecyclerViewAdapter(options, dishRef);
+        adapter = new DailyOfferRecyclerViewAdapter(options, dishRef, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
