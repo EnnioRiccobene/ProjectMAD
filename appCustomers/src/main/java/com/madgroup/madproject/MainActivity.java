@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements
     private FirebaseDatabase database;
     private FirebaseStorage storage;
     private boolean isDefaultImage;
+    private ProgressBar imageProgressBar;
 
 
     @SuppressLint("CommitPrefEdits")
@@ -113,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements
         phone = findViewById(R.id.editTextPhone);
         address = findViewById(R.id.editTextAddress);
         additionalInformation = findViewById(R.id.additionalInformation);
+        imageProgressBar = findViewById(R.id.imageProgressBar);
         modifyingInfo = false;
 
         // Set all field to unclickable
@@ -146,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements
                             address.setText(customer.getAddress());
                             additionalInformation.setText(customer.getInfo());
                             email.setText(customer.getEmail());
+
                         } else {
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -541,6 +545,7 @@ public class MainActivity extends AppCompatActivity implements
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 personalImage.setImageBitmap(bitmap);
                 isDefaultImage = false;
+                imageProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -552,6 +557,7 @@ public class MainActivity extends AppCompatActivity implements
                     Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                     personalImage.setImageDrawable(defaultImg);
                     isDefaultImage = true;
+                    imageProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
                 }
             }
         });
