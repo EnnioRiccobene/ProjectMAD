@@ -10,8 +10,8 @@
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
     <string name="remove">Remove</string>
-    <string name="gallerypermission">Allow the Gallery usage in settings to use this funcionality.</string>
-    <string name="camerapermission">Allow the camera usage in settings to use this funcionality.</string>
+    <string name="galleryPermission">Allow the Gallery usage in settings to use this funcionality.</string>
+    <string name="cameraPermission">Allow the camera usage in settings to use this funcionality.</string>
     <string name="minimum_order">Minimum order:</string>
     <string name="delivery_cost">Delivery cost:</string>
     <string name="restaurant_name">Restaurant name</string>
@@ -156,5 +156,7 @@
         <item>23:30</item>
         <item>23:45</item>
     </string-array>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
 </resources>

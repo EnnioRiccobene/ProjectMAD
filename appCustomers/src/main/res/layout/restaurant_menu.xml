@@ -321,22 +321,22 @@
 
         </RelativeLayout>
 
-        <ImageButton
-            android:id="@+id/imageButtonCart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@color/colorPrimary"
-            android:layout_below="@+id/oraarirelativelayout"
-            app:srcCompat="@drawable/ic_shopping_cart" />
+        <!--<ImageButton-->
+            <!--android:id="@+id/imageButtonCart"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="8dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:background="@color/colorPrimary"-->
+            <!--android:layout_below="@+id/oraarirelativelayout"-->
+            <!--app:srcCompat="@drawable/ic_shopping_cart" />-->
 
         <TextView
             android:id="@+id/MenuView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/imageButtonCart"
+            android:layout_below="@id/oraarirelativelayout"
             android:text="Menù"
             android:textSize="18sp"
             android:textStyle="bold" />

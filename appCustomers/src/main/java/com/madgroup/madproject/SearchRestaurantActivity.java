@@ -12,9 +12,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.webkit.MimeTypeMap;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
@@ -27,8 +32,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +48,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -51,7 +61,8 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SearchRestaurantActivity extends AppCompatActivity {
+public class SearchRestaurantActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     private CircleImageView photo;//temporanea
     private ImageButton btnSearch;
@@ -75,8 +86,13 @@ public class SearchRestaurantActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_searchrestaurant);
-
+        setContentView(R.layout.activity_navigation_drawer);
+        ViewStub stub = (ViewStub)findViewById(R.id.stub);
+        stub.setInflatedId(R.id.inflatedActivity);
+        stub.setLayoutResource(R.layout.activity_searchrestaurant);
+        stub.inflate();
+        prefs = getSharedPreferences("MyData", MODE_PRIVATE);
+        initializeNavigationDrawer();
         // Getting the instance of Firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         restaurantRef = database.getReference().child("Company").child("Profile");
@@ -113,27 +129,25 @@ public class SearchRestaurantActivity extends AppCompatActivity {
         restaurantRef.child("email5").setValue(r5);
 
         photo = findViewById(R.id.restaurant_photo);
-        btnSearch = findViewById(R.id.imageButtonSearch);
-        btnFilter = findViewById(R.id.imageButtonFilter);
         searchRestaurant = findViewById(R.id.searchWidget);
 
-        btnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (searchRestaurant.getVisibility() == View.GONE) {
-                    searchRestaurant.setVisibility(View.VISIBLE);
-                } else {
-                    searchRestaurant.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        btnFilter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showFilterDialog();
-            }
-        });
+//        btnSearch.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (searchRestaurant.getVisibility() == View.GONE) {
+//                    searchRestaurant.setVisibility(View.VISIBLE);
+//                } else {
+//                    searchRestaurant.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+//
+//        btnFilter.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showFilterDialog();
+//            }
+//        });
 
         searchRestaurant.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -437,4 +451,101 @@ public class SearchRestaurantActivity extends AppCompatActivity {
 
     //todo, occuparsi del comportamento della searchView che popoli l'arrayList di ristoranti in base al nome digitato
 
+    // What happens if I click on a icon on the menu
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.searchItem:
+                if (searchRestaurant.getVisibility() == View.GONE) {
+                    searchRestaurant.setVisibility(View.VISIBLE);
+                } else
+                    searchRestaurant.setVisibility(View.GONE);
+
+                break;
+            case R.id.filterItem:
+                showFilterDialog();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_restaurant_menu, menu);
+        return true;
+    }
+
+    public void initializeNavigationDrawer(){
+
+        // Navigation Drawer
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(        // Three lines icon on the left corner
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Set the photo of the Navigation Bar Icon (Need to be completed: refresh when new image is updated)
+        updateNavigatorPersonalIcon(navigationView);
+
+        //TODO
+        // Set restaurant name and email on navigation header
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
+        String name = prefs.getString("Name", "No name inserted");
+        navUsername.setText(name);
+        String email = prefs.getString("Email", "No email inserted");
+        navEmail.setText(email);
+    }
+
+    public void updateNavigatorPersonalIcon(NavigationView navigationView){
+        View headerView = navigationView.getHeaderView(0);
+        CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
+        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
+        if(!ImageBitmap.equals("NoImage")){
+            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+            nav_profile_icon.setImageBitmap(bitmap);
+        } else {
+            Drawable defaultImg = getResources().getDrawable(R.mipmap.ic_launcher_round);
+            nav_profile_icon.setImageDrawable(defaultImg);
+        }
+    }
+
+    // Navigation Drawer
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_search_restaurant) {
+            onBackPressed();
+        } else if (id == R.id.nav_profile) {
+            Intent myIntent = new Intent(this, MainActivity.class);
+            this.startActivity(myIntent);
+
+        } else if (id == R.id.nav_logout) {
+            // LogoutFunction
+        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout layout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        if(layout.isDrawerOpen(GravityCompat.START)){
+            layout.closeDrawer(GravityCompat.START);
+            return;
+        }
+        super.onBackPressed();
+    }
 }

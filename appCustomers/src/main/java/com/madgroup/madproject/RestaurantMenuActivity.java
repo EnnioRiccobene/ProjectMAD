@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -47,7 +49,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Displays the Target screen
  * Required extras:
  * - Restaurant: Restaurant
-*/
+ */
 public class RestaurantMenuActivity extends AppCompatActivity {
 
     private Restaurant restaurant;
@@ -77,7 +79,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     private DatabaseReference restaurantRef;
     private String idRestaurant;
 
-    public static void start(Context context, String restaurantId){
+    public static void start(Context context, String restaurantId) {
         Intent starter = new Intent(context, RestaurantMenuActivity.class);
         starter.putExtra("Restaurant", restaurantId);
         context.startActivity(starter);
@@ -102,10 +104,9 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         fridayHours = findViewById(R.id.fridayhour);
         saturdayHours = findViewById(R.id.saturdayhour);
         sundayHours = findViewById(R.id.sundayhour);
-        imageButtonCart = findViewById(R.id.imageButtonCart);
 
         //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
-        if(!hiddenHours.isExpanded()){
+        if (!hiddenHours.isExpanded()) {
             hiddenHours.collapse();
         }
 
@@ -175,8 +176,8 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
     }
 
-    private void getIncomingIntent(){
-        if(getIntent().hasExtra("Restaurant")){
+    private void getIncomingIntent() {
+        if (getIntent().hasExtra("Restaurant")) {
             idRestaurant = getIntent().getStringExtra("Restaurant");
 //            restaurant.setId(idRestaurant);//l'oggetto restaurant non è stato costruito e non ho gli attributi per farlo oltre all'id
 
@@ -185,7 +186,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         }
     }
 
-    private void initRecicleView(){
+    private void initRecicleView() {
         //todo temporanea, poi prendere dal db e usare il costruttore che mette anche le foto'
         menu.add(new Dish(1, "Margherita", 5, 30));
         menu.add(new Dish(1, "Capricciosa", 7.5f, 30));
@@ -251,5 +252,21 @@ public class RestaurantMenuActivity extends AppCompatActivity {
             }
         });
         dialog.show();
+    }
+
+    // What happens if I click on a icon on the menu
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.shoppingCart:
+                break;
+        }
+            return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.restaurant_menu, menu);
+        return true;
     }
 }
