@@ -1,16 +1,9 @@
 package com.madgroup.appcompany;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,100 +16,40 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.blackcat.currencyedittext.CurrencyEditText;
-import com.madgroup.sdk.MyImageHandler;
-import com.madgroup.sdk.SmartLogger;
-import com.yalantis.ucrop.UCrop;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import com.blackcat.currencyedittext.CurrencyEditText;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DatabaseReference;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 // Creo un ViewHolder (che contiene il layout della cella) e l'Adapter lo setto di tipo ViewHolder
 
-public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOfferRecyclerViewAdapter.ViewHolder>
+public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish, FindDishViewHolder>
         implements PopupMenu.OnMenuItemClickListener {
 
     private ArrayList<Dish> dailyOfferList = new ArrayList<>();
     private Context mContext;
     private int currentIndex = -1;
+    private DatabaseReference dishRef;
     public DailyOfferActivity.AdapterHandler adapterhandler;
 
-    public DailyOfferRecyclerViewAdapter(Context mContext, ArrayList<Dish> dailyOfferList) {
-        this.dailyOfferList = dailyOfferList;
-        this.mContext = mContext;
-    }
-
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.daily_offer_item, viewGroup, false);
-        ViewHolder holder = new ViewHolder(view);
-        return holder;
-    }
-
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
-        viewHolder.dishName.setText(dailyOfferList.get(i).getName());
-        // Rappresentazione con due cifre decimali
-        BigDecimal dishPrice = new BigDecimal(dailyOfferList.get(i).getPrice()).setScale(2, RoundingMode.HALF_UP);
-        viewHolder.dishPrice.setText(""+dishPrice+"€");
-        viewHolder.dishQuantity.setText("Quantità disponibile: "+dailyOfferList.get(i).getAvailableQuantity());
-        viewHolder.dishDescription.setText(dailyOfferList.get(i).getDescription());
-        viewHolder.dishPhoto.setImageBitmap(dailyOfferList.get(i).getPhoto());
-
-        viewHolder.popupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showEditPopup(viewHolder.popupButton, i);
-            }
-        });
-    }
-
-    @Override
-    public int getItemCount() {
-        return dailyOfferList.size();
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-
-        RelativeLayout layout;
-        TextView dishName;
-        TextView dishDescription;
-        TextView dishPrice;
-        CircleImageView dishPhoto;
-        TextView dishQuantity;
-        ImageView popupButton;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            layout = itemView.findViewById(R.id.dish_item_layout);
-            dishName = itemView.findViewById(R.id.dish_name);
-            dishDescription = itemView.findViewById(R.id.dish_description);
-            dishPhoto = itemView.findViewById(R.id.dish_photo);
-            dishPrice = itemView.findViewById(R.id.dish_price);
-            dishQuantity = itemView.findViewById(R.id.dish_quantity);
-            popupButton = itemView.findViewById(R.id.popupButton);
-        }
-    }
-
-    public void showEditPopup(View v, int index) {
-        currentIndex = index;
-        PopupMenu popup = new PopupMenu(mContext, v);
-        popup.setOnMenuItemClickListener(this);
-        popup.inflate(R.menu.daily_offer_item_menu);
-        popup.show();
+    /**
+     * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
+     * {@link FirebaseRecyclerOptions} for configuration options.
+     *
+     * @param options
+     */
+    public DailyOfferRecyclerViewAdapter(@NonNull FirebaseRecyclerOptions<Dish> options, DatabaseReference dishRef) {
+        super(options);
+        this.dishRef = dishRef;
     }
 
     @Override
@@ -128,6 +61,8 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
                 return true;
 
             case R.id.itemRemove:
+                //rimuovo il piatto dal db e dall'arrayList
+                dishRef.child(dailyOfferList.get(currentIndex).getId()).removeValue();
                 dailyOfferList.remove(currentIndex);
                 notifyItemRemoved(currentIndex);
                 notifyItemRangeChanged(currentIndex, dailyOfferList.size());
@@ -138,7 +73,128 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         }
     }
 
+    @Override
+    protected void onBindViewHolder(@NonNull final FindDishViewHolder viewHolder, final int i, @NonNull Dish dish) {
+        viewHolder.dishName.setText(dish.getName());
+        // Rappresentazione con due cifre decimali
+        float dishFprice = Float.valueOf(dish.getPrice().replace("€", "").replace("$", "")
+                .replace("£", "").replace(",", ".").replaceAll("\\s",""));
+        BigDecimal dishPrice = new BigDecimal(dishFprice).setScale(2, RoundingMode.HALF_UP);
+        viewHolder.dishPrice.setText("" + dishPrice + " €"); //todo: aggiustare prezzo, valuta e multilingua
+        viewHolder.dishQuantity.setText("Quantità disponibile: " + dish.getAvailableQuantity());
+        viewHolder.dishDescription.setText(dish.getDescription());
+        viewHolder.dishPhoto.setImageBitmap(dish.getPhoto());
+
+        dailyOfferList.add(new Dish(dish.getId(), dish.getName(), dish.getPrice(), dish.getAvailableQuantity(), dish.getDescription()));
+
+        viewHolder.popupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEditPopup(viewHolder.popupButton, i);
+            }
+        });
+    }
+
+    @NonNull
+    @Override
+    public FindDishViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.daily_offer_item, parent, false);
+        FindDishViewHolder holder = new FindDishViewHolder(view);
+        return holder;
+    }
+
+
+//    public DailyOfferRecyclerViewAdapter(Context mContext, ArrayList<Dish> dailyOfferList, DatabaseReference dishRef) {
+//        this.dailyOfferList = dailyOfferList;
+//        this.mContext = mContext;
+//        this.dishRef = dishRef;
+//    }
+//
+//    @NonNull
+//    @Override
+//    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+//        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.daily_offer_item, viewGroup, false);
+//        ViewHolder holder = new ViewHolder(view);
+//        return holder;
+//    }
+//
+//    @SuppressLint("SetTextI18n")
+//    @Override
+//    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
+//        viewHolder.dishName.setText(dailyOfferList.get(i).getName());
+//        // Rappresentazione con due cifre decimali
+//        BigDecimal dishPrice = new BigDecimal(dailyOfferList.get(i).getPrice()).setScale(2, RoundingMode.HALF_UP);
+//        viewHolder.dishPrice.setText(""+dishPrice+" €"); //todo: aggiustare prezzo, valuta e multilingua
+//        viewHolder.dishQuantity.setText("Quantità disponibile: "+dailyOfferList.get(i).getAvailableQuantity());
+//        viewHolder.dishDescription.setText(dailyOfferList.get(i).getDescription());
+//        viewHolder.dishPhoto.setImageBitmap(dailyOfferList.get(i).getPhoto());
+//
+//        viewHolder.popupButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showEditPopup(viewHolder.popupButton, i);
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public int getItemCount() {
+//        return dailyOfferList.size();
+//    }
+//
+//    public class ViewHolder extends RecyclerView.ViewHolder {
+//
+//        RelativeLayout layout;
+//        TextView dishName;
+//        TextView dishDescription;
+//        TextView dishPrice;
+//        CircleImageView dishPhoto;
+//        TextView dishQuantity;
+//        ImageView popupButton;
+//
+//        public ViewHolder(@NonNull View itemView) {
+//            super(itemView);
+//            layout = itemView.findViewById(R.id.dish_item_layout);
+//            dishName = itemView.findViewById(R.id.dish_name);
+//            dishDescription = itemView.findViewById(R.id.dish_description);
+//            dishPhoto = itemView.findViewById(R.id.dish_photo);
+//            dishPrice = itemView.findViewById(R.id.dish_price);
+//            dishQuantity = itemView.findViewById(R.id.dish_quantity);
+//            popupButton = itemView.findViewById(R.id.popupButton);
+//        }
+//    }
+//
+    public void showEditPopup(View v, int index) {
+        currentIndex = index;
+        PopupMenu popup = new PopupMenu(mContext, v);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.daily_offer_item_menu);
+        popup.show();
+    }
+
+//    @Override
+//    public boolean onMenuItemClick(MenuItem item) {
+//        switch (item.getItemId()) {
+//
+//            case R.id.itemEdit:
+//                showDialog(currentIndex);
+//                return true;
+//
+//            case R.id.itemRemove:
+//                //rimuovo il piatto dal db e dall'arrayList
+//                dishRef.child(dailyOfferList.get(currentIndex).getId());
+//                dailyOfferList.remove(currentIndex);
+//                notifyItemRemoved(currentIndex);
+//                notifyItemRangeChanged(currentIndex, dailyOfferList.size());
+//                return true;
+//
+//            default:
+//                return false;
+//        }
+//    }
+
     // Dialog per la modifica di un piatto già esistente
+    //todo:update piatto nel db
     private void showDialog(final int currentIndex) {
 
         Dish currentDish = dailyOfferList.get(currentIndex);
@@ -209,10 +265,10 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
 
                         Dish currentDish = dailyOfferList.get(currentIndex);
                         currentDish.setName(editDishName.getText().toString());
-                        currentDish.setAvailableQuantity(dishQuantity);
+                        currentDish.setAvailableQuantity(String.valueOf(dishQuantity));
                         currentDish.setDescription("");
                         currentDish.setPhoto(dishPhoto);
-                        currentDish.setPrice(floatPrice);
+                        currentDish.setPrice(String.valueOf(floatPrice));
                     } else {
                         int dishQuantity = Integer.parseInt(editDishQuantity.getText().toString());
                         String dishDesc = editDishDescription.getText().toString();
@@ -220,10 +276,10 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
 
                         Dish currentDish = dailyOfferList.get(currentIndex);
                         currentDish.setName(editDishName.getText().toString());
-                        currentDish.setAvailableQuantity(dishQuantity);
+                        currentDish.setAvailableQuantity(String.valueOf(dishQuantity));
                         currentDish.setDescription(dishDesc);
                         currentDish.setPhoto(dishPhoto);
-                        currentDish.setPrice(floatPrice);
+                        currentDish.setPrice(String.valueOf(floatPrice));
 
                         notifyItemChanged(currentIndex);
                         dialog.dismiss();
@@ -235,4 +291,28 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         dialog.show();
     }
 
+}
+
+
+class FindDishViewHolder extends RecyclerView.ViewHolder {
+
+    RelativeLayout layout;
+    TextView dishName;
+    TextView dishDescription;
+    TextView dishPrice;
+    CircleImageView dishPhoto;
+    TextView dishQuantity;
+    ImageView popupButton;
+
+    public FindDishViewHolder(@NonNull View itemView) {
+        super(itemView);
+
+        layout = itemView.findViewById(R.id.dish_item_layout);
+        dishName = itemView.findViewById(R.id.dish_name);
+        dishDescription = itemView.findViewById(R.id.dish_description);
+        dishPhoto = itemView.findViewById(R.id.dish_photo);
+        dishPrice = itemView.findViewById(R.id.dish_price);
+        dishQuantity = itemView.findViewById(R.id.dish_quantity);
+        popupButton = itemView.findViewById(R.id.popupButton);
+    }
 }

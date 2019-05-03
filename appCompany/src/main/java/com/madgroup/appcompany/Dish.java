@@ -3,14 +3,17 @@ package com.madgroup.appcompany;
 import android.graphics.Bitmap;
 
 public class Dish {
-    private int id;
+    private String id;
     private String name;
-    private float price;
-    private int availableQuantity;
+    private String price;
+    private String availableQuantity;
     private String description;
     private Bitmap photo;
 
-    public Dish(int id, String name, float price, int availableQuantity, String description, Bitmap photo) {
+    public Dish() {
+    }
+
+    public Dish(String id, String name, String price, String availableQuantity, String description, Bitmap photo) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -19,18 +22,26 @@ public class Dish {
         this.photo = photo;
     }
 
-    public Dish(int id, String name, float price, int availableQuantity) {
+    public Dish(String id, String name, String price, String availableQuantity, String description) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.availableQuantity = availableQuantity;
+        this.description = description;
+    }
+
+    public Dish(String id, String name, String price, String availableQuantity) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.availableQuantity = availableQuantity;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -50,19 +61,19 @@ public class Dish {
         this.description = description;
     }
 
-    public float getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 
-    public int getAvailableQuantity() {
+    public String getAvailableQuantity() {
         return availableQuantity;
     }
 
-    public void setAvailableQuantity(int availableQuantity) {
+    public void setAvailableQuantity(String availableQuantity) {
         this.availableQuantity = availableQuantity;
     }
 
