@@ -67,7 +67,7 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
 
             case R.id.itemRemove:
                 //rimuovo il piatto dal db e dall'arrayList
-                dishRef.child(dailyOfferList.get(currentIndex).getId()).removeValue();
+                dishRef.child(dailyOfferList.get(currentIndex).getId()).removeValue();//todo: vedere errori nella remove
                 dailyOfferList.remove(currentIndex);
                 notifyItemRemoved(currentIndex);
                 notifyItemRangeChanged(currentIndex, dailyOfferList.size());
