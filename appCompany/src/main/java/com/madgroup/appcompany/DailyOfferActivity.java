@@ -249,7 +249,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
     }
 
     // Dialog per la creazione di un NUOVO piatto
-
     //todo creazione piatto nel db
     private void showDialog() {
         // custom dialog
@@ -302,18 +301,34 @@ public class DailyOfferActivity extends AppCompatActivity implements
                 } else if (floatPrice==0) {
                     Toast.makeText(getApplicationContext(), getString(R.string.requiredPrice), Toast.LENGTH_SHORT).show();
                 } else {
-                    if(editDishDescription.getText().toString().isEmpty()) {
-                        currentDish = new Dish("1", editDishName.getText().toString(), String.valueOf(floatPrice),
-                                editDishQuantity.getText().toString(), "", bitmap);
-                    } else {
-                        BigDecimal dishPrice = new BigDecimal(currentDish.getPrice()).setScale(2, RoundingMode.HALF_UP);
-
-                        currentDish = new Dish("1", editDishName.getText().toString(), String.valueOf(floatPrice),
-                                editDishQuantity.getText().toString(), editDishDescription.getText().toString(), bitmap);
+                    //formatto la stringa prezzo da mettere nel db
+                    BigDecimal dishPrice = new BigDecimal(floatPrice).setScale(2, RoundingMode.HALF_UP);//todo: sistemare crash
+                    String stringPrice = String.valueOf(dishPrice);
+                    if(local.equals("en_US")){
+                        stringPrice = stringPrice + " $";
+                    } else if(local.equals("en_GB")){
+                        stringPrice = stringPrice + " £";
+                    } else if(local.equals("it_IT")){
+                        stringPrice = stringPrice + " €";
                     }
-                    myList.add(currentDish);
-                    adapter.notifyItemInserted(myList.size() - 1);
-                    adapter.notifyItemRangeChanged(myList.size() - 1, myList.size());
+                    //todo: aggiungere le immagini all'oggetto
+                    if(editDishDescription.getText().toString().isEmpty()) {
+                        currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
+                                editDishQuantity.getText().toString(), "");
+                    } else {
+                        currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
+                                editDishQuantity.getText().toString(), editDishDescription.getText().toString());
+                    }
+//                    myList.add(currentDish);
+//                    dishRef.push().setValue(currentDish);
+                    String key = dishRef.push().getKey();
+                    currentDish.setId(key);
+                    dishRef.child(key).setValue(currentDish);
+
+//                    adapter.notifyItemInserted(myList.size() - 1);
+                    adapter.notifyItemInserted(adapter.getSnapshots().size());
+//                    adapter.notifyItemRangeChanged(myList.size() - 1, myList.size());
+                    adapter.notifyItemRangeChanged(adapter.getSnapshots().size(), adapter.getSnapshots().size() + 1);
                     dialog.dismiss();
                 }
             }

@@ -211,7 +211,6 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
 //    }
 
     // Dialog per la modifica di un piatto già esistente
-    //todo:update piatto nel db
     private void showDialog(final int currentIndex, final DatabaseReference dishRef) {
 
         Dish currentDish = dailyOfferList.get(currentIndex);
