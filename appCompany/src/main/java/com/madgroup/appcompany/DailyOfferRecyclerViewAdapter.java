@@ -27,8 +27,12 @@ import com.google.firebase.database.DatabaseReference;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 // Creo un ViewHolder (che contiene il layout della cella) e l'Adapter lo setto di tipo ViewHolder
 
@@ -58,7 +62,7 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
         switch (item.getItemId()) {
 
             case R.id.itemEdit:
-                showDialog(currentIndex);
+                showDialog(currentIndex, dishRef);
                 return true;
 
             case R.id.itemRemove:
@@ -81,8 +85,20 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
         float dishFprice = Float.valueOf(dish.getPrice().replace("€", "").replace("$", "")
                 .replace("£", "").replace(",", ".").replaceAll("\\s",""));
         BigDecimal dishPrice = new BigDecimal(dishFprice).setScale(2, RoundingMode.HALF_UP);
-        viewHolder.dishPrice.setText("" + dishPrice + " €"); //todo: aggiustare prezzo, valuta e multilingua
-        viewHolder.dishQuantity.setText("Quantità disponibile: " + dish.getAvailableQuantity());
+
+//        Locale current = getResources().getConfiguration().locale;
+        String current = Locale.getDefault().toString();
+        String currency;
+        if(current.equals("en_US")){
+            currency = " $";
+        } else if(current.equals("en_GB")){
+            currency = " £";
+        } else {
+            currency = " €";
+        }
+
+        viewHolder.dishPrice.setText("" + dishPrice + currency);
+        viewHolder.dishQuantity.setText(mContext.getResources().getString(R.string.availableQuantity) + " " + dish.getAvailableQuantity());
         viewHolder.dishDescription.setText(dish.getDescription());
         viewHolder.dishPhoto.setImageBitmap(dish.getPhoto());
 
@@ -196,9 +212,13 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
 
     // Dialog per la modifica di un piatto già esistente
     //todo:update piatto nel db
-    private void showDialog(final int currentIndex) {
+    private void showDialog(final int currentIndex, final DatabaseReference dishRef) {
 
         Dish currentDish = dailyOfferList.get(currentIndex);
+        final String dishId = currentDish.getId();
+        //dishRef.child(dishId)
+
+        final Map<String, Object> childUpdates = new HashMap<>();
 
         // custom dialog
         final Dialog dialog = new Dialog(mContext);
@@ -223,7 +243,7 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
         editDishDescription.setText(currentDish.getDescription());
         editDishQuantity.setText(""+currentDish.getAvailableQuantity());//editPrice.setText((""+currentDish.getPrice()));
         // Prezzo in rappresentazione decimale con due cifre dopo la virgola
-        float dishFprice = Float.valueOf(currentDish.getPrice().replace(",", ".").replace("", "")
+        float dishFprice = Float.valueOf(currentDish.getPrice().replace(",", ".").replace("£", "")
                 .replace("€", "").replace("$", "").replaceAll("\\s",""));
         BigDecimal dishPrice = new BigDecimal(dishFprice).setScale(2, RoundingMode.HALF_UP);
         editPrice.setText(""+dishPrice);
@@ -283,6 +303,13 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
                         currentDish.setDescription(dishDesc);
                         currentDish.setPhoto(dishPhoto);
                         currentDish.setPrice(String.valueOf(floatPrice));
+
+                        //todo: manca la foto
+                        childUpdates.put("/" + dishId + "/" + "name", currentDish.getName());
+                        childUpdates.put("/" + dishId + "/" + "availableQuantity", currentDish.getAvailableQuantity());
+                        childUpdates.put("/" + dishId + "/" + "description", currentDish.getDescription());
+                        childUpdates.put("/" + dishId + "/" + "price", currentDish.getPrice());
+                        dishRef.updateChildren(childUpdates);
 
                         notifyItemChanged(currentIndex);
                         dialog.dismiss();
