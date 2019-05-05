@@ -21,25 +21,46 @@ import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
 import com.github.aakira.expandablelayout.ExpandableLayout;
 import com.github.aakira.expandablelayout.Utils;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageException;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.RestaurantProfile;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Objects;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.annotation.NonNull;
@@ -78,7 +99,7 @@ public class ProfileActivity extends AppCompatActivity
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private static final String TAG = "SearchActivity";
-    private static final int CAMERA_PERMISSIONS_CODE = 1;
+    private static final int CAMERA_PERMISSIONS_CODE = 13;
     private static final int GALLERY_PERMISSIONS_CODE = 2;
     private static String POPUP_CONSTANT = "mPopup";
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
@@ -88,6 +109,13 @@ public class ProfileActivity extends AppCompatActivity
     private static final int CONFIRM_OR_REJECT_CODE = 1;
 
     public static final int TEXT_REQUEST = 1;
+
+    private static final int RC_SIGN_IN = 3;
+    private FirebaseDatabase database;
+    private FirebaseStorage storage;
+    private boolean isDefaultImage;
+    private ProgressBar progressBar;
+    private ProgressBar imgProgressBar;
 
     TextView hours;
     ImageView arrowbtn;
@@ -108,6 +136,12 @@ public class ProfileActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (FirebaseAuth.getInstance().getCurrentUser()==null) {
+            // Utente non ancora loggato
+            startLogin();
+        }
+
         setContentView(R.layout.activity_main);
         ViewStub stub = (ViewStub)findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
@@ -117,12 +151,10 @@ public class ProfileActivity extends AppCompatActivity
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
 
-        // START DATABASE TEST
-        editor.putString("currentUser", "email1");
-        currentUser = "email1";     // DOPO MODIFICARE CON SAVE PREFERENCES
-        editor.apply();
-        populateDatabaseWithDummyValues();
-        // END DATABASE TEST
+
+        // Getting the instance of Firebase
+        database = FirebaseDatabase.getInstance();
+        storage = FirebaseStorage.getInstance();
 
         hours = findViewById(R.id.hours);
         arrowbtn = findViewById(R.id.arrowbtn);
@@ -217,12 +249,17 @@ public class ProfileActivity extends AppCompatActivity
         deliveryCost = findViewById(R.id.deliveryCost);
         minimumOrder = findViewById(R.id.minimumOrder);
         modifyingInfo = false;
+        progressBar = findViewById(R.id.progressBar);
+        imgProgressBar = findViewById(R.id.imgProgressBar);
 
         // Set all field to unclickable
         setFieldUnclickable();
 
-        // Load saved information, if exist
-        loadFields();
+        hideFields();
+        imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
+        isDefaultImage = true;
+        downloadProfilePic();
+        loadFieldsFromFirebase();
 
         initializeNavigationDrawer();
 
@@ -295,8 +332,11 @@ public class ProfileActivity extends AppCompatActivity
                 } else {                      // I pressed to come back
                     modifyingInfo = false;
                     setFieldUnclickable();
-                    saveFields();
-                    Toast.makeText(getApplicationContext(), "Data saved", Toast.LENGTH_SHORT).show();
+                    saveFieldsOnFirebase();
+                    if (!isDefaultImage)
+                        uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
+                    else
+                        deleteProfilePic();
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -320,7 +360,11 @@ public class ProfileActivity extends AppCompatActivity
         if (modifyingInfo) {
             modifyingInfo = false;
             setFieldUnclickable();
-            saveFields();
+            saveFieldsOnFirebase();
+            if (!isDefaultImage)
+                uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
+            else
+                deleteProfilePic();
         } else
             super.onBackPressed();
     }
@@ -511,8 +555,7 @@ public class ProfileActivity extends AppCompatActivity
                 // Set the default image
                 Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                 personalImage.setImageDrawable(defaultImg);
-                editor.remove("PersonalImage");
-                editor.apply();
+                isDefaultImage = true;
                 updateNavigatorPersonalIcon();
                 return true;
 
@@ -531,7 +574,7 @@ public class ProfileActivity extends AppCompatActivity
             Bundle extras = data.getExtras();
             Bitmap bitmap = (Bitmap) extras.get("data");
             personalImage.setImageBitmap(bitmap);
-            saveImageContent();
+            isDefaultImage = false;
         }
 
         if (requestCode == MyImageHandler.Gallery_Pick_Code && resultCode == RESULT_OK && data != null) {
@@ -562,29 +605,50 @@ public class ProfileActivity extends AppCompatActivity
                 Bundle extrasBundle = data.getExtras();
 
                 // Aggiunto il "&& extrasBundle != null" per evitare il crash dell'app
-                if (!extrasBundle.isEmpty() && extrasBundle != null) {
-                    if (extrasBundle.containsKey(getResources().getString(R.string.Monday))) {
-                        mondayHour.setText(extrasBundle.getString(getResources().getString(R.string.Monday)));
+                if (extrasBundle != null){
+                    if (!extrasBundle.isEmpty()) {
+                        if (extrasBundle.containsKey(getResources().getString(R.string.Monday))) {
+                            mondayHour.setText(extrasBundle.getString(getResources().getString(R.string.Monday)));
+                        }
+                        if (extrasBundle.containsKey(getResources().getString(R.string.Tuesday))) {
+                            tuesdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Tuesday)));
+                        }
+                        if (extrasBundle.containsKey(getResources().getString(R.string.Wednesday))) {
+                            wednesdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Wednesday)));
+                        }
+                        if (extrasBundle.containsKey(getResources().getString(R.string.Thursday))) {
+                            thursdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Thursday)));
+                        }
+                        if (extrasBundle.containsKey(getResources().getString(R.string.Friday))) {
+                            fridayHour.setText(extrasBundle.getString(getResources().getString(R.string.Friday)));
+                        }
+                        if (extrasBundle.containsKey(getResources().getString(R.string.Saturday))) {
+                            saturdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Saturday)));
+                        }
+                        if (extrasBundle.containsKey(getResources().getString(R.string.Sunday))) {
+                            sundayHour.setText(extrasBundle.getString(getResources().getString(R.string.Sunday)));
+                        }
                     }
-                    if (extrasBundle.containsKey(getResources().getString(R.string.Tuesday))) {
-                        tuesdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Tuesday)));
-                    }
-                    if (extrasBundle.containsKey(getResources().getString(R.string.Wednesday))) {
-                        wednesdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Wednesday)));
-                    }
-                    if (extrasBundle.containsKey(getResources().getString(R.string.Thursday))) {
-                        thursdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Thursday)));
-                    }
-                    if (extrasBundle.containsKey(getResources().getString(R.string.Friday))) {
-                        fridayHour.setText(extrasBundle.getString(getResources().getString(R.string.Friday)));
-                    }
-                    if (extrasBundle.containsKey(getResources().getString(R.string.Saturday))) {
-                        saturdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Saturday)));
-                    }
-                    if (extrasBundle.containsKey(getResources().getString(R.string.Sunday))) {
-                        sundayHour.setText(extrasBundle.getString(getResources().getString(R.string.Sunday)));
-                    }
-                    saveFields();
+                }
+            }
+        }
+        if (requestCode == RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            if (resultCode == RESULT_OK) {
+                // Successfully signed in
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                editor.putString("currentUser", user.getUid());
+                editor.apply();
+
+                loadFieldsFromFirebase();
+                downloadProfilePic();
+
+            } else {
+                if (response==null) {
+                    // Back button pressed
+                } else {
+                    Toast.makeText(this, "Error: "+ Objects.requireNonNull(response.getError()).getErrorCode(), Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -596,7 +660,7 @@ public class ProfileActivity extends AppCompatActivity
         if (uri != null) {
             try {
                 personalImage.setImageURI(uri);
-                saveImageContent();
+                isDefaultImage = false;
             } catch (Exception e) {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -706,59 +770,326 @@ public class ProfileActivity extends AppCompatActivity
     //todo: aggiungere il menù nell'activity per la modifica degli orari con backbutton e conferma
 
 
-    public void populateDatabaseWithDummyValues() {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        database.child("Company").removeValue();
+//    public void populateDatabaseWithDummyValues() {
+//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+//        database.child("Company").removeValue();
+//
+//        ArrayList<RestaurantProfile> mRestaurantList = new ArrayList<>();
+//        mRestaurantList.add(new RestaurantProfile("Name1", "111", "Via malta", "email1", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
+//        mRestaurantList.add(new RestaurantProfile("Name2", "222", "Via malta", "email2", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
+//        mRestaurantList.add(new RestaurantProfile("Name3", "333", "Via malta", "email3", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
+//        mRestaurantList.add(new RestaurantProfile("Name4", "444", "Via malta", "email4", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
+//        DatabaseReference profileRef = database.child("Company").child("Profile");
+//
+//        for (RestaurantProfile element : mRestaurantList) {
+//            String email = element.getEmail();
+//            profileRef.child(email).setValue(element);
+//        }
+//
+//        ArrayList<OrderedDish> orderedDishList = new ArrayList<>();
+//        orderedDishList.add(new OrderedDish("Food1", 2, 6.4f));
+//        orderedDishList.add(new OrderedDish("Food2", 6, 10.4f));
+//        orderedDishList.add(new OrderedDish("Food3", 3, 6f));
+//        orderedDishList.add(new OrderedDish("Food4", 5, 9.4f));
+//        orderedDishList.add(new OrderedDish("Food5", 7, 1.5f));
+//
+//        // Compute total Price
+//        float x = 0;
+//        for (OrderedDish element : orderedDishList)
+//            x += element.getPrice() * element.getQuantity();
+//        DecimalFormat df = new DecimalFormat("#.##");
+//        df.setMinimumFractionDigits(2);
+//        String price = df.format(x);
+//
+//        ArrayList<Reservation> mReservationList = new ArrayList<>();
+//        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 0, price));
+//        mReservationList.add(new Reservation("Piazza Sabotino 8", "19:00", 0, price));
+//        mReservationList.add(new Reservation("Via Villarbasse 12", "20:45", 0, price));
+//        mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 0, price));
+//        mReservationList.add(new Reservation("Address5", "Delivery Time", 0, price));
+//        mReservationList.add(new Reservation("Address6", "Delivery Time", 0, price));
+//        mReservationList.add(new Reservation("Address7", "Delivery Time", 0, price));
+//        mReservationList.add(new Reservation("Address8", "Delivery Time", 0, price));
+//
+//        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
+//        DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood");
+//
+//        for (int i = 1; i < 5; i++) {
+//            for (Reservation element : mReservationList) {
+//                String orderID = pendingReservationRef.push().getKey();
+//                element.setOrderID(orderID);
+//                pendingReservationRef.child("email" + i).child(orderID).setValue(element);
+//                orderedFoodRef.child(orderID).setValue(orderedDishList);
+//            }
+//        }
+//
+//    }
 
-        ArrayList<RestaurantProfile> mRestaurantList = new ArrayList<>();
-        mRestaurantList.add(new RestaurantProfile("Name1", "111", "Via malta", "email1", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
-        mRestaurantList.add(new RestaurantProfile("Name2", "222", "Via malta", "email2", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
-        mRestaurantList.add(new RestaurantProfile("Name3", "333", "Via malta", "email3", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
-        mRestaurantList.add(new RestaurantProfile("Name4", "444", "Via malta", "email4", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
-        DatabaseReference profileRef = database.child("Company").child("Profile");
+    private void saveFieldsOnFirebase() {
+        progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
-        for (RestaurantProfile element : mRestaurantList) {
-            String email = element.getEmail();
-            profileRef.child(email).setValue(element);
-        }
+        RestaurantProfile currentUser = new RestaurantProfile(name.getText().toString(), phone.getText().toString(),
+                address.getText().toString(), email.getText().toString(), editCategory.getText().toString(),
+                minimumOrder.getText().toString(), deliveryCost.getText().toString(), mondayHour.getText().toString(), tuesdayHour.getText().toString(),
+                wednesdayHour.getText().toString(), thursdayHour.getText().toString(), fridayHour.getText().toString(),
+                saturdayHour.getText().toString(), sundayHour.getText().toString(), additionalInformation.getText().toString());
 
-        ArrayList<OrderedDish> orderedDishList = new ArrayList<>();
-        orderedDishList.add(new OrderedDish("Food1", 2, 6.4f));
-        orderedDishList.add(new OrderedDish("Food2", 6, 10.4f));
-        orderedDishList.add(new OrderedDish("Food3", 3, 6f));
-        orderedDishList.add(new OrderedDish("Food4", 5, 9.4f));
-        orderedDishList.add(new OrderedDish("Food5", 7, 1.5f));
-
-        // Compute total Price
-        float x = 0;
-        for (OrderedDish element : orderedDishList)
-            x += element.getPrice() * element.getQuantity();
-        DecimalFormat df = new DecimalFormat("#.##");
-        df.setMinimumFractionDigits(2);
-        String price = df.format(x);
-
-        ArrayList<Reservation> mReservationList = new ArrayList<>();
-        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 0, price));
-        mReservationList.add(new Reservation("Piazza Sabotino 8", "19:00", 0, price));
-        mReservationList.add(new Reservation("Via Villarbasse 12", "20:45", 0, price));
-        mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 0, price));
-        mReservationList.add(new Reservation("Address5", "Delivery Time", 0, price));
-        mReservationList.add(new Reservation("Address6", "Delivery Time", 0, price));
-        mReservationList.add(new Reservation("Address7", "Delivery Time", 0, price));
-        mReservationList.add(new Reservation("Address8", "Delivery Time", 0, price));
-
-        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
-        DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood");
-
-        for (int i = 1; i < 5; i++) {
-            for (Reservation element : mReservationList) {
-                String orderID = pendingReservationRef.push().getKey();
-                element.setOrderID(orderID);
-                pendingReservationRef.child("email" + i).child(orderID).setValue(element);
-                orderedFoodRef.child(orderID).setValue(orderedDishList);
-            }
-        }
-
+        String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        database.getReference("Profiles")
+                .child("Restaurants").child(currentUid)
+                .setValue(currentUser, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                        if (databaseError != null) {
+                            progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Dati salvati correttamente nel db
+                            // Aggiorno le shared prefs
+                            editor.putString("Name", name.getText().toString());
+                            editor.putString("Email", email.getText().toString());
+                            editor.putString("Phone", phone.getText().toString());
+                            editor.putString("Address", address.getText().toString());
+                            editor.apply();
+                            progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                        }
+                    }
+                });
     }
+
+    private void uploadProfilePic(Bitmap bitmap) {
+
+        imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
+
+        // Se è l'immagine di default, non salvo niente
+        if (isDefaultImage) {
+            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+            return;
+        }
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] data = stream.toByteArray();
+        final StorageReference fileReference = storage.getReference("profile_pics")
+                .child("restaurants")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        final UploadTask uploadTask = fileReference.putBytes(data); // Salvo l'immagine nello storage
+        /* Gestione successo e insuccesso */
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // Upload success
+                /* Ricavo Uri e lo inserisco nel db */
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw Objects.requireNonNull(task.getException());
+                        }
+                        // Continue with the task to get the download URL
+                        return fileReference.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (!task.isSuccessful()) {
+                            // Handle failures
+                            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                        } else {
+                            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void downloadProfilePic() {
+        final long ONE_MEGABYTE = 1024 * 1024;
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                .child("restaurants").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                // Scarico l'immagine e la setto
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                personalImage.setImageBitmap(bitmap);
+                isDefaultImage = false;
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+                int errorCode = ((StorageException) exception).getErrorCode();
+                if (errorCode==StorageException.ERROR_OBJECT_NOT_FOUND) {
+                    // La foto non è presente: carico immagine di default
+                    Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
+                    personalImage.setImageDrawable(defaultImg);
+                    isDefaultImage = true;
+                }
+            }
+        });
+    }
+
+    private void deleteProfilePic() {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                .child("restaurants")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        // Delete the file
+        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                // File deleted successfully
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // An error occurred
+            }
+        });
+    }
+
+    private void hideFields() {
+        name.setVisibility(View.INVISIBLE);
+        email.setVisibility(View.INVISIBLE);
+        phone.setVisibility(View.INVISIBLE);
+        address.setVisibility(View.INVISIBLE);
+        additionalInformation.setVisibility(View.INVISIBLE);
+        deliveryCost.setVisibility(View.INVISIBLE);
+        minimumOrder.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
+    }
+
+    private void showFields() {
+        name.setVisibility(View.VISIBLE);
+        email.setVisibility(View.VISIBLE);
+        phone.setVisibility(View.VISIBLE);
+        address.setVisibility(View.VISIBLE);
+        additionalInformation.setVisibility(View.VISIBLE);
+        deliveryCost.setVisibility(View.VISIBLE);
+        minimumOrder.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);  // Nascondo la progress bar
+    }
+
+    private void loadFieldsFromFirebase() {
+
+        database.getReference("Profiles")
+                .child("Restaurants")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        RestaurantProfile restaurant = dataSnapshot.getValue(RestaurantProfile.class);
+
+                        if (restaurant!=null) {
+                            // Utente già registrato: setto i campi
+                            name.setText(restaurant.getName());
+                            phone.setText(restaurant.getPhoneNumber());
+                            address.setText(restaurant.getAddress());
+                            additionalInformation.setText(restaurant.getInfo());
+                            email.setText(restaurant.getEmail());
+                            deliveryCost.setText(restaurant.getDeliveryCost());
+                            minimumOrder.setText(restaurant.getMinOrder());
+                            editCategory.setText(restaurant.getFoodCategory());
+                            mondayHour.setText(restaurant.getMondayOpeningHours());
+                            tuesdayHour.setText(restaurant.getTuesdayOpeningHours());
+                            wednesdayHour.setText(restaurant.getWednesdayOpeningHours());
+                            thursdayHour.setText(restaurant.getThursdayOpeningHours());
+                            fridayHour.setText(restaurant.getFridayOpeningHours());
+                            saturdayHour.setText(restaurant.getSaturdayOpeningHours());
+                            sundayHour.setText(restaurant.getSundayOpeningHours());
+                            showFields();
+
+                            // Aggiorno le shared prefs
+                            editor.putString("Name", restaurant.getName());
+                            editor.putString("Email", restaurant.getEmail());
+                            editor.putString("Phone", restaurant.getPhoneNumber());
+                            editor.putString("Address", restaurant.getAddress());
+                            editor.apply();
+
+                        } else {
+                            // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
+                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            RestaurantProfile currentUser = new RestaurantProfile(user.getDisplayName(), user.getEmail(),
+                                    "","","","","",getResources().getString(R.string.Closed),
+                                    getResources().getString(R.string.Closed),
+                                    getResources().getString(R.string.Closed),
+                                    getResources().getString(R.string.Closed),
+                                    getResources().getString(R.string.Closed),
+                                    getResources().getString(R.string.Closed),
+                                    getResources().getString(R.string.Closed),
+                                    "");
+                            String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            database.getReference("Profiles")
+                                    .child("Restaurants")
+                                    .child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                    if (databaseError!= null) {
+                                        Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
+                                        // todo: rimuovere la registrazione dell'utente
+                                    } else {
+                                        name.setText(user.getDisplayName());
+                                        email.setText(user.getEmail());
+                                        // Aggiorno le shared prefs
+                                        editor.putString("Name", user.getDisplayName());
+                                        editor.putString("Email", user.getEmail());
+                                        editor.apply();
+                                        showFields();
+                                    }
+                                }
+                            });
+                        }
+
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+    }
+
+
+
+    private void startLogin() {
+        // Choose authentication providers
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build()
+        );
+
+        // Create and launch sign-in intent
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setIsSmartLockEnabled(false)
+                        .setAvailableProviders(providers)
+                        .setLogo(R.drawable.personicon)
+                        .build(),
+                RC_SIGN_IN);
+    }
+
+    private void startLogout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        editor.clear();
+                        editor.apply();
+                        //startLogin();
+                        Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
+                        startActivity(intent);
+                    }
+                });
+    }
+
 
 }

@@ -24,6 +24,15 @@ public class RestaurantProfile implements Parcelable {
     private String fridayOpeningHours;
     private String saturdayOpeningHours;
     private String sundayOpeningHours;
+    private String additionalInformation;
+
+    public String getAdditionalInformation() {
+        return additionalInformation;
+    }
+
+    public void setAdditionalInformation(String additionalInformation) {
+        this.additionalInformation = additionalInformation;
+    }
 
     public String getEmail() {
         return email;
@@ -33,10 +42,12 @@ public class RestaurantProfile implements Parcelable {
         this.email = email;
     }
 
+    public RestaurantProfile() {}
+
     public RestaurantProfile(String name, String phoneNumber, String address, String email, String foodCategory,
                              String minOrder, String deliveryCost, String mondayOpeningHours,
                              String tuesdayOpeningHours, String wednesdayOpeningHours, String thursdayOpeningHours,
-                             String fridayOpeningHours, String saturdayOpeningHours, String sundayOpeningHours) {
+                             String fridayOpeningHours, String saturdayOpeningHours, String sundayOpeningHours, String additionalInformation) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.address = address;
@@ -51,6 +62,7 @@ public class RestaurantProfile implements Parcelable {
         this.fridayOpeningHours = fridayOpeningHours;
         this.saturdayOpeningHours = saturdayOpeningHours;
         this.sundayOpeningHours = sundayOpeningHours;
+        this.additionalInformation=additionalInformation;
     }
 
     public RestaurantProfile(int id, String name, String phoneNumber, String address, String info,
