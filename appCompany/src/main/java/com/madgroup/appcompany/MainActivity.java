@@ -24,6 +24,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blackcat.currencyedittext.CurrencyEditText;
 import com.github.aakira.expandablelayout.ExpandableLayout;
 import com.github.aakira.expandablelayout.Utils;
 import com.google.android.material.navigation.NavigationView;
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity
     private EditText phone;
     private EditText address;
     private EditText additionalInformation;
+    private CurrencyEditText deliveryCost;
+    private CurrencyEditText minimumOrder;
     private Boolean modifyingInfo;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
@@ -211,6 +214,8 @@ public class MainActivity extends AppCompatActivity
         phone = findViewById(R.id.editTextPhone);
         address = findViewById(R.id.editTextAddress);
         additionalInformation = findViewById(R.id.additionalInformation);
+        deliveryCost = findViewById(R.id.deliveryCost);
+        minimumOrder = findViewById(R.id.minimumOrder);
         modifyingInfo = false;
 
         // Set all field to unclickable
@@ -328,6 +333,8 @@ public class MainActivity extends AppCompatActivity
         phone.setEnabled(false);
         address.setEnabled(false);
         additionalInformation.setEnabled(false);
+        deliveryCost.setEnabled(false);
+        minimumOrder.setEnabled(false);
         personalImage.setEnabled(false);
         editCategory.setEnabled(false);
         modifyHours.setEnabled(false);
@@ -340,6 +347,8 @@ public class MainActivity extends AppCompatActivity
         phone.setEnabled(true);
         address.setEnabled(true);
         additionalInformation.setEnabled(true);
+        deliveryCost.setEnabled(true);
+        minimumOrder.setEnabled(true);
         personalImage.setEnabled(true);
         editCategory.setEnabled(true);
         modifyHours.setEnabled(true);
@@ -358,6 +367,10 @@ public class MainActivity extends AppCompatActivity
             address.setText(prefs.getString("Address", ""));
         if (prefs.contains("Information"))
             additionalInformation.setText(prefs.getString("Information", ""));
+        if(prefs.contains("DeliveryCost"))
+            deliveryCost.setText(prefs.getString("DeliveryCost", ""));
+        if(prefs.contains("MinOrder"))
+            minimumOrder.setText(prefs.getString("MinOrder", ""));
         if (prefs.contains("FoodCounter"))
             categoriesCount = prefs.getInt("FoodCounter", 0);
         if (prefs.contains("checkedItems_size")) {
@@ -397,6 +410,8 @@ public class MainActivity extends AppCompatActivity
         editor.putString("Phone", phone.getText().toString());
         editor.putString("Address", address.getText().toString());
         editor.putString("Information", additionalInformation.getText().toString());
+        editor.putString("DeliveryCost", deliveryCost.getText().toString());
+        editor.putString("MinOrder", minimumOrder.getText().toString());
         editor.putInt("FoodCounter", categoriesCount);
         editor.putInt("checkedItems_size", checkedItems.length);
         editor.putInt("mUserItems_size", mUserItems.size());

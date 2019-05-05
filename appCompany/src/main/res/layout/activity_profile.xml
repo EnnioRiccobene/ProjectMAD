@@ -153,6 +153,48 @@
                     android:scrollbars="vertical" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/deliveryCostInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/additionalInformationInputLayout">
+
+                <com.blackcat.currencyedittext.CurrencyEditText
+                    android:id="@+id/deliveryCost"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:hint="@string/delivery_cost"
+                    android:ems="10"
+                    android:inputType="numberDecimal"
+                    app:decimal_digits="2" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/minimumOrderInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/deliveryCostInputLayout">
+
+                <com.blackcat.currencyedittext.CurrencyEditText
+                    android:id="@+id/minimumOrder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:hint="@string/minimum_order"
+                    android:ems="10"
+                    android:inputType="numberDecimal"
+                    app:decimal_digits="2" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
             <EditText
                 android:id="@+id/editTextFoodCategory"
                 android:layout_width="match_parent"
@@ -165,7 +207,7 @@
                 android:inputType="textPersonName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/additionalInformationInputLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/minimumOrderInputLayout" />
 
             <RelativeLayout
                 android:layout_width="match_parent"

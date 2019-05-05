@@ -58,7 +58,6 @@
     <string name="open_24h">Aperto 24h</string>
 
 
-
     <string name="dish_name">Nome del piatto</string>
     <string name="dish_description">Descrizione</string>
     <string name="available_quantity">Quantità disponibile</string>
@@ -165,4 +164,6 @@
     </string-array>
     <string name="requiredPrice">Il prezzo non può essere zero</string>
     <string name="requiredString">Inserire i campi richiesti</string>
+    <string name="delivery_cost">Costo di consegna</string>
+    <string name="minimum_order">Ordine minimo</string>
 </resources>
