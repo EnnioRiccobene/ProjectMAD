@@ -172,7 +172,7 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
         }
 
         viewHolder.dishPrice.setText("" + dishPrice + currency);
-        viewHolder.dishQuantity.setText(mContext.getResources().getString(R.string.availableQuantity) + " " + dish.getAvailableQuantity());
+        viewHolder.dishQuantity.setText(mContext.getResources().getString(R.string.available_quantity) + " " + dish.getAvailableQuantity());
         viewHolder.dishDescription.setText(dish.getDescription());
         viewHolder.dishPhoto.setImageBitmap(dish.getPhoto());
 
