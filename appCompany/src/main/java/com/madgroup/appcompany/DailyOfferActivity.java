@@ -1,19 +1,5 @@
 package com.madgroup.appcompany;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import de.hdodenhof.circleimageview.CircleImageView;
-
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
@@ -37,14 +23,26 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.blackcat.currencyedittext.CurrencyEditText;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
@@ -55,9 +53,13 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DailyOfferActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener, PopupMenu.OnMenuItemClickListener {
+        NavigationView.OnNavigationItemSelectedListener, PopupMenu.OnMenuItemClickListener, DailyOfferRecyclerAdapter.DailyOfferRecyclerListener {
 
     public static final int THUMBSIZE = 50;
     private NavigationView navigationView;
@@ -65,7 +67,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private RecyclerView recyclerView;
-    private DailyOfferRecyclerViewAdapter adapter;
+    private DailyOfferRecyclerAdapter adapter;
     private Dish currentDish;
     private static String POPUP_CONSTANT = "mPopup";
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
@@ -80,8 +82,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
     // Todo: sostituirla con il parametro di autenticazione
     private String restaurantUid;
-
-    ArrayList<Dish> myList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,13 +115,11 @@ public class DailyOfferActivity extends AppCompatActivity implements
 //                "Olio extravergine d'oliva, " +
 //                "Pepe nero, ", gnocchiIcon));
 
-        initDailyOfferRecyclerView(dishRef);
+        initDailyOfferRecyclerView();
     }
 
 
-
-
-    private void initDailyOfferRecyclerView(DatabaseReference dishRef) {
+    private void initDailyOfferRecyclerView() {
 
 //        Query applyQuery = dishRef;
 
@@ -131,20 +129,58 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
 
         recyclerView = this.findViewById(R.id.my_recycler_view);
-        adapter = new DailyOfferRecyclerViewAdapter(options, dishRef, this);
+        adapter = new DailyOfferRecyclerAdapter(this, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        //
-        adapter.startListening();
+        getItemsFromDb();
 
-        // Serve per modificare il campo currentDialog dall'adapter
-        adapter.adapterhandler = new AdapterHandler() {
+        //
+//        adapter.startListening();
+//
+//        // Serve per modificare il campo currentDialog dall'adapter
+//        adapter.adapterhandler = new AdapterHandler() {
+//            @Override
+//            public void setCurrentDialog(Dialog dialog) {
+//                DailyOfferActivity.this.currentDialog = dialog;
+//            }
+//        };
+    }
+
+    void getItemsFromDb() {
+        dishRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void setCurrentDialog(Dialog dialog) {
-                DailyOfferActivity.this.currentDialog = dialog;
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                adapter.setDataset(parseDataset(dataSnapshot));
+                dishRef.removeEventListener(this);
             }
-        };
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    ArrayList<Dish> parseDataset(DataSnapshot dataSnapshot) {
+
+        ArrayList<Dish> dataset = new ArrayList<>();
+
+        if (dataSnapshot != null && dataSnapshot.getValue() != null) {
+            for (Object obj : ((HashMap<String, Object>) dataSnapshot.getValue()).values()) {
+                HashMap<String, Object> data = (HashMap<String, Object>) obj;
+                dataset.add(new Dish(
+                        data.get("id").toString(),
+                        data.get("name").toString(),
+                        data.get("price").toString(),
+                        data.get("availableQuantity").toString(),
+                        data.get("description").toString()
+                ));
+            }
+        }
+
+        return dataset;
     }
 
     // Navigation Drawer
@@ -178,14 +214,14 @@ public class DailyOfferActivity extends AppCompatActivity implements
     // What happens if I press back button
     @Override
     public void onBackPressed() {
-        DrawerLayout layout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        if(layout.isDrawerOpen(GravityCompat.START))
+        DrawerLayout layout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (layout.isDrawerOpen(GravityCompat.START))
             layout.closeDrawer(GravityCompat.START);
         else
             super.onBackPressed();
     }
 
-    public void initializeNavigationDrawer(){
+    public void initializeNavigationDrawer() {
 
         // Navigation Drawer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -211,16 +247,16 @@ public class DailyOfferActivity extends AppCompatActivity implements
         navUsername.setText(username);
 
         String email = prefs.getString("Email", "");
-        TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
         navEmail.setText(email);
         updateNavigatorPersonalIcon();
     }
 
-    public void updateNavigatorPersonalIcon(){
+    public void updateNavigatorPersonalIcon() {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-        if(!ImageBitmap.equals("NoImage")){
+        if (!ImageBitmap.equals("NoImage")) {
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             nav_profile_icon.setImageBitmap(bitmap);
@@ -242,7 +278,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             // Edit icon
             case R.id.addIcon:
-                showDialog();
+                showDialog(null);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -250,7 +286,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
     // Dialog per la creazione di un NUOVO piatto
     //todo creazione piatto nel db
-    private void showDialog() {
+    private void showDialog(final Dish item) {
         // custom dialog
         final Dialog dialog = new Dialog(this);
         dialog.setTitle(R.string.edit_dish);
@@ -265,6 +301,13 @@ public class DailyOfferActivity extends AppCompatActivity implements
         final EditText editDishDescription = (EditText) dialog.findViewById(R.id.editDishDescription);
         final EditText editDishQuantity = (EditText) dialog.findViewById(R.id.editDishQuantity);
         final CurrencyEditText editPrice = dialog.findViewById(R.id.editPrice);
+
+        if (item != null) {
+            editDishName.setText(item.getName());
+            editDishDescription.setText(item.getDescription());
+            editDishQuantity.setText(item.getAvailableQuantity());
+            editPrice.setText(item.getPrice());
+        }
 
         dialogDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -285,56 +328,71 @@ public class DailyOfferActivity extends AppCompatActivity implements
                 String floatStringVal = "";
                 float floatPrice = 0;
 
-                if(local.equals("en_US")){
-                    floatStringVal = formattedVal.replace(",", "").replace("$", "").replaceAll("\\s","");
+                if (local.equals("en_US")) {
+                    floatStringVal = formattedVal.replace(",", "").replace("$", "").replaceAll("\\s", "");
                     floatPrice = Float.parseFloat(floatStringVal);
-                } else if(local.equals("en_GB")){
-                    floatStringVal = formattedVal.replace(",", "").replace("£", "").replaceAll("\\s","");
+                } else if (local.equals("en_GB")) {
+                    floatStringVal = formattedVal.replace(",", "").replace("£", "").replaceAll("\\s", "");
                     floatPrice = Float.parseFloat(floatStringVal);
-                } else if(local.equals("it_IT")){
-                    floatStringVal = formattedVal.replace(".", "").replace(",", ".").replace("€", "").replaceAll("\\s","");
+                } else if (local.equals("it_IT")) {
+                    floatStringVal = formattedVal.replace(".", "").replace(",", ".").replace("€", "").replaceAll("\\s", "");
                     floatPrice = Float.parseFloat(floatStringVal);
                 }
 
                 if (editDishName.getText().toString().isEmpty() || editDishQuantity.getText().toString().isEmpty()) {
                     Toast.makeText(getApplicationContext(), getString(R.string.requiredString), Toast.LENGTH_SHORT).show();
-                } else if (floatPrice==0) {
+                } else if (floatPrice == 0) {
                     Toast.makeText(getApplicationContext(), getString(R.string.requiredPrice), Toast.LENGTH_SHORT).show();
                 } else {
                     //formatto la stringa prezzo da mettere nel db
                     BigDecimal dishPrice = new BigDecimal(floatPrice).setScale(2, RoundingMode.HALF_UP);//todo: sistemare crash
                     String stringPrice = String.valueOf(dishPrice);
-                    if(local.equals("en_US")){
+                    if (local.equals("en_US")) {
                         stringPrice = stringPrice + " $";
-                    } else if(local.equals("en_GB")){
+                    } else if (local.equals("en_GB")) {
                         stringPrice = stringPrice + " £";
-                    } else if(local.equals("it_IT")){
+                    } else if (local.equals("it_IT")) {
                         stringPrice = stringPrice + " €";
                     }
                     //todo: aggiungere le immagini all'oggetto
-                    if(editDishDescription.getText().toString().isEmpty()) {
+                    if (editDishDescription.getText().toString().isEmpty()) {
                         currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
                                 editDishQuantity.getText().toString(), "");
                     } else {
                         currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
                                 editDishQuantity.getText().toString(), editDishDescription.getText().toString());
                     }
-//                    myList.add(currentDish);
-//                    dishRef.push().setValue(currentDish);
 
-                    String key = dishRef.push().getKey();
-                    currentDish.setId(key);
-                    dishRef.child(key).setValue(currentDish);
+                    if (item == null) {
+                        addDbDish(currentDish);
+                    } else {
+                        currentDish.setId(item.getId());
+                        updateDbDish(currentDish);
+                    }
+                    getItemsFromDb();
 
-//                    adapter.notifyItemInserted(myList.size() - 1);
-                    adapter.notifyItemInserted(adapter.getSnapshots().size());
-//                    adapter.notifyItemRangeChanged(myList.size() - 1, myList.size());
-                    adapter.notifyItemRangeChanged(adapter.getSnapshots().size(), adapter.getSnapshots().size() + 1);
                     dialog.dismiss();
                 }
             }
         });
         dialog.show();
+    }
+
+    void updateDbDish(Dish item) {
+        final Map<String, Object> childUpdates = new HashMap<>();
+        String dishId = item.getId();
+
+        childUpdates.put("/" + dishId + "/" + "name", item.getName());
+        childUpdates.put("/" + dishId + "/" + "availableQuantity", item.getAvailableQuantity());
+        childUpdates.put("/" + dishId + "/" + "description", item.getDescription());
+        childUpdates.put("/" + dishId + "/" + "price", item.getPrice());
+        dishRef.updateChildren(childUpdates);
+    }
+
+    void addDbDish(Dish item) {
+        String key = dishRef.push().getKey();
+        item.setId(key);
+        dishRef.child(key).setValue(item);
     }
 
     public void showPopup(View v) {
@@ -370,7 +428,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
                 boolean userPreviousDeniedRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.CAMERA);
 
-                if (cameraPermission== PackageManager.PERMISSION_GRANTED) {
+                if (cameraPermission == PackageManager.PERMISSION_GRANTED) {
                     MyImageHandler.getInstance().startCamera(this);
                 } else {
                     if (userPreviousDeniedRequest) {
@@ -389,7 +447,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
                 boolean userPreviousDeniedGalleryRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.READ_EXTERNAL_STORAGE);
 
-                if (readStoragePermission==PackageManager.PERMISSION_GRANTED) {
+                if (readStoragePermission == PackageManager.PERMISSION_GRANTED) {
                     MyImageHandler.getInstance().startGallery(this);
                 } else {
                     if (userPreviousDeniedGalleryRequest) {
@@ -443,7 +501,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
             }
         }
         if (requestCode == UCrop.REQUEST_CROP) {
-            if (data!=null)
+            if (data != null)
                 handleCropResult(data);
         }
     }
@@ -487,11 +545,21 @@ public class DailyOfferActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void removeItem(String id) {
+        dishRef.child(id).removeValue();
+        getItemsFromDb();
+    }
+
+    @Override
+    public void updateItem(Dish item) {
+        showDialog(item);
+    }
+
     // Serve per modificare il campo currentDialog dall'adapter
-    public abstract class AdapterHandler
-    {
-        public void setCurrentDialog(Dialog dialog) {}
+    public abstract class AdapterHandler {
+        public void setCurrentDialog(Dialog dialog) {
+        }
     }
 
 }
-
