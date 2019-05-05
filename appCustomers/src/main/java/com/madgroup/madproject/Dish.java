@@ -6,12 +6,15 @@ public class Dish {
 
     private String id;
     private String name;
-    private float price;
+    private String price;
     private String availableQuantity;
     private String description;
     private Bitmap photo;
 
-    public Dish(String id, String name, float price, String availableQuantity, String description, Bitmap photo) {
+    public Dish() {
+    }
+
+    public Dish(String id, String name, String price, String availableQuantity, String description, Bitmap photo) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -20,7 +23,15 @@ public class Dish {
         this.photo = photo;
     }
 
-    public Dish(String id, String name, float price, String availableQuantity) {
+    public Dish(String id, String name, String price, String availableQuantity, String description) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.availableQuantity = availableQuantity;
+        this.description = description;
+    }
+
+    public Dish(String id, String name, String price, String availableQuantity) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -51,11 +62,11 @@ public class Dish {
         this.description = description;
     }
 
-    public float getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 

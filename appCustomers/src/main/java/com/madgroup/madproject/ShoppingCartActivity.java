@@ -26,6 +26,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.SmartLogger;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -55,7 +56,6 @@ public class ShoppingCartActivity extends AppCompatActivity {
     private String deliveryCostAmount;
     private String minimumOrder;
     private String restaurantId;
-    private Integer difference;
 
     public static void start(Context context, Reservation reservation, String delivery_cost_amount, String minimumOrder) {
         Intent starter = new Intent(context, ShoppingCartActivity.class);
@@ -122,6 +122,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
         float total = Float.valueOf(deliverCost) + Float.valueOf(currentReservation.getPrice().replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s", ""));
         deliveryPrice.setText(String.valueOf(df.format(Float.valueOf(deliverCost))) + currency);
         totalPrice.setText(String.valueOf(df.format(total)) + currency);
+        currentReservation.setPrice(totalPrice.getText().toString());
 
         float minOrder = Float.valueOf(minimumOrder.replace("€", "").replace(",", ".").replace("£", "").replace("$", "").replaceAll("\\s", ""));
 
@@ -148,11 +149,10 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 //todo: conferma ordine e invia l'oggetto corrispondente al db (e notifica). Fare eventuale email di conferma ordine al cliente e cambiare activity
                 // Creare oggetto Reservation e caricarlo sia sul restaurant (pending) sia nel customer (pending)
 
-                String UserID = prefs.getString("currentUser", "Error");
-                currentReservation.setPrice(totalPrice.getText().toString());
+                String userID = prefs.getString("currentUser", "Error");
                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
                 // Customer Reference
-                final DatabaseReference pendingCustomerRef = database.child("Customer").child("Order").child("Pending").child(restaurantId);
+                final DatabaseReference pendingCustomerRef = database.child("Customer").child("Order").child("Pending").child(userID).child(restaurantId);
                 // Company References
                 final DatabaseReference pendingRestaurantRef = database.child("Company").child("Reservation").child("Pending").child(restaurantId);
                 DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood").child(restaurantId);
@@ -166,45 +166,24 @@ public class ShoppingCartActivity extends AppCompatActivity {
                     @NonNull
                     @Override
                     public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                        difference = -1;
                         ArrayList<OrderedDish> orderedDishes = currentReservation.getOrderedDishList();
                         for (final OrderedDish orderedDish : orderedDishes) {
-                            Query query = menuRef.orderByChild("id").equalTo(orderedDish.getId());
-                            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists()) {
-                                        Dish menuDish = (Dish) dataSnapshot.getValue();
-                                        difference = Integer.parseInt(menuDish.getAvailableQuantity()) - Integer.parseInt(orderedDish.getQuantity());
-                                        if (difference < 0 )
-                                            Transaction.abort();
-                                        HashMap<String, Object> updateAvailableQuantity = new HashMap<>();
-                                        Integer newQuantity = difference;
-                                        updateAvailableQuantity.put("availableQuantity", String.valueOf(newQuantity));
-                                        menuRef.child(orderedDish.getId()).updateChildren(updateAvailableQuantity);
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-                            if (difference < 0 )
+                            String availableQuantity = (String) mutableData.child(orderedDish.getId()).child("availableQuantity").getValue();
+                            Integer remainQuantity = Integer.parseInt(availableQuantity) - Integer.parseInt(orderedDish.getQuantity());
+                            if (remainQuantity  < 0){
                                 Transaction.abort();
-                            else
-                            {
-                                // Aggiungere la reservation nel DB
-                                pendingCustomerRef.child(orderID).setValue(currentReservation);
-                                pendingRestaurantRef.child(orderID).setValue(currentReservation);
                             }
+                            mutableData.child(orderedDish.getId()).child("availableQuantity").setValue(String.valueOf(remainQuantity));
                         }
+                        pendingCustomerRef.child(orderID).setValue(currentReservation);
+                        pendingRestaurantRef.child(orderID).setValue(currentReservation);
                         return Transaction.success(mutableData);
                     }
 
                     @Override
                     public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-
+                        Intent homepage = new Intent(ShoppingCartActivity.this, ProfileActivity.class);
+                        startActivity(homepage);
                     }
                 });
             }

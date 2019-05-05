@@ -1,16 +1,9 @@
 package com.madgroup.appcompany;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,58 +16,167 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.blackcat.currencyedittext.CurrencyEditText;
-import com.madgroup.sdk.MyImageHandler;
-import com.madgroup.sdk.SmartLogger;
-import com.yalantis.ucrop.UCrop;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.blackcat.currencyedittext.CurrencyEditText;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.SmartLogger;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 // Creo un ViewHolder (che contiene il layout della cella) e l'Adapter lo setto di tipo ViewHolder
 
-public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOfferRecyclerViewAdapter.ViewHolder>
+public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish, FindDishViewHolder>
         implements PopupMenu.OnMenuItemClickListener {
 
     private ArrayList<Dish> dailyOfferList = new ArrayList<>();
     private Context mContext;
     private int currentIndex = -1;
+    private DatabaseReference dishRef;
     public DailyOfferActivity.AdapterHandler adapterhandler;
 
-    public DailyOfferRecyclerViewAdapter(Context mContext, ArrayList<Dish> dailyOfferList) {
-        this.dailyOfferList = dailyOfferList;
+    /**
+     * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
+     * {@link FirebaseRecyclerOptions} for configuration options.
+     *
+     * @param options
+     */
+    public DailyOfferRecyclerViewAdapter(@NonNull FirebaseRecyclerOptions<Dish> options, DatabaseReference dishRef, Context mContext) {
+        super(options);
+        this.dishRef = dishRef;
         this.mContext = mContext;
+        this.dailyOfferList = dailyOfferList;
     }
 
-    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.daily_offer_item, viewGroup, false);
-        ViewHolder holder = new ViewHolder(view);
-        return holder;
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.itemEdit:
+                showDialog(currentIndex, dishRef);
+                return true;
+
+            case R.id.itemRemove:
+                //rimuovo il piatto dal db e dall'arrayList
+//                dailyOfferList.clear();             //non ha funzionato
+//                dailyOfferList.addAll(dishRef.);//todo:provare a riempire l'arraylist con una nuova query al db
+
+//                dishRef.addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+//                            dailyOfferList.add((Dish)postSnapshot.getValue());
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
+
+                for (int i = 0; i < dailyOfferList.size(); i++) {
+                    SmartLogger.d("List before names: " + dailyOfferList.get(i).getName());
+                }
+                SmartLogger.d(" ");
+
+                dishRef.child(dailyOfferList.get(currentIndex).getId()).removeValue();//todo: vedere errori nella remove: facendo aggiunte e rimozioni, l'ordine degli elementi della lista non combacia più con quello dell'array
+                dailyOfferList.remove(currentIndex);
+                for (int i = 0; i < dailyOfferList.size(); i++) {
+                    SmartLogger.d("List names: " + dailyOfferList.get(i).getName());
+                }
+                SmartLogger.d(" ");
+
+                dishRef.addChildEventListener(new ChildEventListener() {
+
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        dailyOfferList.clear();
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            dailyOfferList.add((Dish) postSnapshot.getValue());//forse reference sbagliato, mi dice che tento di convertire una stringa in Dish
+                        }
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        dailyOfferList.clear();
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            dailyOfferList.add((Dish) postSnapshot.getValue());
+                        }
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        dailyOfferList.clear();
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            dailyOfferList.add((Dish) postSnapshot.getValue());
+                        }
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        dailyOfferList.clear();
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            dailyOfferList.add((Dish) postSnapshot.getValue());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+//                notifyItemRemoved(currentIndex);
+//                notifyItemRangeChanged(currentIndex, dailyOfferList.size());
+                return true;
+
+            default:
+                return false;
+        }
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
-        viewHolder.dishName.setText(dailyOfferList.get(i).getName());
+    protected void onBindViewHolder(@NonNull final FindDishViewHolder viewHolder, final int i, @NonNull Dish dish) {
+        viewHolder.dishName.setText(dish.getName());
         // Rappresentazione con due cifre decimali
-        BigDecimal dishPrice = new BigDecimal(dailyOfferList.get(i).getPrice()).setScale(2, RoundingMode.HALF_UP);
-        viewHolder.dishPrice.setText(""+dishPrice+"€");
-        viewHolder.dishQuantity.setText("Quantità disponibile: "+dailyOfferList.get(i).getAvailableQuantity());
-        viewHolder.dishDescription.setText(dailyOfferList.get(i).getDescription());
-        viewHolder.dishPhoto.setImageBitmap(dailyOfferList.get(i).getPhoto());
+        float dishFprice = Float.valueOf(dish.getPrice().replace("€", "").replace("$", "")
+                .replace("£", "").replace(",", ".").replaceAll("\\s", ""));
+        BigDecimal dishPrice = new BigDecimal(dishFprice).setScale(2, RoundingMode.HALF_UP);
+
+//        Locale current = getResources().getConfiguration().locale;
+        String current = Locale.getDefault().toString();
+        String currency;
+        if (current.equals("en_US")) {
+            currency = " $";
+        } else if (current.equals("en_GB")) {
+            currency = " £";
+        } else {
+            currency = " €";
+        }
+
+        viewHolder.dishPrice.setText("" + dishPrice + currency);
+        viewHolder.dishQuantity.setText(mContext.getResources().getString(R.string.availableQuantity) + " " + dish.getAvailableQuantity());
+        viewHolder.dishDescription.setText(dish.getDescription());
+        viewHolder.dishPhoto.setImageBitmap(dish.getPhoto());
+
+        dailyOfferList.add(new Dish(dish.getId(), dish.getName(), dish.getPrice(), dish.getAvailableQuantity(), dish.getDescription()));
 
         viewHolder.popupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,33 +186,75 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         });
     }
 
+    @NonNull
     @Override
-    public int getItemCount() {
-        return dailyOfferList.size();
+    public FindDishViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.daily_offer_item, parent, false);
+        FindDishViewHolder holder = new FindDishViewHolder(view);
+        return holder;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
 
-        RelativeLayout layout;
-        TextView dishName;
-        TextView dishDescription;
-        TextView dishPrice;
-        CircleImageView dishPhoto;
-        TextView dishQuantity;
-        ImageView popupButton;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            layout = itemView.findViewById(R.id.dish_item_layout);
-            dishName = itemView.findViewById(R.id.dish_name);
-            dishDescription = itemView.findViewById(R.id.dish_description);
-            dishPhoto = itemView.findViewById(R.id.dish_photo);
-            dishPrice = itemView.findViewById(R.id.dish_price);
-            dishQuantity = itemView.findViewById(R.id.dish_quantity);
-            popupButton = itemView.findViewById(R.id.popupButton);
-        }
-    }
-
+    //    public DailyOfferRecyclerViewAdapter(Context mContext, ArrayList<Dish> dailyOfferList, DatabaseReference dishRef) {
+//        this.dailyOfferList = dailyOfferList;
+//        this.mContext = mContext;
+//        this.dishRef = dishRef;
+//    }
+//
+//    @NonNull
+//    @Override
+//    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+//        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.daily_offer_item, viewGroup, false);
+//        ViewHolder holder = new ViewHolder(view);
+//        return holder;
+//    }
+//
+//    @SuppressLint("SetTextI18n")
+//    @Override
+//    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
+//        viewHolder.dishName.setText(dailyOfferList.get(i).getName());
+//        // Rappresentazione con due cifre decimali
+//        BigDecimal dishPrice = new BigDecimal(dailyOfferList.get(i).getPrice()).setScale(2, RoundingMode.HALF_UP);
+//        viewHolder.dishPrice.setText(""+dishPrice+" €"); //todo: aggiustare prezzo, valuta e multilingua
+//        viewHolder.dishQuantity.setText("Quantità disponibile: "+dailyOfferList.get(i).getAvailableQuantity());
+//        viewHolder.dishDescription.setText(dailyOfferList.get(i).getDescription());
+//        viewHolder.dishPhoto.setImageBitmap(dailyOfferList.get(i).getPhoto());
+//
+//        viewHolder.popupButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showEditPopup(viewHolder.popupButton, i);
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public int getItemCount() {
+//        return dailyOfferList.size();
+//    }
+//
+//    public class ViewHolder extends RecyclerView.ViewHolder {
+//
+//        RelativeLayout layout;
+//        TextView dishName;
+//        TextView dishDescription;
+//        TextView dishPrice;
+//        CircleImageView dishPhoto;
+//        TextView dishQuantity;
+//        ImageView popupButton;
+//
+//        public ViewHolder(@NonNull View itemView) {
+//            super(itemView);
+//            layout = itemView.findViewById(R.id.dish_item_layout);
+//            dishName = itemView.findViewById(R.id.dish_name);
+//            dishDescription = itemView.findViewById(R.id.dish_description);
+//            dishPhoto = itemView.findViewById(R.id.dish_photo);
+//            dishPrice = itemView.findViewById(R.id.dish_price);
+//            dishQuantity = itemView.findViewById(R.id.dish_quantity);
+//            popupButton = itemView.findViewById(R.id.popupButton);
+//        }
+//    }
+//
     public void showEditPopup(View v, int index) {
         currentIndex = index;
         PopupMenu popup = new PopupMenu(mContext, v);
@@ -119,29 +263,35 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         popup.show();
     }
 
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-
-            case R.id.itemEdit:
-                showDialog(currentIndex);
-                return true;
-
-            case R.id.itemRemove:
-                dailyOfferList.remove(currentIndex);
-                notifyItemRemoved(currentIndex);
-                notifyItemRangeChanged(currentIndex, dailyOfferList.size());
-                return true;
-
-            default:
-                return false;
-        }
-    }
+//    @Override
+//    public boolean onMenuItemClick(MenuItem item) {
+//        switch (item.getItemId()) {
+//
+//            case R.id.itemEdit:
+//                showDialog(currentIndex);
+//                return true;
+//
+//            case R.id.itemRemove:
+//                //rimuovo il piatto dal db e dall'arrayList
+//                dishRef.child(dailyOfferList.get(currentIndex).getId());
+//                dailyOfferList.remove(currentIndex);
+//                notifyItemRemoved(currentIndex);
+//                notifyItemRangeChanged(currentIndex, dailyOfferList.size());
+//                return true;
+//
+//            default:
+//                return false;
+//        }
+//    }
 
     // Dialog per la modifica di un piatto già esistente
-    private void showDialog(final int currentIndex) {
+    private void showDialog(final int currentIndex, final DatabaseReference dishRef) {
 
         Dish currentDish = dailyOfferList.get(currentIndex);
+        final String dishId = currentDish.getId();
+        //dishRef.child(dishId)
+
+        final Map<String, Object> childUpdates = new HashMap<>();
 
         // custom dialog
         final Dialog dialog = new Dialog(mContext);
@@ -164,10 +314,12 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
 
         editDishName.setText(currentDish.getName());
         editDishDescription.setText(currentDish.getDescription());
-        editDishQuantity.setText(""+currentDish.getAvailableQuantity());//editPrice.setText((""+currentDish.getPrice()));
+        editDishQuantity.setText("" + currentDish.getAvailableQuantity());//editPrice.setText((""+currentDish.getPrice()));
         // Prezzo in rappresentazione decimale con due cifre dopo la virgola
-        BigDecimal dishPrice = new BigDecimal(currentDish.getPrice()).setScale(2, RoundingMode.HALF_UP);
-        editPrice.setText(""+dishPrice);
+        float dishFprice = Float.valueOf(currentDish.getPrice().replace(",", ".").replace("£", "")
+                .replace("€", "").replace("$", "").replaceAll("\\s", ""));
+        BigDecimal dishPrice = new BigDecimal(dishFprice).setScale(2, RoundingMode.HALF_UP);
+        editPrice.setText("" + dishPrice);
         dishImage.setImageBitmap(currentDish.getPhoto());
 
         dialogDismiss.setOnClickListener(new View.OnClickListener() {
@@ -187,20 +339,20 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
                 String floatStringVal = "";
                 float floatPrice = 0;
 
-                if(local.equals("en_US")){
-                    floatStringVal = formattedVal.replace(",", "").replace("$", "").replaceAll("\\s","");
+                if (local.equals("en_US")) {
+                    floatStringVal = formattedVal.replace(",", "").replace("$", "").replaceAll("\\s", "");
                     floatPrice = Float.parseFloat(floatStringVal);
-                } else if(local.equals("en_GB")){
-                    floatStringVal = formattedVal.replace(",", "").replace("£", "").replaceAll("\\s","");
+                } else if (local.equals("en_GB")) {
+                    floatStringVal = formattedVal.replace(",", "").replace("£", "").replaceAll("\\s", "");
                     floatPrice = Float.parseFloat(floatStringVal);
-                } else if(local.equals("it_IT")){
-                    floatStringVal = formattedVal.replace(".", "").replace(",", ".").replace("€", "").replaceAll("\\s","");
+                } else if (local.equals("it_IT")) {
+                    floatStringVal = formattedVal.replace(".", "").replace(",", ".").replace("€", "").replaceAll("\\s", "");
                     floatPrice = Float.parseFloat(floatStringVal);
                 }
 
                 if (editDishName.getText().toString().isEmpty() || editDishQuantity.getText().toString().isEmpty()) {
                     Toast.makeText(mContext, mContext.getString(R.string.requiredString), Toast.LENGTH_SHORT).show();
-                } else if (floatPrice==0) {
+                } else if (floatPrice == 0) {
                     Toast.makeText(mContext, mContext.getString(R.string.requiredPrice), Toast.LENGTH_SHORT).show();
                 } else {
                     if (editDishDescription.getText().toString().isEmpty()) {
@@ -209,10 +361,10 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
 
                         Dish currentDish = dailyOfferList.get(currentIndex);
                         currentDish.setName(editDishName.getText().toString());
-                        currentDish.setAvailableQuantity(dishQuantity);
+                        currentDish.setAvailableQuantity(String.valueOf(dishQuantity));
                         currentDish.setDescription("");
                         currentDish.setPhoto(dishPhoto);
-                        currentDish.setPrice(floatPrice);
+                        currentDish.setPrice(String.valueOf(floatPrice));
                     } else {
                         int dishQuantity = Integer.parseInt(editDishQuantity.getText().toString());
                         String dishDesc = editDishDescription.getText().toString();
@@ -220,10 +372,17 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
 
                         Dish currentDish = dailyOfferList.get(currentIndex);
                         currentDish.setName(editDishName.getText().toString());
-                        currentDish.setAvailableQuantity(dishQuantity);
+                        currentDish.setAvailableQuantity(String.valueOf(dishQuantity));
                         currentDish.setDescription(dishDesc);
                         currentDish.setPhoto(dishPhoto);
-                        currentDish.setPrice(floatPrice);
+                        currentDish.setPrice(String.valueOf(floatPrice));
+
+                        //todo: manca la foto
+                        childUpdates.put("/" + dishId + "/" + "name", currentDish.getName());
+                        childUpdates.put("/" + dishId + "/" + "availableQuantity", currentDish.getAvailableQuantity());
+                        childUpdates.put("/" + dishId + "/" + "description", currentDish.getDescription());
+                        childUpdates.put("/" + dishId + "/" + "price", currentDish.getPrice());
+                        dishRef.updateChildren(childUpdates);
 
                         notifyItemChanged(currentIndex);
                         dialog.dismiss();
@@ -235,4 +394,28 @@ public class DailyOfferRecyclerViewAdapter extends RecyclerView.Adapter<DailyOff
         dialog.show();
     }
 
+}
+
+
+class FindDishViewHolder extends RecyclerView.ViewHolder {
+
+    RelativeLayout layout;
+    TextView dishName;
+    TextView dishDescription;
+    TextView dishPrice;
+    CircleImageView dishPhoto;
+    TextView dishQuantity;
+    ImageView popupButton;
+
+    public FindDishViewHolder(@NonNull View itemView) {
+        super(itemView);
+
+        layout = itemView.findViewById(R.id.dish_item_layout);
+        dishName = itemView.findViewById(R.id.dish_name);
+        dishDescription = itemView.findViewById(R.id.dish_description);
+        dishPhoto = itemView.findViewById(R.id.dish_photo);
+        dishPrice = itemView.findViewById(R.id.dish_price);
+        dishQuantity = itemView.findViewById(R.id.dish_quantity);
+        popupButton = itemView.findViewById(R.id.popupButton);
+    }
 }

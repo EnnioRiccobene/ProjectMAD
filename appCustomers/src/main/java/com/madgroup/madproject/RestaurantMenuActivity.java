@@ -7,13 +7,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -26,6 +24,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.github.aakira.expandablelayout.ExpandableLayout;
 import com.github.aakira.expandablelayout.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,7 +37,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -74,7 +72,9 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     TextView saturdayHours;
     TextView sundayHours;
     private DatabaseReference restaurantRef;
-    private String idRestaurant;
+    private DatabaseReference dishRef;
+    private String restaurantID;
+    FirebaseRecyclerOptions<Dish> options;
 
     public static void start(Context context, String restaurantId) {
         Intent starter = new Intent(context, RestaurantMenuActivity.class);
@@ -117,12 +117,21 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         getIncomingIntent();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        restaurantRef = database.getReference().child("Company").child("Profile").child(idRestaurant);
+        restaurantRef = database.getReference().child("Company").child("Profile").child(restaurantID);
+        dishRef = database.getReference().child("Company").child("Menu").child(restaurantID);
 
         SharedPreferences prefs = getSharedPreferences("MyData", MODE_PRIVATE);
         address = prefs.getString("Address", "No address defined");
 
         initRecicleView();
+
+        //todo: questo elemento è stato spostato nel'appbar per questo ora crasha. Dovrebbe averlo sistemato Simone
+//        imageButtonCart.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showDialog();
+//            }
+//        });
 
         restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -176,8 +185,8 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
     private void getIncomingIntent() {
         if (getIntent().hasExtra("Restaurant")) {
-            idRestaurant = getIntent().getStringExtra("Restaurant");
-//            restaurant.setId(idRestaurant);//l'oggetto restaurant non è stato costruito e non ho gli attributi per farlo oltre all'id
+            restaurantID = getIntent().getStringExtra("Restaurant");
+//            restaurant.setId(restaurantID);//l'oggetto restaurant non è stato costruito e non ho gli attributi per farlo oltre all'id
 
             //todo: una volta ottenuto l'id del ristorante tramite intent, fare una query al database per ottenere i campi del ristorante con quell'id (photo, Name, foodcategories, orari di apertura, ordine minimo e costo consegna)
             //todo: poi fare un'altra query al db per ottenere tutti i piatti del ristorante con quell'id e riempire l'ArrayList di Dish per la recycleview
@@ -186,16 +195,25 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
     private void initRecicleView() {
         //todo temporanea, poi prendere dal db e usare il costruttore che mette anche le foto'
-        menu.add(new Dish("1", "Margherita", 5, "30"));
-        menu.add(new Dish("2", "Capricciosa", 7.5f, "30"));
-        menu.add(new Dish("3", "Quattro salumi", 7, "30"));
-        menu.add(new Dish("4", "Quattro formaggi", 8, "30"));
-        menu.add(new Dish("5", "Parmiggiana", 7.5f, "30"));
+//        menu.add(new Dish(1, "Margherita", 5, 30));
+//        menu.add(new Dish(1, "Capricciosa", 7.5f, 30));
+//        menu.add(new Dish(1, "Quattro salumi", 7, 30));
+//        menu.add(new Dish(1, "Quattro formaggi", 8, 30));
+//        menu.add(new Dish(1, "Parmiggiana", 7.5f, 30));
+//        menu.add(new Dish(1, "Prosciutto", 6, 30));
+//        menu.add(new Dish(1, "Burrata", 10, 30));
+
+        options = new FirebaseRecyclerOptions.Builder<Dish>()
+                .setQuery(dishRef, Dish.class)
+                .build();
 
         RecyclerView recyclerView = findViewById(R.id.menu_recycleView);
-        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(this, menu, orderedDishes);
+//        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(this, menu, orderedDishes);
+        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(options, dishRef, RestaurantMenuActivity.this, orderedDishes);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter.startListening();
     }
 
     public void showHoursDetails(View view) {
@@ -240,7 +258,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
                 notes = reservationNotes.getText().toString();
                 delivery_cost_amount = deliveryCostAmount.getText().toString();
                 minimumOrder = minimumOrderAmount.getText().toString();
-                Reservation currentReservation = new Reservation(orderedDishes, address, deliveryTime, notes, idRestaurant);
+                Reservation currentReservation = new Reservation(orderedDishes, address, deliveryTime, notes, restaurantID);
                 ShoppingCartActivity.start(RestaurantMenuActivity.this, currentReservation, delivery_cost_amount, minimumOrder);
 
                 dialog.dismiss();

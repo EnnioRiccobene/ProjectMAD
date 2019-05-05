@@ -38,8 +38,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
@@ -68,6 +74,13 @@ public class DailyOfferActivity extends AppCompatActivity implements
     public int iteration = 0;
     private Dialog currentDialog;
 
+    FirebaseRecyclerOptions<Dish> options;
+    private DatabaseReference dishRef;
+    private StorageReference mStorageRef;
+
+    // Todo: sostituirla con il parametro di autenticazione
+    private String restaurantUid;
+
     ArrayList<Dish> myList = new ArrayList<>();
 
     @Override
@@ -83,28 +96,47 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
         initializeNavigationDrawer();
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        restaurantUid = "email1"; //todo: sostituire con UID
+        dishRef = database.getReference().child("Company").child("Menu").child(restaurantUid);
+
+        //todo: interazione con il db
         Bitmap carbonaraIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.carbonara), THUMBSIZE, THUMBSIZE);
         Bitmap gnocchiIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.gnocchi), THUMBSIZE, THUMBSIZE);
 
 
-        myList.add(new Dish("0","Spaghetti alla Carbonara", 5.50f, 5, "" +
-                "Guanciale, uova, pecorino, pepe nero.",carbonaraIcon));
-        myList.add(new Dish("1","Gnocchi di patet", 5.90f, 19, "Patate, " +
-                "Farina, " +
-                "Uova, ", gnocchiIcon));
-        myList.add(new Dish("2","Lasagne alla Bolognese", 8.50f, 3, "Ragù, Besciamella." +
-                "Olio extravergine d'oliva, " +
-                "Pepe nero, ", gnocchiIcon));
+//        myList.add(new Dish("0","Spaghetti alla Carbonara", 5.50f, 5, "" +
+//                "Guanciale, uova, pecorino, pepe nero.",carbonaraIcon));
+//        myList.add(new Dish("1","Gnocchi di patet", 5.90f, 19, "Patate, " +
+//                "Farina, " +
+//                "Uova, ", gnocchiIcon));
+//        myList.add(new Dish("2","Lasagne alla Bolognese", 8.50f, 3, "Ragù, Besciamella." +
+//                "Olio extravergine d'oliva, " +
+//                "Pepe nero, ", gnocchiIcon));
 
-        initDailyOfferRecyclerView();
+        initDailyOfferRecyclerView(dishRef);
     }
 
 
-    private void initDailyOfferRecyclerView() {
+
+
+    private void initDailyOfferRecyclerView(DatabaseReference dishRef) {
+
+//        Query applyQuery = dishRef;
+
+        options = new FirebaseRecyclerOptions.Builder<Dish>()
+                .setQuery(dishRef, Dish.class)
+                .build();
+
+
         recyclerView = this.findViewById(R.id.my_recycler_view);
-        adapter = new DailyOfferRecyclerViewAdapter(this, myList);
+        adapter = new DailyOfferRecyclerViewAdapter(options, dishRef, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        //
+        adapter.startListening();
 
         // Serve per modificare il campo currentDialog dall'adapter
         adapter.adapterhandler = new AdapterHandler() {
@@ -217,6 +249,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
     }
 
     // Dialog per la creazione di un NUOVO piatto
+    //todo creazione piatto nel db
     private void showDialog() {
         // custom dialog
         final Dialog dialog = new Dialog(this);
@@ -268,18 +301,35 @@ public class DailyOfferActivity extends AppCompatActivity implements
                 } else if (floatPrice==0) {
                     Toast.makeText(getApplicationContext(), getString(R.string.requiredPrice), Toast.LENGTH_SHORT).show();
                 } else {
-                    if(editDishDescription.getText().toString().isEmpty()) {
-                        currentDish = new Dish("1", editDishName.getText().toString(), floatPrice,
-                                Integer.parseInt(editDishQuantity.getText().toString()), "", bitmap);
-                    } else {
-                        BigDecimal dishPrice = new BigDecimal(currentDish.getPrice()).setScale(2, RoundingMode.HALF_UP);
-
-                        currentDish = new Dish("1", editDishName.getText().toString(), floatPrice,
-                                Integer.parseInt(editDishQuantity.getText().toString()), editDishDescription.getText().toString(), bitmap);
+                    //formatto la stringa prezzo da mettere nel db
+                    BigDecimal dishPrice = new BigDecimal(floatPrice).setScale(2, RoundingMode.HALF_UP);//todo: sistemare crash
+                    String stringPrice = String.valueOf(dishPrice);
+                    if(local.equals("en_US")){
+                        stringPrice = stringPrice + " $";
+                    } else if(local.equals("en_GB")){
+                        stringPrice = stringPrice + " £";
+                    } else if(local.equals("it_IT")){
+                        stringPrice = stringPrice + " €";
                     }
-                    myList.add(currentDish);
-                    adapter.notifyItemInserted(myList.size() - 1);
-                    adapter.notifyItemRangeChanged(myList.size() - 1, myList.size());
+                    //todo: aggiungere le immagini all'oggetto
+                    if(editDishDescription.getText().toString().isEmpty()) {
+                        currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
+                                editDishQuantity.getText().toString(), "");
+                    } else {
+                        currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
+                                editDishQuantity.getText().toString(), editDishDescription.getText().toString());
+                    }
+//                    myList.add(currentDish);
+//                    dishRef.push().setValue(currentDish);
+
+                    String key = dishRef.push().getKey();
+                    currentDish.setId(key);
+                    dishRef.child(key).setValue(currentDish);
+
+//                    adapter.notifyItemInserted(myList.size() - 1);
+                    adapter.notifyItemInserted(adapter.getSnapshots().size());
+//                    adapter.notifyItemRangeChanged(myList.size() - 1, myList.size());
+                    adapter.notifyItemRangeChanged(adapter.getSnapshots().size(), adapter.getSnapshots().size() + 1);
                     dialog.dismiss();
                 }
             }

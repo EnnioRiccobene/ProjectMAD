@@ -40,7 +40,9 @@ public class ShoppingCartReservationAdapter extends RecyclerView.Adapter<Shoppin
         OrderedDish dish = dishes.get(position);
         holder.dishName.setText(dish.getName());
         holder.dishQuantity.setText(String.valueOf("x " + dish.getQuantity()));
-        float price = dish.getPrice() * Float.parseFloat(dish.getQuantity());
+        float price = Float.valueOf(dish.getPrice().replace(",", ".").replace("£", "")
+                .replace("$", "").replace("€", "")
+                .replaceAll("\\s", "")) * Integer.valueOf(dish.getQuantity());
         Locale current = mContext.getResources().getConfiguration().locale;
         String currency = " €";
         if(current.equals("en_US")){

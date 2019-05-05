@@ -6,7 +6,7 @@ public class OrderedDish implements Serializable {
     private String id;
     private String name;
     private String quantity;
-    private float price;
+    private String price;
 
     public OrderedDish() {
     }
@@ -19,7 +19,14 @@ public class OrderedDish implements Serializable {
         this.id = id;
     }
 
-    public OrderedDish(String name, String quantity, float price) {
+    public OrderedDish(String id, String name, String quantity, String price) {
+        this.id = id;
+        this.name = name;
+        this.quantity = quantity;
+        this.price = price;
+    }
+
+    public OrderedDish(String name, String quantity, String price) {
         this.name = name;
         this.quantity = quantity;
         this.price = price;
@@ -41,11 +48,11 @@ public class OrderedDish implements Serializable {
         this.quantity = quantity;
     }
 
-    public float getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 }

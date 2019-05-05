@@ -66,7 +66,7 @@ public class DetailedReservationDishesAdapter extends
         Dish dish = dishes.get(position);
         holder.dishName.setText(dish.getName());
         holder.dishQuantity.setText(String.valueOf("x " + dish.getAvailableQuantity()));
-        float price = dish.getPrice() * dish.getAvailableQuantity();
+        float price = Float.valueOf(dish.getPrice()) * Integer.valueOf(dish.getAvailableQuantity());
         holder.dishPrice.setText(String.valueOf(price) + " €");
     }
 }
