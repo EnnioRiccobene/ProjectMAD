@@ -4,13 +4,13 @@ import java.io.Serializable;
 
 public class OrderedDish implements Serializable {
     private String name;
-    private Integer quantity;
-    private float price;
+    private String quantity;
+    private String price;
 
     public OrderedDish() {
     }
 
-    public OrderedDish(String name, Integer quantity, float price) {
+    public OrderedDish(String name, String quantity, String price) {
         this.name = name;
         this.quantity = quantity;
         this.price = price;
@@ -24,19 +24,19 @@ public class OrderedDish implements Serializable {
         this.name = name;
     }
 
-    public Integer getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 
-    public float getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 }

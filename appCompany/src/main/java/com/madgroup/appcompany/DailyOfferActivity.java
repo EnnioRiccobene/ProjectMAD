@@ -321,6 +321,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
                     }
 //                    myList.add(currentDish);
 //                    dishRef.push().setValue(currentDish);
+
                     String key = dishRef.push().getKey();
                     currentDish.setId(key);
                     dishRef.child(key).setValue(currentDish);

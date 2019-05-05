@@ -17,12 +17,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.SmartLogger;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -55,6 +61,7 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
         super(options);
         this.dishRef = dishRef;
         this.mContext = mContext;
+        this.dailyOfferList = dailyOfferList;
     }
 
     @Override
@@ -67,10 +74,77 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
 
             case R.id.itemRemove:
                 //rimuovo il piatto dal db e dall'arrayList
-                dishRef.child(dailyOfferList.get(currentIndex).getId()).removeValue();//todo: vedere errori nella remove
+//                dailyOfferList.clear();             //non ha funzionato
+//                dailyOfferList.addAll(dishRef.);//todo:provare a riempire l'arraylist con una nuova query al db
+
+//                dishRef.addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+//                            dailyOfferList.add((Dish)postSnapshot.getValue());
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
+
+                for (int i = 0; i < dailyOfferList.size(); i++) {
+                    SmartLogger.d("List before names: " + dailyOfferList.get(i).getName());
+                }
+                SmartLogger.d(" ");
+
+                dishRef.child(dailyOfferList.get(currentIndex).getId()).removeValue();//todo: vedere errori nella remove: facendo aggiunte e rimozioni, l'ordine degli elementi della lista non combacia più con quello dell'array
                 dailyOfferList.remove(currentIndex);
-                notifyItemRemoved(currentIndex);
-                notifyItemRangeChanged(currentIndex, dailyOfferList.size());
+                for (int i = 0; i < dailyOfferList.size(); i++) {
+                    SmartLogger.d("List names: " + dailyOfferList.get(i).getName());
+                }
+                SmartLogger.d(" ");
+
+                dishRef.addChildEventListener(new ChildEventListener() {
+
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        dailyOfferList.clear();
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            dailyOfferList.add((Dish) postSnapshot.getValue());//forse reference sbagliato, mi dice che tento di convertire una stringa in Dish
+                        }
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        dailyOfferList.clear();
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            dailyOfferList.add((Dish) postSnapshot.getValue());
+                        }
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        dailyOfferList.clear();
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            dailyOfferList.add((Dish) postSnapshot.getValue());
+                        }
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        dailyOfferList.clear();
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            dailyOfferList.add((Dish) postSnapshot.getValue());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+//                notifyItemRemoved(currentIndex);
+//                notifyItemRangeChanged(currentIndex, dailyOfferList.size());
                 return true;
 
             default:
@@ -83,15 +157,15 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
         viewHolder.dishName.setText(dish.getName());
         // Rappresentazione con due cifre decimali
         float dishFprice = Float.valueOf(dish.getPrice().replace("€", "").replace("$", "")
-                .replace("£", "").replace(",", ".").replaceAll("\\s",""));
+                .replace("£", "").replace(",", ".").replaceAll("\\s", ""));
         BigDecimal dishPrice = new BigDecimal(dishFprice).setScale(2, RoundingMode.HALF_UP);
 
 //        Locale current = getResources().getConfiguration().locale;
         String current = Locale.getDefault().toString();
         String currency;
-        if(current.equals("en_US")){
+        if (current.equals("en_US")) {
             currency = " $";
-        } else if(current.equals("en_GB")){
+        } else if (current.equals("en_GB")) {
             currency = " £";
         } else {
             currency = " €";
@@ -121,7 +195,7 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
     }
 
 
-//    public DailyOfferRecyclerViewAdapter(Context mContext, ArrayList<Dish> dailyOfferList, DatabaseReference dishRef) {
+    //    public DailyOfferRecyclerViewAdapter(Context mContext, ArrayList<Dish> dailyOfferList, DatabaseReference dishRef) {
 //        this.dailyOfferList = dailyOfferList;
 //        this.mContext = mContext;
 //        this.dishRef = dishRef;
@@ -240,12 +314,12 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
 
         editDishName.setText(currentDish.getName());
         editDishDescription.setText(currentDish.getDescription());
-        editDishQuantity.setText(""+currentDish.getAvailableQuantity());//editPrice.setText((""+currentDish.getPrice()));
+        editDishQuantity.setText("" + currentDish.getAvailableQuantity());//editPrice.setText((""+currentDish.getPrice()));
         // Prezzo in rappresentazione decimale con due cifre dopo la virgola
         float dishFprice = Float.valueOf(currentDish.getPrice().replace(",", ".").replace("£", "")
-                .replace("€", "").replace("$", "").replaceAll("\\s",""));
+                .replace("€", "").replace("$", "").replaceAll("\\s", ""));
         BigDecimal dishPrice = new BigDecimal(dishFprice).setScale(2, RoundingMode.HALF_UP);
-        editPrice.setText(""+dishPrice);
+        editPrice.setText("" + dishPrice);
         dishImage.setImageBitmap(currentDish.getPhoto());
 
         dialogDismiss.setOnClickListener(new View.OnClickListener() {
@@ -265,20 +339,20 @@ public class DailyOfferRecyclerViewAdapter extends FirebaseRecyclerAdapter<Dish,
                 String floatStringVal = "";
                 float floatPrice = 0;
 
-                if(local.equals("en_US")){
-                    floatStringVal = formattedVal.replace(",", "").replace("$", "").replaceAll("\\s","");
+                if (local.equals("en_US")) {
+                    floatStringVal = formattedVal.replace(",", "").replace("$", "").replaceAll("\\s", "");
                     floatPrice = Float.parseFloat(floatStringVal);
-                } else if(local.equals("en_GB")){
-                    floatStringVal = formattedVal.replace(",", "").replace("£", "").replaceAll("\\s","");
+                } else if (local.equals("en_GB")) {
+                    floatStringVal = formattedVal.replace(",", "").replace("£", "").replaceAll("\\s", "");
                     floatPrice = Float.parseFloat(floatStringVal);
-                } else if(local.equals("it_IT")){
-                    floatStringVal = formattedVal.replace(".", "").replace(",", ".").replace("€", "").replaceAll("\\s","");
+                } else if (local.equals("it_IT")) {
+                    floatStringVal = formattedVal.replace(".", "").replace(",", ".").replace("€", "").replaceAll("\\s", "");
                     floatPrice = Float.parseFloat(floatStringVal);
                 }
 
                 if (editDishName.getText().toString().isEmpty() || editDishQuantity.getText().toString().isEmpty()) {
                     Toast.makeText(mContext, mContext.getString(R.string.requiredString), Toast.LENGTH_SHORT).show();
-                } else if (floatPrice==0) {
+                } else if (floatPrice == 0) {
                     Toast.makeText(mContext, mContext.getString(R.string.requiredPrice), Toast.LENGTH_SHORT).show();
                 } else {
                     if (editDishDescription.getText().toString().isEmpty()) {
