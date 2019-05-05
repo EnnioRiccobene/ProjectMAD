@@ -101,6 +101,7 @@ public class ProfileActivity extends AppCompatActivity implements
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_main);
         stub.inflate();
+        this.setTitle("Profile");
         prefs = getSharedPreferences("MyData", MODE_PRIVATE);
         editor = prefs.edit();
         initializeNavigationDrawer();

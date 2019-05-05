@@ -11,7 +11,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -68,6 +70,14 @@ public class ShoppingCartActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shopping_cart);
+        // init Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        this.setTitle("Order recap");
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+
 
         subtotalPrice = findViewById(R.id.subtotalPrice);
         deliveryPrice = findViewById(R.id.deliveryPrice);
@@ -142,12 +152,12 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 currentReservation.setPrice(totalPrice.getText().toString());
                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
                 // Customer Reference
-                DatabaseReference pendingCustomerRef = database.child("Customer").child("Order").child("Pending").child(restaurantId);
+                final DatabaseReference pendingCustomerRef = database.child("Customer").child("Order").child("Pending").child(restaurantId);
                 // Company References
-                DatabaseReference pendingRestaurantRef = database.child("Company").child("Reservation").child("Pending").child(restaurantId);
+                final DatabaseReference pendingRestaurantRef = database.child("Company").child("Reservation").child("Pending").child(restaurantId);
                 DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood").child(restaurantId);
                 final DatabaseReference menuRef = database.child("Company").child("Menu").child(restaurantId);
-                String orderID = pendingRestaurantRef.push().getKey();
+                final String orderID = pendingRestaurantRef.push().getKey();
                 pendingRestaurantRef.child(orderID);
                 orderedFoodRef.child(orderID);
 
@@ -182,8 +192,14 @@ public class ShoppingCartActivity extends AppCompatActivity {
                             });
                             if (difference < 0 )
                                 Transaction.abort();
+                            else
+                            {
+                                // Aggiungere la reservation nel DB
+                                pendingCustomerRef.child(orderID).setValue(currentReservation);
+                                pendingRestaurantRef.child(orderID).setValue(currentReservation);
+                            }
                         }
-                        return null;
+                        return Transaction.success(mutableData);
                     }
 
                     @Override
@@ -191,11 +207,6 @@ public class ShoppingCartActivity extends AppCompatActivity {
 
                     }
                 });
-                if(difference < 0)
-                    return;
-                // Aggiungere la reservation nel DB
-                pendingCustomerRef.child(currentReservation.getOrderID()).setValue(currentReservation);
-                pendingRestaurantRef.child(currentReservation.getOrderID()).setValue(currentReservation);
             }
         });
     }
