@@ -1,5 +1,6 @@
 package com.madgroup.madproject;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -35,13 +37,14 @@ public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuVi
      *
      * @param options
      */
-    public RecycleViewMenuAdapter(@NonNull FirebaseRecyclerOptions<Dish> options, DatabaseReference dishRef) {
+    public RecycleViewMenuAdapter(@NonNull FirebaseRecyclerOptions<Dish> options, DatabaseReference dishRef, Context mContext) {
         super(options);
         this.dishRef = dishRef;
+        this.mContext = mContext;
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final MenuViewHolder holder, int i, @NonNull Dish dish) {
+    protected void onBindViewHolder(@NonNull final MenuViewHolder holder, int i, @NonNull final Dish dish) {
         final int[] orderedQuantity = {0};
         holder.dishPhoto.setImageBitmap(dish.getPhoto());
         holder.dishName.setText(dish.getName());
@@ -51,13 +54,18 @@ public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuVi
 //        float currDish = Float.valueOf(menu.get(position).getPrice().replace(",", ".").replace("£", "").replace("$", "").replace("€", "").replaceAll("\\s",""));
         final OrderedDish currentDish = new OrderedDish(dish.getName(), "0", dish.getPrice());
 
-        //todo: fare controllo sull'available quantity del piatto (forse va controllato il db)
         holder.incrementButton.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ShowToast")
             @Override
             public void onClick(View v) {
 
                 orderedQuantity[0]++;
-                holder.dishQuantity.setText(String.valueOf(orderedQuantity[0]));
+                if(orderedQuantity[0] <= Integer.valueOf(dish.getAvailableQuantity())){
+                    holder.dishQuantity.setText(String.valueOf(orderedQuantity[0]));
+                } else {
+                    orderedQuantity[0]--;
+                    Toast.makeText(mContext, "The quantity selected is not available", Toast.LENGTH_LONG);
+                }                
 
                 //Aggiungo il piatto ordinato all'arraylist o ne incremento la quantità
                 if (orderedDishes.contains(currentDish)) {
