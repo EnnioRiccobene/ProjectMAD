@@ -156,114 +156,6 @@ public class ProfileActivity extends AppCompatActivity implements
 
     }
 
-    private void hideFields() {
-        name.setVisibility(View.INVISIBLE);
-        email.setVisibility(View.INVISIBLE);
-        phone.setVisibility(View.INVISIBLE);
-        address.setVisibility(View.INVISIBLE);
-        additionalInformation.setVisibility(View.INVISIBLE);
-        progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
-    }
-
-    private void showFields() {
-        name.setVisibility(View.VISIBLE);
-        email.setVisibility(View.VISIBLE);
-        phone.setVisibility(View.VISIBLE);
-        address.setVisibility(View.VISIBLE);
-        additionalInformation.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.INVISIBLE);  // Nascondo la progress bar
-    }
-
-    private void loadFieldsFromFirebase() {
-
-        database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Customer customer = dataSnapshot.getValue(Customer.class); // Leggo le informazioni dal DB
-
-                        if (customer!=null) {
-                            // Utente già registrato: setto i campi
-                            name.setText(customer.getName());
-                            phone.setText(customer.getPhone());
-                            address.setText(customer.getAddress());
-                            additionalInformation.setText(customer.getInfo());
-                            email.setText(customer.getEmail());
-                            showFields();
-
-                            // Aggiorno le shared prefs
-                            editor.putString("Name", customer.getName());
-                            editor.putString("Email", customer.getEmail());
-                            editor.putString("Phone", customer.getPhone());
-                            editor.putString("Address", customer.getAddress());
-                            editor.apply();
-
-                        } else {
-                            // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
-                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            Customer currentUser = new Customer(user.getDisplayName(), user.getEmail(),
-                                    "","","");
-                            String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            database.getReference("Users").child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
-                                @Override
-                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                                    if (databaseError!= null) {
-                                        Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
-                                        // todo: rimuovere la registrazione dell'utente
-                                    } else {
-                                        name.setText(user.getDisplayName());
-                                        email.setText(user.getEmail());
-                                        // Aggiorno le shared prefs
-                                        editor.putString("Name", user.getDisplayName());
-                                        editor.putString("Email", user.getEmail());
-                                        editor.apply();
-                                        showFields();
-                                    }
-                                }
-                            });
-                        }
-
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                    }
-                });
-    }
-
-
-
-    private void startLogin() {
-        // Choose authentication providers
-        List<AuthUI.IdpConfig> providers = Arrays.asList(
-                new AuthUI.IdpConfig.EmailBuilder().build()
-        );
-
-        // Create and launch sign-in intent
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setIsSmartLockEnabled(false)
-                        .setAvailableProviders(providers)
-                        .setLogo(R.drawable.personicon)
-                        .build(),
-                RC_SIGN_IN);
-    }
-
-    private void startLogout() {
-        AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // ...
-                        editor.clear();
-                        editor.apply();
-                        //startLogin();
-                        Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
-                        startActivity(intent);
-                    }
-                });
-    }
-
 
     // What happens if I click on a icon on the menu
     @Override
@@ -365,33 +257,6 @@ public class ProfileActivity extends AppCompatActivity implements
         editor.putString("Information", additionalInformation.getText().toString());
         editor.apply();
     }
-
-    private void saveFieldsOnFirebase() {
-        progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
-
-        Customer currentUser = new Customer(name.getText().toString(), email.getText().toString(),
-                phone.getText().toString(),address.getText().toString(),additionalInformation.getText().toString());
-        String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        database.getReference("Users").child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                if (databaseError != null) {
-                    progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                    Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Dati salvati correttamente nel db
-                    // Aggiorno le shared prefs
-                    editor.putString("Name", name.getText().toString());
-                    editor.putString("Email", email.getText().toString());
-                    editor.putString("Phone", phone.getText().toString());
-                    editor.putString("Address", address.getText().toString());
-                    editor.apply();
-                    progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                }
-            }
-        });
-    }
-
 
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
@@ -588,6 +453,32 @@ public class ProfileActivity extends AppCompatActivity implements
         }
     }
 
+    private void saveFieldsOnFirebase() {
+        progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
+
+        Customer currentUser = new Customer(name.getText().toString(), email.getText().toString(),
+                phone.getText().toString(),address.getText().toString(),additionalInformation.getText().toString());
+        String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        database.getReference("Users").child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                    Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Dati salvati correttamente nel db
+                    // Aggiorno le shared prefs
+                    editor.putString("Name", name.getText().toString());
+                    editor.putString("Email", email.getText().toString());
+                    editor.putString("Phone", phone.getText().toString());
+                    editor.putString("Address", address.getText().toString());
+                    editor.apply();
+                    progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                }
+            }
+        });
+    }
+
     private void uploadProfilePic(Bitmap bitmap) {
 
         imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
@@ -682,6 +573,114 @@ public class ProfileActivity extends AppCompatActivity implements
                 // An error occurred
             }
         });
+    }
+
+    private void hideFields() {
+        name.setVisibility(View.INVISIBLE);
+        email.setVisibility(View.INVISIBLE);
+        phone.setVisibility(View.INVISIBLE);
+        address.setVisibility(View.INVISIBLE);
+        additionalInformation.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
+    }
+
+    private void showFields() {
+        name.setVisibility(View.VISIBLE);
+        email.setVisibility(View.VISIBLE);
+        phone.setVisibility(View.VISIBLE);
+        address.setVisibility(View.VISIBLE);
+        additionalInformation.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);  // Nascondo la progress bar
+    }
+
+    private void loadFieldsFromFirebase() {
+
+        database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Customer customer = dataSnapshot.getValue(Customer.class); // Leggo le informazioni dal DB
+
+                        if (customer!=null) {
+                            // Utente già registrato: setto i campi
+                            name.setText(customer.getName());
+                            phone.setText(customer.getPhone());
+                            address.setText(customer.getAddress());
+                            additionalInformation.setText(customer.getInfo());
+                            email.setText(customer.getEmail());
+                            showFields();
+
+                            // Aggiorno le shared prefs
+                            editor.putString("Name", customer.getName());
+                            editor.putString("Email", customer.getEmail());
+                            editor.putString("Phone", customer.getPhone());
+                            editor.putString("Address", customer.getAddress());
+                            editor.apply();
+
+                        } else {
+                            // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
+                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            Customer currentUser = new Customer(user.getDisplayName(), user.getEmail(),
+                                    "","","");
+                            String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            database.getReference("Users").child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                    if (databaseError!= null) {
+                                        Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
+                                        // todo: rimuovere la registrazione dell'utente
+                                    } else {
+                                        name.setText(user.getDisplayName());
+                                        email.setText(user.getEmail());
+                                        // Aggiorno le shared prefs
+                                        editor.putString("Name", user.getDisplayName());
+                                        editor.putString("Email", user.getEmail());
+                                        editor.apply();
+                                        showFields();
+                                    }
+                                }
+                            });
+                        }
+
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+    }
+
+
+
+    private void startLogin() {
+        // Choose authentication providers
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build()
+        );
+
+        // Create and launch sign-in intent
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setIsSmartLockEnabled(false)
+                        .setAvailableProviders(providers)
+                        .setLogo(R.drawable.personicon)
+                        .build(),
+                RC_SIGN_IN);
+    }
+
+    private void startLogout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        editor.clear();
+                        editor.apply();
+                        //startLogin();
+                        Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
+                        startActivity(intent);
+                    }
+                });
     }
 
 
