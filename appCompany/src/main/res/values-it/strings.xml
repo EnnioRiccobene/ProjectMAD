@@ -17,6 +17,11 @@
     <string name="gallery">Galleria</string>
     <string name="remove">Rimuovi</string>
     <string name="edit">Modifica</string>
+    <string name="address">Indirizzo</string>
+    <string name="lunch_time">Orario</string>
+    <string name="delete">Cancella</string>
+    <string name="action_settings">Aggiungi Azione</string>
+    <string name="order_price"> 19.99 €</string>
 
     <string name="gallerypermission">Abilita i permessi della galleria dalle impostazioni.</string>
     <string name="camerapermission">Abilita i permessi della fotocamera dalle impostazioni.</string>
@@ -53,15 +58,11 @@
     <string name="open_24h">Aperto 24h</string>
 
 
-
     <string name="dish_name">Nome del piatto</string>
     <string name="dish_description">Descrizione</string>
     <string name="available_quantity">Quantità disponibile</string>
     <string name="dish_price">Prezzo</string>
     <string name="edit_dish">Il tuo piatto</string>
-    <string name="requiredString">Inserisci campi obbligatori</string>
-    <string name="requiredPrice">Il prezzo non può essere zero.</string>
-
 
     <string-array name="hours_list">
         <item>00:00</item>
@@ -161,4 +162,8 @@
         <item>23:30</item>
         <item>23:45</item>
     </string-array>
+    <string name="requiredPrice">Il prezzo non può essere zero</string>
+    <string name="requiredString">Inserire i campi richiesti</string>
+    <string name="delivery_cost">Costo di consegna</string>
+    <string name="minimum_order">Ordine minimo</string>
 </resources>

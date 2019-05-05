@@ -17,26 +17,27 @@ import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blackcat.currencyedittext.CurrencyEditText;
 import com.github.aakira.expandablelayout.ExpandableLayout;
 import com.github.aakira.expandablelayout.Utils;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.MyImageHandler;
+import com.madgroup.sdk.RestaurantProfile;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -51,18 +52,19 @@ import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, PopupMenu.OnMenuItemClickListener{
+public class ProfileActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, PopupMenu.OnMenuItemClickListener {
 
     private EditText editCategory;
     private String[] listItems;
     private boolean[] checkedItems;
     private ArrayList<Integer> mUserItems = new ArrayList<>();
     private int categoriesCount = 0;
-
+    static public String currentUser;
     private CircleImageView personalImage;
     private EditText name;
     private EditText email;
@@ -70,6 +72,8 @@ public class MainActivity extends AppCompatActivity
     private EditText phone;
     private EditText address;
     private EditText additionalInformation;
+    private CurrencyEditText deliveryCost;
+    private CurrencyEditText minimumOrder;
     private Boolean modifyingInfo;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity
     public int iteration = 0;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
+    private static final int CONFIRM_OR_REJECT_CODE = 1;
 
     public static final int TEXT_REQUEST = 1;
 
@@ -104,9 +109,20 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ViewStub stub = (ViewStub)findViewById(R.id.stub);
+        stub.setInflatedId(R.id.inflatedActivity);
+        stub.setLayoutResource(R.layout.activity_profile);
+        stub.inflate();
+        this.setTitle("Profile");
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = prefs.edit();
 
-        // Getting the instance of Firebase
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        // START DATABASE TEST
+        editor.putString("currentUser", "email1");
+        currentUser = "email1";     // DOPO MODIFICARE CON SAVE PREFERENCES
+        editor.apply();
+        populateDatabaseWithDummyValues();
+        // END DATABASE TEST
 
         hours = findViewById(R.id.hours);
         arrowbtn = findViewById(R.id.arrowbtn);
@@ -123,7 +139,7 @@ public class MainActivity extends AppCompatActivity
         nestedScrollView = findViewById(R.id.nestedScrollView);
 
         //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
-        if(!hiddenHours.isExpanded()){
+        if (!hiddenHours.isExpanded()) {
             hiddenHours.collapse();
         }
 
@@ -134,7 +150,7 @@ public class MainActivity extends AppCompatActivity
         editCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+                final AlertDialog.Builder mBuilder = new AlertDialog.Builder(ProfileActivity.this);
                 mBuilder.setTitle(getString(R.string.dialog_title));
                 mBuilder.setMultiChoiceItems(listItems, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
@@ -148,7 +164,7 @@ public class MainActivity extends AppCompatActivity
                             } else {
                                 checkedItems[position] = false;
                                 Toast.makeText(getApplicationContext(), getString(R.string.toast_checkbox_limit), Toast.LENGTH_SHORT).show();
-                                ((AlertDialog)dialog).getListView().setItemChecked(position, false);    // Do not select the 4th
+                                ((AlertDialog) dialog).getListView().setItemChecked(position, false);    // Do not select the 4th
                             }
                         } else if (mUserItems.contains(position)) {
                             int a = mUserItems.indexOf(position);
@@ -190,9 +206,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        editor = prefs.edit();
-
         // Defining EditText
         personalImage = findViewById(R.id.imagePersonalPhoto);
         name = findViewById(R.id.editTextName);
@@ -201,6 +214,8 @@ public class MainActivity extends AppCompatActivity
         phone = findViewById(R.id.editTextPhone);
         address = findViewById(R.id.editTextAddress);
         additionalInformation = findViewById(R.id.additionalInformation);
+        deliveryCost = findViewById(R.id.deliveryCost);
+        minimumOrder = findViewById(R.id.minimumOrder);
         modifyingInfo = false;
 
         // Set all field to unclickable
@@ -214,10 +229,10 @@ public class MainActivity extends AppCompatActivity
         // Set restaurant name and email on navigation header
         View headerView = navigationView.getHeaderView(0);
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
-        if(name.getText() != null)
+        if (name.getText() != null)
             navUsername.setText(name.getText());
-        TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
-        if(email.getText() != null)
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
+        if (email.getText() != null)
             navEmail.setText(email.getText());
     }
 
@@ -296,10 +311,13 @@ public class MainActivity extends AppCompatActivity
     // What happens if I press back button
     @Override
     public void onBackPressed() {
-        DrawerLayout layout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        if(layout.isDrawerOpen(GravityCompat.START))
+        DrawerLayout layout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (layout.isDrawerOpen(GravityCompat.START)) {
             layout.closeDrawer(GravityCompat.START);
-        else if (modifyingInfo) {
+            return;
+        }
+
+        if (modifyingInfo) {
             modifyingInfo = false;
             setFieldUnclickable();
             saveFields();
@@ -315,6 +333,8 @@ public class MainActivity extends AppCompatActivity
         phone.setEnabled(false);
         address.setEnabled(false);
         additionalInformation.setEnabled(false);
+        deliveryCost.setEnabled(false);
+        minimumOrder.setEnabled(false);
         personalImage.setEnabled(false);
         editCategory.setEnabled(false);
         modifyHours.setEnabled(false);
@@ -327,6 +347,8 @@ public class MainActivity extends AppCompatActivity
         phone.setEnabled(true);
         address.setEnabled(true);
         additionalInformation.setEnabled(true);
+        deliveryCost.setEnabled(true);
+        minimumOrder.setEnabled(true);
         personalImage.setEnabled(true);
         editCategory.setEnabled(true);
         modifyHours.setEnabled(true);
@@ -338,16 +360,20 @@ public class MainActivity extends AppCompatActivity
         if (prefs.contains("Email"))
             email.setText(prefs.getString("Email", ""));
         // if (prefs.contains("Password"))
-            // password.setText(prefs.getString("Password", ""));
+        // password.setText(prefs.getString("Password", ""));
         if (prefs.contains("Phone"))
             phone.setText(prefs.getString("Phone", ""));
         if (prefs.contains("Address"))
             address.setText(prefs.getString("Address", ""));
         if (prefs.contains("Information"))
             additionalInformation.setText(prefs.getString("Information", ""));
+        if(prefs.contains("DeliveryCost"))
+            deliveryCost.setText(prefs.getString("DeliveryCost", ""));
+        if(prefs.contains("MinOrder"))
+            minimumOrder.setText(prefs.getString("MinOrder", ""));
         if (prefs.contains("FoodCounter"))
             categoriesCount = prefs.getInt("FoodCounter", 0);
-        if (prefs.contains("checkedItems_size")){
+        if (prefs.contains("checkedItems_size")) {
             int size = prefs.getInt("checkedItems_size", 0);
             for (int i = 0; i < size; i++) {
                 checkedItems[i] = prefs.getBoolean("checkedItems_" + i, false);
@@ -384,14 +410,16 @@ public class MainActivity extends AppCompatActivity
         editor.putString("Phone", phone.getText().toString());
         editor.putString("Address", address.getText().toString());
         editor.putString("Information", additionalInformation.getText().toString());
+        editor.putString("DeliveryCost", deliveryCost.getText().toString());
+        editor.putString("MinOrder", minimumOrder.getText().toString());
         editor.putInt("FoodCounter", categoriesCount);
         editor.putInt("checkedItems_size", checkedItems.length);
         editor.putInt("mUserItems_size", mUserItems.size());
-        for(int i = 0; i < checkedItems.length; i++) {
+        for (int i = 0; i < checkedItems.length; i++) {
             editor.putBoolean("checkedItems_" + i, checkedItems[i]);
 //            SmartLogger.d("SaveFields: array["+i+"] = " + checkedItems[i]);
         }
-        for(int i = 0; i < mUserItems.size(); i++){
+        for (int i = 0; i < mUserItems.size(); i++) {
             editor.putInt("listItems_" + i, mUserItems.get(i));
         }
         editor.putString("EditCategory", editCategory.getText().toString());
@@ -411,7 +439,7 @@ public class MainActivity extends AppCompatActivity
         navUsername.setText(username);
 
         String email = prefs.getString("Email", "");
-        TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
         navEmail.setText(email);
     }
 
@@ -448,7 +476,7 @@ public class MainActivity extends AppCompatActivity
                 boolean userPreviousDeniedRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.CAMERA);
 
-                if (cameraPermission== PackageManager.PERMISSION_GRANTED) {
+                if (cameraPermission == PackageManager.PERMISSION_GRANTED) {
                     MyImageHandler.getInstance().startCamera(this);
                 } else {
                     if (userPreviousDeniedRequest) {
@@ -467,7 +495,7 @@ public class MainActivity extends AppCompatActivity
                 boolean userPreviousDeniedGalleryRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.READ_EXTERNAL_STORAGE);
 
-                if (readStoragePermission==PackageManager.PERMISSION_GRANTED) {
+                if (readStoragePermission == PackageManager.PERMISSION_GRANTED) {
                     MyImageHandler.getInstance().startGallery(this);
                 } else {
                     if (userPreviousDeniedGalleryRequest) {
@@ -523,7 +551,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
         if (requestCode == UCrop.REQUEST_CROP) {
-            if (data!=null)
+            if (data != null)
                 handleCropResult(data);
         }
 
@@ -534,26 +562,26 @@ public class MainActivity extends AppCompatActivity
                 Bundle extrasBundle = data.getExtras();
 
                 // Aggiunto il "&& extrasBundle != null" per evitare il crash dell'app
-                if(!extrasBundle.isEmpty() && extrasBundle != null){
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Monday))){
+                if (!extrasBundle.isEmpty() && extrasBundle != null) {
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Monday))) {
                         mondayHour.setText(extrasBundle.getString(getResources().getString(R.string.Monday)));
                     }
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Tuesday))){
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Tuesday))) {
                         tuesdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Tuesday)));
                     }
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Wednesday))){
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Wednesday))) {
                         wednesdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Wednesday)));
                     }
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Thursday))){
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Thursday))) {
                         thursdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Thursday)));
                     }
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Friday))){
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Friday))) {
                         fridayHour.setText(extrasBundle.getString(getResources().getString(R.string.Friday)));
                     }
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Saturday))){
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Saturday))) {
                         saturdayHour.setText(extrasBundle.getString(getResources().getString(R.string.Saturday)));
                     }
-                    if(extrasBundle.containsKey(getResources().getString(R.string.Sunday))){
+                    if (extrasBundle.containsKey(getResources().getString(R.string.Sunday))) {
                         sundayHour.setText(extrasBundle.getString(getResources().getString(R.string.Sunday)));
                     }
                     saveFields();
@@ -585,7 +613,7 @@ public class MainActivity extends AppCompatActivity
 
     private void restoreImageContent() {
         String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-        if(!ImageBitmap.equals("NoImage")){
+        if (!ImageBitmap.equals("NoImage")) {
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             personalImage.setImageBitmap(bitmap);
@@ -621,7 +649,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void initializeNavigationDrawer(){
+    public void initializeNavigationDrawer() {
 
         // Navigation Drawer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -640,11 +668,11 @@ public class MainActivity extends AppCompatActivity
         updateNavigatorPersonalIcon();
     }
 
-    public void updateNavigatorPersonalIcon(){
+    public void updateNavigatorPersonalIcon() {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-        if(!ImageBitmap.equals("NoImage")){
+        if (!ImageBitmap.equals("NoImage")) {
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             nav_profile_icon.setImageBitmap(bitmap);
@@ -676,4 +704,61 @@ public class MainActivity extends AppCompatActivity
     }
 
     //todo: aggiungere il menù nell'activity per la modifica degli orari con backbutton e conferma
+
+
+    public void populateDatabaseWithDummyValues() {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child("Company").removeValue();
+
+        ArrayList<RestaurantProfile> mRestaurantList = new ArrayList<>();
+        mRestaurantList.add(new RestaurantProfile("Name1", "111", "Via malta", "email1", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
+        mRestaurantList.add(new RestaurantProfile("Name2", "222", "Via malta", "email2", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
+        mRestaurantList.add(new RestaurantProfile("Name3", "333", "Via malta", "email3", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
+        mRestaurantList.add(new RestaurantProfile("Name4", "444", "Via malta", "email4", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
+        DatabaseReference profileRef = database.child("Company").child("Profile");
+
+        for (RestaurantProfile element : mRestaurantList) {
+            String email = element.getEmail();
+            profileRef.child(email).setValue(element);
+        }
+
+        ArrayList<OrderedDish> orderedDishList = new ArrayList<>();
+        orderedDishList.add(new OrderedDish("Food1", 2, 6.4f));
+        orderedDishList.add(new OrderedDish("Food2", 6, 10.4f));
+        orderedDishList.add(new OrderedDish("Food3", 3, 6f));
+        orderedDishList.add(new OrderedDish("Food4", 5, 9.4f));
+        orderedDishList.add(new OrderedDish("Food5", 7, 1.5f));
+
+        // Compute total Price
+        float x = 0;
+        for (OrderedDish element : orderedDishList)
+            x += element.getPrice() * element.getQuantity();
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setMinimumFractionDigits(2);
+        String price = df.format(x);
+
+        ArrayList<Reservation> mReservationList = new ArrayList<>();
+        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 0, price));
+        mReservationList.add(new Reservation("Piazza Sabotino 8", "19:00", 0, price));
+        mReservationList.add(new Reservation("Via Villarbasse 12", "20:45", 0, price));
+        mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 0, price));
+        mReservationList.add(new Reservation("Address5", "Delivery Time", 0, price));
+        mReservationList.add(new Reservation("Address6", "Delivery Time", 0, price));
+        mReservationList.add(new Reservation("Address7", "Delivery Time", 0, price));
+        mReservationList.add(new Reservation("Address8", "Delivery Time", 0, price));
+
+        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
+        DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood");
+
+        for (int i = 1; i < 5; i++) {
+            for (Reservation element : mReservationList) {
+                String orderID = pendingReservationRef.push().getKey();
+                element.setOrderID(orderID);
+                pendingReservationRef.child("email" + i).child(orderID).setValue(element);
+                orderedFoodRef.child(orderID).setValue(orderedDishList);
+            }
+        }
+
+    }
+
 }

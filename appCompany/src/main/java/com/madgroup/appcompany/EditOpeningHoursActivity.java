@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -27,7 +25,7 @@ public class EditOpeningHoursActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_opening_hours);
-        dayOldHourPreview = getIntent().getStringArrayListExtra(MainActivity.EXTRA_MESSAGE);
+        dayOldHourPreview = getIntent().getStringArrayListExtra(ProfileActivity.EXTRA_MESSAGE);
 
         initWeekDayName();
 

@@ -2,6 +2,8 @@ package com.madgroup.appcompany;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.Nullable;
+
 public class Dish {
     private int id;
     private String name;
@@ -72,5 +74,14 @@ public class Dish {
 
     public void setPhoto(Bitmap photo) {
         this.photo = photo;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Dish dish = (Dish) obj;
+        if (name != dish.getName()) return true;
+        return false;
     }
 }

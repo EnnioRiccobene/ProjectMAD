@@ -131,13 +131,12 @@ public class ProfileActivity extends AppCompatActivity implements
         imgProgressBar = findViewById(R.id.imgProgressBar);
         modifyingInfo = false;
 
-        hideFields();
-        imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
-
         // Set all field to unclickable
         setFieldUnclickable();
-        isDefaultImage = true;
 
+        hideFields();
+        imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
+        isDefaultImage = true;
         downloadProfilePic();
         loadFieldsFromFirebase();
 
@@ -459,7 +458,9 @@ public class ProfileActivity extends AppCompatActivity implements
         Customer currentUser = new Customer(name.getText().toString(), email.getText().toString(),
                 phone.getText().toString(),address.getText().toString(),additionalInformation.getText().toString());
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        database.getReference("Users").child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
+        database.getReference("Profiles")
+                .child("Customers").child(currentUid)
+                .setValue(currentUser, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                 if (databaseError != null) {
@@ -492,7 +493,9 @@ public class ProfileActivity extends AppCompatActivity implements
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] data = stream.toByteArray();
-        final StorageReference fileReference = storage.getReference("profile_pics").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        final StorageReference fileReference = storage.getReference("profile_pics")
+                .child("customers")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         final UploadTask uploadTask = fileReference.putBytes(data); // Salvo l'immagine nello storage
         /* Gestione successo e insuccesso */
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -534,7 +537,8 @@ public class ProfileActivity extends AppCompatActivity implements
 
     private void downloadProfilePic() {
         final long ONE_MEGABYTE = 1024 * 1024;
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                .child("customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
@@ -559,7 +563,9 @@ public class ProfileActivity extends AppCompatActivity implements
     }
 
     private void deleteProfilePic() {
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                .child("customers")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
         // Delete the file
         storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -595,7 +601,9 @@ public class ProfileActivity extends AppCompatActivity implements
 
     private void loadFieldsFromFirebase() {
 
-        database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+        database.getReference("Profiles")
+                .child("Customers")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -623,7 +631,9 @@ public class ProfileActivity extends AppCompatActivity implements
                             Customer currentUser = new Customer(user.getDisplayName(), user.getEmail(),
                                     "","","");
                             String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            database.getReference("Users").child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
+                            database.getReference("Profiles")
+                                    .child("Customers")
+                                    .child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
                                 @Override
                                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                                     if (databaseError!= null) {

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/deliveryItemCardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="6dp"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground">
+
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/deliveryItemLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/restaurantName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Da Michele"
+            android:textColor="#000"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/restaurantAddress_bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/restaurantName"
+            android:layout_marginTop="3dp"
+            android:text="Pick-up: "
+            android:textColor="#000"
+            android:textSize="13sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/restaurantAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/restaurantName"
+            android:layout_toRightOf="@+id/restaurantAddress_bold"
+            android:layout_marginTop="3dp"
+            android:text="Via del pollo 33"
+            android:textColor="#777"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/customerAddress_bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/restaurantAddress_bold"
+            android:layout_marginTop="3dp"
+            android:text="Delivery: "
+            android:textColor="#000"
+            android:textSize="13sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/customerAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/restaurantAddress_bold"
+            android:layout_toRightOf="@+id/customerAddress_bold"
+            android:layout_marginTop="3dp"
+            android:text="Via del cavallo 33"
+            android:textColor="#777"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="300 mt"
+            android:textColor="#777"
+            android:textSize="13sp"
+            android:layout_alignBaseline="@id/customerAddress"
+            android:layout_alignParentRight="true"
+            android:textStyle="italic"/>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

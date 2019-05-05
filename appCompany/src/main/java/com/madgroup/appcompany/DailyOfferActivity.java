@@ -2,7 +2,6 @@ package com.madgroup.appcompany;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -31,6 +30,7 @@ import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
@@ -38,7 +38,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
@@ -72,11 +71,13 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        // FloatingActionButton fc = findViewById(R.id.add_button);
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_daily_offer);
+        setContentView(R.layout.activity_main);
+        ViewStub stub = (ViewStub)findViewById(R.id.stub);
+        stub.setInflatedId(R.id.inflatedActivity);
+        stub.setLayoutResource(R.layout.activity_daily_offer);
+        stub.inflate();
+        this.setTitle("Daily Offer");
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
@@ -87,12 +88,12 @@ public class DailyOfferActivity extends AppCompatActivity implements
         Bitmap gnocchiIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.gnocchi), THUMBSIZE, THUMBSIZE);
 
 
-        myList.add(new Dish("0","Spaghetti alla Carbonara", 5.50f, 5, "" +
+        myList.add(new Dish(0,"Spaghetti alla Carbonara", 5.50f, 5, "" +
                 "Guanciale, uova, pecorino, pepe nero.",carbonaraIcon));
-        myList.add(new Dish("1","Gnocchi di patet", 5.90f, 19, "Patate, " +
+        myList.add(new Dish(1,"Gnocchi di patet", 5.90f, 19, "Patate, " +
                 "Farina, " +
                 "Uova, ", gnocchiIcon));
-        myList.add(new Dish("2","Lasagne alla Bolognese", 8.50f, 3, "Ragù, Besciamella." +
+        myList.add(new Dish(2,"Lasagne alla Bolognese", 8.50f, 3, "Ragù, Besciamella." +
                 "Olio extravergine d'oliva, " +
                 "Pepe nero, ", gnocchiIcon));
 
@@ -133,7 +134,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
         } else if (id == R.id.nav_profile) {
             // Change activity to Daily Offer
-            Intent myIntent = new Intent(this, MainActivity.class);
+            Intent myIntent = new Intent(this, ProfileActivity.class);
             // myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(myIntent);
         }
@@ -269,12 +270,12 @@ public class DailyOfferActivity extends AppCompatActivity implements
                     Toast.makeText(getApplicationContext(), getString(R.string.requiredPrice), Toast.LENGTH_SHORT).show();
                 } else {
                     if(editDishDescription.getText().toString().isEmpty()) {
-                        currentDish = new Dish("1", editDishName.getText().toString(), floatPrice,
+                        currentDish = new Dish(2, editDishName.getText().toString(), floatPrice,
                                 Integer.parseInt(editDishQuantity.getText().toString()), "", bitmap);
                     } else {
                         BigDecimal dishPrice = new BigDecimal(currentDish.getPrice()).setScale(2, RoundingMode.HALF_UP);
 
-                        currentDish = new Dish("1", editDishName.getText().toString(), floatPrice,
+                        currentDish = new Dish(1, editDishName.getText().toString(), floatPrice,
                                 Integer.parseInt(editDishQuantity.getText().toString()), editDishDescription.getText().toString(), bitmap);
                     }
                     myList.add(currentDish);

@@ -11,4 +11,6 @@
     <string name="remove">Rimuovi</string>
     <string name="gallerypermission">Abilita i permessi della galleria dalle impostazioni.</string>
     <string name="camerapermission">Abilita i permessi della fotocamera dalle impostazioni.</string>
+    <string name="navigation_drawer_open">Apre navigation Drawer</string>
+    <string name="navigation_drawer_close">Chiude navigation Drawer</string>
 </resources>
