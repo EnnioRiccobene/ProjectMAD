@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madgroup.sdk.MyImageHandler;
@@ -62,7 +64,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class MainActivity extends AppCompatActivity implements
+public class ProfileActivity extends AppCompatActivity implements
         PopupMenu.OnMenuItemClickListener,
         NavigationView.OnNavigationItemSelectedListener{
 
@@ -86,11 +88,13 @@ public class MainActivity extends AppCompatActivity implements
     private FirebaseDatabase database;
     private FirebaseStorage storage;
     private boolean isDefaultImage;
+    private ProgressBar imageProgressBar;
 
 
     @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_drawer);
         ViewStub stub = (ViewStub)findViewById(R.id.stub);
@@ -112,8 +116,8 @@ public class MainActivity extends AppCompatActivity implements
         phone = findViewById(R.id.editTextPhone);
         address = findViewById(R.id.editTextAddress);
         additionalInformation = findViewById(R.id.additionalInformation);
+        imageProgressBar = findViewById(R.id.imageProgressBar);
         modifyingInfo = false;
-
 
         // Set all field to unclickable
         setFieldUnclickable();
@@ -122,12 +126,13 @@ public class MainActivity extends AppCompatActivity implements
         if (prefs.contains("currentUser")) {
             // Utente già loggato
             loadFieldsFromFirebase();
+            downloadProfilePic();
         } else {
             startLogin();
         }
 
         // Load saved information, if exist
-        loadFields();
+        //loadFields();
 
     }
     private void loadFieldsFromFirebase() {
@@ -145,15 +150,27 @@ public class MainActivity extends AppCompatActivity implements
                             address.setText(customer.getAddress());
                             additionalInformation.setText(customer.getInfo());
                             email.setText(customer.getEmail());
+
+                            // Aggiorno le shared prefs
+                            editor.putString("Name", customer.getName());
+                            editor.putString("Email", customer.getEmail());
+                            editor.putString("Phone", customer.getPhone());
+                            editor.putString("Address", customer.getAddress());
+                            editor.apply();
+
                         } else {
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             Customer currentUser = new Customer(user.getDisplayName(), user.getEmail(),
-                                    "","","","");
+                                    "","","");
                             String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             database.getReference("Users").child(currentUid).setValue(currentUser);
                             name.setText(user.getDisplayName());
                             email.setText(user.getEmail());
+                            // Aggiorno le shared prefs
+                            editor.putString("Name", user.getDisplayName());
+                            editor.putString("Email", user.getEmail());
+                            editor.apply();
                         }
 
                     }
@@ -182,6 +199,21 @@ public class MainActivity extends AppCompatActivity implements
                 RC_SIGN_IN);
     }
 
+    private void startLogout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        editor.clear();
+                        editor.apply();
+                        //startLogin();
+                        Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
+                        startActivity(intent);
+                    }
+                });
+    }
+
 
     // What happens if I click on a icon on the menu
     @Override
@@ -197,9 +229,12 @@ public class MainActivity extends AppCompatActivity implements
                 } else {                      // I pressed to come back
                     modifyingInfo = false;
                     setFieldUnclickable();
-                    saveFields();
-                    //saveFieldsOnFirebase();
-                    //saveProfilePicOnFirebase(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
+                    //saveFields();
+                    saveFieldsOnFirebase();
+                    if (!isDefaultImage)
+                        uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
+                    else
+                        deleteProfilePic();
                     Toast.makeText(getApplicationContext(), "Data saved", Toast.LENGTH_SHORT).show();
                 }
         }
@@ -223,7 +258,13 @@ public class MainActivity extends AppCompatActivity implements
         if (modifyingInfo) {
             modifyingInfo = false;
             setFieldUnclickable();
-            saveFields();
+            //saveFields();
+            saveFieldsOnFirebase();
+            if (!isDefaultImage)
+                uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
+            else
+                deleteProfilePic();
+
         } else
             super.onBackPressed();
     }
@@ -277,9 +318,16 @@ public class MainActivity extends AppCompatActivity implements
 
     private void saveFieldsOnFirebase() {
         Customer currentUser = new Customer(name.getText().toString(), email.getText().toString(),
-                phone.getText().toString(),address.getText().toString(),additionalInformation.getText().toString(),"");
+                phone.getText().toString(),address.getText().toString(),additionalInformation.getText().toString());
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         database.getReference("Users").child(currentUid).setValue(currentUser);
+        // Aggiorno le shared prefs
+        editor.putString("Name", name.getText().toString());
+        editor.putString("Email", email.getText().toString());
+        editor.putString("Phone", phone.getText().toString());
+        editor.putString("Address", address.getText().toString());
+        editor.apply();
+
     }
 
 
@@ -352,8 +400,8 @@ public class MainActivity extends AppCompatActivity implements
                 Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                 personalImage.setImageDrawable(defaultImg);
                 isDefaultImage = true;
-                editor.remove("PersonalImage");
-                editor.apply();
+                //editor.remove("PersonalImage");
+                //editor.apply();
                 return true;
 
             default:
@@ -372,7 +420,7 @@ public class MainActivity extends AppCompatActivity implements
             Bitmap bitmap = (Bitmap) extras.get("data");
             personalImage.setImageBitmap(bitmap);
             isDefaultImage = false;
-            saveImageContent();
+            //saveImageContent();
         }
 
         if (requestCode == MyImageHandler.Gallery_Pick_Code && resultCode == RESULT_OK && data != null) {
@@ -405,6 +453,7 @@ public class MainActivity extends AppCompatActivity implements
                 editor.apply();
 
                 loadFieldsFromFirebase();
+                downloadProfilePic();
 
             } else {
                 if (response==null) {
@@ -423,7 +472,7 @@ public class MainActivity extends AppCompatActivity implements
             try {
                 personalImage.setImageURI(uri);
                 isDefaultImage = false;
-                saveImageContent();
+                //saveImageContent();
             } catch (Exception e) {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -477,38 +526,27 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    /* Salva l'immagine nello storage con relativo link nel database; se l'immagine è di default carico solo una stringa vuota sul db */
-    private void saveProfilePicOnFirebase(Bitmap bitmap) {
-
-        if (isDefaultImage) {
-            database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                    .child("image").setValue("");
+    private void uploadProfilePic(Bitmap bitmap) {
+        // Se è l'immagine di default, non salvo niente
+        if (isDefaultImage)
             return;
-        }
 
-        //https://firebase.google.com/docs/storage/android/upload-files
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] data = stream.toByteArray();
-
         final StorageReference fileReference = storage.getReference("profile_pics").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         final UploadTask uploadTask = fileReference.putBytes(data); // Salvo l'immagine nello storage
-
         /* Gestione successo e insuccesso */
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-
                 // Handle unsuccessful uploads
-                Toast.makeText(MainActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
-
+                Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                //Toast.makeText(MainActivity.this, "Upload Successful", Toast.LENGTH_LONG).show();
-
+                // Upload success
                 /* Ricavo Uri e lo inserisco nel db */
                 Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
@@ -522,11 +560,7 @@ public class MainActivity extends AppCompatActivity implements
                 }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.isSuccessful()) {
-                            Uri downloadUri = task.getResult(); // URI Dell'immagine
-                            database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                    .child("image").setValue(downloadUri.toString());
-                        } else {
+                        if (!task.isSuccessful()) {
                             // Handle failures
                         }
                     }
@@ -535,49 +569,51 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-    private void getProfilePicFromFirebase() {
-
-        database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("image")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String imageUri = dataSnapshot.getValue(String.class);
-                        if (imageUri.equals("")) {
-                            // Immagine di default
-                            Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
-                            personalImage.setImageDrawable(defaultImg);
-                            isDefaultImage = true;
-                        }
-                        else {
-                            // Scarico l'immagine
-                            final long ONE_MEGABYTE = 1024 * 1024;
-                            StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUri);
-                            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                                @Override
-                                public void onSuccess(byte[] bytes) {
-                                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                    personalImage.setImageBitmap(bitmap);
-                                    isDefaultImage = false;
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception exception) {
-                                    // Handle any errors
-                                }
-                            });
-                        }
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-
+    private void downloadProfilePic() {
+        final long ONE_MEGABYTE = 1024 * 1024;
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                // Scarico l'immagine e la setto
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                personalImage.setImageBitmap(bitmap);
+                isDefaultImage = false;
+                imageProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+                int errorCode = ((StorageException) exception).getErrorCode();
+                if (errorCode==StorageException.ERROR_OBJECT_NOT_FOUND) {
+                    // La foto non è presente: carico immagine di default
+                    Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
+                    personalImage.setImageDrawable(defaultImg);
+                    isDefaultImage = true;
+                    imageProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                }
+            }
+        });
     }
+
+    private void deleteProfilePic() {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        // Delete the file
+        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                // File deleted successfully
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // An error occurred
+            }
+        });
+    }
+
 
     public void initializeNavigationDrawer(){
 
@@ -636,6 +672,7 @@ public class MainActivity extends AppCompatActivity implements
             onBackPressed();
         } else if (id == R.id.nav_logout) {
             // LogoutFunction
+            startLogout();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

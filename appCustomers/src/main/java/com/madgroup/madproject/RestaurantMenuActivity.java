@@ -248,6 +248,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.shoppingCart:
+                showDialog();
                 break;
         }
             return super.onOptionsItemSelected(item);
