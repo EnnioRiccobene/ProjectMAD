@@ -3,14 +3,23 @@ package com.madgroup.madproject;
 import java.io.Serializable;
 
 public class OrderedDish implements Serializable {
+    private String id;
     private String name;
-    private Integer quantity;
+    private String quantity;
     private float price;
 
     public OrderedDish() {
     }
 
-    public OrderedDish(String name, Integer quantity, float price) {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public OrderedDish(String name, String quantity, float price) {
         this.name = name;
         this.quantity = quantity;
         this.price = price;
@@ -24,11 +33,11 @@ public class OrderedDish implements Serializable {
         this.name = name;
     }
 
-    public Integer getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 

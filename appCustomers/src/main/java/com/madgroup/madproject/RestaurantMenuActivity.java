@@ -75,7 +75,6 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     TextView fridayHours;
     TextView saturdayHours;
     TextView sundayHours;
-    ImageButton imageButtonCart;
     private DatabaseReference restaurantRef;
     private String idRestaurant;
 
@@ -118,13 +117,6 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         address = "Via di prova";//todo: la via dovrà essere prelevata con una query al db sull'indirizzo del customer
 
         initRecicleView();
-
-        imageButtonCart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDialog();
-            }
-        });
 
         restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -188,13 +180,11 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
     private void initRecicleView() {
         //todo temporanea, poi prendere dal db e usare il costruttore che mette anche le foto'
-        menu.add(new Dish(1, "Margherita", 5, 30));
-        menu.add(new Dish(1, "Capricciosa", 7.5f, 30));
-        menu.add(new Dish(1, "Quattro salumi", 7, 30));
-        menu.add(new Dish(1, "Quattro formaggi", 8, 30));
-        menu.add(new Dish(1, "Parmiggiana", 7.5f, 30));
-        menu.add(new Dish(1, "Prosciutto", 6, 30));
-        menu.add(new Dish(1, "Burrata", 10, 30));
+        menu.add(new Dish("1", "Margherita", 5, "30"));
+        menu.add(new Dish("2", "Capricciosa", 7.5f, "30"));
+        menu.add(new Dish("3", "Quattro salumi", 7, "30"));
+        menu.add(new Dish("4", "Quattro formaggi", 8, "30"));
+        menu.add(new Dish("5", "Parmiggiana", 7.5f, "30"));
 
         RecyclerView recyclerView = findViewById(R.id.menu_recycleView);
         RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(this, menu, orderedDishes);
@@ -244,9 +234,8 @@ public class RestaurantMenuActivity extends AppCompatActivity {
                 notes = reservationNotes.getText().toString();
                 delivery_cost_amount = deliveryCostAmount.getText().toString();
                 minimumOrder = minimumOrderAmount.getText().toString();
-                Reservation currentReservation = new Reservation(orderedDishes, address, deliveryTime, notes);
-
-                ShoppingCartActivity.start(RestaurantMenuActivity.this, currentReservation, deliveryTime, notes, delivery_cost_amount, minimumOrder);
+                Reservation currentReservation = new Reservation(orderedDishes, address, deliveryTime, notes, idRestaurant);
+                ShoppingCartActivity.start(RestaurantMenuActivity.this, currentReservation, delivery_cost_amount, minimumOrder);
 
                 dialog.dismiss();
             }

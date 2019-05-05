@@ -50,7 +50,7 @@ public class RecycleViewMenuAdapter extends RecyclerView.Adapter<RecycleViewMenu
 //        holder.dishPrice.setText(menu.get(position).getPrice());//todo: gestire la edittext del prezzo come fatto nell'app company
         holder.dishIngredientsList.setText(menu.get(position).getDescription());
         holder.dishQuantity.setText(String.valueOf(orderedQuantity[0]));
-        final OrderedDish currentDish = new OrderedDish(menu.get(position).getName(), 0, menu.get(position).getPrice());
+        final OrderedDish currentDish = new OrderedDish(menu.get(position).getName(), "0", menu.get(position).getPrice());
 
         //todo: fare controllo sull'available quantity del piatto (forse va controllato il db)
         holder.incrementButton.setOnClickListener(new View.OnClickListener() {
@@ -63,10 +63,10 @@ public class RecycleViewMenuAdapter extends RecyclerView.Adapter<RecycleViewMenu
                 //Aggiungo il piatto ordinato all'arraylist o ne incremento la quantità
                 if(orderedDishes.contains(currentDish)){
                     int index = orderedDishes.indexOf(currentDish);
-                    currentDish.setQuantity(orderedQuantity[0]);
+                    currentDish.setQuantity(String.valueOf(orderedQuantity[0]));
                     orderedDishes.get(index).setQuantity(currentDish.getQuantity());
                 } else {
-                    currentDish.setQuantity(orderedQuantity[0]);//la quantità è 1
+                    currentDish.setQuantity(String.valueOf(orderedQuantity[0]));//la quantità è 1
                     orderedDishes.add(currentDish);
                 }
 
@@ -85,11 +85,11 @@ public class RecycleViewMenuAdapter extends RecyclerView.Adapter<RecycleViewMenu
                 orderedQuantity[0]--;
                 holder.dishQuantity.setText(String.valueOf(orderedQuantity[0]));
                 if(orderedDishes.contains(currentDish)){
-                    currentDish.setQuantity(orderedQuantity[0]);
+                    currentDish.setQuantity(String.valueOf(orderedQuantity[0]));
                     int index = orderedDishes.indexOf(currentDish);
                     orderedDishes.get(index).setQuantity(currentDish.getQuantity());
                     //Rimuovo il piatto ordinato dall'ArrayList
-                    if(orderedDishes.get(index).getQuantity() == 0){
+                    if(orderedDishes.get(index).getQuantity() == "0"){
                         orderedDishes.remove(index);
                     }
                 }

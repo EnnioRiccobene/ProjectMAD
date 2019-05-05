@@ -38,11 +38,11 @@ public class DetailedReservation extends AppCompatActivity {
 
         // ARRAY DI PROVA
         dishes = new ArrayList<>();
-        dishes.add(new Dish(0, "Pollo al curry", 34, 30));
-        dishes.add(new Dish(1, "Carbonara", 34, 2));
-        dishes.add(new Dish(2, "Cacio e pepe", 34, 35));
-        dishes.add(new Dish(3, "Insalta", 34, 10));
-        dishes.add(new Dish(4, "Polpette", 34, 60));
+        dishes.add(new Dish("1", "Margherita", 5, 30));
+        dishes.add(new Dish("2", "Capricciosa", 7.5f, 30));
+        dishes.add(new Dish("3", "Quattro salumi", 7, 30));
+        dishes.add(new Dish("4", "Quattro formaggi", 8, 30));
+        dishes.add(new Dish("5", "Parmiggiana", 7.5f, 30));
 
         // Compute Total price
         float localPrice = 0;
