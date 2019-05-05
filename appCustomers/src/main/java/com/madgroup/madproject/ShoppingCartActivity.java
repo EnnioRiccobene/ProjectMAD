@@ -152,10 +152,10 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 String userID = prefs.getString("currentUser", "Error");
                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
                 // Customer Reference
-                final DatabaseReference pendingCustomerRef = database.child("Customer").child("Order").child("Pending").child(userID).child(restaurantId);
+                final DatabaseReference pendingCustomerRef = database.child("Customer").child("Order").child("Pending").child(userID);
                 // Company References
                 final DatabaseReference pendingRestaurantRef = database.child("Company").child("Reservation").child("Pending").child(restaurantId);
-                DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood").child(restaurantId);
+                final DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood").child(restaurantId);
                 final DatabaseReference menuRef = database.child("Company").child("Menu").child(restaurantId);
                 final String orderID = pendingRestaurantRef.push().getKey();
                 pendingRestaurantRef.child(orderID);
@@ -175,6 +175,8 @@ public class ShoppingCartActivity extends AppCompatActivity {
                             }
                             mutableData.child(orderedDish.getId()).child("availableQuantity").setValue(String.valueOf(remainQuantity));
                         }
+                        orderedFoodRef.child(orderID).setValue(currentReservation.getOrderedDishList());
+                        currentReservation.setOrderedDishList(null);
                         pendingCustomerRef.child(orderID).setValue(currentReservation);
                         pendingRestaurantRef.child(orderID).setValue(currentReservation);
                         return Transaction.success(mutableData);

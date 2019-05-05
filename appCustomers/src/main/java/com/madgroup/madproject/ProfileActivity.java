@@ -669,6 +669,9 @@ public class ProfileActivity extends AppCompatActivity implements
         if (id == R.id.nav_search_restaurant) {
             Intent myIntent = new Intent(this, SearchRestaurantActivity.class);
             this.startActivity(myIntent);
+        } else if(id == R.id.nav_orders){
+            Intent myIntent = new Intent(this, OrdersActivity.class);
+            this.startActivity(myIntent);
         } else if (id == R.id.nav_profile) {
             onBackPressed();
         } else if (id == R.id.nav_logout) {
