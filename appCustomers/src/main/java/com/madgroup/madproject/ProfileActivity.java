@@ -22,6 +22,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.Continuation;
@@ -536,6 +541,7 @@ public class ProfileActivity extends AppCompatActivity implements
     }
 
     private void downloadProfilePic() {
+
         final long ONE_MEGABYTE = 1024 * 1024;
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
                 .child("customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -560,6 +566,16 @@ public class ProfileActivity extends AppCompatActivity implements
                 }
             }
         });
+
+/*
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                .child("customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        GlideApp.with(this).load(storageReference)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .error(getResources().getDrawable(R.drawable.personicon))
+                .into(personalImage);
+*/
     }
 
     private void deleteProfilePic() {

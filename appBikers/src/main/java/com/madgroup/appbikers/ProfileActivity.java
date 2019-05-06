@@ -67,6 +67,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Registry;
+import com.bumptech.glide.module.AppGlideModule;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.storage.StorageReference;
+import com.bumptech.glide.annotation.GlideModule;
+
+import java.io.InputStream;
+
+
 public class ProfileActivity extends AppCompatActivity
         implements PopupMenu.OnMenuItemClickListener,
         NavigationView.OnNavigationItemSelectedListener {
@@ -610,6 +624,7 @@ public class ProfileActivity extends AppCompatActivity
     }
 
     private void downloadProfilePic() {
+
         final long ONE_MEGABYTE = 1024 * 1024;
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
                 .child("bikers")
@@ -635,6 +650,13 @@ public class ProfileActivity extends AppCompatActivity
                 }
             }
         });
+
+        /*
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                .child("bikers")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        GlideApp.with(this).load(storageReference).into(personalImage);
+        */
     }
 
     private void deleteProfilePic() {

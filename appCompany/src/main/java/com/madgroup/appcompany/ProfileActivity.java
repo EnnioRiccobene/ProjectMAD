@@ -75,6 +75,18 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Registry;
+import com.bumptech.glide.module.AppGlideModule;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.storage.StorageReference;
+import com.bumptech.glide.annotation.GlideModule;
+
+import java.io.InputStream;
 
 
 public class ProfileActivity extends AppCompatActivity
@@ -828,15 +840,18 @@ public class ProfileActivity extends AppCompatActivity
     private void saveFieldsOnFirebase() {
         progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
-        RestaurantProfile currentUser = new RestaurantProfile(name.getText().toString(), phone.getText().toString(),
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
+
+        RestaurantProfile currentUser = new RestaurantProfile(uid, name.getText().toString(), phone.getText().toString(),
                 address.getText().toString(), email.getText().toString(), editCategory.getText().toString(),
                 minimumOrder.getText().toString(), deliveryCost.getText().toString(), mondayHour.getText().toString(), tuesdayHour.getText().toString(),
                 wednesdayHour.getText().toString(), thursdayHour.getText().toString(), fridayHour.getText().toString(),
                 saturdayHour.getText().toString(), sundayHour.getText().toString(), additionalInformation.getText().toString());
 
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        database.getReference("Profiles")
-                .child("Restaurants").child(currentUid)
+        //database.getReference("Profiles").child("Restaurants")
+                database.getReference("Company").child("Profile")
+                .child(currentUid)
                 .setValue(currentUser, new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
@@ -913,6 +928,7 @@ public class ProfileActivity extends AppCompatActivity
     }
 
     private void downloadProfilePic() {
+
         final long ONE_MEGABYTE = 1024 * 1024;
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
                 .child("restaurants").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -937,6 +953,12 @@ public class ProfileActivity extends AppCompatActivity
                 }
             }
         });
+
+        /*
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                .child("restaurants").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        GlideApp.with(this).load(storageReference).into(personalImage);
+*/
     }
 
     private void deleteProfilePic() {
@@ -995,7 +1017,7 @@ public class ProfileActivity extends AppCompatActivity
                             name.setText(restaurant.getName());
                             phone.setText(restaurant.getPhoneNumber());
                             address.setText(restaurant.getAddress());
-                            additionalInformation.setText(restaurant.getInfo());
+                            additionalInformation.setText(restaurant.getAdditionalInformation());
                             email.setText(restaurant.getEmail());
                             deliveryCost.setText(restaurant.getDeliveryCost());
                             minimumOrder.setText(restaurant.getMinOrder());
@@ -1019,7 +1041,7 @@ public class ProfileActivity extends AppCompatActivity
                         } else {
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
                             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            RestaurantProfile currentUser = new RestaurantProfile(user.getDisplayName(), user.getEmail(),
+                            RestaurantProfile currentUser = new RestaurantProfile(user.getUid(), user.getDisplayName(), user.getEmail(),
                                     "","","","","",getResources().getString(R.string.Closed),
                                     getResources().getString(R.string.Closed),
                                     getResources().getString(R.string.Closed),
@@ -1029,8 +1051,8 @@ public class ProfileActivity extends AppCompatActivity
                                     getResources().getString(R.string.Closed),
                                     "");
                             String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            database.getReference("Profiles")
-                                    .child("Restaurants")
+                            //database.getReference("Profiles").child("Restaurants")
+                            database.getReference("Company").child("Profile")
                                     .child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
                                 @Override
                                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {

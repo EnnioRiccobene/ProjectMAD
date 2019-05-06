@@ -7,14 +7,12 @@ import android.os.Parcelable;
 
 public class RestaurantProfile implements Parcelable {
 
-    private int id;
+    private String id;
     private String name;
     private String phoneNumber;
     private String address;
-    private String info;
     private String email;
     private String foodCategory;
-    private Bitmap photo;
     private String minOrder;  //todo aggiungerlo al profilo company
     private String deliveryCost; //todo aggiungerlo al profilo company
     private String mondayOpeningHours;
@@ -25,6 +23,7 @@ public class RestaurantProfile implements Parcelable {
     private String saturdayOpeningHours;
     private String sundayOpeningHours;
     private String additionalInformation;
+    private String fCategoryANDdCost;
 
     public String getAdditionalInformation() {
         return additionalInformation;
@@ -44,10 +43,8 @@ public class RestaurantProfile implements Parcelable {
 
     public RestaurantProfile() {}
 
-    public RestaurantProfile(String name, String phoneNumber, String address, String email, String foodCategory,
-                             String minOrder, String deliveryCost, String mondayOpeningHours,
-                             String tuesdayOpeningHours, String wednesdayOpeningHours, String thursdayOpeningHours,
-                             String fridayOpeningHours, String saturdayOpeningHours, String sundayOpeningHours, String additionalInformation) {
+    public RestaurantProfile(String id, String name, String phoneNumber, String address, String email, String foodCategory, String minOrder, String deliveryCost, String mondayOpeningHours, String tuesdayOpeningHours, String wednesdayOpeningHours, String thursdayOpeningHours, String fridayOpeningHours, String saturdayOpeningHours, String sundayOpeningHours, String additionalInformation) {
+        this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.address = address;
@@ -62,62 +59,15 @@ public class RestaurantProfile implements Parcelable {
         this.fridayOpeningHours = fridayOpeningHours;
         this.saturdayOpeningHours = saturdayOpeningHours;
         this.sundayOpeningHours = sundayOpeningHours;
-        this.additionalInformation=additionalInformation;
+        this.additionalInformation = additionalInformation;
+        this.fCategoryANDdCost = foodCategory + "_" + deliveryCost.replace(".", "").replace(",", "");
     }
 
-    public RestaurantProfile(int id, String name, String phoneNumber, String address, String info,
-                             String foodCategory, Bitmap photo, String minOrder, String deliveryCost,
-                             String mondayOpeningHours, String tuesdayOpeningHours,
-                             String wednesdayOpeningHours, String thursdayOpeningHours,
-                             String fridayOpeningHours, String saturdayOpeningHours,
-                             String sundayOpeningHours) {
-        this.id = id;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.info = info;
-        this.foodCategory = foodCategory;
-        this.photo = photo;
-        this.minOrder = minOrder;
-        this.deliveryCost = deliveryCost;
-        this.mondayOpeningHours = mondayOpeningHours;
-        this.tuesdayOpeningHours = tuesdayOpeningHours;
-        this.wednesdayOpeningHours = wednesdayOpeningHours;
-        this.thursdayOpeningHours = thursdayOpeningHours;
-        this.fridayOpeningHours = fridayOpeningHours;
-        this.saturdayOpeningHours = saturdayOpeningHours;
-        this.sundayOpeningHours = sundayOpeningHours;
-    }
-
-    public RestaurantProfile(int id, String name, String phoneNumber, String address, String foodCategory,
-                      Bitmap photo, String minOrder, String deliveryCost, String mondayOpeningHours,
-                      String tuesdayOpeningHours, String wednesdayOpeningHours,
-                      String thursdayOpeningHours, String fridayOpeningHours,
-                      String saturdayOpeningHours, String sundayOpeningHours) {
-        this.id = id;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.foodCategory = foodCategory;
-        this.photo = photo;
-        this.minOrder = minOrder;
-        this.deliveryCost = deliveryCost;
-        this.mondayOpeningHours = mondayOpeningHours;
-        this.tuesdayOpeningHours = tuesdayOpeningHours;
-        this.wednesdayOpeningHours = wednesdayOpeningHours;
-        this.thursdayOpeningHours = thursdayOpeningHours;
-        this.fridayOpeningHours = fridayOpeningHours;
-        this.saturdayOpeningHours = saturdayOpeningHours;
-        this.sundayOpeningHours = sundayOpeningHours;
-    }
-
-
-
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -145,13 +95,7 @@ public class RestaurantProfile implements Parcelable {
         this.address = address;
     }
 
-    public String getInfo() {
-        return info;
-    }
 
-    public void setInfo(String info) {
-        this.info = info;
-    }
 
     public String getFoodCategory() {
         return foodCategory;
@@ -161,16 +105,12 @@ public class RestaurantProfile implements Parcelable {
         this.foodCategory = foodCategory;
     }
 
-    public Bitmap getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(Bitmap photo) {
-        this.photo = photo;
-    }
-
     public String getMinOrder() {
         return minOrder;
+    }
+
+    public String getfCategoryANDdCost() {
+        return fCategoryANDdCost;
     }
 
     public void setMinOrder(String minOrder) {
@@ -248,13 +188,11 @@ public class RestaurantProfile implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
+        dest.writeString(this.id);
         dest.writeString(this.name);
         dest.writeString(this.phoneNumber);
         dest.writeString(this.address);
-        dest.writeString(this.info);
         dest.writeString(this.foodCategory);
-        dest.writeParcelable(this.photo, flags);
         dest.writeString(this.minOrder);
         dest.writeString(this.deliveryCost);
         dest.writeString(this.mondayOpeningHours);
@@ -267,13 +205,11 @@ public class RestaurantProfile implements Parcelable {
     }
 
     protected RestaurantProfile(Parcel in) {
-        this.id = in.readInt();
+        this.id = in.readString();
         this.name = in.readString();
         this.phoneNumber = in.readString();
         this.address = in.readString();
-        this.info = in.readString();
         this.foodCategory = in.readString();
-        this.photo = in.readParcelable(Bitmap.class.getClassLoader());
         this.minOrder = in.readString();
         this.deliveryCost = in.readString();
         this.mondayOpeningHours = in.readString();
