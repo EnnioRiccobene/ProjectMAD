@@ -30,10 +30,13 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseError;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -88,7 +91,9 @@ public class ProfileActivity extends AppCompatActivity implements
     private FirebaseDatabase database;
     private FirebaseStorage storage;
     private boolean isDefaultImage;
-    private ProgressBar imageProgressBar;
+    private ProgressBar progressBar;
+    private ProgressBar imgProgressBar;
+
 
 
     @SuppressLint("CommitPrefEdits")
@@ -96,6 +101,12 @@ public class ProfileActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        if (FirebaseAuth.getInstance().getCurrentUser()==null) {
+            // Utente non ancora loggato
+            startLogin();
+        }
+
         setContentView(R.layout.activity_navigation_drawer);
         ViewStub stub = (ViewStub)findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
@@ -117,13 +128,21 @@ public class ProfileActivity extends AppCompatActivity implements
         phone = findViewById(R.id.editTextPhone);
         address = findViewById(R.id.editTextAddress);
         additionalInformation = findViewById(R.id.additionalInformation);
-        imageProgressBar = findViewById(R.id.imageProgressBar);
+        progressBar = findViewById(R.id.progressBar);
+        imgProgressBar = findViewById(R.id.imgProgressBar);
         modifyingInfo = false;
+
+        hideFields();
+        imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
 
         // Set all field to unclickable
         setFieldUnclickable();
         isDefaultImage = true;
 
+        downloadProfilePic();
+        loadFieldsFromFirebase();
+
+        /*
         if (prefs.contains("currentUser")) {
             // Utente già loggato
             loadFieldsFromFirebase();
@@ -131,88 +150,11 @@ public class ProfileActivity extends AppCompatActivity implements
         } else {
             startLogin();
         }
+        */
 
         // Load saved information, if exist
         //loadFields();
 
-    }
-    private void loadFieldsFromFirebase() {
-
-        database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Customer customer = dataSnapshot.getValue(Customer.class); // Leggo le informazioni dal DB
-
-                        if (customer!=null) {
-                            // Utente già registrato: setto i campi
-                            name.setText(customer.getName());
-                            phone.setText(customer.getPhone());
-                            address.setText(customer.getAddress());
-                            additionalInformation.setText(customer.getInfo());
-                            email.setText(customer.getEmail());
-
-                            // Aggiorno le shared prefs
-                            editor.putString("Name", customer.getName());
-                            editor.putString("Email", customer.getEmail());
-                            editor.putString("Phone", customer.getPhone());
-                            editor.putString("Address", customer.getAddress());
-                            editor.apply();
-
-                        } else {
-                            // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            Customer currentUser = new Customer(user.getDisplayName(), user.getEmail(),
-                                    "","","");
-                            String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            database.getReference("Users").child(currentUid).setValue(currentUser);
-                            name.setText(user.getDisplayName());
-                            email.setText(user.getEmail());
-                            // Aggiorno le shared prefs
-                            editor.putString("Name", user.getDisplayName());
-                            editor.putString("Email", user.getEmail());
-                            editor.apply();
-                        }
-
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                    }
-                });
-    }
-
-
-
-    private void startLogin() {
-        // Choose authentication providers
-        List<AuthUI.IdpConfig> providers = Arrays.asList(
-                new AuthUI.IdpConfig.EmailBuilder().build()
-        );
-
-        // Create and launch sign-in intent
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setIsSmartLockEnabled(false)
-                        .setAvailableProviders(providers)
-                        .setLogo(R.drawable.personicon)
-                        .build(),
-                RC_SIGN_IN);
-    }
-
-    private void startLogout() {
-        AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // ...
-                        editor.clear();
-                        editor.apply();
-                        //startLogin();
-                        Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
-                        startActivity(intent);
-                    }
-                });
     }
 
 
@@ -236,7 +178,7 @@ public class ProfileActivity extends AppCompatActivity implements
                         uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
                     else
                         deleteProfilePic();
-                    Toast.makeText(getApplicationContext(), "Data saved", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "Data saved", Toast.LENGTH_SHORT).show();
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -316,21 +258,6 @@ public class ProfileActivity extends AppCompatActivity implements
         editor.putString("Information", additionalInformation.getText().toString());
         editor.apply();
     }
-
-    private void saveFieldsOnFirebase() {
-        Customer currentUser = new Customer(name.getText().toString(), email.getText().toString(),
-                phone.getText().toString(),address.getText().toString(),additionalInformation.getText().toString());
-        String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        database.getReference("Users").child(currentUid).setValue(currentUser);
-        // Aggiorno le shared prefs
-        editor.putString("Name", name.getText().toString());
-        editor.putString("Email", email.getText().toString());
-        editor.putString("Phone", phone.getText().toString());
-        editor.putString("Address", address.getText().toString());
-        editor.apply();
-
-    }
-
 
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
@@ -527,10 +454,41 @@ public class ProfileActivity extends AppCompatActivity implements
         }
     }
 
+    private void saveFieldsOnFirebase() {
+        progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
+
+        Customer currentUser = new Customer(name.getText().toString(), email.getText().toString(),
+                phone.getText().toString(),address.getText().toString(),additionalInformation.getText().toString());
+        String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        database.getReference("Users").child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                    Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Dati salvati correttamente nel db
+                    // Aggiorno le shared prefs
+                    editor.putString("Name", name.getText().toString());
+                    editor.putString("Email", email.getText().toString());
+                    editor.putString("Phone", phone.getText().toString());
+                    editor.putString("Address", address.getText().toString());
+                    editor.apply();
+                    progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                }
+            }
+        });
+    }
+
     private void uploadProfilePic(Bitmap bitmap) {
+
+        imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
+
         // Se è l'immagine di default, non salvo niente
-        if (isDefaultImage)
+        if (isDefaultImage) {
+            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
             return;
+        }
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -563,6 +521,11 @@ public class ProfileActivity extends AppCompatActivity implements
                     public void onComplete(@NonNull Task<Uri> task) {
                         if (!task.isSuccessful()) {
                             // Handle failures
+                            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                        } else {
+                            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -580,7 +543,6 @@ public class ProfileActivity extends AppCompatActivity implements
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 personalImage.setImageBitmap(bitmap);
                 isDefaultImage = false;
-                imageProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -592,7 +554,6 @@ public class ProfileActivity extends AppCompatActivity implements
                     Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                     personalImage.setImageDrawable(defaultImg);
                     isDefaultImage = true;
-                    imageProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
                 }
             }
         });
@@ -613,6 +574,114 @@ public class ProfileActivity extends AppCompatActivity implements
                 // An error occurred
             }
         });
+    }
+
+    private void hideFields() {
+        name.setVisibility(View.INVISIBLE);
+        email.setVisibility(View.INVISIBLE);
+        phone.setVisibility(View.INVISIBLE);
+        address.setVisibility(View.INVISIBLE);
+        additionalInformation.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
+    }
+
+    private void showFields() {
+        name.setVisibility(View.VISIBLE);
+        email.setVisibility(View.VISIBLE);
+        phone.setVisibility(View.VISIBLE);
+        address.setVisibility(View.VISIBLE);
+        additionalInformation.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);  // Nascondo la progress bar
+    }
+
+    private void loadFieldsFromFirebase() {
+
+        database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Customer customer = dataSnapshot.getValue(Customer.class); // Leggo le informazioni dal DB
+
+                        if (customer!=null) {
+                            // Utente già registrato: setto i campi
+                            name.setText(customer.getName());
+                            phone.setText(customer.getPhone());
+                            address.setText(customer.getAddress());
+                            additionalInformation.setText(customer.getInfo());
+                            email.setText(customer.getEmail());
+                            showFields();
+
+                            // Aggiorno le shared prefs
+                            editor.putString("Name", customer.getName());
+                            editor.putString("Email", customer.getEmail());
+                            editor.putString("Phone", customer.getPhone());
+                            editor.putString("Address", customer.getAddress());
+                            editor.apply();
+
+                        } else {
+                            // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
+                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            Customer currentUser = new Customer(user.getDisplayName(), user.getEmail(),
+                                    "","","");
+                            String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            database.getReference("Users").child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                    if (databaseError!= null) {
+                                        Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
+                                        // todo: rimuovere la registrazione dell'utente
+                                    } else {
+                                        name.setText(user.getDisplayName());
+                                        email.setText(user.getEmail());
+                                        // Aggiorno le shared prefs
+                                        editor.putString("Name", user.getDisplayName());
+                                        editor.putString("Email", user.getEmail());
+                                        editor.apply();
+                                        showFields();
+                                    }
+                                }
+                            });
+                        }
+
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+    }
+
+
+
+    private void startLogin() {
+        // Choose authentication providers
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build()
+        );
+
+        // Create and launch sign-in intent
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setIsSmartLockEnabled(false)
+                        .setAvailableProviders(providers)
+                        .setLogo(R.drawable.personicon)
+                        .build(),
+                RC_SIGN_IN);
+    }
+
+    private void startLogout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        editor.clear();
+                        editor.apply();
+                        //startLogin();
+                        Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
+                        startActivity(intent);
+                    }
+                });
     }
 
 
