@@ -107,16 +107,20 @@ public class ProfileActivity extends AppCompatActivity implements
 
         super.onCreate(savedInstanceState);
 
+        /*
         if (FirebaseAuth.getInstance().getCurrentUser()==null) {
             // Utente non ancora loggato
             startLogin();
+            return;
         }
+        */
 
         setContentView(R.layout.activity_navigation_drawer);
         ViewStub stub = (ViewStub)findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_main);
         stub.inflate();
+        this.setTitle("Profile");
         prefs = getSharedPreferences("MyData", MODE_PRIVATE);
         editor = prefs.edit();
         initializeNavigationDrawer();
@@ -142,10 +146,10 @@ public class ProfileActivity extends AppCompatActivity implements
         hideFields();
         imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
         isDefaultImage = true;
-        downloadProfilePic();
-        loadFieldsFromFirebase();
+        //downloadProfilePic();
+        //loadFieldsFromFirebase();
 
-        /*
+
         if (prefs.contains("currentUser")) {
             // Utente già loggato
             loadFieldsFromFirebase();
@@ -153,7 +157,7 @@ public class ProfileActivity extends AppCompatActivity implements
         } else {
             startLogin();
         }
-        */
+
 
         // Load saved information, if exist
         //loadFields();
@@ -380,6 +384,8 @@ public class ProfileActivity extends AppCompatActivity implements
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                prefs = getSharedPreferences("MyData", MODE_PRIVATE);
+                editor = prefs.edit();
                 editor.putString("currentUser", user.getUid());
                 editor.apply();
 
@@ -619,8 +625,8 @@ public class ProfileActivity extends AppCompatActivity implements
 
     private void loadFieldsFromFirebase() {
 
-        database.getReference("Profiles")
-                .child("Customers")
+        database.getReference("Customer")
+                .child("Profile")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -768,7 +774,6 @@ public class ProfileActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_profile) {
             onBackPressed();
         } else if (id == R.id.nav_logout) {
-            // LogoutFunction
             startLogout();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

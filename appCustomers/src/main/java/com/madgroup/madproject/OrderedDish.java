@@ -3,11 +3,27 @@ package com.madgroup.madproject;
 import java.io.Serializable;
 
 public class OrderedDish implements Serializable {
+    private String id;
     private String name;
     private String quantity;
     private String price;
 
     public OrderedDish() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public OrderedDish(String id, String name, String quantity, String price) {
+        this.id = id;
+        this.name = name;
+        this.quantity = quantity;
+        this.price = price;
     }
 
     public OrderedDish(String name, String quantity, String price) {

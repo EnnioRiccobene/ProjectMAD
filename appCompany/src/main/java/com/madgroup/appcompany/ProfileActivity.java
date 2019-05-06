@@ -149,10 +149,10 @@ public class ProfileActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (FirebaseAuth.getInstance().getCurrentUser()==null) {
-            // Utente non ancora loggato
-            startLogin();
-        }
+//        if (FirebaseAuth.getInstance().getCurrentUser()==null) {
+//            // Utente non ancora loggato
+//            startLogin();
+//        }
 
         setContentView(R.layout.activity_main);
         ViewStub stub = (ViewStub)findViewById(R.id.stub);
@@ -270,8 +270,8 @@ public class ProfileActivity extends AppCompatActivity
         hideFields();
         imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
         isDefaultImage = true;
-        downloadProfilePic();
-        loadFieldsFromFirebase();
+        //downloadProfilePic();
+        //loadFieldsFromFirebase();
 
         initializeNavigationDrawer();
 
@@ -283,6 +283,15 @@ public class ProfileActivity extends AppCompatActivity
         TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
         if (email.getText() != null)
             navEmail.setText(email.getText());
+
+
+        if (prefs.contains("currentUser")) {
+            // Utente già loggato
+            loadFieldsFromFirebase();
+            downloadProfilePic();
+        } else {
+            startLogin();
+        }
     }
 
     //I seguenti due metodi sono per gestire l'animazione della freccia durante l'interazione con l'ExpandableLayout
@@ -324,6 +333,8 @@ public class ProfileActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_profile) {
             onBackPressed();
+        } else if (id == R.id.nav_logout) {
+            startLogout();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -1004,8 +1015,7 @@ public class ProfileActivity extends AppCompatActivity
 
     private void loadFieldsFromFirebase() {
 
-        database.getReference("Profiles")
-                .child("Restaurants")
+        database.getReference("Company").child("Profile")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -1041,15 +1051,7 @@ public class ProfileActivity extends AppCompatActivity
                         } else {
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
                             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            RestaurantProfile currentUser = new RestaurantProfile(user.getUid(), user.getDisplayName(), user.getEmail(),
-                                    "","","","","",getResources().getString(R.string.Closed),
-                                    getResources().getString(R.string.Closed),
-                                    getResources().getString(R.string.Closed),
-                                    getResources().getString(R.string.Closed),
-                                    getResources().getString(R.string.Closed),
-                                    getResources().getString(R.string.Closed),
-                                    getResources().getString(R.string.Closed),
-                                    "");
+                            RestaurantProfile currentUser = new RestaurantProfile(user.getUid(), user.getDisplayName(), user.getEmail());
                             String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             //database.getReference("Profiles").child("Restaurants")
                             database.getReference("Company").child("Profile")

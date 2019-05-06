@@ -59,8 +59,6 @@ import com.madgroup.sdk.SmartLogger;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -79,7 +77,6 @@ public class SearchRestaurantActivity extends AppCompatActivity
     private DatabaseReference restaurantRef;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef; //di prova
-    private Uri mImageUri;
     private SharedPreferences.Editor editor;
 
 

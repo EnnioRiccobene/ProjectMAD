@@ -27,7 +27,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuViewHolder> {
 
     //    private ArrayList<Dish> menu = new ArrayList<>();
-    private ArrayList<OrderedDish> orderedDishes = new ArrayList<>();
+    private ArrayList<OrderedDish> orderedDishes;
     Context mContext;
     private DatabaseReference dishRef;
 
@@ -37,10 +37,11 @@ public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuVi
      *
      * @param options
      */
-    public RecycleViewMenuAdapter(@NonNull FirebaseRecyclerOptions<Dish> options, DatabaseReference dishRef, Context mContext) {
+    public RecycleViewMenuAdapter(@NonNull FirebaseRecyclerOptions<Dish> options, DatabaseReference dishRef, Context mContext, ArrayList<OrderedDish> orderedDishes) {
         super(options);
         this.dishRef = dishRef;
         this.mContext = mContext;
+        this.orderedDishes = orderedDishes;
     }
 
     @Override
@@ -52,7 +53,7 @@ public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuVi
         holder.dishIngredientsList.setText(dish.getDescription());
         holder.dishQuantity.setText(String.valueOf(orderedQuantity[0]));
 //        float currDish = Float.valueOf(menu.get(position).getPrice().replace(",", ".").replace("£", "").replace("$", "").replace("€", "").replaceAll("\\s",""));
-        final OrderedDish currentDish = new OrderedDish(dish.getName(), "0", dish.getPrice());
+        final OrderedDish currentDish = new OrderedDish(dish.getId(), dish.getName(), "0", dish.getPrice());
 
         holder.incrementButton.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("ShowToast")

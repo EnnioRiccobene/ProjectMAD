@@ -116,10 +116,11 @@ public class ProfileActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (FirebaseAuth.getInstance().getCurrentUser()==null) {
-            // Utente non ancora loggato
-            startLogin();
-        }
+//        if (FirebaseAuth.getInstance().getCurrentUser()==null) {
+//            // Utente non ancora loggato
+//            startLogin();
+//            return;
+//        }
 
         // Getting the instance of Firebase
         database = FirebaseDatabase.getInstance();
@@ -130,13 +131,11 @@ public class ProfileActivity extends AppCompatActivity
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_main);
         stub.inflate();
-        currentUser = "email1";
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
-        editor.putString("currentUser", "email1");
-        editor.apply();
 
+        currentUser = prefs.getString("currentUser", "");
         // Defining EditText
         personalImage = findViewById(R.id.imagePersonalPhoto);
         name = findViewById(R.id.editTextName);
@@ -158,8 +157,16 @@ public class ProfileActivity extends AppCompatActivity
         hideFields();
         imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
         isDefaultImage = true;
-        downloadProfilePic();
-        loadFieldsFromFirebase();
+        //downloadProfilePic();
+        //loadFieldsFromFirebase();
+
+        if (prefs.contains("currentUser")) {
+            // Utente già loggato
+            loadFieldsFromFirebase();
+            downloadProfilePic();
+        } else {
+            startLogin();
+        }
 
     }
 
@@ -379,6 +386,8 @@ public class ProfileActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                editor = prefs.edit();
                 editor.putString("currentUser", user.getUid());
                 editor.apply();
 
@@ -499,6 +508,9 @@ public class ProfileActivity extends AppCompatActivity
             Intent myIntent = new Intent(this, DeliveryActivity.class);
             // myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(myIntent);
+        }
+        else if (id == R.id.nav_logout) {
+            startLogout();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -699,8 +711,9 @@ public class ProfileActivity extends AppCompatActivity
     }
 
     private void loadFieldsFromFirebase() {
-
-        database.getReference("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+        database = FirebaseDatabase.getInstance();
+        //database.getReference("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+        database.getReference("Rider").child("Profile").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

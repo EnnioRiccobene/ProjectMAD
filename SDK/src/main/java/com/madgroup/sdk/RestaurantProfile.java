@@ -43,6 +43,26 @@ public class RestaurantProfile implements Parcelable {
 
     public RestaurantProfile() {}
 
+    public RestaurantProfile(String id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = "";
+        this.address = "";
+        this.foodCategory = "";
+        this.minOrder = "";
+        this.deliveryCost = "";
+        this.mondayOpeningHours = "Closed";
+        this.tuesdayOpeningHours = "Closed";
+        this.wednesdayOpeningHours = "Closed";
+        this.thursdayOpeningHours = "Closed";
+        this.fridayOpeningHours = "Closed";
+        this.saturdayOpeningHours = "Closed";
+        this.sundayOpeningHours = "Closed";
+        this.additionalInformation = "Closed";
+        this.fCategoryANDdCost = foodCategory + "_" + deliveryCost.replace(".", "").replace(",", "");
+    }
+
     public RestaurantProfile(String id, String name, String phoneNumber, String address, String email, String foodCategory, String minOrder, String deliveryCost, String mondayOpeningHours, String tuesdayOpeningHours, String wednesdayOpeningHours, String thursdayOpeningHours, String fridayOpeningHours, String saturdayOpeningHours, String sundayOpeningHours, String additionalInformation) {
         this.id = id;
         this.name = name;

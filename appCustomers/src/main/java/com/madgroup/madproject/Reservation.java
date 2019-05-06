@@ -8,12 +8,21 @@ public class Reservation implements Serializable {
 
     // TODO: Aggiungere successivamente classe Customer con tutte le informazioni necessarie dell'utente (nome, cognome, telefono)
     private String orderID;
+    private String restaurantID;
     private ArrayList<OrderedDish> orderedDishList;
     private String address;
     private String deliveryTime;
     private String price;
     private Integer status;
     private String notes;
+
+    public String getRestaurantID() {
+        return restaurantID;
+    }
+
+    public void setRestaurantID(String restaurantID) {
+        this.restaurantID = restaurantID;
+    }
 
     public Reservation() {
     }
@@ -30,6 +39,7 @@ public class Reservation implements Serializable {
         this.address = address;
         this.deliveryTime = deliveryTime;
         this.status = 0;
+
         // Compute total Price
         float x = 0;
         for (OrderedDish element : orderedDishList) {
@@ -42,12 +52,13 @@ public class Reservation implements Serializable {
         price = df.format(x);
     }
 
-    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes) {
+    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, String restaurantID) {
         this.orderedDishList = orderedDishList;
         this.address = address;
         this.deliveryTime = deliveryTime;
         this.notes = notes;
         this.status = 0;
+        this.restaurantID = restaurantID;
         // Compute total Price
         float x = 0;
         for (OrderedDish element : orderedDishList) {
