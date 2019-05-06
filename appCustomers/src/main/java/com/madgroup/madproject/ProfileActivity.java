@@ -460,11 +460,13 @@ public class ProfileActivity extends AppCompatActivity implements
     private void saveFieldsOnFirebase() {
         progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
-        Customer currentUser = new Customer(name.getText().toString(), email.getText().toString(),
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Customer currentUser = new Customer(uid, name.getText().toString(), email.getText().toString(),
                 phone.getText().toString(),address.getText().toString(),additionalInformation.getText().toString());
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        database.getReference("Profiles")
-                .child("Customers").child(currentUid)
+        //database.getReference("Profiles").child("Customers")
+        database.getReference("Customer").child("Profile")
+                .child(currentUid)
                 .setValue(currentUser, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
@@ -644,11 +646,11 @@ public class ProfileActivity extends AppCompatActivity implements
                         } else {
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
                             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            Customer currentUser = new Customer(user.getDisplayName(), user.getEmail(),
+                            Customer currentUser = new Customer(user.getUid(), user.getDisplayName(), user.getEmail(),
                                     "","","");
                             String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            database.getReference("Profiles")
-                                    .child("Customers")
+                            //database.getReference("Profiles").child("Customers")
+                            database.getReference("Customer").child("Profile")
                                     .child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
                                 @Override
                                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {

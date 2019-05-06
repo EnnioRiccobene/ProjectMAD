@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class Customer implements Serializable {
 
+    private String id;
     private String name;
     private String email;
     private String phone;
@@ -12,12 +13,21 @@ public class Customer implements Serializable {
 
     public Customer(){}
 
-    public Customer(String name, String email, String phone, String address, String info) {
+    public Customer(String id, String name, String email, String phone, String address, String info) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.address = address;
         this.info = info;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
