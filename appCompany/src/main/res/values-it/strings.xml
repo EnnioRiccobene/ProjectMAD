@@ -63,6 +63,10 @@
     <string name="available_quantity">Quantità disponibile</string>
     <string name="dish_price">Prezzo</string>
     <string name="edit_dish">Il tuo piatto</string>
+    <string name="requiredString">Inserisci campi obbligatori</string>
+    <string name="requiredPrice">Il prezzo non può essere zero.</string>
+    <string name="availableQuantity">Quantità disponibile:</string>
+
 
     <string-array name="hours_list">
         <item>00:00</item>
@@ -162,8 +166,6 @@
         <item>23:30</item>
         <item>23:45</item>
     </string-array>
-    <string name="requiredPrice">Il prezzo non può essere zero</string>
-    <string name="requiredString">Inserire i campi richiesti</string>
     <string name="delivery_cost">Costo di consegna</string>
     <string name="minimum_order">Ordine minimo</string>
 </resources>

@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.Registry;
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.module.AppGlideModule;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.github.aakira.expandablelayout.ExpandableLayout;
 import com.github.aakira.expandablelayout.Utils;
@@ -76,7 +77,9 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     TextView saturdayHours;
     TextView sundayHours;
     private DatabaseReference restaurantRef;
+    private DatabaseReference dishRef;
     private String idRestaurant;
+    FirebaseRecyclerOptions<Dish> options;
 
     public static void start(Context context, String restaurantId) {
         Intent starter = new Intent(context, RestaurantMenuActivity.class);
@@ -113,6 +116,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         restaurantRef = database.getReference().child("Company").child("Profile").child(idRestaurant);
+        dishRef = database.getReference().child("Company").child("Menu").child(idRestaurant);
 
         address = "Via di prova";//todo: la via dovrà essere prelevata con una query al db sull'indirizzo del customer
 
@@ -171,7 +175,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     private void getIncomingIntent() {
         if (getIntent().hasExtra("Restaurant")) {
             idRestaurant = getIntent().getStringExtra("Restaurant");
-//            restaurant.setId(idRestaurant);//l'oggetto restaurant non è stato costruito e non ho gli attributi per farlo oltre all'id
+            // restaurant.setId(idRestaurant);//l'oggetto restaurant non è stato costruito e non ho gli attributi per farlo oltre all'id
 
             //todo: una volta ottenuto l'id del ristorante tramite intent, fare una query al database per ottenere i campi del ristorante con quell'id (photo, Name, foodcategories, orari di apertura, ordine minimo e costo consegna)
             //todo: poi fare un'altra query al db per ottenere tutti i piatti del ristorante con quell'id e riempire l'ArrayList di Dish per la recycleview
@@ -180,18 +184,25 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
     private void initRecicleView() {
         //todo temporanea, poi prendere dal db e usare il costruttore che mette anche le foto'
-        menu.add(new Dish(1, "Margherita", 5, 30));
-        menu.add(new Dish(1, "Capricciosa", 7.5f, 30));
-        menu.add(new Dish(1, "Quattro salumi", 7, 30));
-        menu.add(new Dish(1, "Quattro formaggi", 8, 30));
-        menu.add(new Dish(1, "Parmiggiana", 7.5f, 30));
-        menu.add(new Dish(1, "Prosciutto", 6, 30));
-        menu.add(new Dish(1, "Burrata", 10, 30));
+//        menu.add(new Dish(1, "Margherita", 5, 30));
+//        menu.add(new Dish(1, "Capricciosa", 7.5f, 30));
+//        menu.add(new Dish(1, "Quattro salumi", 7, 30));
+//        menu.add(new Dish(1, "Quattro formaggi", 8, 30));
+//        menu.add(new Dish(1, "Parmiggiana", 7.5f, 30));
+//        menu.add(new Dish(1, "Prosciutto", 6, 30));
+//        menu.add(new Dish(1, "Burrata", 10, 30));
+
+        options = new FirebaseRecyclerOptions.Builder<Dish>()
+                .setQuery(dishRef, Dish.class)
+                .build();
 
         RecyclerView recyclerView = findViewById(R.id.menu_recycleView);
-        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(this, menu, orderedDishes);
+//        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(this, menu, orderedDishes);
+        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(options, dishRef, RestaurantMenuActivity.this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter.startListening();
     }
 
     public void showHoursDetails(View view) {

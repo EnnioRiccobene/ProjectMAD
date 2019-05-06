@@ -30,6 +30,7 @@ public class DetailedReservation extends AppCompatActivity {
     private TextView lunchTime;
     private TextView notes;
     private Reservation reservation;
+    TextView dishesText;
     private RecyclerView recyclerView;
     private DetailedReservationDishesAdapter dAdapter;
 
@@ -40,7 +41,9 @@ public class DetailedReservation extends AppCompatActivity {
         reservation = (Reservation) getIntent().getSerializableExtra("Reservation");
         ArrayList<OrderedDish> orderedFood = (ArrayList<OrderedDish>) getIntent().getSerializableExtra("OrderedFood");
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detailed_reservation_toolbar);
+        totalPrice = findViewById(R.id.totalPrice);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -117,6 +120,4 @@ public class DetailedReservation extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
 }

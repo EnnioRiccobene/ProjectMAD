@@ -32,8 +32,11 @@ public class Reservation implements Serializable {
         this.status = 0;
         // Compute total Price
         float x = 0;
-        for (OrderedDish element : orderedDishList)
-            x += element.getPrice() * element.getQuantity();
+        for (OrderedDish element : orderedDishList) {
+            float elementPrice = Float.valueOf(element.getPrice().replace(",", ".").replace("£", "").replace("$", "").replace("€", "").replaceAll("\\s", ""));
+            int elementQuantity = Integer.valueOf(element.getQuantity());
+            x += elementPrice * elementQuantity;
+        }
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
         price = df.format(x);
@@ -47,8 +50,11 @@ public class Reservation implements Serializable {
         this.status = 0;
         // Compute total Price
         float x = 0;
-        for (OrderedDish element : orderedDishList)
-            x += element.getPrice() * element.getQuantity();
+        for (OrderedDish element : orderedDishList) {
+            float elementPrice = Float.valueOf(element.getPrice().replace(",", ".").replace("£", "").replace("$", "").replace("€", "").replaceAll("\\s", ""));
+            int elementQuantity = Integer.valueOf(element.getQuantity());
+            x += elementPrice * elementQuantity;
+        }
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
         price = df.format(x);

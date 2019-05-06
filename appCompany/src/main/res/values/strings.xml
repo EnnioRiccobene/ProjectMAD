@@ -63,8 +63,9 @@
     <string name="dish_price">Price</string>
     <string name="edit_dish">Your dish</string>
     <string name="action_settings">Add Action</string>
-    <string name="requiredString">Enter required fields</string>
-    <string name="requiredPrice">Price cannot be zero.</string>
+    <string name="requiredString" translatable="false">Enter required fields</string>
+    <string name="requiredPrice" translatable="false">Price cannot be zero.</string>
+    <string name="availableQuantity">Available quantity:</string>
     <string name="delivery_cost">Delivery cost</string>
     <string name="minimum_order">Minimum Order</string>
 
