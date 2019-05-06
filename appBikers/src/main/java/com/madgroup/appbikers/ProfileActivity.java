@@ -544,12 +544,16 @@ public class ProfileActivity extends AppCompatActivity
 
         progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
-        RiderProfile currentUser = new RiderProfile(name.getText().toString(), email.getText().toString(),
-                phone.getText().toString(), true);
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
+                phone.getText().toString(), additionalInformation.getText().toString(), true);
 
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        database.getReference("Profiles").child("Bikers").child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
+        //database.getReference("Profiles").child("Bikers")
+        database.getReference("Rider").child("Profile")
+                .child(currentUid)
+                .setValue(currentUser, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                 if (databaseError != null) {
@@ -720,11 +724,11 @@ public class ProfileActivity extends AppCompatActivity
                         } else {
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
                             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            RiderProfile currentUser = new RiderProfile(user.getDisplayName(), user.getEmail(),
-                                    "",true);
+                            RiderProfile currentUser = new RiderProfile(user.getUid(), user.getDisplayName(), user.getEmail(),
+                                    "","",true);
                             String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            database.getReference("Profiles")
-                                    .child("Bikers")
+                            //database.getReference("Profiles").child("Bikers")
+                            database.getReference("Rider").child("Profile")
                                     .child(currentUid)
                                     .setValue(currentUser, new DatabaseReference.CompletionListener() {
                                 @Override

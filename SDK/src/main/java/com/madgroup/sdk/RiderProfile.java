@@ -3,11 +3,32 @@ package com.madgroup.sdk;
 import java.io.Serializable;
 
 public class RiderProfile implements Serializable {
+    private String id;
     private String name;
     private String email;
     private String phoneNumber;
     private String additionalInformation;
     private boolean active;
+
+    public RiderProfile() {
+    }
+
+    public RiderProfile(String id, String name, String email, String phoneNumber, String additionalInformation, boolean active) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.additionalInformation = additionalInformation;
+        this.active = active;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public boolean isActive() {
         return active;
@@ -17,21 +38,7 @@ public class RiderProfile implements Serializable {
         this.active = active;
     }
 
-    public RiderProfile() {
-    }
 
-    public RiderProfile(String name, String email, String phoneNumber, boolean active) {
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.active = active;
-    }
-
-    public RiderProfile(String name, String email, String phoneNumber) {
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-    }
 
     public String getName() {
         return name;
