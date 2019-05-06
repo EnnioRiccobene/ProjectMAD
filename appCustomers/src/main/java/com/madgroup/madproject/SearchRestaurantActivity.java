@@ -96,7 +96,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
         initializeNavigationDrawer();
         // Getting the instance of Firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        restaurantRef = database.getReference().child("Company").child("Profile");
+        restaurantRef = database.getReference().child("Profiles").child("Restaurants");
 
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads");

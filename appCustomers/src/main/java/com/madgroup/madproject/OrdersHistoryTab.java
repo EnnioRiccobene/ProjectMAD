@@ -172,7 +172,8 @@ public class OrdersHistoryTab extends Fragment {
                                             orderedFood.add(post);
                                         }
                                         // TODO: APRIRE DETTAGLI ORDINI
-                                        Intent openPage = new Intent(getActivity(), ShoppingCartActivity.class);
+                                        DetailedOrder.start(getActivity(), currentItem, orderedFood);
+                                        Intent openPage = new Intent(getActivity(), DetailedOrder.class);
                                         openPage.putExtra("Reservation", currentItem);
                                         openPage.putExtra("OrderedFood", orderedFood);
                                         getActivity().startActivity(openPage);

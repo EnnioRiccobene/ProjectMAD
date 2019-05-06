@@ -3,6 +3,9 @@ package com.madgroup.madproject;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -21,11 +24,17 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageException;
+import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
@@ -147,7 +156,7 @@ public class OrdersPendingTab extends Fragment {
                 new FirebaseRecyclerAdapter<Reservation, OrderViewHolder>(options) {
                     @Override
                     protected void onBindViewHolder(@NonNull OrderViewHolder holder, int i, @NonNull final Reservation currentItem) {
-                        // holder.mImageView.setImageResource(R.drawable.ic_garbage); // TODO: PRENDERE LA FOTO DEL RISTORANDE DAL DB
+                        downloadProfilePic(currentItem.getRestaurantID(), holder.mImageView);
                         holder.mTextView1.setText(currentItem.getAddress());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
@@ -167,7 +176,8 @@ public class OrdersPendingTab extends Fragment {
                                             orderedFood.add(post);
                                         }
                                         // TODO: APRIRE DETTAGLI ORDINI
-                                        Intent openPage = new Intent(getActivity(), ShoppingCartActivity.class);
+                                        DetailedOrder.start(getActivity(), currentItem, orderedFood);
+                                        Intent openPage = new Intent(getActivity(), DetailedOrder.class);
                                         openPage.putExtra("Reservation", currentItem);
                                         openPage.putExtra("OrderedFood", orderedFood);
                                         getActivity().startActivity(openPage);
@@ -216,4 +226,29 @@ public class OrdersPendingTab extends Fragment {
             viewForeground = itemView.findViewById(R.id.view_foreground);
         }
     }
+
+    private void downloadProfilePic(String restaurantId, final CircleImageView mImageView) {
+        final long ONE_MEGABYTE = 1024 * 1024;
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics").child("restaurants").child(restaurantId);
+        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                // Scarico l'immagine e la setto
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                mImageView.setImageBitmap(bitmap);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+                int errorCode = ((StorageException) exception).getErrorCode();
+                if (errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
+                    // La foto non è presente: carico immagine di default
+                    Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
+                    mImageView.setImageDrawable(defaultImg);
+                }
+            }
+        });
+    }
+
 }

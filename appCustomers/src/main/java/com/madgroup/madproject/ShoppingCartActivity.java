@@ -118,7 +118,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
         phone.setText(prefs.getString("Phone", ""));
         time.setText(deliveryTime);
         notes.setText(note);
-        String deliverCost = deliveryCostAmount.replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s", "");
+        final String deliverCost = deliveryCostAmount.replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s", "");
         float total = Float.valueOf(deliverCost) + Float.valueOf(currentReservation.getPrice().replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s", ""));
         deliveryPrice.setText(String.valueOf(df.format(Float.valueOf(deliverCost))) + currency);
         totalPrice.setText(String.valueOf(df.format(total)) + currency);
@@ -170,15 +170,16 @@ public class ShoppingCartActivity extends AppCompatActivity {
                         for (final OrderedDish orderedDish : orderedDishes) {
                             String availableQuantity = (String) mutableData.child(orderedDish.getId()).child("availableQuantity").getValue();
                             Integer remainQuantity = Integer.parseInt(availableQuantity) - Integer.parseInt(orderedDish.getQuantity());
-                            if (remainQuantity  < 0){
+                            if (remainQuantity  < 0)
                                 Transaction.abort();
-                            }
                             mutableData.child(orderedDish.getId()).child("availableQuantity").setValue(String.valueOf(remainQuantity));
                         }
+                        currentReservation.setOrderID(orderID);
                         orderedFoodRef.child(orderID).setValue(currentReservation.getOrderedDishList());
                         currentReservation.setOrderedDishList(null);
-                        pendingCustomerRef.child(orderID).setValue(currentReservation);
                         pendingRestaurantRef.child(orderID).setValue(currentReservation);
+                        currentReservation.setDeliveryCost(deliverCost);
+                        pendingCustomerRef.child(orderID).setValue(currentReservation);
                         return Transaction.success(mutableData);
                     }
 
