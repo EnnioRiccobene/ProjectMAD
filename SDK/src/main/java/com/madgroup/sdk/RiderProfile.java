@@ -7,14 +7,14 @@ public class RiderProfile implements Serializable {
     private String email;
     private String phoneNumber;
     private String additionalInformation;
-    private boolean active;
+    private boolean status;
 
-    public boolean isActive() {
-        return active;
+    public boolean isStatus() {
+        return status;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     public RiderProfile() {
@@ -24,7 +24,7 @@ public class RiderProfile implements Serializable {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.active = active;
+        this.status = active;
     }
 
     public RiderProfile(String name, String email, String phoneNumber) {
