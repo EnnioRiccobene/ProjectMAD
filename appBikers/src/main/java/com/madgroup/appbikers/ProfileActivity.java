@@ -87,7 +87,7 @@ public class ProfileActivity extends AppCompatActivity
         implements PopupMenu.OnMenuItemClickListener,
         NavigationView.OnNavigationItemSelectedListener {
 
-    public static String currentUser;
+    private String currentUser;
     private CircleImageView personalImage;
     private EditText name;
     private EditText email;
@@ -137,8 +137,7 @@ public class ProfileActivity extends AppCompatActivity
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
-
-        currentUser = prefs.getString("currentUser", "");
+        currentUser = prefs.getString("currentUser", "noUser");
         // Defining EditText
         personalImage = findViewById(R.id.imagePersonalPhoto);
         name = findViewById(R.id.editTextName);
@@ -153,16 +152,13 @@ public class ProfileActivity extends AppCompatActivity
 
         // Set all field to unclickable
         setFieldUnclickable();
-
         navigationDrawerInitialization();
         createChildEventListener();
-
         hideFields();
         imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
         isDefaultImage = true;
         //downloadProfilePic();
         //loadFieldsFromFirebase();
-
         if (prefs.contains("currentUser")) {
             // Utente già loggato
             loadFieldsFromFirebase();
@@ -170,7 +166,6 @@ public class ProfileActivity extends AppCompatActivity
         } else {
             startLogin();
         }
-
     }
 
     // What happens if I click on a icon on the menu
@@ -485,16 +480,18 @@ public class ProfileActivity extends AppCompatActivity
     private void verifyRiderAvailability(NavigationView navigationView) {
         riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        if(currentUser.equals("noUser"))
+            return;
+        SmartLogger.d("currentUser: " + currentUser);
         final DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
         // TODO: Anzichè prenderlo dal DB, prenderlo solo dalle prefs (DEVE ESSERE IMPOSTATO AL LOGIN)
         riderStatusRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Boolean riderStatus = (Boolean) dataSnapshot.getValue();
-                SmartLogger.d(riderStatus.toString());
                 editor.putBoolean("Status", riderStatus);
-                riderAvailability.setChecked(riderStatus);
                 editor.apply();
+                riderAvailability.setChecked(riderStatus);
             }
 
             @Override
@@ -531,11 +528,13 @@ public class ProfileActivity extends AppCompatActivity
         }
 
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
-        if (name.getText() != null)
-            navUsername.setText(name.getText());
+        String name = prefs.getString("Name", "");
+        if (!name.equals(""))
+            navUsername.setText(name);
         TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
-        if (email.getText() != null)
-            navEmail.setText(email.getText());
+        String email = prefs.getString("Email", "");
+        if (!email.equals(""))
+            navEmail.setText(email);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -599,7 +598,7 @@ public class ProfileActivity extends AppCompatActivity
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
-                phone.getText().toString(), additionalInformation.getText().toString(), true);
+                phone.getText().toString(), additionalInformation.getText().toString(), false);
 
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 

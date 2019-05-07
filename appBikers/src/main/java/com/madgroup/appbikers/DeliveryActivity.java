@@ -1,13 +1,11 @@
 package com.madgroup.appbikers;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -30,11 +28,8 @@ import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.SmartLogger;
 
 public class DeliveryActivity extends AppCompatActivity implements
@@ -87,7 +82,6 @@ public class DeliveryActivity extends AppCompatActivity implements
         Boolean status = prefs.getBoolean("Status", false);
         SmartLogger.d("status letto: " + status.toString());
         riderAvailability.setChecked(status);
-
         riderAvailability.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,7 +129,7 @@ public class DeliveryActivity extends AppCompatActivity implements
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_profile) {
-            Intent myIntent = new Intent(this, MainActivity.class);
+            Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);
         }
         if(id  == R.id.nav_switch)
