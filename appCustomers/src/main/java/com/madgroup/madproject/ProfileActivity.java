@@ -26,6 +26,7 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -68,8 +69,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static androidx.core.os.LocaleListCompat.create;
 
 
 public class ProfileActivity extends AppCompatActivity implements
@@ -95,7 +99,6 @@ public class ProfileActivity extends AppCompatActivity implements
     public int iteration = 0;
     private FirebaseDatabase database;
     private FirebaseStorage storage;
-    private boolean isDefaultImage;
     private ProgressBar progressBar;
     private ProgressBar imgProgressBar;
 
@@ -145,7 +148,7 @@ public class ProfileActivity extends AppCompatActivity implements
 
         hideFields();
         imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
-        isDefaultImage = true;
+        //isDefaultImage = true;
         //downloadProfilePic();
         //loadFieldsFromFirebase();
 
@@ -171,6 +174,7 @@ public class ProfileActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             // Edit icon
             case R.id.editIcon:
+
                 if (!modifyingInfo) {         // I pressed for modifying data
                     modifyingInfo = true;
                     setFieldClickable();
@@ -181,11 +185,7 @@ public class ProfileActivity extends AppCompatActivity implements
                     setFieldUnclickable();
                     //saveFields();
                     saveFieldsOnFirebase();
-                    if (!isDefaultImage)
-                        uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
-                    else
-                        deleteProfilePic();
-                    //Toast.makeText(getApplicationContext(), "Data saved", Toast.LENGTH_SHORT).show();
+                    uploadProfilePic();
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -210,11 +210,7 @@ public class ProfileActivity extends AppCompatActivity implements
             setFieldUnclickable();
             //saveFields();
             saveFieldsOnFirebase();
-            if (!isDefaultImage)
-                uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
-            else
-                deleteProfilePic();
-
+            uploadProfilePic();
         } else
             super.onBackPressed();
     }
@@ -240,31 +236,31 @@ public class ProfileActivity extends AppCompatActivity implements
         personalImage.setEnabled(true);
     }
 
-    private void loadFields() {
-        if (prefs.contains("Name"))
-            name.setText(prefs.getString("Name", ""));
-        if (prefs.contains("Email"))
-            email.setText(prefs.getString("Email", ""));
-        // if (prefs.contains("Password"))
-            // password.setText(prefs.getString("Password", ""));
-        if (prefs.contains("Phone"))
-            phone.setText(prefs.getString("Phone", ""));
-        if(prefs.contains("Address"))
-            address.setText(prefs.getString("Address", ""));
-        if(prefs.contains("Information"))
-            additionalInformation.setText(prefs.getString("Information", ""));
-        restoreImageContent();
-    }
-
-    private void saveFields() {
-        editor.putString("Name", name.getText().toString());
-        editor.putString("Email", email.getText().toString());
-        // editor.putString("Password", password.getText().toString());
-        editor.putString("Phone", phone.getText().toString());
-        editor.putString("Address", address.getText().toString());
-        editor.putString("Information", additionalInformation.getText().toString());
-        editor.apply();
-    }
+//    private void loadFields() {
+//        if (prefs.contains("Name"))
+//            name.setText(prefs.getString("Name", ""));
+//        if (prefs.contains("Email"))
+//            email.setText(prefs.getString("Email", ""));
+//        // if (prefs.contains("Password"))
+//            // password.setText(prefs.getString("Password", ""));
+//        if (prefs.contains("Phone"))
+//            phone.setText(prefs.getString("Phone", ""));
+//        if(prefs.contains("Address"))
+//            address.setText(prefs.getString("Address", ""));
+//        if(prefs.contains("Information"))
+//            additionalInformation.setText(prefs.getString("Information", ""));
+//        restoreImageContent();
+//    }
+//
+//    private void saveFields() {
+//        editor.putString("Name", name.getText().toString());
+//        editor.putString("Email", email.getText().toString());
+//        // editor.putString("Password", password.getText().toString());
+//        editor.putString("Phone", phone.getText().toString());
+//        editor.putString("Address", address.getText().toString());
+//        editor.putString("Information", additionalInformation.getText().toString());
+//        editor.apply();
+//    }
 
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
@@ -334,7 +330,7 @@ public class ProfileActivity extends AppCompatActivity implements
                 // Set the default image
                 Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                 personalImage.setImageDrawable(defaultImg);
-                isDefaultImage = true;
+                //isDefaultImage = true;
                 //editor.remove("PersonalImage");
                 //editor.apply();
                 return true;
@@ -354,7 +350,7 @@ public class ProfileActivity extends AppCompatActivity implements
             Bundle extras = data.getExtras();
             Bitmap bitmap = (Bitmap) extras.get("data");
             personalImage.setImageBitmap(bitmap);
-            isDefaultImage = false;
+            //isDefaultImage = false;
             //saveImageContent();
         }
 
@@ -408,7 +404,7 @@ public class ProfileActivity extends AppCompatActivity implements
         if (uri != null) {
             try {
                 personalImage.setImageURI(uri);
-                isDefaultImage = false;
+                //isDefaultImage = false;
                 //saveImageContent();
             } catch (Exception e) {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -416,26 +412,26 @@ public class ProfileActivity extends AppCompatActivity implements
         }
     }
 
-    private void saveImageContent() {
-        Bitmap bitmap = ((BitmapDrawable) personalImage.getDrawable()).getBitmap();
-        String encoded = MyImageHandler.getInstance().fromBitmapToString(bitmap);
-        editor.putString("PersonalImage", encoded);
-        editor.apply();
-    }
+//    private void saveImageContent() {
+//        Bitmap bitmap = ((BitmapDrawable) personalImage.getDrawable()).getBitmap();
+//        String encoded = MyImageHandler.getInstance().fromBitmapToString(bitmap);
+//        editor.putString("PersonalImage", encoded);
+//        editor.apply();
+//    }
 
-    private void restoreImageContent() {
-        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-        if(!ImageBitmap.equals("NoImage")){
-            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
-            personalImage.setImageBitmap(bitmap);
-            isDefaultImage = false;
-        } else {
-            Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
-            personalImage.setImageDrawable(defaultImg);
-            isDefaultImage = true;
-        }
-    }
+//    private void restoreImageContent() {
+//        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
+//        if(!ImageBitmap.equals("NoImage")){
+//            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+//            personalImage.setImageBitmap(bitmap);
+//            //isDefaultImage = false;
+//        } else {
+//            Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
+//            personalImage.setImageDrawable(defaultImg);
+//            //isDefaultImage = true;
+//        }
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -493,18 +489,22 @@ public class ProfileActivity extends AppCompatActivity implements
         });
     }
 
-    private void uploadProfilePic(Bitmap bitmap) {
+    private void uploadProfilePic() {
 
         imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
-        // Se è l'immagine di default, non salvo niente
-        if (isDefaultImage) {
-            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-            return;
-        }
+        // TODO: Fare il check con l'immagine di default e decommentare
+        // Se è l'immagine di default, non salvo niente ed eventualmente elimino quella presente.
+//        if (isDefaultImage) {
+//            deleteProfilePic();
+//            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+//            return;
+//        }
+
+        Bitmap bitmap = ((BitmapDrawable) personalImage.getDrawable()).getBitmap();
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] data = stream.toByteArray();
         final StorageReference fileReference = storage.getReference("profile_pics")
                 .child("customers")
@@ -549,41 +549,16 @@ public class ProfileActivity extends AppCompatActivity implements
     }
 
     private void downloadProfilePic() {
-
-        final long ONE_MEGABYTE = 1024 * 1024;
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
                 .child("customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                // Scarico l'immagine e la setto
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                personalImage.setImageBitmap(bitmap);
-                isDefaultImage = false;
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-                int errorCode = ((StorageException) exception).getErrorCode();
-                if (errorCode==StorageException.ERROR_OBJECT_NOT_FOUND) {
-                    // La foto non è presente: carico immagine di default
-                    Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
-                    personalImage.setImageDrawable(defaultImg);
-                    isDefaultImage = true;
-                }
-            }
-        });
 
-/*
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
-                .child("customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        GlideApp.with(this).load(storageReference)
+        GlideApp.with(this)
+                .load(storageReference)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
-                .error(getResources().getDrawable(R.drawable.personicon))
+                .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(personalImage);
-*/
+
     }
 
     private void deleteProfilePic() {
