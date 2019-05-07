@@ -19,6 +19,7 @@ import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -90,6 +92,7 @@ public class ProfileActivity extends AppCompatActivity
     private EditText name;
     private EditText email;
     // private EditText password;
+    private SwitchCompat riderAvailability;
     private EditText phone;
     private EditText additionalInformation;
     private Boolean modifyingInfo;
@@ -476,6 +479,42 @@ public class ProfileActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         updateNavigatorInformation(navigationView);
+        verifyRiderAvailability(navigationView);
+    }
+
+    private void verifyRiderAvailability(NavigationView navigationView) {
+        riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        // TODO: Anzichè prenderlo dal DB, prenderlo solo dalle prefs (DEVE ESSERE IMPOSTATO AL LOGIN)
+        riderStatusRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Boolean riderStatus = (Boolean) dataSnapshot.getValue();
+                SmartLogger.d(riderStatus.toString());
+                editor.putBoolean("Status", riderStatus);
+                riderAvailability.setChecked(riderStatus);
+                editor.apply();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        riderAvailability.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean newStatus;
+                if (riderAvailability.isChecked())
+                    newStatus = true;
+                else
+                    newStatus = false;
+                editor.putBoolean("Status", newStatus);
+                riderStatusRef.setValue(newStatus);
+                editor.apply();
+            }
+        });
     }
 
     public void updateNavigatorInformation(NavigationView navigationView) {
@@ -512,6 +551,8 @@ public class ProfileActivity extends AppCompatActivity
         else if (id == R.id.nav_logout) {
             startLogout();
         }
+        if(id  == R.id.nav_switch)
+            return true;
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -802,5 +843,4 @@ public class ProfileActivity extends AppCompatActivity
                     }
                 });
     }
-
 }

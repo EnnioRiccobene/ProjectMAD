@@ -1,7 +1,9 @@
 package com.madgroup.appbikers;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -28,24 +30,32 @@ import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.SmartLogger;
 
 public class DeliveryActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         DeliveryPendingTab1.OnFragmentInteractionListener,
-        DeliveryHistoryTab2.OnFragmentInteractionListener{
+        DeliveryHistoryTab2.OnFragmentInteractionListener {
 
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
+    private String currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_drawer);
-        ViewStub stub = (ViewStub)findViewById(R.id.stub);
+        ViewStub stub = (ViewStub) findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_deliveries);
         stub.inflate();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        currentUser = prefs.getString("currentUser", "");
         editor = prefs.edit();
         this.setTitle("Deliveries");
         initializeTabs();
@@ -53,8 +63,7 @@ public class DeliveryActivity extends AppCompatActivity implements
     }
 
 
-
-    public void navigationDrawerInitialization(){
+    public void navigationDrawerInitialization() {
         // Navigation Drawer Initialization
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -68,13 +77,37 @@ public class DeliveryActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         updateNavigatorInformation(navigationView);
+        verifyRiderAvailability(navigationView);
     }
 
-    public void updateNavigatorInformation(NavigationView navigationView){
+    private void verifyRiderAvailability(NavigationView navigationView) {
+        final SwitchCompat riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        Boolean status = prefs.getBoolean("Status", false);
+        SmartLogger.d("status letto: " + status.toString());
+        riderAvailability.setChecked(status);
+
+        riderAvailability.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean newStatus;
+                if (riderAvailability.isChecked())
+                    newStatus = true;
+                else
+                    newStatus = false;
+                editor.putBoolean("Status", newStatus);
+                riderStatusRef.setValue(newStatus);
+                editor.apply();
+            }
+        });
+    }
+
+    public void updateNavigatorInformation(NavigationView navigationView) {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-        if(!ImageBitmap.equals("NoImage")){
+        if (!ImageBitmap.equals("NoImage")) {
             byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
             nav_profile_icon.setImageBitmap(bitmap);
@@ -85,11 +118,11 @@ public class DeliveryActivity extends AppCompatActivity implements
 
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
         String name = prefs.getString("Name", "");
-        if(!name.equals(""))
+        if (!name.equals(""))
             navUsername.setText(name);
-        TextView navEmail= (TextView) headerView.findViewById(R.id.nav_email);
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
         String email = prefs.getString("Email", "");
-        if(!email.equals(""))
+        if (!email.equals(""))
             navEmail.setText(email);
     }
 
@@ -101,11 +134,12 @@ public class DeliveryActivity extends AppCompatActivity implements
         if (id == R.id.nav_deliviries) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
-        }
-        else if(id == R.id.nav_profile){
-            Intent myIntent = new Intent(this, ProfileActivity.class);
+        } else if (id == R.id.nav_profile) {
+            Intent myIntent = new Intent(this, MainActivity.class);
             this.startActivity(myIntent);
         }
+        if(id  == R.id.nav_switch)
+            return true;
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -113,7 +147,7 @@ public class DeliveryActivity extends AppCompatActivity implements
     }
 
     // Tabs
-    public void initializeTabs(){
+    public void initializeTabs() {
         // Remove black line under toolbar
         StateListAnimator stateListAnimator = new StateListAnimator();
         stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(findViewById(android.R.id.content), "elevation", 0));
@@ -127,7 +161,7 @@ public class DeliveryActivity extends AppCompatActivity implements
         tablayout.setupWithViewPager(viewPager);
 
         // Add actions on tab selected/reselected/unselected
-        tablayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
+        tablayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
@@ -146,6 +180,7 @@ public class DeliveryActivity extends AppCompatActivity implements
         });
 
     }
+
     @Override
     public void onFragmentInteraction(Uri uri) {
 
