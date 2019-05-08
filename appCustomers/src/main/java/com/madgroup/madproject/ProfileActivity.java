@@ -22,11 +22,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.Continuation;
@@ -35,8 +30,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseError;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -98,7 +91,7 @@ public class ProfileActivity extends AppCompatActivity implements
     private boolean isDefaultImage;
     private ProgressBar progressBar;
     private ProgressBar imgProgressBar;
-
+    private NavigationView navigationView;
 
 
     @SuppressLint("CommitPrefEdits")
@@ -187,6 +180,7 @@ public class ProfileActivity extends AppCompatActivity implements
                         deleteProfilePic();
                     //Toast.makeText(getApplicationContext(), "Data saved", Toast.LENGTH_SHORT).show();
                 }
+                updateNavigatorInformation();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -309,6 +303,7 @@ public class ProfileActivity extends AppCompatActivity implements
                                 new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSIONS_CODE);
                     }
                 }
+                updateNavigatorInformation();
                 return true;
 
             case R.id.itemGallery:
@@ -328,6 +323,7 @@ public class ProfileActivity extends AppCompatActivity implements
                                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, GALLERY_PERMISSIONS_CODE);
                     }
                 }
+                updateNavigatorInformation();
                 return true;
 
             case R.id.itemDelete:
@@ -335,6 +331,7 @@ public class ProfileActivity extends AppCompatActivity implements
                 Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                 personalImage.setImageDrawable(defaultImg);
                 isDefaultImage = true;
+                updateNavigatorInformation();
                 //editor.remove("PersonalImage");
                 //editor.apply();
                 return true;
@@ -675,6 +672,7 @@ public class ProfileActivity extends AppCompatActivity implements
                                 }
                             });
                         }
+                        updateNavigatorInformation();
 
                     }
                     @Override
@@ -730,14 +728,12 @@ public class ProfileActivity extends AppCompatActivity implements
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         // Set the photo of the Navigation Bar Icon (Need to be completed: refresh when new image is updated)
-        updateNavigatorPersonalIcon(navigationView);
+        updateNavigatorInformation();
 
-        //TODO
-        // Set restaurant name and email on navigation header
         View headerView = navigationView.getHeaderView(0);
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
         TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
@@ -747,7 +743,7 @@ public class ProfileActivity extends AppCompatActivity implements
         navEmail.setText(email);
     }
 
-    public void updateNavigatorPersonalIcon(NavigationView navigationView){
+    public void updateNavigatorInformation(){
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
@@ -759,6 +755,13 @@ public class ProfileActivity extends AppCompatActivity implements
             Drawable defaultImg = getResources().getDrawable(R.mipmap.ic_launcher_round);
             nav_profile_icon.setImageDrawable(defaultImg);
         }
+
+        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
+        String name = prefs.getString("Name", "No name inserted");
+        navUsername.setText(name);
+        String email = prefs.getString("Email", "No email inserted");
+        navEmail.setText(email);
     }
 
     // Navigation Drawer
@@ -770,6 +773,9 @@ public class ProfileActivity extends AppCompatActivity implements
 
         if (id == R.id.nav_search_restaurant) {
             Intent myIntent = new Intent(this, SearchRestaurantActivity.class);
+            this.startActivity(myIntent);
+        } else if(id == R.id.nav_orders){
+            Intent myIntent = new Intent(this, OrdersActivity.class);
             this.startActivity(myIntent);
         } else if (id == R.id.nav_profile) {
             onBackPressed();

@@ -12,19 +12,17 @@
         android:id="@+id/progressBar"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ProgressBar
         android:id="@+id/imgProgressBar"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-    />
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -36,13 +34,12 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:fillViewport="true"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            tools:context=".ProfileActivity"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin">
-
+            tools:context=".ProfileActivity">
 
 
             <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -60,16 +57,15 @@
                 app:srcCompat="@drawable/personicon" />
 
 
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/nameInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:focusableInTouchMode="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imagePersonalPhoto"
-                android:layout_marginTop="12dp"
-                android:focusableInTouchMode="true">
+                app:layout_constraintTop_toBottomOf="@+id/imagePersonalPhoto">
 
                 <EditText
                     android:id="@+id/editTextName"
@@ -117,8 +113,8 @@
                 android:id="@+id/phoneInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/emailInputLayout">
 
@@ -189,8 +185,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_margin"
-                    android:hint="@string/delivery_cost"
                     android:ems="10"
+                    android:hint="@string/delivery_cost"
                     android:inputType="numberDecimal"
                     app:decimal_digits="2" />
 
@@ -210,8 +206,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_margin"
-                    android:hint="@string/minimum_order"
                     android:ems="10"
+                    android:hint="@string/minimum_order"
                     android:inputType="numberDecimal"
                     app:decimal_digits="2" />
 
@@ -259,21 +255,21 @@
                             android:layout_height="wrap_content"
                             android:drawableLeft="@drawable/ic_clock"
                             android:drawablePadding="8dp"
+                            android:drawableTint="@color/colorPrimary"
                             android:text="@string/opening_hours"
                             android:textColor="#3d3d3d"
                             android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:drawableTint="@color/colorPrimary"/>
+                            android:textStyle="bold" />
 
                         <ImageView
                             android:id="@+id/arrowbtn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:layout_marginStart="16dp"
                             android:drawablePadding="8dp"
                             android:src="@drawable/ic_sort_down"
-                            android:tint="@color/colorPrimary"
-                            android:layout_gravity="center"/>
+                            android:tint="@color/colorPrimary" />
                     </LinearLayout>
                 </LinearLayout>
 

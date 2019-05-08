@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/detailed_reservation_toolbar"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
@@ -83,7 +83,7 @@
                     android:layout_below="@+id/recycler_view"
                     android:layout_marginTop="24dp"
                     android:layout_marginBottom="20dp"
-                    android:text="Subtotal: "
+                    android:text="Total: "
                     android:textColor="#3d3d3d"
                     android:textSize="16sp"
                     android:textStyle="bold" />

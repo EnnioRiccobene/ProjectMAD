@@ -1,4 +1,4 @@
-package com.madgroup.appcompany;
+package com.madgroup.sdk;
 
 import android.graphics.Bitmap;
 

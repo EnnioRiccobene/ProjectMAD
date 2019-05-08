@@ -8,6 +8,10 @@
         android:icon="@drawable/ic_nav_search"
         android:title="Search restaurant" />
     <item
+        android:id="@+id/nav_orders"
+        android:icon="@drawable/ic_action_food"
+        android:title="Orders" />
+    <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/ic_action_user"
         android:title="Profile" />

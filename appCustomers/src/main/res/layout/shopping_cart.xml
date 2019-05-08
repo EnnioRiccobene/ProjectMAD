@@ -135,6 +135,7 @@
                     android:scrollbars="vertical"/>
 
                 <View
+                    android:id="@+id/first_view"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/colorPrimaryDark"
@@ -144,9 +145,8 @@
                     android:id="@+id/subtotalPrice_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/recycler_view"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_below="@+id/first_view"
+                    android:layout_marginTop="16dp"
                     android:text="@string/subtotal"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp"
@@ -158,8 +158,6 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/subtotalPrice_bold"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginBottom="18dp"
                     android:layout_marginEnd="16dp"
                     android:textColor="#3d3d3d"
                     android:text="3 €"
@@ -171,7 +169,6 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/subtotalPrice_bold"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="20dp"
                     android:text="@string/delivery_cost"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp"
@@ -183,16 +180,16 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/delivery_cost_order"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginBottom="18dp"
                     android:layout_marginEnd="16dp"
                     android:textColor="#3d3d3d"
                     android:text="3 €"
                     android:textSize="16sp" />
 
                 <View
+                    android:id="@+id/second_view"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
                     android:background="@color/colorPrimaryDark"
                     android:layout_below="@id/delivery_cost_order"/>
 
@@ -200,9 +197,8 @@
                     android:id="@+id/totalPrice_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/delivery_cost_order"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_below="@+id/second_view"
+                    android:layout_marginTop="16dp"
                     android:text="@string/total"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp"
@@ -214,16 +210,16 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/totalPrice_bold"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginBottom="18dp"
                     android:layout_marginEnd="16dp"
                     android:textColor="#3d3d3d"
                     android:text="3 €"
                     android:textSize="16sp" />
 
                 <View
+                    android:id="@+id/third_view"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
                     android:background="@color/colorPrimaryDark"
                     android:layout_below="@id/totalPrice_bold"/>
 
@@ -231,7 +227,7 @@
                     android:id="@+id/name_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/totalPrice_bold"
+                    android:layout_below="@+id/third_view"
                     android:layout_marginTop="16dp"
                     android:text="@string/name"
                     android:textColor="#3d3d3d"

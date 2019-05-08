@@ -88,7 +88,7 @@ public class DeliveryHistoryTab2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_history_tab2, container, false);
+        View view =  inflater.inflate(R.layout.fragment_order_tab, container, false);
         // createHistoryDeliveryList();
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         currentUser = prefs.getString("currentUser", "noUser");
@@ -169,7 +169,7 @@ public class DeliveryHistoryTab2 extends Fragment {
                     }
                 };
 
-        recyclerView = view.findViewById(R.id.historyDeliveryRecycleView);
+        recyclerView = view.findViewById(R.id.orderRecyclerView);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(adapter);

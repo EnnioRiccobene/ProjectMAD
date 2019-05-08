@@ -64,23 +64,9 @@ import com.yalantis.ucrop.UCrop;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
-import android.content.Context;
-
-import androidx.annotation.NonNull;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Registry;
-import com.bumptech.glide.module.AppGlideModule;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
-import com.google.firebase.storage.StorageReference;
-import com.bumptech.glide.annotation.GlideModule;
-
-import java.io.InputStream;
 
 
 public class ProfileActivity extends AppCompatActivity
@@ -112,7 +98,7 @@ public class ProfileActivity extends AppCompatActivity
     private boolean isDefaultImage;
     private ProgressBar progressBar;
     private ProgressBar imgProgressBar;
-
+    private NavigationView navigationView;
 
 
     @Override
@@ -311,6 +297,7 @@ public class ProfileActivity extends AppCompatActivity
                                 new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSIONS_CODE);
                     }
                 }
+                updateNavigatorInformation();
                 return true;
 
             case R.id.itemGallery:
@@ -330,6 +317,7 @@ public class ProfileActivity extends AppCompatActivity
                                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, GALLERY_PERMISSIONS_CODE);
                     }
                 }
+                updateNavigatorInformation();
                 return true;
 
             case R.id.itemDelete:
@@ -337,7 +325,7 @@ public class ProfileActivity extends AppCompatActivity
                 Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                 personalImage.setImageDrawable(defaultImg);
                 isDefaultImage = true;
-
+                updateNavigatorInformation();
                 return true;
 
             default:
@@ -471,9 +459,9 @@ public class ProfileActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        updateNavigatorInformation(navigationView);
+        updateNavigatorInformation();
         verifyRiderAvailability(navigationView);
     }
 
@@ -514,7 +502,7 @@ public class ProfileActivity extends AppCompatActivity
         });
     }
 
-    public void updateNavigatorInformation(NavigationView navigationView) {
+    public void updateNavigatorInformation() {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
@@ -528,10 +516,10 @@ public class ProfileActivity extends AppCompatActivity
         }
 
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
         String name = prefs.getString("Name", "");
         if (!name.equals(""))
             navUsername.setText(name);
-        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
         String email = prefs.getString("Email", "");
         if (!email.equals(""))
             navEmail.setText(email);
@@ -620,6 +608,7 @@ public class ProfileActivity extends AppCompatActivity
                     editor.apply();
                     progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
                 }
+                updateNavigatorInformation();
             }
         });
     }
@@ -801,6 +790,7 @@ public class ProfileActivity extends AppCompatActivity
                                 }
                             });
                         }
+                        updateNavigatorInformation();
 
                     }
                     @Override

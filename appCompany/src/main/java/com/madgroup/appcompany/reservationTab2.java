@@ -1,7 +1,6 @@
 package com.madgroup.appcompany;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -11,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,10 +29,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.RiderProfile;
 import com.madgroup.sdk.SmartLogger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
@@ -217,7 +215,6 @@ public class reservationTab2 extends Fragment {
                     Random rand = new Random();
                     int nActiveProfiles = rand.nextInt((int) dataSnapshot.getChildrenCount());
                     Iterator itr = dataSnapshot.getChildren().iterator();
-                    SmartLogger.d("Active Profiles: " + (int) dataSnapshot.getChildrenCount() + "\nRandomNumber: " + nActiveProfiles);
                     for (int i = 0; i < nActiveProfiles; i++)
                         itr.next();
                     DataSnapshot childSnapshot = (DataSnapshot) itr.next();
@@ -229,7 +226,7 @@ public class reservationTab2 extends Fragment {
                     Delivery.put("customerAddress", currentItem.getAddress());
                     Delivery.put("orderID", currentItem.getOrderID());
                     Delivery.put("deliveryTime", currentItem.getDeliveryTime());
-                    deliveriesRef.child("Pending").child(choosenRider.getEmail()).child(currentItem.getOrderID()).setValue(Delivery);
+                    deliveriesRef.child("Pending").child(choosenRider.getId()).child(currentItem.getOrderID()).setValue(Delivery);
                 }
             }
 
@@ -247,6 +244,7 @@ public class reservationTab2 extends Fragment {
         public TextView mTextView2;  // Lunch_time
         public TextView mTextView3;  // Price
         public RelativeLayout viewForeground;
+        View mView;
 
         public ReservationViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -255,6 +253,7 @@ public class reservationTab2 extends Fragment {
             mTextView2 = itemView.findViewById(R.id.lunch_time);
             mTextView3 = itemView.findViewById(R.id.order_price);
             viewForeground = itemView.findViewById(R.id.view_foreground);
+            mView = itemView;
         }
     }
 }

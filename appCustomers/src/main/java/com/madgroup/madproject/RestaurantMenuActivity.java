@@ -36,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
 
@@ -179,7 +180,6 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         if (getIntent().hasExtra("Restaurant")) {
             restaurantID = getIntent().getStringExtra("Restaurant");
 //            restaurant.setId(restaurantID);//l'oggetto restaurant non è stato costruito e non ho gli attributi per farlo oltre all'id
-
             //todo: una volta ottenuto l'id del ristorante tramite intent, fare una query al database per ottenere i campi del ristorante con quell'id (photo, Name, foodcategories, orari di apertura, ordine minimo e costo consegna)
             //todo: poi fare un'altra query al db per ottenere tutti i piatti del ristorante con quell'id e riempire l'ArrayList di Dish per la recycleview
         }

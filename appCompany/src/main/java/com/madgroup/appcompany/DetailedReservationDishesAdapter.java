@@ -1,7 +1,5 @@
 package com.madgroup.appcompany;
 
-import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +11,8 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.madgroup.sdk.OrderedDish;
 
 public class DetailedReservationDishesAdapter extends
         RecyclerView.Adapter<DetailedReservationDishesAdapter.ViewHolder>{
@@ -60,8 +60,20 @@ public class DetailedReservationDishesAdapter extends
     public void onBindViewHolder(ViewHolder holder, int position) {
         OrderedDish dish = orderedDishes.get(position);
         holder.dishName.setText(dish.getName());
-        holder.dishQuantity.setText(String.valueOf("x " + dish.getQuantity()));
-        float price = dish.getPrice() * dish.getQuantity();
+        holder.dishQuantity.setText("x " + dish.getQuantity());
+        float price = Float.valueOf(dish.getPrice().replace(",", ".").replace("£", "")
+                .replace("$", "").replace("€", "")
+                .replaceAll("\\s", "")) * Integer.valueOf(dish.getQuantity());
+        // TODO: Inserire:
+//        Locale current = mContext.getResources().getConfiguration().locale;
+//        String currency = " €";
+//        if(current.equals("en_US")){
+//            currency = " $";
+//        } else if(current.equals("en_GB")){
+//            currency = " £";
+//        }
+//        holder.dishPrice.setText(String.valueOf(df.format(price))+ currency);
+
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
         holder.dishPrice.setText(df.format(price) + " €");

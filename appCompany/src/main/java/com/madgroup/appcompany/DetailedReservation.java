@@ -7,7 +7,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,10 +18,11 @@ import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.madgroup.sdk.OrderedDish;
+import com.madgroup.sdk.Reservation;
 
 import java.util.ArrayList;
-
-import static com.madgroup.appcompany.ProfileActivity.currentUser;
+import java.util.ResourceBundle;
 
 
 public class DetailedReservation extends AppCompatActivity {
@@ -30,14 +33,17 @@ public class DetailedReservation extends AppCompatActivity {
     private TextView lunchTime;
     private TextView notes;
     private Reservation reservation;
-    TextView dishesText;
     private RecyclerView recyclerView;
     private DetailedReservationDishesAdapter dAdapter;
+    private String currentUser;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed_reservation);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        currentUser = prefs.getString("currentUser", "noUser");
         reservation = (Reservation) getIntent().getSerializableExtra("Reservation");
         ArrayList<OrderedDish> orderedFood = (ArrayList<OrderedDish>) getIntent().getSerializableExtra("OrderedFood");
 
@@ -88,7 +94,6 @@ public class DetailedReservation extends AppCompatActivity {
                 reservation.setStatus(ReservationActivity.ACCEPTED_RESERVATION_CODE);
                 pendingReservationRef.child(orderID).removeValue();
                 acceptedReservationRef.child(orderID).setValue(reservation);
-
                 finish();
             }
         });

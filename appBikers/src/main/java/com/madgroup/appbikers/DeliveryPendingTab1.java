@@ -1,14 +1,16 @@
 package com.madgroup.appbikers;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,13 +19,19 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.madgroup.sdk.Reservation;
 
 import java.util.ArrayList;
 
@@ -60,15 +68,6 @@ public class DeliveryPendingTab1 extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DeliveryPendingTab1.
-     */
-    // TODO: Rename and change types and number of parameters
     public static DeliveryPendingTab1 newInstance(String param1, String param2) {
         DeliveryPendingTab1 fragment = new DeliveryPendingTab1();
         Bundle args = new Bundle();
@@ -92,14 +91,13 @@ public class DeliveryPendingTab1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_pending_tab1, container, false);
+        View view = inflater.inflate(R.layout.fragment_order_tab, container, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         currentUser = prefs.getString("currentUser", "noUser");
         buildRecyclerView(view);
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -160,6 +158,53 @@ public class DeliveryPendingTab1 extends Fragment {
 
                             }
                         });
+                        holder.bikerArrived.setImageResource(R.drawable.ic_circled_confirm);
+                        ImageViewCompat.setImageTintList(holder.bikerArrived, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                        holder.bikerArrived.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Ordine Arrivato:
+                                // Company: passare da accepted a history
+                                // Customer: passare da pending a history
+                                // Rider: passare da pending a history
+                                final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                                final DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentItem.getOrderID());
+                                final DatabaseReference historyReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentItem.getOrderID());
+                                database.runTransaction(new Transaction.Handler() {
+                                    @NonNull
+                                    @Override
+                                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                                        // Company: prendo reservation, pongo status = 3, metto su history, rimuovo da pending
+                                        Reservation moveReservation = (Reservation) mutableData.child("Company").child("Reservation").child("Pending").child(currentItem.getOrderID()).getValue();
+                                        moveReservation.setStatus(3);
+                                        mutableData.child("Company").child("Reservation").child("History").child(currentItem.getOrderID()).setValue(moveReservation);
+                                        mutableData.child("Company").child("Reservation").child("Pending").child(currentItem.getOrderID()).setValue(null);
+                                        // Customer: prendo reservation, pongo status = 1, metto su history, rimuovo da pending
+                                        moveReservation = (Reservation) mutableData.child("Customer").child("Order").child("Pending").child(currentItem.getOrderID()).getValue();
+                                        moveReservation.setStatus(1);
+                                        mutableData.child("Customer").child("Order").child("History").child(currentItem.getOrderID()).setValue(moveReservation);
+                                        mutableData.child("Customer").child("Order").child("Pending").child(currentItem.getOrderID()).setValue(null);
+                                        // Rider: rimuovo da pending e pongo su history
+                                        mutableData.child("Rider").child("Order").child("Pending").child(currentItem.getOrderID()).setValue(null);
+                                        mutableData.child("Rider").child("Order").child("History").child(currentItem.getOrderID()).setValue(currentItem);
+
+                                        return Transaction.success(mutableData);
+                                    }
+
+                                    @Override
+                                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+                                    }
+                                });
+//                                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+//                                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
+//                                DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser);
+//                                String orderID = currentItem.getOrderID();
+//                                currentItem.setStatus(ReservationActivity.ACCEPTED_RESERVATION_CODE);
+//                                pendingReservationRef.child(orderID).removeValue();
+//                                acceptedReservationRef.child(orderID).setValue(currentItem);
+                            }
+                        });
                     }
 
                     @NonNull
@@ -171,7 +216,7 @@ public class DeliveryPendingTab1 extends Fragment {
                     }
                 };
 
-        recyclerView = view.findViewById(R.id.pendingDeliveryRecycleView);
+        recyclerView = view.findViewById(R.id.orderRecyclerView);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(adapter);
@@ -236,6 +281,7 @@ public class DeliveryPendingTab1 extends Fragment {
         TextView restaurantAddress;
         TextView distance;
         TextView customerAddress;
+        ImageView bikerArrived;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -245,6 +291,7 @@ public class DeliveryPendingTab1 extends Fragment {
             restaurantAddress = itemView.findViewById(R.id.restaurantAddress);
             distance = itemView.findViewById(R.id.distance);
             customerAddress = itemView.findViewById(R.id.customerAddress);
+            bikerArrived = itemView.findViewById(R.id.biker_arrived);
         }
 
     }

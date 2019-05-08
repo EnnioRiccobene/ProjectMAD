@@ -15,6 +15,15 @@ public class Reservation implements Serializable {
     private String price;
     private Integer status;
     private String notes;
+    private String deliveryCost;
+
+    public String getDeliveryCost() {
+        return deliveryCost;
+    }
+
+    public void setDeliveryCost(String deliveryCost) {
+        this.deliveryCost = deliveryCost;
+    }
 
     public String getRestaurantID() {
         return restaurantID;

@@ -118,7 +118,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
         phone.setText(prefs.getString("Phone", ""));
         time.setText(deliveryTime);
         notes.setText(note);
-        String deliverCost = deliveryCostAmount.replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s", "");
+        final String deliverCost = deliveryCostAmount.replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s", "");
         float total = Float.valueOf(deliverCost) + Float.valueOf(currentReservation.getPrice().replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s", ""));
         deliveryPrice.setText(String.valueOf(df.format(Float.valueOf(deliverCost))) + currency);
         totalPrice.setText(String.valueOf(df.format(total)) + currency);
@@ -151,15 +151,13 @@ public class ShoppingCartActivity extends AppCompatActivity {
 
                 String userID = prefs.getString("currentUser", "Error");
                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                final String orderID = database.child("Company").child("Reservation").child("Pending").child(restaurantId).push().getKey();
                 // Customer Reference
-                final DatabaseReference pendingCustomerRef = database.child("Customer").child("Order").child("Pending").child(userID).child(restaurantId);
+                final DatabaseReference pendingCustomerRef = database.child("Customer").child("Order").child("Pending").child(userID).child(orderID);
                 // Company References
-                final DatabaseReference pendingRestaurantRef = database.child("Company").child("Reservation").child("Pending").child(restaurantId);
-                DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood").child(restaurantId);
+                final DatabaseReference pendingRestaurantRef = database.child("Company").child("Reservation").child("Pending").child(restaurantId).child(orderID);
+                final DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood").child(restaurantId).child(orderID);
                 final DatabaseReference menuRef = database.child("Company").child("Menu").child(restaurantId);
-                final String orderID = pendingRestaurantRef.push().getKey();
-                pendingRestaurantRef.child(orderID);
-                orderedFoodRef.child(orderID);
 
                 // Verificare che la quantità richiesta sia disponibile e ridurla
                 menuRef.runTransaction(new Transaction.Handler() {
@@ -170,14 +168,17 @@ public class ShoppingCartActivity extends AppCompatActivity {
                         for (final OrderedDish orderedDish : orderedDishes) {
                             String availableQuantity = (String) mutableData.child(orderedDish.getId()).child("availableQuantity").getValue();
                             Integer remainQuantity = Integer.parseInt(availableQuantity) - Integer.parseInt(orderedDish.getQuantity());
-                            if (remainQuantity  < 0){
+                            if (remainQuantity  < 0)
                                 Transaction.abort();
-                            }
                             mutableData.child(orderedDish.getId()).child("availableQuantity").setValue(String.valueOf(remainQuantity));
                         }
-                        // TODO: togliere arraylist e metterlo su orderedFood
-                        pendingCustomerRef.child(orderID).setValue(currentReservation);
-                        pendingRestaurantRef.child(orderID).setValue(currentReservation);
+
+                        currentReservation.setOrderID(orderID);
+                        currentReservation.setDeliveryCost(deliverCost);
+                        orderedFoodRef.setValue(currentReservation.getOrderedDishList());
+                        currentReservation.setOrderedDishList(null);
+                        pendingCustomerRef.setValue(currentReservation);
+                        pendingRestaurantRef.setValue(currentReservation);
                         return Transaction.success(mutableData);
                     }
 

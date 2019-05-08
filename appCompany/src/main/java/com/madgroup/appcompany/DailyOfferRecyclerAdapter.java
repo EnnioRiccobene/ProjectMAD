@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.madgroup.sdk.Dish;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

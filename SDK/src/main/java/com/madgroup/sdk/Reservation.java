@@ -1,4 +1,4 @@
-package com.madgroup.appcompany;
+package com.madgroup.sdk;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
@@ -42,7 +42,7 @@ public class Reservation implements Serializable {
         // Compute total Price
         float x = 0;
         for (OrderedDish element : orderedDishList)
-            x += element.getPrice() * element.getQuantity();
+            x += Float.parseFloat(element.getPrice()) * Float.parseFloat(element.getQuantity());
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
         price = df.format(x);

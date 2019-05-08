@@ -29,6 +29,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.OrderedDish;
+import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
@@ -182,10 +184,11 @@ public class reservationTab1 extends Fragment {
                             public void onClick(View v) {
 
                                 // Scarico dal DB orderedFood
-                                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("OrderedFood");
                                 String orderID = currentItem.getOrderID();
-                                pendingReservationRef.child(orderID).addListenerForSingleValueEvent(new ValueEventListener() {
+                                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("OrderedFood").child(currentUser).child(orderID);
+                                SmartLogger.d("orderID: " + orderID + "\ncurrentUser: " + currentUser);
+                                pendingReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         ArrayList<OrderedDish> orderedFood = new ArrayList<>();

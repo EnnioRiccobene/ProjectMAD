@@ -361,6 +361,7 @@ public class ProfileActivity extends AppCompatActivity
                     else
                         deleteProfilePic();
                 }
+                updateNavigatorInformation();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -553,6 +554,7 @@ public class ProfileActivity extends AppCompatActivity
                                 new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSIONS_CODE);
                     }
                 }
+                updateNavigatorInformation();
                 return true;
 
             case R.id.itemGallery:
@@ -572,6 +574,7 @@ public class ProfileActivity extends AppCompatActivity
                                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, GALLERY_PERMISSIONS_CODE);
                     }
                 }
+                updateNavigatorInformation();
                 return true;
 
             case R.id.itemDelete:
@@ -579,7 +582,7 @@ public class ProfileActivity extends AppCompatActivity
                 Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
                 personalImage.setImageDrawable(defaultImg);
                 isDefaultImage = true;
-                updateNavigatorPersonalIcon();
+                updateNavigatorInformation();
                 return true;
 
             default:
@@ -695,7 +698,7 @@ public class ProfileActivity extends AppCompatActivity
         String encoded = MyImageHandler.getInstance().fromBitmapToString(bitmap);
         editor.putString("PersonalImage", encoded);
         editor.apply();
-        updateNavigatorPersonalIcon();
+        updateNavigatorInformation();
     }
 
     private void restoreImageContent() {
@@ -752,10 +755,10 @@ public class ProfileActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // Set the photo of the Navigation Bar Icon (Need to be completed: refresh when new image is updated)
-        updateNavigatorPersonalIcon();
+        updateNavigatorInformation();
     }
 
-    public void updateNavigatorPersonalIcon() {
+    public void updateNavigatorInformation() {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
@@ -767,6 +770,15 @@ public class ProfileActivity extends AppCompatActivity
             Drawable defaultImg = getResources().getDrawable(R.mipmap.ic_launcher_round);
             nav_profile_icon.setImageDrawable(defaultImg);
         }
+
+        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
+        String name = prefs.getString("Name", "");
+        if (!name.equals(""))
+            navUsername.setText(name);
+        String email = prefs.getString("Email", "");
+        if (!email.equals(""))
+            navEmail.setText(email);
     }
 
     public void launchedithours(View view) {
@@ -1072,8 +1084,9 @@ public class ProfileActivity extends AppCompatActivity
                                     }
                                 }
                             });
-                        }
 
+                        }
+                        updateNavigatorInformation();
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {

@@ -530,6 +530,9 @@ public class SearchRestaurantActivity extends AppCompatActivity
 
         if (id == R.id.nav_search_restaurant) {
             onBackPressed();
+        } else if(id == R.id.nav_orders){
+            Intent myIntent = new Intent(this, OrdersActivity.class);
+            this.startActivity(myIntent);
         } else if (id == R.id.nav_profile) {
             Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);

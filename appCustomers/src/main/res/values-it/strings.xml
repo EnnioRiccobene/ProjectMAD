@@ -156,5 +156,6 @@
         <item>23:30</item>
         <item>23:45</item>
     </string-array>
+    <string name="order_price">prezzo dell\'ordine</string>
 
 </resources>

@@ -18,6 +18,17 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".OrdersActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".DetailedOrder"
+            android:parentActivityName=".OrdersActivity"
+            android:windowSoftInputMode="adjustPan">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.madgroup.madproject.OrdersActivity" />
+        </activity>
+        <activity
             android:name=".ProfileActivity"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
@@ -28,9 +39,7 @@
         </activity>
         <activity
             android:name=".SearchRestaurantActivity"
-            android:windowSoftInputMode="adjustPan">
-
-        </activity>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".RestaurantMenuActivity"
             android:parentActivityName=".SearchRestaurantActivity"
