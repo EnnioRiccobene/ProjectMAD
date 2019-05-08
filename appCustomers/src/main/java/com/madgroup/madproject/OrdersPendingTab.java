@@ -35,6 +35,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
+import com.madgroup.sdk.OrderedDish;
+import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;

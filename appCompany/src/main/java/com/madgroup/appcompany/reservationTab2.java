@@ -1,6 +1,7 @@
 package com.madgroup.appcompany;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -29,10 +30,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.RiderProfile;
 import com.madgroup.sdk.SmartLogger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
@@ -174,7 +177,36 @@ public class reservationTab2 extends Fragment {
                         }
                         holder.mTextView1.setText(currentItem.getAddress());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
-                        holder.mTextView3.setText(currentItem.getPrice() + " €");
+                        holder.mTextView3.setText(currentItem.getPrice());
+
+                        holder.mView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Scarico dal DB orderedFood
+                                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                                String orderID = currentItem.getOrderID();
+                                DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood").child(currentUser).child(orderID);
+                                orderedFoodRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        ArrayList<OrderedDish> orderedFood = new ArrayList<>();
+                                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                                            OrderedDish post = postSnapshot.getValue(OrderedDish.class);
+                                            orderedFood.add(post);
+                                        }
+                                        Intent openPage = new Intent(getActivity(), DetailedReservation.class);
+                                        openPage.putExtra("Reservation", currentItem);
+                                        openPage.putExtra("OrderedFood", orderedFood);
+                                        getActivity().startActivity(openPage);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        });
                     }
 
                     @NonNull
@@ -205,7 +237,7 @@ public class reservationTab2 extends Fragment {
         // Rider search part
         final DatabaseReference riderRef = database.child("Rider").child("Profile");
         final DatabaseReference deliveriesRef = database.child("Rider").child("Delivery");
-        Query query = riderRef.orderByChild("active").equalTo(true);
+        Query query = riderRef.orderByChild("status").equalTo(true);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -221,6 +253,8 @@ public class reservationTab2 extends Fragment {
                     RiderProfile choosenRider = childSnapshot.getValue(RiderProfile.class);
                     // Creating Delivery Item
                     HashMap<String, String> Delivery = new HashMap<>();
+                    Delivery.put("restaurantID", currentUser);
+                    Delivery.put("customerID", currentItem.getCustomerID());
                     Delivery.put("restaurantName", currentItem.getAddress());
                     Delivery.put("restaurantAddress", currentItem.getAddress());
                     Delivery.put("customerAddress", currentItem.getAddress());

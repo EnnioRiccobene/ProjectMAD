@@ -36,6 +36,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.madgroup.sdk.OrderedDish;
+import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
@@ -250,9 +252,11 @@ public class RestaurantMenuActivity extends AppCompatActivity {
                 notes = reservationNotes.getText().toString();
                 delivery_cost_amount = deliveryCostAmount.getText().toString();
                 minimumOrder = minimumOrderAmount.getText().toString();
-                Reservation currentReservation = new Reservation(orderedDishes, address, deliveryTime, notes, restaurantID);
-                ShoppingCartActivity.start(RestaurantMenuActivity.this, currentReservation, delivery_cost_amount, minimumOrder);
+                String currentCustomer = getSharedPreferences("MyData", MODE_PRIVATE).getString("currentUser", "noUser");
+                Reservation currentReservation = new Reservation(orderedDishes, address, deliveryTime, notes, restaurantID, delivery_cost_amount);
+                currentReservation.setCustomerID(currentCustomer);
 
+                ShoppingCartActivity.start(RestaurantMenuActivity.this, currentReservation, minimumOrder);
                 dialog.dismiss();
             }
         });

@@ -166,16 +166,16 @@ public class reservationTab3 extends Fragment {
                         }
                         holder.mTextView1.setText(currentItem.getAddress());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
-                        holder.mTextView3.setText(currentItem.getPrice() + " €");
+                        holder.mTextView3.setText(currentItem.getPrice());
 
                         holder.mView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 // Scarico dal DB orderedFood
                                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("OrderedFood");
                                 String orderID = currentItem.getOrderID();
-                                pendingReservationRef.child(orderID).addListenerForSingleValueEvent(new ValueEventListener() {
+                                DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood").child(currentUser).child(orderID);
+                                orderedFoodRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         ArrayList<OrderedDish> orderedFood = new ArrayList<>();

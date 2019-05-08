@@ -99,7 +99,6 @@ public class reservationTab1 extends Fragment {
                              Bundle savedInstanceState) {
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         currentUser = prefs.getString("currentUser", "noUser");
-        SmartLogger.d(currentUser);
         View view = inflater.inflate(R.layout.fragment_reservation_tab, container, false);
         buildRecyclerView(view);
 
@@ -177,18 +176,17 @@ public class reservationTab1 extends Fragment {
                         });
                         holder.mTextView1.setText(currentItem.getAddress());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
-                        holder.mTextView3.setText(currentItem.getPrice() + " €");
+                        holder.mTextView3.setText(currentItem.getPrice());
 
                         holder.mView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
 
                                 // Scarico dal DB orderedFood
-                                String orderID = currentItem.getOrderID();
                                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("OrderedFood").child(currentUser).child(orderID);
-                                SmartLogger.d("orderID: " + orderID + "\ncurrentUser: " + currentUser);
-                                pendingReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                String orderID = currentItem.getOrderID();
+                                DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood").child(currentUser).child(orderID);
+                                orderedFoodRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         ArrayList<OrderedDish> orderedFood = new ArrayList<>();

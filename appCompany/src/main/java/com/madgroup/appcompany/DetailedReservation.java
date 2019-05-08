@@ -73,7 +73,7 @@ public class DetailedReservation extends AppCompatActivity {
         // Fields
         confirmButton = findViewById(R.id.detailed_reservation_confirm_button);
         totalPrice = findViewById(R.id.totalPrice);
-        totalPrice.setText(reservation.getPrice() + " €");
+        totalPrice.setText(reservation.getPrice());
         address = findViewById(R.id.address);
         address.setText(reservation.getAddress());
         lunchTime = findViewById(R.id.time);

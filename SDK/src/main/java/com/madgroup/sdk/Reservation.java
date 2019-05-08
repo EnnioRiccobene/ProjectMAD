@@ -9,9 +9,12 @@ public class Reservation implements Serializable {
 
     // TODO: Aggiungere successivamente classe Customer con tutte le informazioni necessarie dell'utente (nome, cognome, telefono)
     private String orderID;
+    private String customerID;
     private ArrayList<OrderedDish> orderedDishList;
+    private String restaurantID;
     private String address;
     private String deliveryTime;
+    private String deliveryCost;
     private String price;
     private Integer status;
     private String notes;
@@ -43,6 +46,41 @@ public class Reservation implements Serializable {
         float x = 0;
         for (OrderedDish element : orderedDishList)
             x += Float.parseFloat(element.getPrice()) * Float.parseFloat(element.getQuantity());
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setMinimumFractionDigits(2);
+        price = df.format(x);
+    }
+
+    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, Integer status) {
+        this.orderedDishList = orderedDishList;
+        this.address = address;
+        this.deliveryTime = deliveryTime;
+        this.status= status;
+        this.notes = notes;
+        // Compute total Price
+        float x = 0;
+        for (OrderedDish element : orderedDishList)
+            x += Float.parseFloat(element.getPrice()) * Float.parseFloat(element.getQuantity());
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setMinimumFractionDigits(2);
+        price = df.format(x);
+    }
+
+    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, String restaurantID, String deliveryCost ) {
+        this.orderedDishList = orderedDishList;
+        this.address = address;
+        this.deliveryTime = deliveryTime;
+        this.notes = notes;
+        this.status = 0;
+        this.restaurantID = restaurantID;
+        this.deliveryCost = deliveryCost;
+        // Compute total Price
+        float x = 0;
+        for (OrderedDish element : orderedDishList) {
+            float elementPrice = Float.valueOf(element.getPrice().replace(",", ".").replace("£", "").replace("$", "").replace("€", "").replaceAll("\\s", ""));
+            int elementQuantity = Integer.valueOf(element.getQuantity());
+            x += elementPrice * elementQuantity;
+        }
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
         price = df.format(x);
@@ -108,6 +146,39 @@ public class Reservation implements Serializable {
         this.notes = notes;
     }
 
+    public String getCustomerID() {
+        return customerID;
+    }
 
+    public void setCustomerID(String customerID) {
+        this.customerID = customerID;
+    }
+    public String getRestaurantID() {
+        return restaurantID;
+    }
+
+    public void setRestaurantID(String restaurantID) {
+        this.restaurantID = restaurantID;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setDeliveryTime(String deliveryTime) {
+        this.deliveryTime = deliveryTime;
+    }
+
+    public String getDeliveryCost() {
+        return deliveryCost;
+    }
+
+    public void setDeliveryCost(String deliveryCost) {
+        this.deliveryCost = deliveryCost;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
 }
 

@@ -26,6 +26,8 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.OrderedDish;
+import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
 
 import java.text.DecimalFormat;
@@ -57,10 +59,9 @@ public class ShoppingCartActivity extends AppCompatActivity {
     private String minimumOrder;
     private String restaurantId;
 
-    public static void start(Context context, Reservation reservation, String delivery_cost_amount, String minimumOrder) {
+    public static void start(Context context, Reservation reservation, String minimumOrder) {
         Intent starter = new Intent(context, ShoppingCartActivity.class);
         starter.putExtra("Reservation", reservation);
-        starter.putExtra("DeliveryCost", delivery_cost_amount);
         starter.putExtra("MinimumOrder", minimumOrder);
         context.startActivity(starter);
     }
@@ -195,11 +196,11 @@ public class ShoppingCartActivity extends AppCompatActivity {
     private void getIncomingIntent() {
         if (getIntent().hasExtra("Reservation")) {
             currentReservation = (Reservation) getIntent().getSerializableExtra("Reservation");
+            minimumOrder = getIntent().getStringExtra("MinimumOrder");
             deliveryTime = currentReservation.getDeliveryTime();
             note = currentReservation.getNotes();
             restaurantId = currentReservation.getRestaurantID();
-            deliveryCostAmount = getIntent().getStringExtra("DeliveryCost");
-            minimumOrder = getIntent().getStringExtra("MinimumOrder");
+            deliveryCostAmount = currentReservation.getDeliveryCost();
         }
     }
 

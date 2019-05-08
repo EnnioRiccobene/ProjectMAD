@@ -63,6 +63,7 @@ public class DetailedReservationDishesAdapter extends
         holder.dishQuantity.setText("x " + dish.getQuantity());
         float price = Float.valueOf(dish.getPrice().replace(",", ".").replace("£", "")
                 .replace("$", "").replace("€", "")
+                .replace("$", "").replace("€", "")
                 .replaceAll("\\s", "")) * Integer.valueOf(dish.getQuantity());
         // TODO: Inserire:
 //        Locale current = mContext.getResources().getConfiguration().locale;
@@ -76,7 +77,7 @@ public class DetailedReservationDishesAdapter extends
 
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
-        holder.dishPrice.setText(df.format(price) + " €");
+        holder.dishPrice.setText(df.format(price));
 
         //Lab3Ennio
         // holder.dishQuantity.setText(String.valueOf("x " + dish.getAvailableQuantity()));

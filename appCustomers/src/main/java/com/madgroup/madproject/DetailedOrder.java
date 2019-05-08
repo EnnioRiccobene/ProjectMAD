@@ -14,6 +14,9 @@ import android.os.Bundle;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.madgroup.sdk.OrderedDish;
+import com.madgroup.sdk.Reservation;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Locale;
