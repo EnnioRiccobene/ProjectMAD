@@ -204,8 +204,8 @@ public class DeliveryPendingTab1 extends Fragment {
                                     }
                                 });
                                 // Rider: rimuovo da pending e pongo su history
-                                database.child("Rider").child("Order").child("Pending").child(currentUser).child(currentItem.getOrderID()).setValue(null);
-                                database.child("Rider").child("Order").child("History").child(currentUser).child(currentItem.getOrderID()).setValue(currentItem);
+                                database.child("Rider").child("Delivery").child("Pending").child(currentUser).child(currentItem.getOrderID()).setValue(null);
+                                database.child("Rider").child("Delivery").child("History").child(currentUser).child(currentItem.getOrderID()).setValue(currentItem);
 
 
 //                                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);

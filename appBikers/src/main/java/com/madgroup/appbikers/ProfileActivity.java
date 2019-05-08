@@ -36,6 +36,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.Continuation;
@@ -168,10 +169,10 @@ public class ProfileActivity extends AppCompatActivity
                     modifyingInfo = false;
                     setFieldUnclickable();
                     saveFieldsOnFirebase();
-                    if (!isDefaultImage)
+                    //if (!isDefaultImage)
                         uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
-                    else
-                        deleteProfilePic();
+                    //else
+                        //deleteProfilePic();
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -204,10 +205,10 @@ public class ProfileActivity extends AppCompatActivity
             modifyingInfo = false;
             setFieldUnclickable();
             saveFieldsOnFirebase();
-            if (!isDefaultImage)
+            //if (!isDefaultImage)
                 uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
-            else
-                deleteProfilePic();
+            //else
+                //deleteProfilePic();
         } else
             super.onBackPressed();
     }
@@ -617,14 +618,16 @@ public class ProfileActivity extends AppCompatActivity
 
         imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
-        // Se è l'immagine di default, non salvo niente
-        if (isDefaultImage) {
-            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-            return;
-        }
+        // TODO: Fare il check con l'immagine di default e decommentare
+        // Se è l'immagine di default, non salvo niente ed eventualmente elimino quella presente.
+//        if (isDefaultImage) {
+//            deleteProfilePic();
+//            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+//            return;
+//        }
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] data = stream.toByteArray();
         final StorageReference fileReference = storage.getReference("profile_pics")
                 .child("bikers")
@@ -670,38 +673,42 @@ public class ProfileActivity extends AppCompatActivity
 
     private void downloadProfilePic() {
 
-        final long ONE_MEGABYTE = 1024 * 1024;
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
-                .child("bikers")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                // Scarico l'immagine e la setto
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                personalImage.setImageBitmap(bitmap);
-                isDefaultImage = false;
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-                int errorCode = ((StorageException) exception).getErrorCode();
-                if (errorCode==StorageException.ERROR_OBJECT_NOT_FOUND) {
-                    // La foto non è presente: carico immagine di default
-                    Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
-                    personalImage.setImageDrawable(defaultImg);
-                    isDefaultImage = true;
-                }
-            }
-        });
+//        final long ONE_MEGABYTE = 1024 * 1024;
+//        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+//                .child("bikers")
+//                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+//        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+//            @Override
+//            public void onSuccess(byte[] bytes) {
+//                // Scarico l'immagine e la setto
+//                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//                personalImage.setImageBitmap(bitmap);
+//                isDefaultImage = false;
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception exception) {
+//                // Handle any errors
+//                int errorCode = ((StorageException) exception).getErrorCode();
+//                if (errorCode==StorageException.ERROR_OBJECT_NOT_FOUND) {
+//                    // La foto non è presente: carico immagine di default
+//                    Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
+//                    personalImage.setImageDrawable(defaultImg);
+//                    isDefaultImage = true;
+//                }
+//            }
+//        });
 
-        /*
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
                 .child("bikers")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        GlideApp.with(this).load(storageReference).into(personalImage);
-        */
+
+        GlideApp.with(this)
+                .load(storageReference)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .error(GlideApp.with(this).load(R.drawable.personicon))
+                .into(personalImage);
     }
 
     private void deleteProfilePic() {

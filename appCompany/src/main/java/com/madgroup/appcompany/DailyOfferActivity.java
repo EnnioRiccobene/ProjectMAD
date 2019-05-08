@@ -37,19 +37,29 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.madgroup.sdk.Dish;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
 import com.yalantis.ucrop.UCrop;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -57,6 +67,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -84,6 +95,8 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
     // Todo: sostituirla con il parametro di autenticazione
     private String restaurantUid;
+
+    private CircleImageView dishImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +149,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
 
         recyclerView = this.findViewById(R.id.my_recycler_view);
-        adapter = new DailyOfferRecyclerAdapter(this, this);
+        adapter = new DailyOfferRecyclerAdapter(this, this, restaurantUid);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -303,7 +316,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
         ImageButton dialogDismiss = (ImageButton) dialog.findViewById(R.id.dialogDismiss);
         ImageButton dialogConfirm = (ImageButton) dialog.findViewById(R.id.dialogConfirm);
-        final CircleImageView dishImage = (CircleImageView) dialog.findViewById(R.id.dishImage);
+        dishImage = (CircleImageView) dialog.findViewById(R.id.dishImage);
         final EditText editDishName = (EditText) dialog.findViewById(R.id.editDishName);
         final EditText editDishDescription = (EditText) dialog.findViewById(R.id.editDishDescription);
         final EditText editDishQuantity = (EditText) dialog.findViewById(R.id.editDishQuantity);
@@ -314,6 +327,14 @@ public class DailyOfferActivity extends AppCompatActivity implements
             editDishDescription.setText(item.getDescription());
             editDishQuantity.setText(item.getAvailableQuantity());
             editPrice.setText(item.getPrice());
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference("dish_pics")
+                    .child(restaurantUid).child(item.getId());
+            GlideApp.with(this)
+                    .load(storageReference)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .error(GlideApp.with(this).load(R.drawable.ic_dish))
+                    .into(dishImage);
         }
 
         dialogDismiss.setOnClickListener(new View.OnClickListener() {
@@ -362,12 +383,13 @@ public class DailyOfferActivity extends AppCompatActivity implements
                         stringPrice = stringPrice + " €";
                     }
                     //todo: aggiungere le immagini all'oggetto
+                    Bitmap img = ((BitmapDrawable)(dishImage.getDrawable())).getBitmap();
                     if (editDishDescription.getText().toString().isEmpty()) {
                         currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
-                                editDishQuantity.getText().toString(), "");
+                                editDishQuantity.getText().toString(), "", img);
                     } else {
                         currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
-                                editDishQuantity.getText().toString(), editDishDescription.getText().toString());
+                                editDishQuantity.getText().toString(), editDishDescription.getText().toString(), img);
                     }
 
                     if (item == null) {
@@ -394,12 +416,73 @@ public class DailyOfferActivity extends AppCompatActivity implements
         childUpdates.put("/" + dishId + "/" + "description", item.getDescription());
         childUpdates.put("/" + dishId + "/" + "price", item.getPrice());
         dishRef.updateChildren(childUpdates);
+        uploadDishPhoto(dishId, item);
     }
 
     void addDbDish(Dish item) {
         String key = dishRef.push().getKey();
         item.setId(key);
         dishRef.child(key).setValue(item);
+        uploadDishPhoto(key, item);
+    }
+
+    private void uploadDishPhoto(String dishID, Dish item) {
+
+        final StorageReference photoRef = FirebaseStorage.getInstance().getReference("dish_pics")
+                .child(restaurantUid).child(dishID);
+
+        // imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
+
+        // TODO: Fare il check con l'immagine di default e decommentare
+        // Se è l'immagine di default, non salvo niente ed eventualmente elimino quella presente.
+//        if (isDefaultImage) {
+//            deletePic();
+//            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+//            return;
+//        }
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Bitmap img = ((BitmapDrawable)(dishImage.getDrawable())).getBitmap();
+        img.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] data = stream.toByteArray();
+        final UploadTask uploadTask = photoRef.putBytes(data); // Salvo l'immagine nello storage
+        /* Gestione successo e insuccesso */
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                Toast.makeText(DailyOfferActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // Upload success
+                /* Ricavo Uri e lo inserisco nel db */
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw Objects.requireNonNull(task.getException());
+                        }
+                        // Continue with the task to get the download URL
+                        return photoRef.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (!task.isSuccessful()) {
+                            // Handle failures
+                            // imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            Toast.makeText(DailyOfferActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                        } else {
+                            //imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+
     }
 
     public void showPopup(View v) {

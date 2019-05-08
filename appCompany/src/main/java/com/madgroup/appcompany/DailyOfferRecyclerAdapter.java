@@ -12,6 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.madgroup.sdk.Dish;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -25,10 +29,12 @@ public class DailyOfferRecyclerAdapter extends RecyclerView.Adapter<FindDishView
     private Context mContext;
     private DailyOfferRecyclerListener listener;
     private int currentIndex = -1;
+    private String restaurantUID;
 
-    public DailyOfferRecyclerAdapter(Context mContext, DailyOfferRecyclerListener listener) {
+    public DailyOfferRecyclerAdapter(Context mContext, DailyOfferRecyclerListener listener, String restaurantUID) {
         this.mContext = mContext;
         this.listener = listener;
+        this.restaurantUID=restaurantUID;
     }
 
     @NonNull
@@ -66,8 +72,17 @@ public class DailyOfferRecyclerAdapter extends RecyclerView.Adapter<FindDishView
         viewHolder.dishPhoto.setImageBitmap(dish.getPhoto());
 
         //todo: togliere questa prova
-        String url = "https://vignette.wikia.nocookie.net/simpsons/images/4/40/Picture0003.jpg/revision/latest/scale-to-width-down/200?cb=20110623042517";
-        Glide.with(mContext).load(url).into(viewHolder.dishPhoto);
+        //String url = "https://vignette.wikia.nocookie.net/simpsons/images/4/40/Picture0003.jpg/revision/latest/scale-to-width-down/200?cb=20110623042517";
+        //Glide.with(mContext).load(url).into(viewHolder.dishPhoto);
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("dish_pics")
+                .child(restaurantUID).child(dish.getId());
+        GlideApp.with(mContext)
+                .load(storageReference)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .error(GlideApp.with(mContext).load(R.drawable.ic_dish))
+                .into(viewHolder.dishPhoto);
 
         viewHolder.popupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,6 +91,7 @@ public class DailyOfferRecyclerAdapter extends RecyclerView.Adapter<FindDishView
             }
         });
     }
+
 
     public void showEditPopup(View v, int index) {
         currentIndex = index;

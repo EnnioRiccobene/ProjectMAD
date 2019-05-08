@@ -163,16 +163,14 @@ public class OrdersHistoryTab extends Fragment {
 
                                 // Scarico dal DB orderedFood
                                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-
                                 String orderID = currentItem.getOrderID();
                                 String restaurantID = currentItem.getRestaurantID();
                                 DatabaseReference orderedFoodRed = database.child("Company").child("Reservation").child("OrderedFood").child(restaurantID).child(orderID);
-
-
-                                orderedFoodRed.child(orderID).addListenerForSingleValueEvent(new ValueEventListener() {
+                                orderedFoodRed.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         ArrayList<OrderedDish> orderedFood = new ArrayList<>();
+                                        SmartLogger.d("SIZE: " + dataSnapshot.getChildrenCount());
                                         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                                             OrderedDish post = postSnapshot.getValue(OrderedDish.class);
                                             orderedFood.add(post);

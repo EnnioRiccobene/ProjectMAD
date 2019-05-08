@@ -40,6 +40,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -49,6 +50,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -261,7 +263,16 @@ public class SearchRestaurantActivity extends AppCompatActivity
                         holder.food_category.setText(model.getFoodCategory());
                         holder.minimum_order_amount.setText(model.getMinOrder());
                         holder.delivery_cost_amount.setText(model.getDeliveryCost());
-//                        holder.restaurant_photo.setImageBitmap(R.drawable.); todo: prendere l'immagine dal database
+                        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                                .child("restaurants").child(model.getId());
+
+                        GlideApp.with(SearchRestaurantActivity.this)
+                                .load(storageReference)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .skipMemoryCache(true)
+                                .error(GlideApp.with(SearchRestaurantActivity.this).load(R.drawable.personicon))
+                                .into(holder.restaurant_photo);
+
 
                         holder.cardLayout.setOnClickListener(new View.OnClickListener() {
                             @SuppressLint("ShowToast")
