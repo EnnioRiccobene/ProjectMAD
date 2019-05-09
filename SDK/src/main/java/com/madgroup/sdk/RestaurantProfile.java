@@ -50,8 +50,8 @@ public class RestaurantProfile implements Parcelable {
         this.phoneNumber = "";
         this.address = "";
         this.foodCategory = "";
-        this.minOrder = "";
-        this.deliveryCost = "";
+        this.minOrder = "0,00 €";
+        this.deliveryCost = "0,00 €";
         this.mondayOpeningHours = "Closed";
         this.tuesdayOpeningHours = "Closed";
         this.wednesdayOpeningHours = "Closed";

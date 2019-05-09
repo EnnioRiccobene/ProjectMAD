@@ -472,6 +472,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
             case R.id.searchItem:
                 if (searchRestaurant.getVisibility() == View.GONE) {
                     searchRestaurant.setVisibility(View.VISIBLE);
+                    searchRestaurant.onActionViewExpanded();
                 } else
                     searchRestaurant.setVisibility(View.GONE);
 
