@@ -24,11 +24,15 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -88,15 +92,15 @@ public class OrdersActivity extends AppCompatActivity implements
     public void updateNavigatorPersonalIcon(NavigationView navigationView) {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
-        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-        if (!ImageBitmap.equals("NoImage")) {
-            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
-            nav_profile_icon.setImageBitmap(bitmap);
-        } else {
-            Drawable defaultImg = getResources().getDrawable(R.mipmap.ic_launcher_round);
-            nav_profile_icon.setImageDrawable(defaultImg);
-        }
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                .child("customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        GlideApp.with(this)
+                .load(storageReference)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .error(GlideApp.with(this).load(R.drawable.personicon))
+                .into(nav_profile_icon);
     }
 
     // Navigation Drawer

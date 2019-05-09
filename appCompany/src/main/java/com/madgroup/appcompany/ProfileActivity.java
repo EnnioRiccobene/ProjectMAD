@@ -263,13 +263,13 @@ public class ProfileActivity extends AppCompatActivity
         minimumOrder = findViewById(R.id.minimumOrder);
         modifyingInfo = false;
         progressBar = findViewById(R.id.progressBar);
-        imgProgressBar = findViewById(R.id.imgProgressBar);
+        // imgProgressBar = findViewById(R.id.imgProgressBar);
 
         // Set all field to unclickable
         setFieldUnclickable();
 
         hideFields();
-        imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
+        // imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
         isDefaultImage = true;
         //downloadProfilePic();
         //loadFieldsFromFirebase();
@@ -469,7 +469,7 @@ public class ProfileActivity extends AppCompatActivity
             saturdayHour.setText(prefs.getString("SaturdayHour", getResources().getString(R.string.Closed)));
         if (prefs.contains("SundayHour"))
             sundayHour.setText(prefs.getString("SundayHour", getResources().getString(R.string.Closed)));
-        restoreImageContent();
+        // restoreImageContent();
     }
 
     private void saveFields() {
@@ -501,15 +501,7 @@ public class ProfileActivity extends AppCompatActivity
         editor.putString("SundayHour", sundayHour.getText().toString());
         editor.apply();
 
-        // Set restaurant name and email on navigation header
-        View headerView = ((NavigationView) findViewById(R.id.nav_view)).getHeaderView(0);
-        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
-        String username = prefs.getString("Name", "");
-        navUsername.setText(username);
-
-        String email = prefs.getString("Email", "");
-        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
-        navEmail.setText(email);
+        updateNavigatorInformation();
     }
 
     public void showPopup(View v) {
@@ -762,15 +754,25 @@ public class ProfileActivity extends AppCompatActivity
     public void updateNavigatorInformation() {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
-        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-        if (!ImageBitmap.equals("NoImage")) {
-            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
-            nav_profile_icon.setImageBitmap(bitmap);
-        } else {
-            Drawable defaultImg = getResources().getDrawable(R.mipmap.ic_launcher_round);
-            nav_profile_icon.setImageDrawable(defaultImg);
-        }
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                .child("restaurants").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        GlideApp.with(this)
+                .load(storageReference)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .error(GlideApp.with(this).load(R.drawable.personicon))
+                .into(nav_profile_icon);
+
+//        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
+//        if (!ImageBitmap.equals("NoImage")) {
+//            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+//            nav_profile_icon.setImageBitmap(bitmap);
+//        } else {
+//            Drawable defaultImg = getResources().getDrawable(R.mipmap.ic_launcher_round);
+//            nav_profile_icon.setImageDrawable(defaultImg);
+//        }
 
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
         TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
@@ -862,7 +864,7 @@ public class ProfileActivity extends AppCompatActivity
 //    }
 
     private void saveFieldsOnFirebase() {
-        progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
+        // progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
 
@@ -880,17 +882,13 @@ public class ProfileActivity extends AppCompatActivity
                     @Override
                     public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                         if (databaseError != null) {
-                            progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            // progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
                             Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
                         } else {
                             // Dati salvati correttamente nel db
                             // Aggiorno le shared prefs
-                            editor.putString("Name", name.getText().toString());
-                            editor.putString("Email", email.getText().toString());
-                            editor.putString("Phone", phone.getText().toString());
-                            editor.putString("Address", address.getText().toString());
-                            editor.apply();
-                            progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            saveFields();
+                            // progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
                         }
                     }
                 });
@@ -898,7 +896,7 @@ public class ProfileActivity extends AppCompatActivity
 
     private void uploadProfilePic(Bitmap bitmap) {
 
-        imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
+        // imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
         // TODO: Fare il check con l'immagine di default e decommentare
         // Se è l'immagine di default, non salvo niente ed eventualmente elimino quella presente.
@@ -941,10 +939,10 @@ public class ProfileActivity extends AppCompatActivity
                     public void onComplete(@NonNull Task<Uri> task) {
                         if (!task.isSuccessful()) {
                             // Handle failures
-                            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            // imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
                             Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
                         } else {
-                            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            // imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
                             Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -1011,24 +1009,26 @@ public class ProfileActivity extends AppCompatActivity
     }
 
     private void hideFields() {
-        name.setVisibility(View.INVISIBLE);
-        email.setVisibility(View.INVISIBLE);
-        phone.setVisibility(View.INVISIBLE);
-        address.setVisibility(View.INVISIBLE);
-        additionalInformation.setVisibility(View.INVISIBLE);
-        deliveryCost.setVisibility(View.INVISIBLE);
-        minimumOrder.setVisibility(View.INVISIBLE);
+        nestedScrollView.setVisibility(View.GONE);
+//        name.setVisibility(View.INVISIBLE);
+//        email.setVisibility(View.INVISIBLE);
+//        phone.setVisibility(View.INVISIBLE);
+//        address.setVisibility(View.INVISIBLE);
+//        additionalInformation.setVisibility(View.INVISIBLE);
+//        deliveryCost.setVisibility(View.INVISIBLE);
+//        minimumOrder.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
     }
 
     private void showFields() {
-        name.setVisibility(View.VISIBLE);
-        email.setVisibility(View.VISIBLE);
-        phone.setVisibility(View.VISIBLE);
-        address.setVisibility(View.VISIBLE);
-        additionalInformation.setVisibility(View.VISIBLE);
-        deliveryCost.setVisibility(View.VISIBLE);
-        minimumOrder.setVisibility(View.VISIBLE);
+        nestedScrollView.setVisibility(View.VISIBLE);
+//        name.setVisibility(View.VISIBLE);
+//        email.setVisibility(View.VISIBLE);
+//        phone.setVisibility(View.VISIBLE);
+//        address.setVisibility(View.VISIBLE);
+//        additionalInformation.setVisibility(View.VISIBLE);
+//        deliveryCost.setVisibility(View.VISIBLE);
+//        minimumOrder.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.INVISIBLE);  // Nascondo la progress bar
     }
 
