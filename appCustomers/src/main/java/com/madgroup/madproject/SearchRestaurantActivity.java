@@ -473,6 +473,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
                 if (searchRestaurant.getVisibility() == View.GONE) {
                     searchRestaurant.setVisibility(View.VISIBLE);
                     searchRestaurant.onActionViewExpanded();
+                    searchRestaurant.requestFocus();
                 } else
                     searchRestaurant.setVisibility(View.GONE);
 

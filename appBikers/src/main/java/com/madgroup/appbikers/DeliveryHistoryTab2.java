@@ -149,7 +149,7 @@ public class DeliveryHistoryTab2 extends Fragment {
                     protected void onBindViewHolder(@NonNull ViewHolder holder, int i, @NonNull final Delivery currentItem) {
                         holder.restaurantName.setText(currentItem.getRestaurantName());
                         holder.restaurantAddress.setText(currentItem.getRestaurantAddress());
-                        holder.distance.setText(currentItem.calculateDistance("123", "123") + " mt");
+                        holder.distance.setText("");
                         holder.customerAddress.setText(currentItem.getCustomerAddress());
                         holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
                             @Override
