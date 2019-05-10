@@ -301,7 +301,7 @@ public class ProfileActivity extends AppCompatActivity
             createRotateAnimator(arrowbtn, 0f, 180f).start();
         }
         hiddenHours.toggle();
-//        nestedScrollView.scrollTo(0, view.getBottom()); todo: capire come far scrollare la vista verso il basso in automatico quando apro la view
+
     }
 
     private ObjectAnimator createRotateAnimator(final View target, final float from, final float to) {

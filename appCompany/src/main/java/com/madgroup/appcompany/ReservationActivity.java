@@ -1,6 +1,7 @@
 package com.madgroup.appcompany;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -30,10 +31,17 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ReservationActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -75,10 +83,38 @@ public class ReservationActivity extends AppCompatActivity implements
         // OVERRIDE DEL ONBACKPRESSED
         initializeNavigationDrawer();
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child(prefs.getString("currentUser", ""));
+        //todo: testare lettura dal db
+        final Map<String, Object> childUpdates = new HashMap<>();
+        ArrayList<String> reservationKeys = new ArrayList<>();
+        newOrderRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null && dataSnapshot.getValue() != null) {
+//                    HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.getValue();
+//                    reservationKeys.add(Boolean.valueOf(data.get("seen").toString()));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        //aggiornare il db settando a true i valori seen
+
+//        final Map<String, Object> childUpdates = new HashMap<>();
+//        String dishId = item.getId();
+//
+//        childUpdates.put("/" + dishId + "/" + "name", item.getName());
+//        childUpdates.put("/" + dishId + "/" + "availableQuantity", item.getAvailableQuantity());
+//        childUpdates.put("/" + dishId + "/" + "description", item.getDescription());
+//        childUpdates.put("/" + dishId + "/" + "price", item.getPrice());
+//        dishRef.updateChildren(childUpdates);
+
         notificationText = getResources().getString(R.string.notification_text);
         if (prefs.contains("currentUser")) {
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child(prefs.getString("currentUser", ""));
             NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
             notify.newOrderListner();
         }
