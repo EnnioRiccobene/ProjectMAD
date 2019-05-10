@@ -103,12 +103,12 @@ public class DeliveryActivity extends AppCompatActivity implements
             }
         });
 
-        notificationText = getResources().getString(R.string.notification_text);
-        if (prefs.contains("currentUser")) {
-
-            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
-            notify.newOrderListner();
-        }
+//        notificationText = getResources().getString(R.string.notification_text);
+//        if (prefs.contains("currentUser")) {
+//
+//            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+//            notify.newOrderListner();
+//        }
     }
 
 
