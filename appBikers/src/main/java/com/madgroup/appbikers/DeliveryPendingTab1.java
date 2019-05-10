@@ -152,14 +152,13 @@ public class DeliveryPendingTab1 extends Fragment {
                         holder.restaurantAddress.setText(currentItem.getRestaurantAddress());
                         holder.distance.setText(currentItem.calculateDistance("123", "123") + " mt");
                         holder.customerAddress.setText(currentItem.getCustomerAddress());
-
-                        holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // Set action on click
-
-                            }
-                        });
+//                        holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                // Set action on click
+//
+//                            }
+//                        });
                         holder.bikerArrived.setImageResource(R.drawable.ic_circled_confirm);
                         ImageViewCompat.setImageTintList(holder.bikerArrived, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
                         holder.bikerArrived.setOnClickListener(new View.OnClickListener() {

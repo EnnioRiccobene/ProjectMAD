@@ -255,8 +255,8 @@ public class reservationTab2 extends Fragment {
                     HashMap<String, Object> Delivery = new HashMap<>();
                     Delivery.put("restaurantID", currentUser);
                     Delivery.put("customerID", currentItem.getCustomerID());
-                    Delivery.put("restaurantName", currentItem.getAddress());
-                    Delivery.put("restaurantAddress", currentItem.getAddress());
+                    Delivery.put("restaurantName", prefs.getString("Name", ""));
+                    Delivery.put("restaurantAddress", prefs.getString("Address", ""));
                     Delivery.put("customerAddress", currentItem.getAddress());
                     Delivery.put("orderID", currentItem.getOrderID());
                     Delivery.put("deliveryTime", currentItem.getDeliveryTime());
