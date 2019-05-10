@@ -22,6 +22,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -184,7 +187,8 @@ public class DeliveryActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_profile) {
             Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);
-        }
+        } else if (id == R.id.nav_logout)
+                startLogout();
         if (id == R.id.nav_switch)
             return true;
 
@@ -232,5 +236,17 @@ public class DeliveryActivity extends AppCompatActivity implements
     public void onFragmentInteraction(Uri uri) {
 
     }
-
+    private void startLogout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        editor.clear();
+                        editor.apply();
+                        Intent intent = new Intent(DeliveryActivity.this, ProfileActivity.class);
+                        startActivity(intent);
+                    }
+                });
+    }
 }

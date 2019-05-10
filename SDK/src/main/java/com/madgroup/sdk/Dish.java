@@ -10,18 +10,8 @@ public class Dish {
     private String price;
     private String availableQuantity;
     private String description;
-    private Bitmap photo;
 
     public Dish() {
-    }
-
-    public Dish(String id, String name, String price, String availableQuantity, String description, Bitmap photo) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.availableQuantity = availableQuantity;
-        this.description = description;
-        this.photo = photo;
     }
 
     public Dish(String id, String name, String price, String availableQuantity, String description) {
@@ -77,14 +67,6 @@ public class Dish {
 
     public void setAvailableQuantity(String availableQuantity) {
         this.availableQuantity = availableQuantity;
-    }
-
-    public Bitmap getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(Bitmap photo) {
-        this.photo = photo;
     }
 
     @Override

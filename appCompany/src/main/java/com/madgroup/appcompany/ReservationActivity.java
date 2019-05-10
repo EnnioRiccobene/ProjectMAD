@@ -28,6 +28,9 @@ import android.view.ViewStub;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -143,7 +146,8 @@ public class ReservationActivity extends AppCompatActivity implements
             Intent myIntent = new Intent(this, ProfileActivity.class);
             // myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(myIntent);
-        }
+        } else if (id == R.id.nav_logout)
+            startLogout();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -260,5 +264,19 @@ public class ReservationActivity extends AppCompatActivity implements
         // RIEMPIERE LE LISTE E AGGIORNARE LE RECYCLER VIEW
 
 
+    }
+
+    private void startLogout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        editor.clear();
+                        editor.apply();
+                        Intent intent = new Intent(ReservationActivity.this, ProfileActivity.class);
+                        startActivity(intent);
+                    }
+                });
     }
 }

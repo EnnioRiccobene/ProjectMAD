@@ -24,11 +24,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.github.aakira.expandablelayout.ExpandableLayout;
 import com.github.aakira.expandablelayout.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -125,6 +127,16 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("MyData", MODE_PRIVATE);
         address = prefs.getString("Address", "No address defined");
+
+        // Carico l'immagine del ristorante
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                .child("restaurants").child(restaurantID);
+        GlideApp.with(this)
+                .load(storageReference)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .error(GlideApp.with(this).load(R.drawable.personicon))
+                .into(restaurantPhoto);
 
         initRecicleView();
 

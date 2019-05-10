@@ -21,6 +21,7 @@ import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -100,6 +102,8 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
     private CircleImageView dishImage;
 
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -109,6 +113,9 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_navigation_drawer);
         ViewStub stub = (ViewStub) findViewById(R.id.stub);
+
+
+
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_daily_offer);
         stub.inflate();
@@ -122,6 +129,10 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
         restaurantUid = prefs.getString("currentUser", "");
         dishRef = database.getReference().child("Company").child("Menu").child(restaurantUid);
+
+        progressBar = findViewById(R.id.progressBar);
+
+        progressBar.setVisibility(View.INVISIBLE);
 
         //todo: interazione con il db
         Bitmap carbonaraIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.carbonara), THUMBSIZE, THUMBSIZE);
@@ -214,17 +225,14 @@ public class DailyOfferActivity extends AppCompatActivity implements
             onBackPressed();
 
         } else if (id == R.id.nav_reservations) {
-            // Change activity to Reservations
             Intent myIntent = new Intent(this, ReservationActivity.class);
-            // myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(myIntent);
 
         } else if (id == R.id.nav_profile) {
-            // Change activity to Daily Offer
             Intent myIntent = new Intent(this, ProfileActivity.class);
-            // myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(myIntent);
-        }
+        } else if (id == R.id.nav_logout)
+            startLogout();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -381,14 +389,12 @@ public class DailyOfferActivity extends AppCompatActivity implements
                     } else if (local.equals("it_IT")) {
                         stringPrice = stringPrice + " €";
                     }
-                    //todo: aggiungere le immagini all'oggetto
-                    Bitmap img = ((BitmapDrawable)(dishImage.getDrawable())).getBitmap();
                     if (editDishDescription.getText().toString().isEmpty()) {
                         currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
-                                editDishQuantity.getText().toString(), "", img);
+                                editDishQuantity.getText().toString(), "");
                     } else {
                         currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
-                                editDishQuantity.getText().toString(), editDishDescription.getText().toString(), img);
+                                editDishQuantity.getText().toString(), editDishDescription.getText().toString());
                     }
 
                     if (item == null) {
@@ -397,6 +403,8 @@ public class DailyOfferActivity extends AppCompatActivity implements
                         currentDish.setId(item.getId());
                         updateDbDish(currentDish);
                     }
+                    progressBar.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.INVISIBLE);
                     getItemsFromDb();
 
                     dialog.dismiss();
@@ -476,6 +484,9 @@ public class DailyOfferActivity extends AppCompatActivity implements
                         } else {
                             //imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
                             Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
+                            adapter.notifyDataSetChanged();
+                            progressBar.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
                         }
                     }
                 });
@@ -649,6 +660,20 @@ public class DailyOfferActivity extends AppCompatActivity implements
     public abstract class AdapterHandler {
         public void setCurrentDialog(Dialog dialog) {
         }
+    }
+
+    private void startLogout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        editor.clear();
+                        editor.apply();
+                        Intent intent = new Intent(DailyOfferActivity.this, ProfileActivity.class);
+                        startActivity(intent);
+                    }
+                });
     }
 
 }

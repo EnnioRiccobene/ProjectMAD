@@ -4,7 +4,7 @@
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="4dp">
 
     <RelativeLayout
         android:id="@+id/relativeItemLayout"

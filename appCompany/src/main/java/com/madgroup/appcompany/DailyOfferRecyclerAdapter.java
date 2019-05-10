@@ -69,11 +69,6 @@ public class DailyOfferRecyclerAdapter extends RecyclerView.Adapter<FindDishView
         viewHolder.dishPrice.setText("" + dishPrice + currency);
         viewHolder.dishQuantity.setText(mContext.getResources().getString(R.string.availableQuantity) + " " + dish.getAvailableQuantity());
         viewHolder.dishDescription.setText(dish.getDescription());
-        viewHolder.dishPhoto.setImageBitmap(dish.getPhoto());
-
-        //todo: togliere questa prova
-        //String url = "https://vignette.wikia.nocookie.net/simpsons/images/4/40/Picture0003.jpg/revision/latest/scale-to-width-down/200?cb=20110623042517";
-        //Glide.with(mContext).load(url).into(viewHolder.dishPhoto);
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("dish_pics")
                 .child(restaurantUID).child(dish.getId());

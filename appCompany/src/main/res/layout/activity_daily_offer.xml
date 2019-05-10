@@ -8,6 +8,15 @@ tools:context=".DailyOfferActivity"
 app:layout_behavior="@string/appbar_scrolling_view_behavior"
 tools:showIn="@layout/app_bar_navigation_drawer">
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
     <!-- A RecyclerView with some commonly used attributes -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/my_recycler_view"

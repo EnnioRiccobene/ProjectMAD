@@ -573,4 +573,6 @@ public class SearchRestaurantActivity extends AppCompatActivity
         }
         super.onBackPressed();
     }
+
+
 }
