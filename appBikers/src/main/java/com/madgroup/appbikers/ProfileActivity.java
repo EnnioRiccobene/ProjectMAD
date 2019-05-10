@@ -142,7 +142,6 @@ public class ProfileActivity extends AppCompatActivity
 
         // Set all field to unclickable
         setFieldUnclickable();
-        createChildEventListener();
         hideFields();
         imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
         isDefaultImage = true;
@@ -151,9 +150,9 @@ public class ProfileActivity extends AppCompatActivity
         notificationText = getResources().getString(R.string.notification_text);
         if (prefs.contains("currentUser")) {
             // Utente già loggato
-            navigationDrawerInitialization();
             loadFieldsFromFirebase();
             downloadProfilePic();
+            navigationDrawerInitialization();
 
             DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child(prefs.getString("currentUser", ""));
             NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
@@ -383,12 +382,12 @@ public class ProfileActivity extends AppCompatActivity
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 editor = prefs.edit();
-                editor.putString("currentUser", user.getUid());
+                currentUser = user.getUid();
                 editor.putString("Name", user.getDisplayName());
                 editor.putString("Email", user.getEmail());
                 editor.apply();
-                navigationDrawerInitialization();
                 loadFieldsFromFirebase();
+                navigationDrawerInitialization();
                 downloadProfilePic();
 
             } else {
@@ -473,14 +472,28 @@ public class ProfileActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         updateNavigatorInformation();
-        verifyRiderAvailability(navigationView);
+        verifyRiderAvailability();
+
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        riderAvailability.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean newStatus;
+                if (riderAvailability.isChecked())
+                    newStatus = true;
+                else
+                    newStatus = false;
+                editor.putBoolean("Status", newStatus);
+                riderStatusRef.setValue(newStatus);
+                editor.apply();
+            }
+        });
     }
 
-    private void verifyRiderAvailability(NavigationView navigationView) {
+    private void verifyRiderAvailability() {
         riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        if(currentUser.equals("noUser"))
-            return;
         SmartLogger.d("currentUser: " + currentUser);
         final DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
         // TODO: Anzichè prenderlo dal DB, prenderlo solo dalle prefs (DEVE ESSERE IMPOSTATO AL LOGIN)
@@ -496,19 +509,6 @@ public class ProfileActivity extends AppCompatActivity
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
-        riderAvailability.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean newStatus;
-                if (riderAvailability.isChecked())
-                    newStatus = true;
-                else
-                    newStatus = false;
-                editor.putBoolean("Status", newStatus);
-                riderStatusRef.setValue(newStatus);
-                editor.apply();
             }
         });
     }
@@ -558,39 +558,6 @@ public class ProfileActivity extends AppCompatActivity
         return true;
     }
 
-    public void createChildEventListener() {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference pendingDeliveryRef = database.child("Rider").child("Delivery").child("Pending").child(currentUser);
-
-        childEventListener = pendingDeliveryRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                SmartLogger.d("NOTIFICATION: DATA ADDED");
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
 
     private void saveFieldsOnFirebase() {
 
@@ -598,7 +565,7 @@ public class ProfileActivity extends AppCompatActivity
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
-                phone.getText().toString(), additionalInformation.getText().toString(), false);
+                phone.getText().toString(), additionalInformation.getText().toString());
 
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -776,21 +743,24 @@ public class ProfileActivity extends AppCompatActivity
                             showFields();
 
                             // Aggiorno le shared prefs
+                            editor.putString("currentUser", rider.getId());
                             editor.putString("Name", rider.getName());
                             editor.putString("Email", rider.getEmail());
                             editor.putString("Phone", rider.getPhoneNumber());
                             editor.apply();
+                            updateNavigatorInformation();
+                            verifyRiderAvailability();
 
                         } else {
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
                             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            RiderProfile currentUser = new RiderProfile(user.getUid(), user.getDisplayName(), user.getEmail(),
-                                    "","",true);
+                            RiderProfile currentRider = new RiderProfile(user.getUid(), user.getDisplayName(), user.getEmail(),
+                                    "","",false);
                             String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             //database.getReference("Profiles").child("Bikers")
                             database.getReference("Rider").child("Profile")
                                     .child(currentUid)
-                                    .setValue(currentUser, new DatabaseReference.CompletionListener() {
+                                    .setValue(currentRider, new DatabaseReference.CompletionListener() {
                                 @Override
                                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                                     if (databaseError!= null) {
@@ -800,16 +770,18 @@ public class ProfileActivity extends AppCompatActivity
                                         name.setText(user.getDisplayName());
                                         email.setText(user.getEmail());
                                         // Aggiorno le shared prefs
+                                        currentUser = user.getUid();
                                         editor.putString("Name", user.getDisplayName());
                                         editor.putString("Email", user.getEmail());
+                                        editor.putBoolean("Status", false);
                                         editor.apply();
                                         showFields();
                                     }
+                                    updateNavigatorInformation();
+                                    verifyRiderAvailability();
                                 }
                             });
                         }
-                        updateNavigatorInformation();
-
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {

@@ -30,6 +30,15 @@ public class RiderProfile implements Serializable {
         this.status = status;
     }
 
+    public RiderProfile(String id, String name, String email, String phoneNumber, String additionalInformation) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.additionalInformation = additionalInformation;
+        this.status = status;
+    }
+
     public RiderProfile(String id, String name, String email, String phoneNumber, boolean status) {
         this.id = id;
         this.name = name;
