@@ -86,7 +86,7 @@ public class NotificationHandler {
                 .setTitle(notificationTitle)
                 .setText(notificationText)
                 .setBackgroundColorRes(R.color.colorAccent) // or setBackgroundColorInt(Color.CYAN)
-                .setDuration(10000)
+                .setDuration(3000)
                 .enableSwipeToDismiss()
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
