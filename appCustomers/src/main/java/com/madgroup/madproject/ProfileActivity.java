@@ -124,7 +124,6 @@ public class ProfileActivity extends AppCompatActivity implements
         this.setTitle("Profile");
         prefs = getSharedPreferences("MyData", MODE_PRIVATE);
         editor = prefs.edit();
-        initializeNavigationDrawer();
         // Getting the instance of Firebase
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -153,6 +152,7 @@ public class ProfileActivity extends AppCompatActivity implements
 
         if (prefs.contains("currentUser")) {
             // Utente già loggato
+            initializeNavigationDrawer();
             loadFieldsFromFirebase();
             downloadProfilePic();
         } else {
@@ -385,8 +385,10 @@ public class ProfileActivity extends AppCompatActivity implements
                 prefs = getSharedPreferences("MyData", MODE_PRIVATE);
                 editor = prefs.edit();
                 editor.putString("currentUser", user.getUid());
+                editor.putString("Name", user.getDisplayName());
+                editor.putString("Email", user.getEmail());
                 editor.apply();
-
+                initializeNavigationDrawer();
                 loadFieldsFromFirebase();
                 downloadProfilePic();
 

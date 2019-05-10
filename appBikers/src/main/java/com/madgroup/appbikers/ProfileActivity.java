@@ -139,7 +139,6 @@ public class ProfileActivity extends AppCompatActivity
 
         // Set all field to unclickable
         setFieldUnclickable();
-        navigationDrawerInitialization();
         createChildEventListener();
         hideFields();
         imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
@@ -148,6 +147,7 @@ public class ProfileActivity extends AppCompatActivity
         //loadFieldsFromFirebase();
         if (prefs.contains("currentUser")) {
             // Utente già loggato
+            navigationDrawerInitialization();
             loadFieldsFromFirebase();
             downloadProfilePic();
         } else {
@@ -376,8 +376,10 @@ public class ProfileActivity extends AppCompatActivity
                 prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 editor = prefs.edit();
                 editor.putString("currentUser", user.getUid());
+                editor.putString("Name", user.getDisplayName());
+                editor.putString("Email", user.getEmail());
                 editor.apply();
-
+                navigationDrawerInitialization();
                 loadFieldsFromFirebase();
                 downloadProfilePic();
 

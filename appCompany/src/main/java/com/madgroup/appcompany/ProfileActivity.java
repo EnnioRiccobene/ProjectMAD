@@ -274,25 +274,15 @@ public class ProfileActivity extends AppCompatActivity
         //downloadProfilePic();
         //loadFieldsFromFirebase();
 
-        initializeNavigationDrawer();
-
-        // Set restaurant name and email on navigation header
-        View headerView = navigationView.getHeaderView(0);
-        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
-        if (name.getText() != null)
-            navUsername.setText(name.getText());
-        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
-        if (email.getText() != null)
-            navEmail.setText(email.getText());
-
-
         if (prefs.contains("currentUser")) {
             // Utente già loggato
+            initializeNavigationDrawer();
             loadFieldsFromFirebase();
             downloadProfilePic();
         } else {
             startLogin();
         }
+
     }
 
     //I seguenti due metodi sono per gestire l'animazione della freccia durante l'interazione con l'ExpandableLayout
@@ -658,11 +648,12 @@ public class ProfileActivity extends AppCompatActivity
                 // Successfully signed in
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 editor.putString("currentUser", user.getUid());
+                editor.putString("Name", user.getDisplayName());
+                editor.putString("Email", user.getEmail());
                 editor.apply();
-
+                initializeNavigationDrawer();
                 loadFieldsFromFirebase();
                 downloadProfilePic();
-
             } else {
                 if (response==null) {
                     // Back button pressed
@@ -1066,6 +1057,7 @@ public class ProfileActivity extends AppCompatActivity
                             editor.putString("Phone", restaurant.getPhoneNumber());
                             editor.putString("Address", restaurant.getAddress());
                             editor.apply();
+                            updateNavigatorInformation();
 
                         } else {
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
@@ -1088,12 +1080,12 @@ public class ProfileActivity extends AppCompatActivity
                                         editor.putString("Email", user.getEmail());
                                         editor.apply();
                                         showFields();
+                                        updateNavigatorInformation();
                                     }
                                 }
                             });
 
                         }
-                        updateNavigatorInformation();
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
