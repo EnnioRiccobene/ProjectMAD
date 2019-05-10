@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -29,6 +30,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
@@ -153,7 +156,14 @@ public class OrdersHistoryTab extends Fragment {
                     @Override
                     protected void onBindViewHolder(@NonNull OrderViewHolder holder, int i, @NonNull final Reservation currentItem) {
                         final int index = i;
-                        // holder.mImageView.setImageResource(R.drawable.ic_garbage); // TODO: PRENDERE LA FOTO DEL RISTORANDE DAL DB
+                        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                                .child("restaurants").child(currentItem.getRestaurantID());
+                        GlideApp.with(OrdersHistoryTab.this)
+                                .load(storageReference)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .skipMemoryCache(true)
+                                .error(GlideApp.with(OrdersHistoryTab.this).load(R.drawable.personicon))
+                                .into(holder.mImageView);
                         holder.mTextView1.setText(currentItem.getAddress());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
