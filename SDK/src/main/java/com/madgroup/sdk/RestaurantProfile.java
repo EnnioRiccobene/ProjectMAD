@@ -25,6 +25,31 @@ public class RestaurantProfile implements Parcelable {
     private String additionalInformation;
     private String fCategoryANDdCost;
 
+    //campi di supporto per le query al db
+    private String catPizza;
+    private String catSandwiches;
+    private String catKebab;
+    private String catItalian;
+    private String catAmerican;
+    private String catDesserts;
+    private String catFry;
+    private String catVegetarian;
+    private String catAsian;
+    private String catMediterranean;
+    private String catSouthAmerican;
+
+    private String catPizzaDel;
+    private String catSandwichesDel;
+    private String catKebabDel;
+    private String catItalianDel;
+    private String catAmericanDel;
+    private String catDessertsDel;
+    private String catFryDel;
+    private String catVegetarianDel;
+    private String catAsianDel;
+    private String catMediterraneanDel;
+    private String catSouthAmericanDel;
+
     public String getAdditionalInformation() {
         return additionalInformation;
     }
@@ -61,6 +86,72 @@ public class RestaurantProfile implements Parcelable {
         this.sundayOpeningHours = "Closed";
         this.additionalInformation = "Closed";
         this.fCategoryANDdCost = foodCategory + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Pizza"))
+            this.catPizza = "true";
+        else
+            this.catPizza = "false";
+//        this.catPizzaDel = catPizza + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Sandwiches") || foodCategory.contains("Panini"))
+            this.catSandwiches = "true";
+        else
+            this.catSandwiches = "false";
+//        this.catSandwichesDel = catSandwiches + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Kebab"))
+            this.catKebab = "true";
+        else
+            this.catKebab = "false";
+//        this.catKebabDel = catKebab + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Italian") || foodCategory.contains("Italiano"))
+            this.catItalian = "true";
+        else
+            this.catItalian = "false";
+//        this.catItalianDel = catItalian + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("American") || foodCategory.contains("Americano"))
+            this.catAmerican = "true";
+        else
+            this.catAmerican = "false";
+//        this.catAmericanDel = catAmerican + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Desserts") || foodCategory.contains("Dolci"))
+            this.catDesserts = "true";
+        else
+            this.catDesserts = "false";
+//        this.catDessertsDel = catDesserts + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Fry") || foodCategory.contains("Fritti"))
+            this.catFry = "true";
+        else
+            this.catFry = "false";
+//        this.catFryDel = catFry + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Vegetarian") || foodCategory.contains("Vegetariano"))
+            this.catVegetarian = "true";
+        else
+            this.catVegetarian = "false";
+//        this.catVegetarianDel = catVegetarian + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Asian") || foodCategory.contains("Asiatico"))
+            this.catAsian = "true";
+        else
+            this.catAsian = "false";
+//        this.catAsianDel = catAsian + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Mediterranean") || foodCategory.contains("Mediterraneo"))
+            this.catMediterranean = "true";
+        else
+            this.catMediterranean = "false";
+//        this.catMediterraneanDel = catMediterranean + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("South American") || foodCategory.contains("Sud Americano"))
+            this.catSouthAmerican = "true";
+        else
+            this.catSouthAmerican = "false";
+//        this.catSouthAmericanDel = catSouthAmerican + "_" + deliveryCost.replace(".", "").replace(",", "");
     }
 
     public RestaurantProfile(String id, String name, String phoneNumber, String address, String email, String foodCategory, String minOrder, String deliveryCost, String mondayOpeningHours, String tuesdayOpeningHours, String wednesdayOpeningHours, String thursdayOpeningHours, String fridayOpeningHours, String saturdayOpeningHours, String sundayOpeningHours, String additionalInformation) {
@@ -81,6 +172,72 @@ public class RestaurantProfile implements Parcelable {
         this.sundayOpeningHours = sundayOpeningHours;
         this.additionalInformation = additionalInformation;
         this.fCategoryANDdCost = foodCategory + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Pizza"))
+            this.catPizza = "true";
+        else
+            this.catPizza = "false";
+        this.catPizzaDel = catPizza + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Sandwiches") || foodCategory.contains("Panini"))
+            this.catSandwiches = "true";
+        else
+            this.catSandwiches = "false";
+        this.catSandwichesDel = catSandwiches + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Kebab"))
+            this.catKebab = "true";
+        else
+            this.catKebab = "false";
+        this.catKebabDel = catKebab + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Italian") || foodCategory.contains("Italiano"))
+            this.catItalian = "true";
+        else
+            this.catItalian = "false";
+        this.catItalianDel = catItalian + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("American") || foodCategory.contains("Americano"))
+            this.catAmerican = "true";
+        else
+            this.catAmerican = "false";
+        this.catAmericanDel = catAmerican + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Desserts") || foodCategory.contains("Dolci"))
+            this.catDesserts = "true";
+        else
+            this.catDesserts = "false";
+        this.catDessertsDel = catDesserts + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Fry") || foodCategory.contains("Fritti"))
+            this.catFry = "true";
+        else
+            this.catFry = "false";
+        this.catFryDel = catFry + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Vegetarian") || foodCategory.contains("Vegetariano"))
+            this.catVegetarian = "true";
+        else
+            this.catVegetarian = "false";
+        this.catVegetarianDel = catVegetarian + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Asian") || foodCategory.contains("Asiatico"))
+            this.catAsian = "true";
+        else
+            this.catAsian = "false";
+        this.catAsianDel = catAsian + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("Mediterranean") || foodCategory.contains("Mediterraneo"))
+            this.catMediterranean = "true";
+        else
+            this.catMediterranean = "false";
+        this.catMediterraneanDel = catMediterranean + "_" + deliveryCost.replace(".", "").replace(",", "");
+
+        if(foodCategory.contains("South American") || foodCategory.contains("Sud Americano"))
+            this.catSouthAmerican = "true";
+        else
+            this.catSouthAmerican = "false";
+        this.catSouthAmericanDel = catSouthAmerican + "_" + deliveryCost.replace(".", "").replace(",", "");
     }
 
     public String getId() {

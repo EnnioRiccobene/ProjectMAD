@@ -107,29 +107,11 @@ public class SearchRestaurantActivity extends AppCompatActivity
         //uploadFile();
 
         mContext = this;
-//todo: questo inserimento di ristoranti nel db è temporaneo, in questa activity devo solo leggere
+
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.personicon);
 
         photo = findViewById(R.id.restaurant_photo);
         searchRestaurant = findViewById(R.id.searchWidget);
-
-//        btnSearch.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (searchRestaurant.getVisibility() == View.GONE) {
-//                    searchRestaurant.setVisibility(View.VISIBLE);
-//                } else {
-//                    searchRestaurant.setVisibility(View.GONE);
-//                }
-//            }
-//        });
-//
-//        btnFilter.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                showFilterDialog();
-//            }
-//        });
 
         searchRestaurant.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -170,10 +152,9 @@ public class SearchRestaurantActivity extends AppCompatActivity
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 
-    //todo: metodo di prova per mettere le immagini nello storage e ricavarne l'uri da scrivere nel db. Poi metterlo in libreria, passangogli il percorso dove salvare l'uri nel db
+
     private void uploadFile() {
 
-        //todo: al momento l'immagine è presa da drawable, poi si dovrà prendere da fotocamera e libreria
         //https://firebase.google.com/docs/storage/android/upload-files
         Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
         Bitmap bitmap = ((BitmapDrawable) defaultImg).getBitmap();
@@ -330,7 +311,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
 
         TextView dialogDismiss = dialog.findViewById(R.id.dialogCancel);
         TextView dialogConfirm = dialog.findViewById(R.id.dialogConfirm);
-        TextView food_category = dialog.findViewById(R.id.food_category);
+        final TextView food_category = dialog.findViewById(R.id.food_category);
         RadioGroup radioGroupFoodCategory = dialog.findViewById(R.id.radio_group_food_category);
         RadioButton radioAll = dialog.findViewById(R.id.radio_all);
         RadioButton radioPizza = dialog.findViewById(R.id.radio_pizza);
@@ -382,7 +363,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 restaurantCategory = null;
-                //todo annullare anche il filtro del costo di consegna
+
                 dialog.dismiss();
             }
         });
@@ -395,15 +376,41 @@ public class SearchRestaurantActivity extends AppCompatActivity
 
                 if (restaurantCategory != null) {
 
+                    String foodCatChildKey = "foodCategory";
+                    if(restaurantCategory.equals("Pizza"))
+                        foodCatChildKey = "catPizza";
+                    else if(restaurantCategory.equals("Sandwiches") || restaurantCategory.equals("Panini"))
+                        foodCatChildKey = "catSandwiches";
+                    else if(restaurantCategory.equals("Kebab"))
+                        foodCatChildKey = "catKebab";
+                    else if(restaurantCategory.equals("Italian") || restaurantCategory.equals("Italiano"))
+                        foodCatChildKey = "catItalian";
+                    else if(restaurantCategory.equals("American") || restaurantCategory.equals("Americano"))
+                        foodCatChildKey = "catAmerican";
+                    else if(restaurantCategory.equals("Desserts") || restaurantCategory.equals("Dolci"))
+                        foodCatChildKey = "catDesserts";
+                    else if(restaurantCategory.equals("Fry") || restaurantCategory.equals("Fritti"))
+                        foodCatChildKey = "catFry";
+                    else if(restaurantCategory.equals("Vegetarian") || restaurantCategory.equals("Vegetariano"))
+                        foodCatChildKey = "catVegetarian";
+                    else if(restaurantCategory.equals("Asian") || restaurantCategory.equals("Asiatico"))
+                        foodCatChildKey = "catAsian";
+                    else if(restaurantCategory.equals("Mediterranean") || restaurantCategory.equals("Mediterraneo"))
+                        foodCatChildKey = "catMediterranean";
+                    else if(restaurantCategory.equals("South American") || restaurantCategory.equals("Sud Americano"))
+                        foodCatChildKey = "catSouthAmerican";
+
+
                     if ((!restaurantCategory.equals("All")) && (!restaurantCategory.equals("Qualsiasi"))) {
 
                         //restaurantRef arriva fino a profile
                         String queryText = restaurantCategory;
-                        applyQuery = restaurantRef.orderByChild("foodCategory").startAt(queryText).endAt(queryText + "\uf8ff");
+//                        applyQuery = restaurantRef.orderByChild("foodCategory").startAt(queryText).endAt(queryText + "\uf8ff");
+                        applyQuery = restaurantRef.orderByChild(foodCatChildKey).equalTo("true");
 
                         if (freeDeliveryCheckbox.isChecked()) {
 
-                            applyQuery = restaurantRef.orderByChild("fCategoryANDdCost").startAt(queryText).endAt(queryText + "_000\uf8ff");
+                            applyQuery = restaurantRef.orderByChild(foodCatChildKey + "Del").startAt("true_000").endAt("true_000\uf8ff");
                         }
 
                     } else {
