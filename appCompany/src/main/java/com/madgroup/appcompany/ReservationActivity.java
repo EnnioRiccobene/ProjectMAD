@@ -85,7 +85,7 @@ public class ReservationActivity extends AppCompatActivity implements
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child(prefs.getString("currentUser", ""));
-        //todo: testare lettura dal db
+
         final Map<String, Object> childUpdates = new HashMap<>();
         final ArrayList<String> reservationKeys = new ArrayList<>();
 
@@ -95,12 +95,10 @@ public class ReservationActivity extends AppCompatActivity implements
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if (dataSnapshot != null && dataSnapshot.getValue() != null) {
-//                    for (Object obj : ((HashMap<String, Object>) dataSnapshot.getValue())) {
                         HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.getValue();
                         for ( String key : data.keySet() ) {
                             reservationKeys.add(key);
                         }
-//                    }
 
                     for(int i = 0; i < reservationKeys.size(); i++){
                         childUpdates.put("/" + reservationKeys.get(i) + "/" + "seen", true);

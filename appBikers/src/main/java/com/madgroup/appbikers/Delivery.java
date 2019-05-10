@@ -13,6 +13,7 @@ public class Delivery {
     private String customerPhone;
     private String restaurantPhone;
     private String deliveryTime;
+    private boolean seen;
 
 
     public Delivery() {
@@ -24,6 +25,15 @@ public class Delivery {
         this.customerAddress = customerAddress;
         this.paymentMethod = paymentMethod;
         this.deliveryTime = deliveryTime;
+        this.seen = false;
+    }
+
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void setSeen(boolean seen) {
+        this.seen = seen;
     }
 
     public void setRestaurantAddress(String restaurantAddress) {

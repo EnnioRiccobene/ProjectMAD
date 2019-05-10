@@ -1,5 +1,18 @@
 package com.madgroup.appbikers;
 
+import android.animation.ObjectAnimator;
+import android.animation.StateListAnimator;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewStub;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
@@ -8,33 +21,24 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
-import android.animation.ObjectAnimator;
-import android.animation.StateListAnimator;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.util.Base64;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewStub;
-import android.widget.TextView;
-
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.SmartLogger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DeliveryActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -44,6 +48,9 @@ public class DeliveryActivity extends AppCompatActivity implements
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private String currentUser;
+    String notificationTitle = "MAD Company";
+    String notificationText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +66,44 @@ public class DeliveryActivity extends AppCompatActivity implements
         this.setTitle("Deliveries");
         initializeTabs();
         navigationDrawerInitialization();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child(prefs.getString("currentUser", ""));
+
+        final Map<String, Object> childUpdates = new HashMap<>();
+        final ArrayList<String> reservationKeys = new ArrayList<>();
+
+        //aggiorno il db con i nuovi valori di "seen"
+        newOrderRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot != null && dataSnapshot.getValue() != null) {
+                    HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.getValue();
+                    for ( String key : data.keySet() ) {
+                        reservationKeys.add(key);
+                    }
+
+                    for(int i = 0; i < reservationKeys.size(); i++){
+                        childUpdates.put("/" + reservationKeys.get(i) + "/" + "seen", true);
+                    }
+                    newOrderRef.updateChildren(childUpdates);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        notificationText = getResources().getString(R.string.notification_text);
+        if (prefs.contains("currentUser")) {
+
+            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+            notify.newOrderListner();
+        }
     }
 
 
@@ -138,7 +183,7 @@ public class DeliveryActivity extends AppCompatActivity implements
             Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);
         }
-        if(id  == R.id.nav_switch)
+        if (id == R.id.nav_switch)
             return true;
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

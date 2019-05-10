@@ -252,7 +252,7 @@ public class reservationTab2 extends Fragment {
                     DataSnapshot childSnapshot = (DataSnapshot) itr.next();
                     RiderProfile choosenRider = childSnapshot.getValue(RiderProfile.class);
                     // Creating Delivery Item
-                    HashMap<String, String> Delivery = new HashMap<>();
+                    HashMap<String, Object> Delivery = new HashMap<>();
                     Delivery.put("restaurantID", currentUser);
                     Delivery.put("customerID", currentItem.getCustomerID());
                     Delivery.put("restaurantName", currentItem.getAddress());
@@ -260,6 +260,7 @@ public class reservationTab2 extends Fragment {
                     Delivery.put("customerAddress", currentItem.getAddress());
                     Delivery.put("orderID", currentItem.getOrderID());
                     Delivery.put("deliveryTime", currentItem.getDeliveryTime());
+                    Delivery.put("seen", false);
                     deliveriesRef.child("Pending").child(choosenRider.getId()).child(currentItem.getOrderID()).setValue(Delivery);
                 }
             }
