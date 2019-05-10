@@ -68,6 +68,7 @@
     <string name="availableQuantity">Available quantity:</string>
     <string name="delivery_cost">Delivery cost</string>
     <string name="minimum_order">Minimum Order</string>
+    <string name="notification_text">A new order has arrived. Look at the reservation page to see it</string>
 
     <string-array name="hours_list">
         <item>00:00</item>
