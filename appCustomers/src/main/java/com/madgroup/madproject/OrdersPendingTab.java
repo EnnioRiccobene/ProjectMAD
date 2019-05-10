@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -158,7 +159,17 @@ public class OrdersPendingTab extends Fragment {
                 new FirebaseRecyclerAdapter<Reservation, OrderViewHolder>(options) {
                     @Override
                     protected void onBindViewHolder(@NonNull OrderViewHolder holder, int i, @NonNull final Reservation currentItem) {
-                        downloadProfilePic(currentItem.getRestaurantID(), holder.mImageView);
+                        //downloadProfilePic(currentItem.getRestaurantID(), holder.mImageView);
+
+                        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                                .child("restaurants").child(currentItem.getRestaurantID());
+                        GlideApp.with(OrdersPendingTab.this)
+                                .load(storageReference)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .skipMemoryCache(true)
+                                .error(GlideApp.with(OrdersPendingTab.this).load(R.drawable.personicon))
+                                .into(holder.mImageView);
+
                         holder.mTextView1.setText(currentItem.getAddress());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
