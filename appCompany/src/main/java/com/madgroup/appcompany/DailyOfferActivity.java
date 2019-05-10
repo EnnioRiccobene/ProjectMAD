@@ -93,7 +93,9 @@ public class DailyOfferActivity extends AppCompatActivity implements
     private DatabaseReference dishRef;
     private StorageReference mStorageRef;
 
-    // Todo: sostituirla con il parametro di autenticazione
+    String notificationTitle = "MAD Company";
+    String notificationText;
+
     private String restaurantUid;
 
     private CircleImageView dishImage;
@@ -125,17 +127,15 @@ public class DailyOfferActivity extends AppCompatActivity implements
         Bitmap carbonaraIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.carbonara), THUMBSIZE, THUMBSIZE);
         Bitmap gnocchiIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.gnocchi), THUMBSIZE, THUMBSIZE);
 
-
-//        myList.add(new Dish("0","Spaghetti alla Carbonara", 5.50f, 5, "" +
-//                "Guanciale, uova, pecorino, pepe nero.",carbonaraIcon));
-//        myList.add(new Dish("1","Gnocchi di patet", 5.90f, 19, "Patate, " +
-//                "Farina, " +
-//                "Uova, ", gnocchiIcon));
-//        myList.add(new Dish("2","Lasagne alla Bolognese", 8.50f, 3, "Ragù, Besciamella." +
-//                "Olio extravergine d'oliva, " +
-//                "Pepe nero, ", gnocchiIcon));
-
         initDailyOfferRecyclerView();
+
+        notificationText = getResources().getString(R.string.notification_text);
+        if (prefs.contains("currentUser")) {
+
+            DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child(prefs.getString("currentUser", ""));
+            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+            notify.newOrderListner();
+        }
     }
 
 

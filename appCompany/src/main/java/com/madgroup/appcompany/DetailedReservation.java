@@ -38,6 +38,9 @@ public class DetailedReservation extends AppCompatActivity {
     private String currentUser;
     private SharedPreferences prefs;
 
+    String notificationTitle = "MAD Company";
+    String notificationText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +100,14 @@ public class DetailedReservation extends AppCompatActivity {
                 finish();
             }
         });
+
+        notificationText = getResources().getString(R.string.notification_text);
+        if (prefs.contains("currentUser")) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child(prefs.getString("currentUser", ""));
+            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+            notify.newOrderListner();
+        }
     }
 
     @Override

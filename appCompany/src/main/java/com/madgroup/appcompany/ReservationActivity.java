@@ -30,6 +30,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -42,6 +44,9 @@ public class ReservationActivity extends AppCompatActivity implements
     private ActionBarDrawerToggle toggle;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
+
+    String notificationTitle = "MAD Company";
+    String notificationText;
 
     public final static int PENDING_RESERVATION_CODE = 0;
     public final static int ACCEPTED_RESERVATION_CODE = 1;
@@ -69,6 +74,14 @@ public class ReservationActivity extends AppCompatActivity implements
 
         // OVERRIDE DEL ONBACKPRESSED
         initializeNavigationDrawer();
+
+        notificationText = getResources().getString(R.string.notification_text);
+        if (prefs.contains("currentUser")) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child(prefs.getString("currentUser", ""));
+            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+            notify.newOrderListner();
+        }
 
     }
 

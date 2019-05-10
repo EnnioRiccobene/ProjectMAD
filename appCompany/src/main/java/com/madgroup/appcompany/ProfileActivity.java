@@ -130,6 +130,9 @@ public class ProfileActivity extends AppCompatActivity
     private ProgressBar progressBar;
     private ProgressBar imgProgressBar;
 
+    String notificationTitle = "MAD Company";
+    String notificationText;
+
     TextView hours;
     ImageView arrowbtn;
     ExpandableLayout hiddenHours;
@@ -274,15 +277,20 @@ public class ProfileActivity extends AppCompatActivity
         //downloadProfilePic();
         //loadFieldsFromFirebase();
 
+        notificationText = getResources().getString(R.string.notification_text);
         if (prefs.contains("currentUser")) {
             // Utente già loggato
             initializeNavigationDrawer();
             loadFieldsFromFirebase();
             downloadProfilePic();
+
+            DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child(prefs.getString("currentUser", ""));
+            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+            notify.newOrderListner();
+
         } else {
             startLogin();
         }
-
     }
 
     //I seguenti due metodi sono per gestire l'animazione della freccia durante l'interazione con l'ExpandableLayout

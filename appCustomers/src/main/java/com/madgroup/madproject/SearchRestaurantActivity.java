@@ -109,28 +109,6 @@ public class SearchRestaurantActivity extends AppCompatActivity
         mContext = this;
 //todo: questo inserimento di ristoranti nel db è temporaneo, in questa activity devo solo leggere
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.personicon);
-//        Restaurant r1 = new Restaurant("email1", "Da Saro", "0695555555", "Via X, Acireale", "Panini", "Photo", "10€",
-//                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
-//                "Chiuso", "Chiuso");
-//        Restaurant r2 = new Restaurant("email2", "Napples Pizza", "0695555555", "Via X, Acireale", "Pizza", "Photo", "10€",
-//                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
-//                "Chiuso", "Chiuso");
-//        Restaurant r3 = new Restaurant("email3", "Horace Kebab", "0695555555", "Via X, Acireale", "Kebab", "photo", "10€",
-//                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
-//                "Chiuso", "Chiuso");
-//        Restaurant r4 = new Restaurant("email4", "Greek Lab", "0695555555", "Via X, Acireale", "Mediterranea", "photo", "10€",
-//                "2€", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
-//                "Chiuso", "Chiuso");
-//        Restaurant r5 = new Restaurant("email5", "Acqua e farina", "0695555555", "Via X, Acireale", "Pizza, Fritti", "photo", "10€",
-//                "0,00 €", "Chiuso", "Chiuso", "Chiuso", "Chiuso", "Chiuso",
-//                "Chiuso", "Chiuso");
-
-//        restaurantRef.setValue("email1");
-//        restaurantRef.child("email1").setValue(r1);
-//        restaurantRef.child("email2").setValue(r2);
-//        restaurantRef.child("email3").setValue(r3);
-//        restaurantRef.child("email4").setValue(r4);
-//        restaurantRef.child("email5").setValue(r5);
 
         photo = findViewById(R.id.restaurant_photo);
         searchRestaurant = findViewById(R.id.searchWidget);

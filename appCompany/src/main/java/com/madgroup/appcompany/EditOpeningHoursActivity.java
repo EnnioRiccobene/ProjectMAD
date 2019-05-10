@@ -1,7 +1,9 @@
 package com.madgroup.appcompany;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -14,12 +16,19 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class EditOpeningHoursActivity extends AppCompatActivity {
     public static final String EXTRA_REPLY = "com.madgroup.appcompany.extra.REPLY";
 
     private ArrayList<String> weekdayName = new ArrayList<>();
     private ArrayList<String> dayOldHourPreview = new ArrayList<>();
     private LinkedHashMap<String, String> hourValue = new LinkedHashMap<>();
+
+    private SharedPreferences prefs;
+    String notificationTitle = "MAD Company";
+    String notificationText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +45,15 @@ public class EditOpeningHoursActivity extends AppCompatActivity {
         toolbar.setTitle("");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        notificationText = getResources().getString(R.string.notification_text);
+        if (prefs.contains("currentUser")) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child(prefs.getString("currentUser", ""));
+            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+            notify.newOrderListner();
+        }
     }
 
     private void initWeekDayName(){

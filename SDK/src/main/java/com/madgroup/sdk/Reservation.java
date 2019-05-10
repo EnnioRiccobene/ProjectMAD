@@ -6,8 +6,6 @@ import java.util.ArrayList;
 
 public class Reservation implements Serializable {
 
-
-    // TODO: Aggiungere successivamente classe Customer con tutte le informazioni necessarie dell'utente (nome, cognome, telefono)
     private String orderID;
     private String customerID;
     private ArrayList<OrderedDish> orderedDishList;
@@ -18,6 +16,7 @@ public class Reservation implements Serializable {
     private String price;
     private Integer status;
     private String notes;
+    private boolean seen;
 
 //    Status
 //    0: Da confermare/rifiutare        Tab1
@@ -35,6 +34,7 @@ public class Reservation implements Serializable {
         this.deliveryTime = deliveryTime;
         this.status = status;
         this.price = price;
+        this.seen = false;
     }
 
     public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, Integer status) {
@@ -42,6 +42,7 @@ public class Reservation implements Serializable {
         this.address = address;
         this.deliveryTime = deliveryTime;
         this.status= status;
+        this.seen = false;
         // Compute total Price
         float x = 0;
         for (OrderedDish element : orderedDishList)
@@ -57,6 +58,7 @@ public class Reservation implements Serializable {
         this.deliveryTime = deliveryTime;
         this.status= status;
         this.notes = notes;
+        this.seen = false;
         // Compute total Price
         float x = 0;
         for (OrderedDish element : orderedDishList)
@@ -74,6 +76,7 @@ public class Reservation implements Serializable {
         this.status = 0;
         this.restaurantID = restaurantID;
         this.deliveryCost = deliveryCost;
+        this.seen = false;
         // Compute total Price
         float x = 0;
         for (OrderedDish element : orderedDishList) {
@@ -179,6 +182,14 @@ public class Reservation implements Serializable {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void setSeen(boolean seen) {
+        this.seen = seen;
     }
 }
 
