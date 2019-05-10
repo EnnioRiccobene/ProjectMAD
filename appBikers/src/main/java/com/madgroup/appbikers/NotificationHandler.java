@@ -1,4 +1,4 @@
-package com.madgroup.appcompany;
+package com.madgroup.appbikers;
 
 import android.app.Activity;
 import android.content.Context;
@@ -91,7 +91,7 @@ public class NotificationHandler {
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        context.startActivity(new Intent(context, ReservationActivity.class));
+                        context.startActivity(new Intent(context, DeliveryActivity.class));
                     }
                 })
                 .show();
@@ -134,7 +134,6 @@ public class NotificationHandler {
                 ArrayList<Boolean> dataset = new ArrayList<>();
                 dataset.addAll(parseDataset(dataSnapshot));
 
-                //lancio la notifica solo se il campo "seen" è false
                 for(int i = 0; i < dataset.size(); i++) {
                     if(!dataset.get(i)) {
                         launchNotification();

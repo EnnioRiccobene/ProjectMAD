@@ -101,6 +101,9 @@ public class ProfileActivity extends AppCompatActivity
     private ProgressBar imgProgressBar;
     private NavigationView navigationView;
 
+    String notificationTitle = "MAD Company";
+    String notificationText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,11 +148,16 @@ public class ProfileActivity extends AppCompatActivity
         isDefaultImage = true;
         //downloadProfilePic();
         //loadFieldsFromFirebase();
+        notificationText = getResources().getString(R.string.notification_text);
         if (prefs.contains("currentUser")) {
             // Utente già loggato
             navigationDrawerInitialization();
             loadFieldsFromFirebase();
             downloadProfilePic();
+
+            DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child(prefs.getString("currentUser", ""));
+            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+            notify.newOrderListner();
         } else {
             startLogin();
         }

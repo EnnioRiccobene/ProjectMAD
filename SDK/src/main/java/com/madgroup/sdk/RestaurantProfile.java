@@ -13,8 +13,8 @@ public class RestaurantProfile implements Parcelable {
     private String address;
     private String email;
     private String foodCategory;
-    private String minOrder;  //todo aggiungerlo al profilo company
-    private String deliveryCost; //todo aggiungerlo al profilo company
+    private String minOrder;
+    private String deliveryCost;
     private String mondayOpeningHours;
     private String tuesdayOpeningHours;
     private String wednesdayOpeningHours;

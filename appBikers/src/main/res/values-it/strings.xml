@@ -13,4 +13,5 @@
     <string name="camerapermission">Abilita i permessi della fotocamera dalle impostazioni.</string>
     <string name="navigation_drawer_open">Apre navigation Drawer</string>
     <string name="navigation_drawer_close">Chiude navigation Drawer</string>
+    <string name="notification_text">È arrivato un nuovo ordine. Controlla la pagina delle consegne per vederlo</string>
 </resources>

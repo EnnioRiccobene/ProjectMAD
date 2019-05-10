@@ -84,16 +84,27 @@ public class ReservationActivity extends AppCompatActivity implements
         initializeNavigationDrawer();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child(prefs.getString("currentUser", ""));
-        //todo: testare lettura dal db
+        final DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child(prefs.getString("currentUser", ""));
+
         final Map<String, Object> childUpdates = new HashMap<>();
-        ArrayList<String> reservationKeys = new ArrayList<>();
+        final ArrayList<String> reservationKeys = new ArrayList<>();
+
+        //aggiorno il db con i nuovi valori di "seen"
         newOrderRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 if (dataSnapshot != null && dataSnapshot.getValue() != null) {
-//                    HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.getValue();
-//                    reservationKeys.add(Boolean.valueOf(data.get("seen").toString()));
+                        HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.getValue();
+                        for ( String key : data.keySet() ) {
+                            reservationKeys.add(key);
+                        }
+
+                    for(int i = 0; i < reservationKeys.size(); i++){
+                        childUpdates.put("/" + reservationKeys.get(i) + "/" + "seen", true);
+                    }
+                    newOrderRef.updateChildren(childUpdates);
+
                 }
             }
 
@@ -102,16 +113,6 @@ public class ReservationActivity extends AppCompatActivity implements
 
             }
         });
-        //aggiornare il db settando a true i valori seen
-
-//        final Map<String, Object> childUpdates = new HashMap<>();
-//        String dishId = item.getId();
-//
-//        childUpdates.put("/" + dishId + "/" + "name", item.getName());
-//        childUpdates.put("/" + dishId + "/" + "availableQuantity", item.getAvailableQuantity());
-//        childUpdates.put("/" + dishId + "/" + "description", item.getDescription());
-//        childUpdates.put("/" + dishId + "/" + "price", item.getPrice());
-//        dishRef.updateChildren(childUpdates);
 
         notificationText = getResources().getString(R.string.notification_text);
         if (prefs.contains("currentUser")) {
