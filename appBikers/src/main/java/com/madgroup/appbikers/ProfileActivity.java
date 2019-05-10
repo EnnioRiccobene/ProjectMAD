@@ -178,9 +178,9 @@ public class ProfileActivity extends AppCompatActivity
                     setFieldUnclickable();
                     saveFieldsOnFirebase();
                     //if (!isDefaultImage)
-                        uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
+                    uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
                     //else
-                        //deleteProfilePic();
+                    //deleteProfilePic();
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -214,9 +214,9 @@ public class ProfileActivity extends AppCompatActivity
             setFieldUnclickable();
             saveFieldsOnFirebase();
             //if (!isDefaultImage)
-                uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
+            uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
             //else
-                //deleteProfilePic();
+            //deleteProfilePic();
         } else
             super.onBackPressed();
     }
@@ -384,6 +384,7 @@ public class ProfileActivity extends AppCompatActivity
                 prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 editor = prefs.edit();
                 currentUser = user.getUid();
+                editor.putString("currentUser", user.getUid());
                 editor.putString("Name", user.getDisplayName());
                 editor.putString("Email", user.getEmail());
                 editor.apply();
@@ -501,10 +502,12 @@ public class ProfileActivity extends AppCompatActivity
         riderStatusRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Boolean riderStatus = (Boolean) dataSnapshot.getValue();
-                editor.putBoolean("Status", riderStatus);
-                editor.apply();
-                riderAvailability.setChecked(riderStatus);
+                if(dataSnapshot.exists()){
+                    Boolean riderStatus = (Boolean) dataSnapshot.getValue();
+                    editor.putBoolean("Status", riderStatus);
+                    editor.apply();
+                    riderAvailability.setChecked(riderStatus);
+                }
             }
 
             @Override
@@ -517,16 +520,19 @@ public class ProfileActivity extends AppCompatActivity
     public void updateNavigatorInformation() {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
-                .child("bikers")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        if(FirebaseAuth.getInstance().getCurrentUser() != null ){
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                    .child("bikers")
+                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-        GlideApp.with(this)
-                .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .error(GlideApp.with(this).load(R.drawable.personicon))
-                .into(nav_profile_icon);
+            GlideApp.with(this)
+                    .load(storageReference)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .error(GlideApp.with(this).load(R.drawable.personicon))
+                    .into(nav_profile_icon);
+        }
+
 
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
         TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
@@ -574,23 +580,23 @@ public class ProfileActivity extends AppCompatActivity
         database.getReference("Rider").child("Profile")
                 .child(currentUid)
                 .setValue(currentUser, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                if (databaseError != null) {
-                    progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                    Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Dati salvati correttamente nel db
-                    // Aggiorno le shared prefs
-                    editor.putString("Name", name.getText().toString());
-                    editor.putString("Email", email.getText().toString());
-                    editor.putString("Phone", phone.getText().toString());
-                    editor.apply();
-                    progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                }
-                updateNavigatorInformation();
-            }
-        });
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                        if (databaseError != null) {
+                            progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Dati salvati correttamente nel db
+                            // Aggiorno le shared prefs
+                            editor.putString("Name", name.getText().toString());
+                            editor.putString("Email", email.getText().toString());
+                            editor.putString("Phone", phone.getText().toString());
+                            editor.apply();
+                            progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                        }
+                        updateNavigatorInformation();
+                    }
+                });
     }
 
     private void uploadProfilePic(Bitmap bitmap) {
@@ -738,6 +744,7 @@ public class ProfileActivity extends AppCompatActivity
 
                         if (rider!=null) {
                             // Utente già registrato: setto i campi
+                            editor.putString("currentUser", rider.getId());
                             name.setText(rider.getName());
                             phone.setText(rider.getPhoneNumber());
                             additionalInformation.setText(rider.getAdditionalInformation());
@@ -763,26 +770,26 @@ public class ProfileActivity extends AppCompatActivity
                             database.getReference("Rider").child("Profile")
                                     .child(currentUid)
                                     .setValue(currentRider, new DatabaseReference.CompletionListener() {
-                                @Override
-                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                                    if (databaseError!= null) {
-                                        Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
-                                        // todo: rimuovere la registrazione dell'utente
-                                    } else {
-                                        name.setText(user.getDisplayName());
-                                        email.setText(user.getEmail());
-                                        // Aggiorno le shared prefs
-                                        currentUser = user.getUid();
-                                        editor.putString("Name", user.getDisplayName());
-                                        editor.putString("Email", user.getEmail());
-                                        editor.putBoolean("Status", false);
-                                        editor.apply();
-                                        showFields();
-                                    }
-                                    updateNavigatorInformation();
-                                    verifyRiderAvailability();
-                                }
-                            });
+                                        @Override
+                                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                            if (databaseError!= null) {
+                                                Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
+                                                // todo: rimuovere la registrazione dell'utente
+                                            } else {
+                                                name.setText(user.getDisplayName());
+                                                email.setText(user.getEmail());
+                                                // Aggiorno le shared prefs
+                                                currentUser = user.getUid();
+                                                editor.putString("Name", user.getDisplayName());
+                                                editor.putString("Email", user.getEmail());
+                                                editor.putBoolean("Status", false);
+                                                editor.apply();
+                                                showFields();
+                                            }
+                                            updateNavigatorInformation();
+                                            verifyRiderAvailability();
+                                        }
+                                    });
                         }
                     }
                     @Override
