@@ -34,6 +34,7 @@ public class Reservation implements Serializable {
         this.deliveryTime = deliveryTime;
         this.status = status;
         this.price = price;
+        this.seen = false;
     }
 
     public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, Integer status) {
@@ -41,6 +42,7 @@ public class Reservation implements Serializable {
         this.address = address;
         this.deliveryTime = deliveryTime;
         this.status= status;
+        this.seen = false;
         // Compute total Price
         float x = 0;
         for (OrderedDish element : orderedDishList)
@@ -56,6 +58,7 @@ public class Reservation implements Serializable {
         this.deliveryTime = deliveryTime;
         this.status= status;
         this.notes = notes;
+        this.seen = false;
         // Compute total Price
         float x = 0;
         for (OrderedDish element : orderedDishList)
@@ -73,6 +76,7 @@ public class Reservation implements Serializable {
         this.status = 0;
         this.restaurantID = restaurantID;
         this.deliveryCost = deliveryCost;
+        this.seen = false;
         // Compute total Price
         float x = 0;
         for (OrderedDish element : orderedDishList) {
