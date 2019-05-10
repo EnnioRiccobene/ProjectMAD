@@ -382,13 +382,12 @@ public class DailyOfferActivity extends AppCompatActivity implements
                         stringPrice = stringPrice + " €";
                     }
                     //todo: aggiungere le immagini all'oggetto
-                    Bitmap img = ((BitmapDrawable)(dishImage.getDrawable())).getBitmap();
                     if (editDishDescription.getText().toString().isEmpty()) {
                         currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
-                                editDishQuantity.getText().toString(), "", img);
+                                editDishQuantity.getText().toString(), "");
                     } else {
                         currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
-                                editDishQuantity.getText().toString(), editDishDescription.getText().toString(), img);
+                                editDishQuantity.getText().toString(), editDishDescription.getText().toString());
                     }
 
                     if (item == null) {
@@ -476,6 +475,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
                         } else {
                             //imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
                             Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
+                            adapter.notifyDataSetChanged();
                         }
                     }
                 });

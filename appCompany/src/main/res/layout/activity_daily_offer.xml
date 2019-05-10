@@ -8,6 +8,8 @@ tools:context=".DailyOfferActivity"
 app:layout_behavior="@string/appbar_scrolling_view_behavior"
 tools:showIn="@layout/app_bar_navigation_drawer">
 
+
+
     <!-- A RecyclerView with some commonly used attributes -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/my_recycler_view"
