@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -224,17 +225,14 @@ public class DailyOfferActivity extends AppCompatActivity implements
             onBackPressed();
 
         } else if (id == R.id.nav_reservations) {
-            // Change activity to Reservations
             Intent myIntent = new Intent(this, ReservationActivity.class);
-            // myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(myIntent);
 
         } else if (id == R.id.nav_profile) {
-            // Change activity to Daily Offer
             Intent myIntent = new Intent(this, ProfileActivity.class);
-            // myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(myIntent);
-        }
+        } else if (id == R.id.nav_logout)
+            startLogout();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -662,6 +660,20 @@ public class DailyOfferActivity extends AppCompatActivity implements
     public abstract class AdapterHandler {
         public void setCurrentDialog(Dialog dialog) {
         }
+    }
+
+    private void startLogout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        editor.clear();
+                        editor.apply();
+                        Intent intent = new Intent(DailyOfferActivity.this, ProfileActivity.class);
+                        startActivity(intent);
+                    }
+                });
     }
 
 }
