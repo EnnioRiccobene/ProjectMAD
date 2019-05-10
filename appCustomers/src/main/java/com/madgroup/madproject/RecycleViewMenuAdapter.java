@@ -90,8 +90,9 @@ public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuVi
         holder.reduceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                orderedQuantity[0]--;
+                if(orderedQuantity[0] > 0){
+                    orderedQuantity[0]--;
+                }
                 holder.dishQuantity.setText(String.valueOf(orderedQuantity[0]));
                 if (orderedDishes.contains(currentDish)) {
                     currentDish.setQuantity(String.valueOf(orderedQuantity[0]));
