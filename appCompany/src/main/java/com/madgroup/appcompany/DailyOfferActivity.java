@@ -21,6 +21,7 @@ import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -100,6 +101,8 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
     private CircleImageView dishImage;
 
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -109,6 +112,9 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_navigation_drawer);
         ViewStub stub = (ViewStub) findViewById(R.id.stub);
+
+
+
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_daily_offer);
         stub.inflate();
@@ -122,6 +128,10 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
         restaurantUid = prefs.getString("currentUser", "");
         dishRef = database.getReference().child("Company").child("Menu").child(restaurantUid);
+
+        progressBar = findViewById(R.id.progressBar);
+
+        progressBar.setVisibility(View.INVISIBLE);
 
         //todo: interazione con il db
         Bitmap carbonaraIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.carbonara), THUMBSIZE, THUMBSIZE);
@@ -381,7 +391,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
                     } else if (local.equals("it_IT")) {
                         stringPrice = stringPrice + " €";
                     }
-                    //todo: aggiungere le immagini all'oggetto
                     if (editDishDescription.getText().toString().isEmpty()) {
                         currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
                                 editDishQuantity.getText().toString(), "");
@@ -396,6 +405,8 @@ public class DailyOfferActivity extends AppCompatActivity implements
                         currentDish.setId(item.getId());
                         updateDbDish(currentDish);
                     }
+                    progressBar.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.INVISIBLE);
                     getItemsFromDb();
 
                     dialog.dismiss();
@@ -476,6 +487,8 @@ public class DailyOfferActivity extends AppCompatActivity implements
                             //imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
                             Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
                             adapter.notifyDataSetChanged();
+                            progressBar.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
                         }
                     }
                 });
