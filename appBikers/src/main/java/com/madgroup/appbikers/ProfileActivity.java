@@ -155,7 +155,7 @@ public class ProfileActivity extends AppCompatActivity
             loadFieldsFromFirebase();
             downloadProfilePic();
 
-            DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child(prefs.getString("currentUser", ""));
+            final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", "")).child("seen");
             NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
             notify.newOrderListner();
         } else {

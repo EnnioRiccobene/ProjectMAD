@@ -68,7 +68,9 @@ public class DeliveryActivity extends AppCompatActivity implements
         navigationDrawerInitialization();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child(prefs.getString("currentUser", ""));
+        //final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child(prefs.getString("currentUser", ""));
+        final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", "")).child("seen");
+
 
         final Map<String, Object> childUpdates = new HashMap<>();
         final ArrayList<String> reservationKeys = new ArrayList<>();

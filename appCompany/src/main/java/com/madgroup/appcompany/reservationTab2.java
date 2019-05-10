@@ -227,7 +227,7 @@ public class reservationTab2 extends Fragment {
 
     public void callRider(final Reservation currentItem, int index) {
         String orderID = currentItem.getOrderID();
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser).child(orderID);
         currentItem.setStatus(2);
         HashMap<String, Object> statusUpdate = new HashMap<>();
@@ -252,7 +252,7 @@ public class reservationTab2 extends Fragment {
                     DataSnapshot childSnapshot = (DataSnapshot) itr.next();
                     RiderProfile choosenRider = childSnapshot.getValue(RiderProfile.class);
                     // Creating Delivery Item
-                    HashMap<String, Object> Delivery = new HashMap<>();
+                    HashMap<String, String> Delivery = new HashMap<>();
                     Delivery.put("restaurantID", currentUser);
                     Delivery.put("customerID", currentItem.getCustomerID());
                     Delivery.put("restaurantName", currentItem.getAddress());
@@ -260,8 +260,10 @@ public class reservationTab2 extends Fragment {
                     Delivery.put("customerAddress", currentItem.getAddress());
                     Delivery.put("orderID", currentItem.getOrderID());
                     Delivery.put("deliveryTime", currentItem.getDeliveryTime());
-                    Delivery.put("seen", false);
+                    //Delivery.put("seen", false);
                     deliveriesRef.child("Pending").child(choosenRider.getId()).child(currentItem.getOrderID()).setValue(Delivery);
+                    final DatabaseReference notifyFlagRef = database.child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(choosenRider.getId()).child(currentItem.getOrderID()).child("seen");
+                    notifyFlagRef.setValue(false);
                 }
             }
 
