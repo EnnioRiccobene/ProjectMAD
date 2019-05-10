@@ -60,6 +60,7 @@ import com.google.firebase.storage.UploadTask;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.RiderProfile;
 import com.madgroup.sdk.SmartLogger;
+import com.tapadoo.alerter.Alerter;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.ByteArrayOutputStream;
@@ -154,7 +155,7 @@ public class ProfileActivity extends AppCompatActivity
             downloadProfilePic();
             navigationDrawerInitialization();
 
-            final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", "")).child("seen");
+            final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", ""));
             NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
             notify.newOrderListner();
         } else {
