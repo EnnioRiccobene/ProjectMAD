@@ -643,6 +643,7 @@ public class ProfileActivity extends AppCompatActivity
                         } else {
                             imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
                             Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
+                            updateNavigatorInformation();
                         }
                     }
                 });

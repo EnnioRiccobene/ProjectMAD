@@ -545,6 +545,7 @@ public class ProfileActivity extends AppCompatActivity implements
                         } else {
                             imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
                             Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
+                            updateNavigatorInformation();
                         }
                     }
                 });
@@ -655,7 +656,6 @@ public class ProfileActivity extends AppCompatActivity implements
                             });
                         }
                         updateNavigatorInformation();
-
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -715,14 +715,6 @@ public class ProfileActivity extends AppCompatActivity implements
 
         // Set the photo of the Navigation Bar Icon (Need to be completed: refresh when new image is updated)
         updateNavigatorInformation();
-
-        View headerView = navigationView.getHeaderView(0);
-        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
-        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
-        String name = prefs.getString("Name", "No name inserted");
-        navUsername.setText(name);
-        String email = prefs.getString("Email", "No email inserted");
-        navEmail.setText(email);
     }
 
     public void updateNavigatorInformation(){
