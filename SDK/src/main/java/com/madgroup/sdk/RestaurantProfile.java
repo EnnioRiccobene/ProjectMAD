@@ -91,67 +91,67 @@ public class RestaurantProfile implements Parcelable {
             this.catPizza = "true";
         else
             this.catPizza = "false";
-//        this.catPizzaDel = catPizza + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.catPizzaDel = catPizza + "_" + deliveryCost.replace(".", "").replace(",", "");
 
         if(foodCategory.contains("Sandwiches") || foodCategory.contains("Panini"))
             this.catSandwiches = "true";
         else
             this.catSandwiches = "false";
-//        this.catSandwichesDel = catSandwiches + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.catSandwichesDel = catSandwiches + "_" + deliveryCost.replace(".", "").replace(",", "");
 
         if(foodCategory.contains("Kebab"))
             this.catKebab = "true";
         else
             this.catKebab = "false";
-//        this.catKebabDel = catKebab + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.catKebabDel = catKebab + "_" + deliveryCost.replace(".", "").replace(",", "");
 
         if(foodCategory.contains("Italian") || foodCategory.contains("Italiano"))
             this.catItalian = "true";
         else
             this.catItalian = "false";
-//        this.catItalianDel = catItalian + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.catItalianDel = catItalian + "_" + deliveryCost.replace(".", "").replace(",", "");
 
         if(foodCategory.contains("American") || foodCategory.contains("Americano"))
             this.catAmerican = "true";
         else
             this.catAmerican = "false";
-//        this.catAmericanDel = catAmerican + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.catAmericanDel = catAmerican + "_" + deliveryCost.replace(".", "").replace(",", "");
 
         if(foodCategory.contains("Desserts") || foodCategory.contains("Dolci"))
             this.catDesserts = "true";
         else
             this.catDesserts = "false";
-//        this.catDessertsDel = catDesserts + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.catDessertsDel = catDesserts + "_" + deliveryCost.replace(".", "").replace(",", "");
 
         if(foodCategory.contains("Fry") || foodCategory.contains("Fritti"))
             this.catFry = "true";
         else
             this.catFry = "false";
-//        this.catFryDel = catFry + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.catFryDel = catFry + "_" + deliveryCost.replace(".", "").replace(",", "");
 
         if(foodCategory.contains("Vegetarian") || foodCategory.contains("Vegetariano"))
             this.catVegetarian = "true";
         else
             this.catVegetarian = "false";
-//        this.catVegetarianDel = catVegetarian + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.catVegetarianDel = catVegetarian + "_" + deliveryCost.replace(".", "").replace(",", "");
 
         if(foodCategory.contains("Asian") || foodCategory.contains("Asiatico"))
             this.catAsian = "true";
         else
             this.catAsian = "false";
-//        this.catAsianDel = catAsian + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.catAsianDel = catAsian + "_" + deliveryCost.replace(".", "").replace(",", "");
 
         if(foodCategory.contains("Mediterranean") || foodCategory.contains("Mediterraneo"))
             this.catMediterranean = "true";
         else
             this.catMediterranean = "false";
-//        this.catMediterraneanDel = catMediterranean + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.catMediterraneanDel = catMediterranean + "_" + deliveryCost.replace(".", "").replace(",", "");
 
         if(foodCategory.contains("South American") || foodCategory.contains("Sud Americano"))
             this.catSouthAmerican = "true";
         else
             this.catSouthAmerican = "false";
-//        this.catSouthAmericanDel = catSouthAmerican + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.catSouthAmericanDel = catSouthAmerican + "_" + deliveryCost.replace(".", "").replace(",", "");
     }
 
     public RestaurantProfile(String id, String name, String phoneNumber, String address, String email, String foodCategory, String minOrder, String deliveryCost, String mondayOpeningHours, String tuesdayOpeningHours, String wednesdayOpeningHours, String thursdayOpeningHours, String fridayOpeningHours, String saturdayOpeningHours, String sundayOpeningHours, String additionalInformation) {
@@ -356,6 +356,186 @@ public class RestaurantProfile implements Parcelable {
 
     public void setSundayOpeningHours(String sundayOpeningHours) {
         this.sundayOpeningHours = sundayOpeningHours;
+    }
+
+    public String getCatPizza() {
+        return catPizza;
+    }
+
+    public String getCatSandwiches() {
+        return catSandwiches;
+    }
+
+    public String getCatKebab() {
+        return catKebab;
+    }
+
+    public String getCatItalian() {
+        return catItalian;
+    }
+
+    public String getCatAmerican() {
+        return catAmerican;
+    }
+
+    public String getCatDesserts() {
+        return catDesserts;
+    }
+
+    public String getCatFry() {
+        return catFry;
+    }
+
+    public String getCatVegetarian() {
+        return catVegetarian;
+    }
+
+    public String getCatAsian() {
+        return catAsian;
+    }
+
+    public String getCatMediterranean() {
+        return catMediterranean;
+    }
+
+    public String getCatSouthAmerican() {
+        return catSouthAmerican;
+    }
+
+    public String getCatPizzaDel() {
+        return catPizzaDel;
+    }
+
+    public String getCatSandwichesDel() {
+        return catSandwichesDel;
+    }
+
+    public String getCatKebabDel() {
+        return catKebabDel;
+    }
+
+    public String getCatItalianDel() {
+        return catItalianDel;
+    }
+
+    public String getCatAmericanDel() {
+        return catAmericanDel;
+    }
+
+    public String getCatDessertsDel() {
+        return catDessertsDel;
+    }
+
+    public String getCatFryDel() {
+        return catFryDel;
+    }
+
+    public String getCatVegetarianDel() {
+        return catVegetarianDel;
+    }
+
+    public String getCatAsianDel() {
+        return catAsianDel;
+    }
+
+    public String getCatMediterraneanDel() {
+        return catMediterraneanDel;
+    }
+
+    public String getCatSouthAmericanDel() {
+        return catSouthAmericanDel;
+    }
+
+    public void setfCategoryANDdCost(String fCategoryANDdCost) {
+        this.fCategoryANDdCost = fCategoryANDdCost;
+    }
+
+    public void setCatPizza(String catPizza) {
+        this.catPizza = catPizza;
+    }
+
+    public void setCatSandwiches(String catSandwiches) {
+        this.catSandwiches = catSandwiches;
+    }
+
+    public void setCatKebab(String catKebab) {
+        this.catKebab = catKebab;
+    }
+
+    public void setCatItalian(String catItalian) {
+        this.catItalian = catItalian;
+    }
+
+    public void setCatAmerican(String catAmerican) {
+        this.catAmerican = catAmerican;
+    }
+
+    public void setCatDesserts(String catDesserts) {
+        this.catDesserts = catDesserts;
+    }
+
+    public void setCatFry(String catFry) {
+        this.catFry = catFry;
+    }
+
+    public void setCatVegetarian(String catVegetarian) {
+        this.catVegetarian = catVegetarian;
+    }
+
+    public void setCatAsian(String catAsian) {
+        this.catAsian = catAsian;
+    }
+
+    public void setCatMediterranean(String catMediterranean) {
+        this.catMediterranean = catMediterranean;
+    }
+
+    public void setCatSouthAmerican(String catSouthAmerican) {
+        this.catSouthAmerican = catSouthAmerican;
+    }
+
+    public void setCatPizzaDel(String catPizzaDel) {
+        this.catPizzaDel = catPizzaDel;
+    }
+
+    public void setCatSandwichesDel(String catSandwichesDel) {
+        this.catSandwichesDel = catSandwichesDel;
+    }
+
+    public void setCatKebabDel(String catKebabDel) {
+        this.catKebabDel = catKebabDel;
+    }
+
+    public void setCatItalianDel(String catItalianDel) {
+        this.catItalianDel = catItalianDel;
+    }
+
+    public void setCatAmericanDel(String catAmericanDel) {
+        this.catAmericanDel = catAmericanDel;
+    }
+
+    public void setCatDessertsDel(String catDessertsDel) {
+        this.catDessertsDel = catDessertsDel;
+    }
+
+    public void setCatFryDel(String catFryDel) {
+        this.catFryDel = catFryDel;
+    }
+
+    public void setCatVegetarianDel(String catVegetarianDel) {
+        this.catVegetarianDel = catVegetarianDel;
+    }
+
+    public void setCatAsianDel(String catAsianDel) {
+        this.catAsianDel = catAsianDel;
+    }
+
+    public void setCatMediterraneanDel(String catMediterraneanDel) {
+        this.catMediterraneanDel = catMediterraneanDel;
+    }
+
+    public void setCatSouthAmericanDel(String catSouthAmericanDel) {
+        this.catSouthAmericanDel = catSouthAmericanDel;
     }
 
     @Override
