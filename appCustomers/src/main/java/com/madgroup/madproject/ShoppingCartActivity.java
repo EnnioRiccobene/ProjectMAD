@@ -151,7 +151,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 // Creare oggetto Reservation e caricarlo sia sul restaurant (pending) sia nel customer (pending)
 
                 String userID = prefs.getString("currentUser", "Error");
-                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
                 final String orderID = database.child("Company").child("Reservation").child("Pending").child(restaurantId).push().getKey();
                 // Customer Reference
                 final DatabaseReference pendingCustomerRef = database.child("Customer").child("Order").child("Pending").child(userID).child(orderID);
@@ -180,6 +180,8 @@ public class ShoppingCartActivity extends AppCompatActivity {
                         currentReservation.setOrderedDishList(null);
                         pendingCustomerRef.setValue(currentReservation);
                         pendingRestaurantRef.setValue(currentReservation);
+                        DatabaseReference notifyFlagRef = database.child("Company").child("Reservation").child("Pending").child("NotifyFlag").child(restaurantId).child(orderID).child("seen");
+                        notifyFlagRef.setValue(false);
                         return Transaction.success(mutableData);
                     }
 
