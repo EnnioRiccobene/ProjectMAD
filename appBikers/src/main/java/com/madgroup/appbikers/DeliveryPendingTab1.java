@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -37,6 +38,8 @@ import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
+
+import static android.widget.Toast.LENGTH_LONG;
 
 
 /**
@@ -152,9 +155,17 @@ public class DeliveryPendingTab1 extends Fragment {
                         holder.restaurantAddress.setText(currentItem.getRestaurantAddress());
                         holder.distance.setText(currentItem.calculateDistance("123", "123") + " mt");
                         holder.customerAddress.setText(currentItem.getCustomerAddress());
-
                         holder.bikerArrived.setImageResource(R.drawable.ic_circled_confirm);
                         ImageViewCompat.setImageTintList(holder.bikerArrived, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+
+                        holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                NavigationActivity.start(getContext());
+//                                Toast.makeText(getActivity(), "CardView clicked", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
                         holder.bikerArrived.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {

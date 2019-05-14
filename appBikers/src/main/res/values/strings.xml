@@ -18,4 +18,6 @@
     <string name="nav_header_subtitle" translatable="false">android.studio@android.com</string>
     <string name="nav_header_desc" translatable="false">Navigation header</string>
     <string name="notification_text">A new order has arrived. Look at the delivery page to see it</string>
+    <string name="delivery_to">Delivery to:</string>
+    <string name="pick_up">Pick-up:</string>
 </resources>

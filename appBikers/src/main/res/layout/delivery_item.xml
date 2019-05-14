@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/restaurantName"
             android:layout_marginTop="3dp"
-            android:text="Pick-up: "
+            android:text="@string/pick_up"
             android:textColor="#000"
             android:textSize="13sp"
             android:textStyle="bold"/>
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/restaurantAddress_bold"
             android:layout_marginTop="3dp"
-            android:text="Delivery: "
+            android:text="@string/delivery_to"
             android:textColor="#000"
             android:textSize="13sp"
             android:textStyle="bold"/>
