@@ -161,8 +161,7 @@ public class DeliveryPendingTab1 extends Fragment {
                         holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                NavigationActivity.start(getContext());
-//                                Toast.makeText(getActivity(), "CardView clicked", Toast.LENGTH_SHORT).show();
+                                NavigationActivity.start(getContext(), currentItem.getRestaurantAddress(), currentItem.getCustomerAddress());
                             }
                         });
 

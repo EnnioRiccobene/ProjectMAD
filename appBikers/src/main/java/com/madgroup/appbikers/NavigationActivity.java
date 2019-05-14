@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class NavigationActivity extends AppCompatActivity {
 
-    public static void start(Context context) {
+    public static void start(Context context, String restaurantAddress, String customerAddress) {
         Intent starter = new Intent(context, NavigationActivity.class);
+        starter.putExtra("restaurantAddress", restaurantAddress);
+        starter.putExtra("customerAddress", customerAddress);
         context.startActivity(starter);
     }
 
