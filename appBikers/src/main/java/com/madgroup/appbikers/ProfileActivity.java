@@ -1,6 +1,8 @@
 package com.madgroup.appbikers;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -8,9 +10,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +31,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
@@ -75,6 +81,7 @@ public class ProfileActivity extends AppCompatActivity
         implements PopupMenu.OnMenuItemClickListener,
         NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int GPS_PERMISSIONS_CODE = 88;
     private String currentUser;
     private CircleImageView personalImage;
     private EditText name;
@@ -105,6 +112,8 @@ public class ProfileActivity extends AppCompatActivity
     String notificationTitle = "MAD Company";
     String notificationText;
 
+    private static final String defaultLat = "LAT";
+    private static final String defaultLon = "LON";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,7 +170,32 @@ public class ProfileActivity extends AppCompatActivity
         } else {
             startLogin();
         }
+
+
+        checkGPSpermissions();
     }
+
+    private void checkGPSpermissions() {
+        int gpsPermission = ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        boolean userPreviousDeniedRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (gpsPermission == PackageManager.PERMISSION_GRANTED) {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            LocationListener locationListener = new MyLocationListener(currentUser);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
+
+        } else {
+            if (userPreviousDeniedRequest) {
+                //Toast.makeText(getApplicationContext(), getString(R.string.camerapermission), Toast.LENGTH_SHORT).show();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, GPS_PERMISSIONS_CODE);
+            }
+        }
+    }
+
 
     // What happens if I click on a icon on the menu
     @Override
@@ -457,6 +491,26 @@ public class ProfileActivity extends AppCompatActivity
                     Toast.makeText(getApplicationContext(), getString(R.string.gallerypermission), Toast.LENGTH_SHORT).show();
                 }
             }
+            case GPS_PERMISSIONS_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                } else {
+                    // permission denied!
+                    // notify user
+                    new AlertDialog.Builder(this)
+                            .setMessage("You have to enable location's permissions.")
+                            .setPositiveButton("Insert string here!!", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                }
+                            })
+                            .setNegativeButton("Cancel",null)
+                            .show();
+                }
+                return;
+            }
         }
     }
 
@@ -572,7 +626,7 @@ public class ProfileActivity extends AppCompatActivity
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
-                phone.getText().toString(), additionalInformation.getText().toString());
+                phone.getText().toString(), additionalInformation.getText().toString(), defaultLat, defaultLon);
 
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -764,7 +818,7 @@ public class ProfileActivity extends AppCompatActivity
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
                             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             RiderProfile currentRider = new RiderProfile(user.getUid(), user.getDisplayName(), user.getEmail(),
-                                    "","",false);
+                                    "","",false, defaultLat, defaultLon);
                             String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             //database.getReference("Profiles").child("Bikers")
                             database.getReference("Rider").child("Profile")
