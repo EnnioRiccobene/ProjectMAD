@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -33,12 +34,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.RiderProfile;
-import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Random;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -166,7 +163,7 @@ public class reservationTab2 extends Fragment {
                                 holder.mImageView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        callRider(currentItem, index);
+                                        openRiderPage(currentItem, index);
                                     }
                                 });
                                 break;
@@ -225,45 +222,27 @@ public class reservationTab2 extends Fragment {
         adapter.startListening();
     }
 
-    public void callRider(final Reservation currentItem, int index) {
-        String orderID = currentItem.getOrderID();
-        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser).child(orderID);
-        currentItem.setStatus(2);
-        HashMap<String, Object> statusUpdate = new HashMap<>();
-        statusUpdate.put("status", 2);
-        acceptedReservationRef.updateChildren(statusUpdate);
+    public void openRiderPage(final Reservation currentItem, int index) {
 
-        // Rider search part
-        final DatabaseReference riderRef = database.child("Rider").child("Profile");
-        final DatabaseReference deliveriesRef = database.child("Rider").child("Delivery");
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference riderRef = database.child("Rider").child("Profile");
         Query query = riderRef.orderByChild("status").equalTo(true);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    if ((int) dataSnapshot.getChildrenCount() == 0)
+                    if (dataSnapshot == null || dataSnapshot.getValue() == null){
+                        Toast.makeText(getActivity(), "No rider available", Toast.LENGTH_LONG).show();
                         return;
-                    Random rand = new Random();
-                    int nActiveProfiles = rand.nextInt((int) dataSnapshot.getChildrenCount());
-                    Iterator itr = dataSnapshot.getChildren().iterator();
-                    for (int i = 0; i < nActiveProfiles; i++)
-                        itr.next();
-                    DataSnapshot childSnapshot = (DataSnapshot) itr.next();
-                    RiderProfile choosenRider = childSnapshot.getValue(RiderProfile.class);
-                    // Creating Delivery Item
-                    HashMap<String, String> Delivery = new HashMap<>();
-                    Delivery.put("restaurantID", currentUser);
-                    Delivery.put("customerID", currentItem.getCustomerID());
-                    Delivery.put("restaurantName", prefs.getString("Name", ""));
-                    Delivery.put("restaurantAddress", prefs.getString("Address", ""));
-                    Delivery.put("customerAddress", currentItem.getAddress());
-                    Delivery.put("orderID", currentItem.getOrderID());
-                    Delivery.put("deliveryTime", currentItem.getDeliveryTime());
-                    //Delivery.put("seen", false);
-                    deliveriesRef.child("Pending").child(choosenRider.getId()).child(currentItem.getOrderID()).setValue(Delivery);
-                    final DatabaseReference notifyFlagRef = database.child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(choosenRider.getId()).child(currentItem.getOrderID()).child("seen");
-                    notifyFlagRef.setValue(false);
+                    }
+                    ArrayList<RiderProfile> riderList = new ArrayList<>();
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren())
+                        riderList.add(postSnapshot.getValue(RiderProfile.class));
+
+                    Intent openRiderListActivity = new Intent(getContext(), ChooseRiderActivity.class);
+                    openRiderListActivity.putExtra("riderList", riderList);
+                    openRiderListActivity.putExtra("reservation", currentItem);
+                    getActivity().startActivity(openRiderListActivity);
                 }
             }
 
@@ -272,6 +251,53 @@ public class reservationTab2 extends Fragment {
 
             }
         });
+
+//        String orderID = currentItem.getOrderID();
+//        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+//        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser).child(orderID);
+//        currentItem.setStatus(2);
+//        HashMap<String, Object> statusUpdate = new HashMap<>();
+//        statusUpdate.put("status", 2);
+//        acceptedReservationRef.updateChildren(statusUpdate);
+//
+//        // Rider search part
+//        final DatabaseReference riderRef = database.child("Rider").child("Profile");
+//        final DatabaseReference deliveriesRef = database.child("Rider").child("Delivery");
+//        Query query = riderRef.orderByChild("status").equalTo(true);
+//        query.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists()) {
+//                    if ((int) dataSnapshot.getChildrenCount() == 0)
+//                        return;
+//                    Random rand = new Random();
+//                    int nActiveProfiles = rand.nextInt((int) dataSnapshot.getChildrenCount());
+//                    Iterator itr = dataSnapshot.getChildren().iterator();
+//                    for (int i = 0; i < nActiveProfiles; i++)
+//                        itr.next();
+//                    DataSnapshot childSnapshot = (DataSnapshot) itr.next();
+//                    RiderProfile choosenRider = childSnapshot.getValue(RiderProfile.class);
+//                    // Creating Delivery Item
+//                    HashMap<String, String> Delivery = new HashMap<>();
+//                    Delivery.put("restaurantID", currentUser);
+//                    Delivery.put("customerID", currentItem.getCustomerID());
+//                    Delivery.put("restaurantName", prefs.getString("Name", ""));
+//                    Delivery.put("restaurantAddress", prefs.getString("Address", ""));
+//                    Delivery.put("customerAddress", currentItem.getAddress());
+//                    Delivery.put("orderID", currentItem.getOrderID());
+//                    Delivery.put("deliveryTime", currentItem.getDeliveryTime());
+//                    //Delivery.put("seen", false);
+//                    deliveriesRef.child("Pending").child(choosenRider.getId()).child(currentItem.getOrderID()).setValue(Delivery);
+//                    final DatabaseReference notifyFlagRef = database.child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(choosenRider.getId()).child(currentItem.getOrderID()).child("seen");
+//                    notifyFlagRef.setValue(false);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
     }
 
