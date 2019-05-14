@@ -215,7 +215,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.menu_recycleView);
 //        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(this, menu, orderedDishes);
-        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(options, dishRef, RestaurantMenuActivity.this, orderedDishes);
+        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(options, dishRef, RestaurantMenuActivity.this, orderedDishes, restaurantID);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
