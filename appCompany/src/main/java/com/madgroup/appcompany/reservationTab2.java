@@ -36,6 +36,8 @@ import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.RiderProfile;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -238,6 +240,20 @@ public class reservationTab2 extends Fragment {
                     ArrayList<RiderProfile> riderList = new ArrayList<>();
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren())
                         riderList.add(postSnapshot.getValue(RiderProfile.class));
+
+//                    Collections.sort(riderList, new Comparator<RiderProfile>() {
+//                        @Override
+//                        public int compare(RiderProfile o1, RiderProfile o2) {
+//                            // long distance1 = getDistance(restaurantAddress, o1.getPosition)
+//                            // long distance2 = getDistance(restaurantAddress, o2.getPosition)
+//                            if (distance1 > distance2)
+//                                return 1;
+//                            else if (distance1 < distance2)
+//                                return -1;
+//                            else
+//                                return 0;
+//                        }
+//                    });
 
                     Intent openRiderListActivity = new Intent(getContext(), ChooseRiderActivity.class);
                     openRiderListActivity.putExtra("riderList", riderList);

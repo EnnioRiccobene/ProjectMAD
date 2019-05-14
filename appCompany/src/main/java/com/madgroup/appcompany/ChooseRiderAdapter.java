@@ -28,6 +28,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ChooseRiderAdapter extends
         RecyclerView.Adapter<ChooseRiderAdapter.ViewHolder> {
 
+    private String restaurantAddress;
     private ArrayList<RiderProfile> riderList;
     private Reservation reservation;
     private String currentUser;
@@ -56,6 +57,7 @@ public class ChooseRiderAdapter extends
         this.context = context;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         currentUser = prefs.getString("currentUser", "noUser");
+        restaurantAddress = prefs.getString("Address", "noAddress");
     }
 
     @Override
@@ -77,6 +79,7 @@ public class ChooseRiderAdapter extends
         holder.riderName.setText(rider.getName());
         loadPhoto(holder, rider);
         // TODO: calcolo distanza
+        // getDistance(restaurantAddress, rider.getPosition);
         holder.riderDistance.setText("300 mt");
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

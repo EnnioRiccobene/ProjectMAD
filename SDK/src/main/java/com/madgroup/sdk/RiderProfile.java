@@ -9,6 +9,7 @@ public class RiderProfile implements Serializable {
     private String phoneNumber;
     private String additionalInformation;
     private boolean status;
+    private Position position;
 
     public boolean isStatus() {
         return status;
