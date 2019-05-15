@@ -1,7 +1,9 @@
 package com.madgroup.appbikers;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
@@ -34,6 +36,7 @@ import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
@@ -44,6 +47,7 @@ import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -51,10 +55,14 @@ import retrofit2.Response;
 // classes needed to launch navigation UI
 import android.view.View;
 import android.widget.Button;
+
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
 
 import java.io.IOException;
 import java.util.List;
+
+//todo: modificare il layout aggiungendo due button nascosti sotto StartNavigation (Restaurant e Customer). Al click su start navigation devono comparire o sparire questi due button, mentre al click su uno dei due faccio partire la navigazione verso il ristorante o il cliente
+//todo: nella navigazione settare percorsi per biker
 
 public class NavigationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener, PermissionsListener {
 
@@ -107,20 +115,20 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         }
     }
 
-    private Point getLocationFromAddress(String strAddress){
+    private Point getLocationFromAddress(String strAddress) {
 
         Geocoder coder = new Geocoder(this);
         List<Address> address = null;
 
         try {
-            address = coder.getFromLocationName(strAddress,1);
+            address = coder.getFromLocationName(strAddress, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (address==null) {
+        if (address == null) {
             return null;
         }
-        Address location=address.get(0);
+        Address location = address.get(0);
         location.getLatitude();
         location.getLongitude();
 
@@ -130,7 +138,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
     }
 
-    private void addressesGeocode(String restaurantAddress, String customerAddress){
+    private void addressesGeocode(String restaurantAddress, String customerAddress) {
 
         restaurantPoint = getLocationFromAddress(restaurantAddress);
         customerPoint = getLocationFromAddress(customerAddress);
@@ -181,7 +189,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         loadedMapStyle.addLayer(destinationSymbolLayer);
     }
 
-    @SuppressWarnings( {"MissingPermission"})
+    @SuppressWarnings({"MissingPermission"})
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
 
@@ -201,7 +209,9 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         return true;
     }
 
-    private void drawRestaurantToClientRoute(Point origin, Point destination){
+
+    private void drawRestaurantToClientRoute(Point origin, Point destination) {
+
         NavigationRoute.builder(this)
                 .accessToken(Mapbox.getAccessToken())
                 .origin(origin)

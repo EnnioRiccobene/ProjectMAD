@@ -73,5 +73,5 @@ dependencies {
 
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:7.3.2'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.37.0'
-//    implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:4.8.0'
+
 }
