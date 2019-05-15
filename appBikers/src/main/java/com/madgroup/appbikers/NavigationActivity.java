@@ -3,6 +3,8 @@ package com.madgroup.appbikers;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -12,6 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 // classes needed to initialize map
 import com.madgroup.sdk.SmartLogger;
 import com.mapbox.android.core.permissions.PermissionsListener;
+import com.mapbox.api.geocoding.v5.MapboxGeocoding;
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
+import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -48,6 +53,7 @@ import android.view.View;
 import android.widget.Button;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
 
+import java.io.IOException;
 import java.util.List;
 
 public class NavigationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener, PermissionsListener {
@@ -60,11 +66,17 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
     // variables for calculating and drawing a route
     private DirectionsRoute currentRoute;
+    private DirectionsRoute dummyRoute;
     private static final String TAG = "DirectionsActivity";
     private NavigationMapRoute navigationMapRoute;
 
     // variables needed to initialize navigation
     private Button button;
+
+    private String restaurantAddress = "", customerAddress = "";
+    private Point restaurantPoint;
+    private Point customerPoint;
+    MapboxGeocoding mapboxGeocoding;
 
     public static void start(Context context, String restaurantAddress, String customerAddress) {
         Intent starter = new Intent(context, NavigationActivity.class);
@@ -81,7 +93,49 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        getIncomingIntent();
+        addressesGeocode(restaurantAddress, customerAddress);
+
+        drawRestaurantToClientRoute(restaurantPoint, customerPoint);
     }
+
+    private void getIncomingIntent() {
+        if (getIntent().hasExtra("restaurantAddress")) {
+            restaurantAddress = getIntent().getStringExtra("restaurantAddress");
+            customerAddress = getIntent().getStringExtra("customerAddress");
+        }
+    }
+
+    private Point getLocationFromAddress(String strAddress){
+
+        Geocoder coder = new Geocoder(this);
+        List<Address> address = null;
+
+        try {
+            address = coder.getFromLocationName(strAddress,1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (address==null) {
+            return null;
+        }
+        Address location=address.get(0);
+        location.getLatitude();
+        location.getLongitude();
+
+        Point p1 = Point.fromLngLat((double) (location.getLongitude()/* * 1E6*/), (double) (location.getLatitude()/* * 1E6*/));
+
+        return p1;
+
+    }
+
+    private void addressesGeocode(String restaurantAddress, String customerAddress){
+
+        restaurantPoint = getLocationFromAddress(restaurantAddress);
+        customerPoint = getLocationFromAddress(customerAddress);
+    }
+
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
@@ -99,12 +153,13 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        boolean simulateRoute = true;
+//                        boolean simulateRoute = true;
+                        boolean simulateRoute = false;
                         NavigationLauncherOptions options = NavigationLauncherOptions.builder()
                                 .directionsRoute(currentRoute)
                                 .shouldSimulateRoute(simulateRoute)
                                 .build();
-// Call this method with Context from within an Activity
+                        // Call this method with Context from within an Activity
                         NavigationLauncher.startNavigation(NavigationActivity.this, options);
                     }
                 });
@@ -130,20 +185,62 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
 
-        Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
-        Point originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
-                locationComponent.getLastKnownLocation().getLatitude());
-
-        GeoJsonSource source = mapboxMap.getStyle().getSourceAs("destination-source-id");
-        if (source != null) {
-            source.setGeoJson(Feature.fromGeometry(destinationPoint));
-        }
-        getRoute(originPoint, destinationPoint);
-
-        button.setEnabled(true);
-        button.setBackgroundResource(R.color.mapboxBlue);
+//        Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
+//        Point originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
+//                locationComponent.getLastKnownLocation().getLatitude());
+//
+//        GeoJsonSource source = mapboxMap.getStyle().getSourceAs("destination-source-id");
+//        if (source != null) {
+//            source.setGeoJson(Feature.fromGeometry(destinationPoint));
+//        }
+//        getRoute(originPoint, destinationPoint);
+//
+//        button.setEnabled(true);
+//        button.setBackgroundResource(R.color.mapboxBlue);
 
         return true;
+    }
+
+    private void drawRestaurantToClientRoute(Point origin, Point destination){
+        NavigationRoute.builder(this)
+                .accessToken(Mapbox.getAccessToken())
+                .origin(origin)
+                .destination(destination)
+                .build()
+                .getRoute(new Callback<DirectionsResponse>() {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                        // You can get the generic HTTP info about the response
+                        SmartLogger.d(TAG, "Response code: " + response.code());
+                        if (response.body() == null) {
+                            SmartLogger.e(TAG, "No routes found, make sure you set the right user and access token.");
+                            return;
+                        } else if (response.body().routes().size() < 1) {
+                            SmartLogger.e(TAG, "No routes found");
+                            return;
+                        }
+
+                        dummyRoute = response.body().routes().get(0);
+
+                        GeoJsonSource source = mapboxMap.getStyle().getSourceAs("destination-source-id");
+                        if (source != null) {
+                            source.setGeoJson(Feature.fromGeometry(destination));
+                        }
+
+                        // Draw the route on the map
+                        if (navigationMapRoute != null) {
+                            navigationMapRoute.removeRoute();
+                        } else {
+                            navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
+                        }
+                        navigationMapRoute.addRoute(dummyRoute);
+                    }
+
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
+                        SmartLogger.e(TAG, "Error: " + throwable.getMessage());
+                    }
+                });
     }
 
     private void getRoute(Point origin, Point destination) {
@@ -155,7 +252,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                 .getRoute(new Callback<DirectionsResponse>() {
                     @Override
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-// You can get the generic HTTP info about the response
+                        // You can get the generic HTTP info about the response
                         SmartLogger.d(TAG, "Response code: " + response.code());
                         if (response.body() == null) {
                             SmartLogger.e(TAG, "No routes found, make sure you set the right user and access token.");
@@ -167,7 +264,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
                         currentRoute = response.body().routes().get(0);
 
-// Draw the route on the map
+                        // Draw the route on the map
                         if (navigationMapRoute != null) {
                             navigationMapRoute.removeRoute();
                         } else {
@@ -185,14 +282,14 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
     @SuppressWarnings( {"MissingPermission"})
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
-// Check if permissions are enabled and if not request
+        // Check if permissions are enabled and if not request
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
-// Activate the MapboxMap LocationComponent to show user location
-// Adding in LocationComponentOptions is also an optional parameter
+            // Activate the MapboxMap LocationComponent to show user location
+            // Adding in LocationComponentOptions is also an optional parameter
             locationComponent = mapboxMap.getLocationComponent();
             locationComponent.activateLocationComponent(this, loadedMapStyle);
             locationComponent.setLocationComponentEnabled(true);
-// Set the component's camera mode
+            // Set the component's camera mode
             locationComponent.setCameraMode(CameraMode.TRACKING);
         } else {
             permissionsManager = new PermissionsManager(this);
