@@ -109,7 +109,7 @@ public class ProfileActivity extends AppCompatActivity
     private ProgressBar imgProgressBar;
     private NavigationView navigationView;
 
-    String notificationTitle = "MAD Company";
+    String notificationTitle = "MAD Bikers";
     String notificationText;
 
     private static final String defaultLat = "LAT";

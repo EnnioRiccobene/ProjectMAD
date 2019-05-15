@@ -51,7 +51,7 @@ public class DeliveryActivity extends AppCompatActivity implements
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private String currentUser;
-    String notificationTitle = "MAD Company";
+    String notificationTitle = "MAD Bikers";
     String notificationText;
 
 
