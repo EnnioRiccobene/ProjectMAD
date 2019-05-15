@@ -62,7 +62,7 @@ import java.io.IOException;
 import java.util.List;
 
 //todo: modificare il layout aggiungendo due button nascosti sotto StartNavigation (Restaurant e Customer). Al click su start navigation devono comparire o sparire questi due button, mentre al click su uno dei due faccio partire la navigazione verso il ristorante o il cliente
-//todo: nella navigazione settare percorsi per biker
+//todo: aggiungere la possibilità di scegliere percorsi per biker o in macchina
 
 public class NavigationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener, PermissionsListener {
 
@@ -216,6 +216,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                 .accessToken(Mapbox.getAccessToken())
                 .origin(origin)
                 .destination(destination)
+                .profile("cycling")
                 .build()
                 .getRoute(new Callback<DirectionsResponse>() {
                     @Override
@@ -258,6 +259,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                 .accessToken(Mapbox.getAccessToken())
                 .origin(origin)
                 .destination(destination)
+                .profile("cycling")
                 .build()
                 .getRoute(new Callback<DirectionsResponse>() {
                     @Override
