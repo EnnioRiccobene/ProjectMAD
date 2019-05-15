@@ -89,6 +89,14 @@ public class RiderProfile implements Serializable {
         return id;
     }
 
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
     public void setId(String id) {
         this.id = id;
     }

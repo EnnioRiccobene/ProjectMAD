@@ -59,6 +59,7 @@ import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -171,7 +172,6 @@ public class ProfileActivity extends AppCompatActivity
         // Getting the instance of Firebase
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
-
         hours = findViewById(R.id.hours);
         arrowbtn = findViewById(R.id.arrowbtn);
         hiddenHours = findViewById(R.id.hiddenhours);
