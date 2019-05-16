@@ -2,7 +2,6 @@ package com.madgroup.appcompany;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,10 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.view.Menu;
@@ -48,38 +45,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
-import com.google.gson.reflect.TypeToken;
+import com.madgroup.sdk.CustomAutoCompleteTextView;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.RestaurantProfile;
 import com.madgroup.sdk.SmartLogger;
-import com.mapbox.android.core.location.LocationEngine;
-import com.mapbox.android.core.location.LocationEngineProvider;
-import com.mapbox.api.geocoding.v5.models.CarmenFeature;
-import com.mapbox.api.geocoding.v5.models.GeocodingAdapterFactory;
-import com.mapbox.geojson.Point;
-import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
-import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
-import com.mapbox.mapboxsdk.plugins.places.autocomplete.ui.PlaceAutocompleteFragment;
-import com.mapbox.mapboxsdk.plugins.places.autocomplete.ui.PlaceSelectionListener;
-import com.mapbox.mapboxsdk.plugins.places.autocomplete.ui.SearchResultAdapter;
-import com.mapbox.services.android.location.LostLocationEngine;
-import com.mapbox.services.android.ui.geocoder.GeocoderAutoCompleteView;
 import com.mapbox.services.commons.models.Position;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -89,7 +68,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.core.widget.NestedScrollView;
@@ -98,19 +76,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentTransaction;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Registry;
-import com.bumptech.glide.module.AppGlideModule;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
-import com.google.firebase.storage.StorageReference;
-import com.bumptech.glide.annotation.GlideModule;
-
-import java.io.InputStream;
-
 
 public class ProfileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, PopupMenu.OnMenuItemClickListener {
@@ -126,7 +91,7 @@ public class ProfileActivity extends AppCompatActivity
     private EditText email;
     // private EditText password;
     private EditText phone;
-    private GeocoderAutoCompleteView address;
+    private CustomAutoCompleteTextView address;
     private EditText additionalInformation;
     private CurrencyEditText deliveryCost;
     private CurrencyEditText minimumOrder;
@@ -292,9 +257,7 @@ public class ProfileActivity extends AppCompatActivity
 
         address.setAccessToken("pk.eyJ1IjoicGRvcjk1IiwiYSI6ImNqdnBkZDhwMTBrbnA0YnFsbjh6Zmh0NWoifQ.Bp-Ctr-VVIKCSbTX5kqNGg");
         address.setCountry("IT");
-
-
-
+        address.setProximity(Position.fromCoordinates(45.062358, 7.662752));
 
 
         // Set all field to unclickable

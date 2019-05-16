@@ -56,4 +56,8 @@ dependencies {
     annotationProcessor 'androidx.annotation:annotation:1.0.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
 
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-places-v7:0.8.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:4.8.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-ui:2.2.9'
+
 }
