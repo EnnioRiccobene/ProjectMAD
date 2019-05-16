@@ -23,11 +23,43 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/mapboxGrayLight"
-        android:enabled="false"
-        android:text="Start navigation"
+        android:background="@color/mapboxBlue"
+        android:enabled="true"
+        android:text="@string/start_navigation"
         android:textColor="@color/mapboxWhite"
         mapbox:layout_constraintStart_toStartOf="parent"
         mapbox:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/restaurantButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/mapboxGrayLight"
+        android:enabled="false"
+        android:text="@string/to_restaurant"
+        android:visibility="gone"
+        android:textColor="@color/mapboxWhite"
+        mapbox:layout_constraintStart_toStartOf="parent"
+        mapbox:layout_constraintTop_toBottomOf="@id/startButton" />
+
+    <Button
+        android:id="@+id/customerButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/mapboxGrayLight"
+        android:enabled="false"
+        android:visibility="gone"
+        android:text="@string/to_customer"
+        android:textColor="@color/mapboxWhite"
+        mapbox:layout_constraintStart_toStartOf="parent"
+        mapbox:layout_constraintTop_toBottomOf="@id/restaurantButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

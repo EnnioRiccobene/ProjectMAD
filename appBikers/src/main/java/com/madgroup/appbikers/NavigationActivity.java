@@ -1,12 +1,11 @@
 package com.madgroup.appbikers;
 
-import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.location.Address;
-import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -17,8 +16,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.madgroup.sdk.SmartLogger;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
-import com.mapbox.api.geocoding.v5.models.CarmenFeature;
-import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
+import com.mapbox.geocoder.GeocoderCriteria;
+import com.mapbox.geocoder.MapboxGeocoder;
+import com.mapbox.geocoder.android.AndroidGeocoder;
+import com.mapbox.geocoder.service.models.GeocoderResponse;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -60,6 +61,7 @@ import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 //todo: modificare il layout aggiungendo due button nascosti sotto StartNavigation (Restaurant e Customer). Al click su start navigation devono comparire o sparire questi due button, mentre al click su uno dei due faccio partire la navigazione verso il ristorante o il cliente
 //todo: aggiungere la possibilità di scegliere percorsi per biker o in macchina
@@ -103,9 +105,11 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         mapView.getMapAsync(this);
 
         getIncomingIntent();
-        addressesGeocode(restaurantAddress, customerAddress);
 
-        drawRestaurantToClientRoute(restaurantPoint, customerPoint);
+        new GeocodeTask().execute("url");
+//        addressesGeocode(restaurantAddress, customerAddress);
+
+//        drawRestaurantToClientRoute(restaurantPoint, customerPoint);
     }
 
     private void getIncomingIntent() {
@@ -115,16 +119,45 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         }
     }
 
+    private class GeocodeTask extends AsyncTask<String, Void, String> {
+        private ProgressDialog pd;
+
+        // onPreExecute called before the doInBackgroud start for display
+        // progress dialog.
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd = ProgressDialog.show(NavigationActivity.this, "", "Loading", true,
+                    false); // Create and show Progress dialog
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            addressesGeocode(restaurantAddress, customerAddress);
+            return null;
+        }
+
+        // onPostExecute displays the results of the doInBackgroud and also we
+        // can hide progress dialog.
+        @Override
+        protected void onPostExecute(String result) {
+            drawRestaurantToClientRoute(restaurantPoint, customerPoint);
+            pd.dismiss();
+
+        }
+    }
+
     private Point getLocationFromAddress(String strAddress) {
 
-        Geocoder coder = new Geocoder(this);
+        AndroidGeocoder geocoder = new AndroidGeocoder(this, Locale.getDefault());
         List<Address> address = null;
-
+        geocoder.setAccessToken("pk.eyJ1IjoiZW5uaW9yaWNjb2JlbmUiLCJhIjoiY2p2cDAwaWpiMWM2cTRhdm4xa2doMWR4aSJ9.13f4K6NH4ybrj9iPVzG7kA");
         try {
-            address = coder.getFromLocationName(strAddress, 1);
+            address = geocoder.getFromLocationName(strAddress, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         if (address == null) {
             return null;
         }
@@ -135,6 +168,40 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         Point p1 = Point.fromLngLat((double) (location.getLongitude()/* * 1E6*/), (double) (location.getLatitude()/* * 1E6*/));
 
         return p1;
+
+//        // The geocoder client
+//        MapboxGeocoder client = new MapboxGeocoder.Builder()
+//                .setAccessToken("pk.eyJ1IjoiZW5uaW9yaWNjb2JlbmUiLCJhIjoiY2p2cDAwaWpiMWM2cTRhdm4xa2doMWR4aSJ9.13f4K6NH4ybrj9iPVzG7kA")
+//                .setLocation(strAddress)
+//                .setType(GeocoderCriteria.TYPE_POI)
+//                .build();
+//
+//        retrofit.Response<GeocoderResponse> response;
+//        try {
+//            response = client.execute();
+//            response.body().getFeatures().
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+//        Geocoder coder = new Geocoder(this, Locale.getDefault());
+//        List<Address> address = null;
+//
+//        try {
+//            address = coder.getFromLocationName(strAddress, 1);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        if (address == null) {
+//            return null;
+//        }
+//        Address location = address.get(0);
+//        location.getLatitude();
+//        location.getLongitude();
+//
+//        Point p1 = Point.fromLngLat((double) (location.getLongitude()/* * 1E6*/), (double) (location.getLatitude()/* * 1E6*/));
+//
+//        return p1;
 
     }
 
@@ -161,7 +228,9 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        boolean simulateRoute = true;
+
+
+
                         boolean simulateRoute = false;
                         NavigationLauncherOptions options = NavigationLauncherOptions.builder()
                                 .directionsRoute(currentRoute)
