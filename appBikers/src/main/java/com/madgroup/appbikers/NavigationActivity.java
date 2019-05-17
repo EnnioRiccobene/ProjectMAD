@@ -338,7 +338,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                 .destination(destination)
                 .profile("cycling")
                 .build()
-                .getRoute(new Callback<DirectionsResponse>() {//todo: non entra qua per settare currentRoute
+                .getRoute(new Callback<DirectionsResponse>() {
                     @Override
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
                         // You can get the generic HTTP info about the response
