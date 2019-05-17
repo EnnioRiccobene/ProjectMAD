@@ -149,7 +149,6 @@ public class ProfileActivity extends AppCompatActivity implements
         //downloadProfilePic();
         //loadFieldsFromFirebase();
 
-
         if (prefs.contains("currentUser")) {
             // Utente già loggato
             initializeNavigationDrawer();
@@ -718,6 +717,8 @@ public class ProfileActivity extends AppCompatActivity implements
     }
 
     public void updateNavigatorInformation(){
+        if(FirebaseAuth.getInstance() == null)
+            return;
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")

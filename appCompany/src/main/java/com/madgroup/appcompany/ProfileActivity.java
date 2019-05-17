@@ -753,7 +753,8 @@ public class ProfileActivity extends AppCompatActivity
     public void updateNavigatorInformation() {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
-
+        if(FirebaseAuth.getInstance().getCurrentUser() == null)
+            return;
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
                 .child("restaurants").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         GlideApp.with(this)
