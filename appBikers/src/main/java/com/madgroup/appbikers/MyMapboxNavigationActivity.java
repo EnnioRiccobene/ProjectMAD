@@ -1,11 +1,18 @@
 package com.madgroup.appbikers;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -29,12 +36,31 @@ public class MyMapboxNavigationActivity extends AppCompatActivity implements OnN
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        checkLocationpermissions();
         setTheme(R.style.Theme_AppCompat_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
         navigationView = findViewById(R.id.navigationView);
         navigationView.onCreate(savedInstanceState);
         initialize();
+
+    }
+
+    private void checkLocationpermissions() {
+        int gpsPermission = ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (gpsPermission == PackageManager.PERMISSION_GRANTED) {
+            // Permessi già accettati: comincio a tracciare la posizione
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            String currentUser = prefs.getString("currentUser", "noUser");
+            LocationListener locationListener = new MyLocationListener(currentUser);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
+        } else {
+            Intent myIntent = new Intent(this, ProfileActivity.class);
+            this.startActivity(myIntent);
+        }
     }
 
     @Override

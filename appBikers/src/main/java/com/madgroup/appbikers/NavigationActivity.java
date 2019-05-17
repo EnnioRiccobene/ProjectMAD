@@ -1,16 +1,23 @@
 package com.madgroup.appbikers;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.location.Address;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 // classes needed to initialize map
 import com.madgroup.sdk.SmartLogger;
@@ -94,6 +101,8 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        checkLocationpermissions();
+
         Mapbox.getInstance(this, "pk.eyJ1IjoiZW5uaW9yaWNjb2JlbmUiLCJhIjoiY2p2cDAwaWpiMWM2cTRhdm4xa2doMWR4aSJ9.13f4K6NH4ybrj9iPVzG7kA");
         setContentView(R.layout.my_activity_navigation);
         mapView = findViewById(R.id.mapView);
@@ -106,8 +115,25 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         customerBtn = findViewById(R.id.customerButton);
 
         new GeocodeTask().execute("url");
-
     }
+
+    private void checkLocationpermissions() {
+        int gpsPermission = ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (gpsPermission == PackageManager.PERMISSION_GRANTED) {
+            // Permessi già accettati: comincio a tracciare la posizione
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            String currentUser = prefs.getString("currentUser", "noUser");
+            LocationListener locationListener = new MyLocationListener(currentUser);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
+        } else {
+            Intent myIntent = new Intent(this, ProfileActivity.class);
+            this.startActivity(myIntent);
+        }
+    }
+
 
     private void getIncomingIntent() {
         if (getIntent().hasExtra("restaurantAddress")) {
