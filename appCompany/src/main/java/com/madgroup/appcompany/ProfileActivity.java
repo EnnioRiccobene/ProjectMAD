@@ -45,21 +45,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.madgroup.sdk.CustomAutoCompleteTextView;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.RestaurantProfile;
 import com.madgroup.sdk.SmartLogger;
+import com.mapbox.services.commons.models.Position;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -77,19 +76,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import android.content.Context;
-
-import androidx.annotation.NonNull;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Registry;
-import com.bumptech.glide.module.AppGlideModule;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
-import com.google.firebase.storage.StorageReference;
-import com.bumptech.glide.annotation.GlideModule;
-
-import java.io.InputStream;
-
 
 public class ProfileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, PopupMenu.OnMenuItemClickListener {
@@ -105,7 +91,7 @@ public class ProfileActivity extends AppCompatActivity
     private EditText email;
     // private EditText password;
     private EditText phone;
-    private EditText address;
+    private CustomAutoCompleteTextView address;
     private EditText additionalInformation;
     private CurrencyEditText deliveryCost;
     private CurrencyEditText minimumOrder;
@@ -151,7 +137,7 @@ public class ProfileActivity extends AppCompatActivity
     private LinkedHashMap<String, String> hourValue = new LinkedHashMap<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 //        if (FirebaseAuth.getInstance().getCurrentUser()==null) {
@@ -160,7 +146,7 @@ public class ProfileActivity extends AppCompatActivity
 //        }
 
         setContentView(R.layout.activity_main);
-        ViewStub stub = (ViewStub)findViewById(R.id.stub);
+        ViewStub stub = (ViewStub) findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_profile);
         stub.inflate();
@@ -268,6 +254,12 @@ public class ProfileActivity extends AppCompatActivity
         progressBar = findViewById(R.id.progressBar);
         // imgProgressBar = findViewById(R.id.imgProgressBar);
 
+
+        address.setAccessToken("pk.eyJ1IjoicGRvcjk1IiwiYSI6ImNqdnBkZDhwMTBrbnA0YnFsbjh6Zmh0NWoifQ.Bp-Ctr-VVIKCSbTX5kqNGg");
+        address.setCountry("IT");
+        address.setProximity(Position.fromCoordinates(45.062358, 7.662752));
+
+
         // Set all field to unclickable
         setFieldUnclickable();
 
@@ -356,9 +348,9 @@ public class ProfileActivity extends AppCompatActivity
                     setFieldUnclickable();
                     saveFieldsOnFirebase();
                     //if (!isDefaultImage)
-                        uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
+                    uploadProfilePic(((BitmapDrawable) personalImage.getDrawable()).getBitmap());
                     //else
-                        //deleteProfilePic();
+                    //deleteProfilePic();
                 }
                 updateNavigatorInformation();
         }
@@ -385,9 +377,9 @@ public class ProfileActivity extends AppCompatActivity
             setFieldUnclickable();
             saveFieldsOnFirebase();
             //if (!isDefaultImage)
-                uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
+            uploadProfilePic(((BitmapDrawable) personalImage.getDrawable()).getBitmap());
             //else
-                //deleteProfilePic();
+            //deleteProfilePic();
         } else
             super.onBackPressed();
     }
@@ -434,9 +426,9 @@ public class ProfileActivity extends AppCompatActivity
             address.setText(prefs.getString("Address", ""));
         if (prefs.contains("Information"))
             additionalInformation.setText(prefs.getString("Information", ""));
-        if(prefs.contains("DeliveryCost"))
+        if (prefs.contains("DeliveryCost"))
             deliveryCost.setText(prefs.getString("DeliveryCost", ""));
-        if(prefs.contains("MinOrder"))
+        if (prefs.contains("MinOrder"))
             minimumOrder.setText(prefs.getString("MinOrder", ""));
         if (prefs.contains("FoodCounter"))
             categoriesCount = prefs.getInt("FoodCounter", 0);
@@ -622,7 +614,7 @@ public class ProfileActivity extends AppCompatActivity
                 Bundle extrasBundle = data.getExtras();
 
                 // Aggiunto il "&& extrasBundle != null" per evitare il crash dell'app
-                if (extrasBundle != null){
+                if (extrasBundle != null) {
                     if (!extrasBundle.isEmpty()) {
                         if (extrasBundle.containsKey(getResources().getString(R.string.Monday))) {
                             mondayHour.setText(extrasBundle.getString(getResources().getString(R.string.Monday)));
@@ -663,10 +655,10 @@ public class ProfileActivity extends AppCompatActivity
                 loadFieldsFromFirebase();
                 downloadProfilePic();
             } else {
-                if (response==null) {
+                if (response == null) {
                     // Back button pressed
                 } else {
-                    Toast.makeText(this, "Error: "+ Objects.requireNonNull(response.getError()).getErrorCode(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Error: " + Objects.requireNonNull(response.getError()).getErrorCode(), Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -753,7 +745,7 @@ public class ProfileActivity extends AppCompatActivity
     public void updateNavigatorInformation() {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
-        if(FirebaseAuth.getInstance().getCurrentUser() == null)
+        if (FirebaseAuth.getInstance().getCurrentUser() == null)
             return;
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
                 .child("restaurants").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -876,7 +868,7 @@ public class ProfileActivity extends AppCompatActivity
 
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         //database.getReference("Profiles").child("Restaurants")
-                database.getReference("Company").child("Profile")
+        database.getReference("Company").child("Profile")
                 .child(currentUid)
                 .setValue(currentUser, new DatabaseReference.CompletionListener() {
                     @Override
@@ -1042,7 +1034,7 @@ public class ProfileActivity extends AppCompatActivity
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         RestaurantProfile restaurant = dataSnapshot.getValue(RestaurantProfile.class);
 
-                        if (restaurant!=null) {
+                        if (restaurant != null) {
                             // Utente già registrato: setto i campi
                             name.setText(restaurant.getName());
                             phone.setText(restaurant.getPhoneNumber());
@@ -1079,7 +1071,7 @@ public class ProfileActivity extends AppCompatActivity
                                     .child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
                                 @Override
                                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                                    if (databaseError!= null) {
+                                    if (databaseError != null) {
                                         Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
                                         // todo: rimuovere la registrazione dell'utente
                                     } else {
@@ -1097,12 +1089,12 @@ public class ProfileActivity extends AppCompatActivity
 
                         }
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                     }
                 });
     }
-
 
 
     private void startLogin() {
