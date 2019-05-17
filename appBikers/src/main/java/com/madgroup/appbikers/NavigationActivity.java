@@ -232,7 +232,8 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                                 .shouldSimulateRoute(simulateRoute)
                                 .build();
                         // Call this method with Context from within an Activity
-                        NavigationLauncher.startNavigation(NavigationActivity.this, options);
+//                        NavigationLauncher.startNavigation(NavigationActivity.this, options);
+                        MyNavigationLauncher.startNavigation(NavigationActivity.this, options);
                     }
                 });
 
@@ -257,7 +258,8 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                                 .shouldSimulateRoute(simulateRoute)
                                 .build();
                         // Call this method with Context from within an Activity
-                        NavigationLauncher.startNavigation(NavigationActivity.this, options);
+//                        NavigationLauncher.startNavigation(NavigationActivity.this, options);
+                        MyNavigationLauncher.startNavigation(NavigationActivity.this, options);
                     }
                 });
             }
