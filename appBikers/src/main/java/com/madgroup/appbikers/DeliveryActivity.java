@@ -1,9 +1,14 @@
 package com.madgroup.appbikers;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.StateListAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -17,6 +22,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
@@ -109,8 +116,23 @@ public class DeliveryActivity extends AppCompatActivity implements
 //            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
 //            notify.newOrderListner();
 //        }
+        checkLocationpermissions();
     }
 
+    private void checkLocationpermissions() {
+        int gpsPermission = ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (gpsPermission == PackageManager.PERMISSION_GRANTED) {
+            // Permessi già accettati: comincio a tracciare la posizione
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            LocationListener locationListener = new MyLocationListener(currentUser);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
+        } else {
+            Intent myIntent = new Intent(this, ProfileActivity.class);
+            this.startActivity(myIntent);
+        }
+    }
 
     public void navigationDrawerInitialization() {
         // Navigation Drawer Initialization
