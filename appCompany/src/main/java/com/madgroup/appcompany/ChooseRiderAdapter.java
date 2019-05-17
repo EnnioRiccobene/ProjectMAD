@@ -88,8 +88,7 @@ public class ChooseRiderAdapter extends
         final RiderProfile rider = riderList.get(position);
         holder.riderName.setText(rider.getName());
         loadPhoto(holder, rider);
-        // TODO: position del rider pari a 0.0, 0.0
-        holder.riderDistance.setText(getDistance(restaurantAddress, rider.getPosition()) + " km");
+        holder.riderDistance.setText(getDistance(restaurantAddress, rider.getPosition()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,6 +136,8 @@ public class ChooseRiderAdapter extends
     }
 
     String getDistance(String restaurantAddress, Position riderPosition){
+        if(riderPosition == null)
+            return "N.A.";
         Geocoder geocoder = new Geocoder(context);
         List<Address> addresses;
         try {
@@ -146,7 +147,9 @@ public class ChooseRiderAdapter extends
                 double longitude = addresses.get(0).getLongitude();
                 final Position restaurantPosition = new Position(latitude, longitude);
                 double distance = Haversine.distance(restaurantPosition, riderPosition);
-                return String.valueOf((int)(distance));
+                DecimalFormat df = new DecimalFormat("#.#");
+                df.setMaximumIntegerDigits(2);
+                return df.format(distance) + " km";
             }
         } catch (IOException e) {
             e.printStackTrace();

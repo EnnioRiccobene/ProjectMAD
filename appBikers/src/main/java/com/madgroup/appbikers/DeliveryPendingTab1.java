@@ -319,8 +319,10 @@ public class DeliveryPendingTab1 extends Fragment {
         positionRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists() || dataSnapshot == null)
+                if(!dataSnapshot.exists() || dataSnapshot == null){
+                    distanceTextView.setText("N.A.");
                     return;
+                }
                 Position riderPosition = dataSnapshot.getValue(Position.class);
                 Geocoder geocoder = new Geocoder(getContext());
                 List<Address> addresses;

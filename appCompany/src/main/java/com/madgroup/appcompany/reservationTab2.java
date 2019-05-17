@@ -328,6 +328,13 @@ public class reservationTab2 extends Fragment {
                 double latitude = addresses.get(0).getLatitude();
                 double longitude = addresses.get(0).getLongitude();
                 final Position restaurantPosition = new Position(latitude, longitude);
+                ArrayList<RiderProfile> notSortableRider = new ArrayList<>();
+                for (RiderProfile element : riderList) {
+                    if (element.getPosition() == null) {
+                        riderList.remove(element);
+                        notSortableRider.add(element);
+                    }
+                }
                 Collections.sort(riderList, new Comparator<RiderProfile>() {
                     @Override
                     public int compare(RiderProfile o1, RiderProfile o2) {
@@ -341,6 +348,8 @@ public class reservationTab2 extends Fragment {
                             return 0;
                     }
                 });
+                for (RiderProfile element: notSortableRider)
+                    riderList.add(element);
             }
         } catch (IOException e) {
             e.printStackTrace();
