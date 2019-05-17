@@ -75,6 +75,7 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -111,7 +112,7 @@ public class ProfileActivity extends AppCompatActivity
     private ProgressBar imgProgressBar;
     private NavigationView navigationView;
 
-    String notificationTitle = "MAD Company";
+    String notificationTitle = "MAD Bikers";
     String notificationText;
 
     private static final String defaultLat = "LAT";
@@ -263,7 +264,7 @@ public class ProfileActivity extends AppCompatActivity
 
     private void setFieldClickable() {
         name.setEnabled(true);
-        email.setEnabled(true);
+        email.setEnabled(false);
         // password.setEnabled(true);
         phone.setEnabled(true);
         additionalInformation.setEnabled(true);
@@ -618,16 +619,24 @@ public class ProfileActivity extends AppCompatActivity
         progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Position defaultPos = new Position(defaultLat, defaultLon);
-        RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
-                phone.getText().toString(), additionalInformation.getText().toString(), true, defaultPos);
+        // RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
+        //         phone.getText().toString(), additionalInformation.getText().toString(), true, defaultPos);
+        //Position position = new Position(defaultLat, defaultLon);
+        HashMap<String, Object> updateValues = new HashMap<>();
+        updateValues.put("name", name.getText().toString());
+        updateValues.put("phone", phone.getText().toString());
+        updateValues.put("additionalInformation", additionalInformation.getText().toString());
+        SmartLogger.d(updateValues.toString());
+
+//        RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
+//                phone.getText().toString(), additionalInformation.getText().toString());
 
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         //database.getReference("Profiles").child("Bikers")
         database.getReference("Rider").child("Profile")
                 .child(currentUid)
-                .setValue(currentUser, new DatabaseReference.CompletionListener() {
+                .updateChildren(updateValues, new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                         if (databaseError != null) {
@@ -812,7 +821,7 @@ public class ProfileActivity extends AppCompatActivity
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
                             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             RiderProfile currentRider = new RiderProfile(user.getUid(), user.getDisplayName(), user.getEmail(),
-                                    "","",false, new Position(defaultLat, defaultLon));
+                                    "","",false);
                             String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             //database.getReference("Profiles").child("Bikers")
                             database.getReference("Rider").child("Profile")

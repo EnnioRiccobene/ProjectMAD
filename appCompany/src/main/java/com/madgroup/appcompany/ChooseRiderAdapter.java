@@ -3,6 +3,8 @@ package com.madgroup.appcompany;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +19,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.madgroup.sdk.Haversine;
+import com.madgroup.sdk.Position;
 import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.RiderProfile;
+import com.madgroup.sdk.SmartLogger;
 
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -78,9 +88,7 @@ public class ChooseRiderAdapter extends
         final RiderProfile rider = riderList.get(position);
         holder.riderName.setText(rider.getName());
         loadPhoto(holder, rider);
-        // TODO: calcolo distanza
-        // getDistance(restaurantAddress, rider.getPosition);
-        holder.riderDistance.setText("300 mt");
+        holder.riderDistance.setText(getDistance(restaurantAddress, rider.getPosition()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,5 +133,28 @@ public class ChooseRiderAdapter extends
                 .skipMemoryCache(true)
                 .error(GlideApp.with(context).load(R.drawable.personicon))
                 .into(holder.riderPhoto);
+    }
+
+    String getDistance(String restaurantAddress, Position riderPosition){
+        if(riderPosition == null)
+            return "N.A.";
+        Geocoder geocoder = new Geocoder(context);
+        List<Address> addresses;
+        try {
+            addresses = geocoder.getFromLocationName(restaurantAddress, 1);
+            if (addresses.size() > 0) {
+                double latitude = addresses.get(0).getLatitude();
+                double longitude = addresses.get(0).getLongitude();
+                final Position restaurantPosition = new Position(latitude, longitude);
+                double distance = Haversine.distance(restaurantPosition, riderPosition);
+                DecimalFormat df = new DecimalFormat("#.#");
+                df.setMaximumIntegerDigits(2);
+                return df.format(distance) + " km";
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "N.A.";
+        }
+        return "N.A.";
     }
 }
