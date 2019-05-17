@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,10 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.madgroup.sdk.SmartLogger;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
-import com.mapbox.geocoder.GeocoderCriteria;
-import com.mapbox.geocoder.MapboxGeocoder;
 import com.mapbox.geocoder.android.AndroidGeocoder;
-import com.mapbox.geocoder.service.models.GeocoderResponse;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -86,7 +82,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     private Point restaurantPoint;
     private Point customerPoint;
     MapboxGeocoding mapboxGeocoding;
-    private int responseRouteFlag = 0; //1 all'inizio; 2: rotta per il ristorante; 3: rotta per il cliente
 
     public static void start(Context context, String restaurantAddress, String customerAddress) {
         Intent starter = new Intent(context, NavigationActivity.class);
@@ -228,10 +223,9 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                         if (source != null) {
                             source.setGeoJson(Feature.fromGeometry(destinationPoint));
                         }
+
                         getRoute(originPoint, destinationPoint);
 
-//                        int a = 2;
-//                        startMyNavigation(a);
                         boolean simulateRoute = false;
                         NavigationLauncherOptions options = NavigationLauncherOptions.builder()
                                 .directionsRoute(currentRoute)
@@ -257,8 +251,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
                         getRoute(originPoint, destinationPoint);
 
-//                        int a = 3;
-//                        startMyNavigation(a);
                         boolean simulateRoute = false;
                         NavigationLauncherOptions options = NavigationLauncherOptions.builder()
                                 .directionsRoute(currentRoute)
@@ -271,22 +263,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
             }
         });
     }
-
-//    private void startMyNavigation(int a){
-//        while(true){
-//            if(responseRouteFlag == a){
-//                boolean simulateRoute = false;
-//                NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-//                        .directionsRoute(currentRoute)
-//                        .shouldSimulateRoute(simulateRoute)
-//                        .build();
-//                // Call this method with Context from within an Activity
-//                NavigationLauncher.startNavigation(NavigationActivity.this, options);
-//                break;
-//            }
-//            SystemClock.sleep(500);
-//        }
-//    }
 
     private void addDestinationIconSymbolLayer(@NonNull Style loadedMapStyle) {
         loadedMapStyle.addImage("destination-icon-id",
@@ -333,11 +309,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                         }
 
                         currentRoute = response.body().routes().get(0);
-                        if((origin != customerPoint && origin != restaurantPoint) && destination == restaurantPoint){
-                            responseRouteFlag = 2;
-                        } else if((origin != customerPoint && origin != restaurantPoint) && destination == customerPoint){
-                            responseRouteFlag = 3;
-                        } else responseRouteFlag = 1;
 
                         GeoJsonSource source = mapboxMap.getStyle().getSourceAs("destination-source-id");
                         if (source != null) {
@@ -381,11 +352,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                         }
 
                         currentRoute = response.body().routes().get(0);
-                        if((origin != customerPoint && origin != restaurantPoint) && destination == restaurantPoint){
-                            responseRouteFlag = 2;
-                        } else if((origin != customerPoint && origin != restaurantPoint) && destination == customerPoint){
-                            responseRouteFlag = 3;
-                        } else responseRouteFlag = 1;
 
                         // Draw the route on the map
                         if (navigationMapRoute != null) {
