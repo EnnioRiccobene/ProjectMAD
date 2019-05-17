@@ -24,10 +24,10 @@ class MyLocationListener implements LocationListener {
         double lon = location.getLongitude();
         double lat = location.getLatitude();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference bikerRef = database.child("Rider").child("Profile").child(currentUserID);
+        DatabaseReference bikerRef = database.child("Rider").child("Profile").child(currentUserID).child("position");
         final Map<String, Object> childUpdate = new HashMap<>();
-        childUpdate.put("/" + "lat" , String.valueOf(lat));
-        childUpdate.put("/" + "lon" , String.valueOf(lon));
+        childUpdate.put("/" + "lat" , lat);
+        childUpdate.put("/" + "lon" , lon);
         bikerRef.updateChildren(childUpdate);
     }
 
