@@ -22,7 +22,9 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class DailyOfferRecyclerAdapter extends RecyclerView.Adapter<FindDishViewHolder> implements PopupMenu.OnMenuItemClickListener {
+public class DailyOfferRecyclerAdapter extends
+        RecyclerView.Adapter<FindDishViewHolder> implements
+        PopupMenu.OnMenuItemClickListener {
 
 
     private ArrayList<Dish> dataset = new ArrayList<>();

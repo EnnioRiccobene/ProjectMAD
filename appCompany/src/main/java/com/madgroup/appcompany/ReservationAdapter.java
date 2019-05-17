@@ -118,7 +118,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
                 holder.mImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        callRider(currentItem, index);
+//                        openRiderPage(currentItem, index);
                     }
                 });
                 break;
@@ -174,7 +174,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
 //    }
 
     // Modifico lo status della query accepted. Prima dal database, poi nella lista
-//    public void callRider(final Reservation currentItem, int index){
+//    public void openRiderPage(final Reservation currentItem, int index){
 //        String orderID = currentItem.getOrderID();
 //        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 //        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child("email1").child(orderID);

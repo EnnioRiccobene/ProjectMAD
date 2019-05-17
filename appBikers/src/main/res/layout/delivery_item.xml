@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="6dp"
-    app:cardElevation="6dp"
     android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="6dp">
 
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -35,18 +35,18 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/restaurantName"
             android:layout_marginTop="3dp"
-            android:text="@string/pick_up"
+            android:text="Pick-up: "
             android:textColor="#000"
             android:textSize="13sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/restaurantAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/restaurantName"
-            android:layout_toRightOf="@+id/restaurantAddress_bold"
             android:layout_marginTop="3dp"
+            android:layout_toRightOf="@+id/restaurantAddress_bold"
             android:text="Via del pollo 33"
             android:textColor="#777"
             android:textSize="13sp" />
@@ -57,18 +57,20 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/restaurantAddress_bold"
             android:layout_marginTop="3dp"
-            android:text="@string/delivery_to"
+            android:maxWidth="250dip"
+            android:text="Delivery: "
             android:textColor="#000"
             android:textSize="13sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/customerAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/restaurantAddress_bold"
-            android:layout_toRightOf="@+id/customerAddress_bold"
             android:layout_marginTop="3dp"
+            android:layout_toRightOf="@+id/customerAddress_bold"
+            android:maxWidth="250dip"
             android:text="Via del cavallo 33"
             android:textColor="#777"
             android:textSize="13sp" />
@@ -77,20 +79,17 @@
             android:id="@+id/distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="300 mt"
-            android:textColor="#777"
-            android:textSize="13sp"
             android:layout_alignBaseline="@id/customerAddress"
             android:layout_alignParentRight="true"
-            android:textStyle="italic"/>
+            android:textColor="#777"
+            android:textSize="13sp"
+            android:textStyle="italic" />
 
         <ImageView
             android:id="@+id/biker_arrived"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"/>
-
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
     </RelativeLayout>
-
 </androidx.cardview.widget.CardView>

@@ -9,8 +9,15 @@ public class RiderProfile implements Serializable {
     private String phoneNumber;
     private String additionalInformation;
     private boolean status;
-    private String lat;
-    private String lon;
+    private Position position;
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
+    }
 
     public boolean isStatus() {
         return status;
@@ -23,41 +30,47 @@ public class RiderProfile implements Serializable {
     public RiderProfile() {
     }
 
-    public RiderProfile(String id, String name, String email, String phoneNumber, String additionalInformation, boolean status, String lat, String lon) {
+    public RiderProfile(String id, String name, String email, String phoneNumber, String additionalInformation, boolean status) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.additionalInformation = additionalInformation;
         this.status = status;
-        this.lat = lat;
-        this.lon = lon;
     }
 
-    public RiderProfile(String id, String name, String email, String phoneNumber, String additionalInformation, String lat, String lon) {
+    public RiderProfile(String id, String name, String email, String phoneNumber, String additionalInformation, boolean status, Position pos) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.additionalInformation = additionalInformation;
         this.status = status;
-        this.lat = lat;
-        this.lon = lon;
+        this.position = pos;
     }
 
-//    public RiderProfile(String id, String name, String email, String phoneNumber, boolean status) {
-//        this.id = id;
-//        this.name = name;
-//        this.email = email;
-//        this.phoneNumber = phoneNumber;
-//        this.status = status;
-//    }
+    public RiderProfile(String id, String name, String email, String phoneNumber, String additionalInformation) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.additionalInformation = additionalInformation;
+        this.status = status;
+    }
 
-//    public RiderProfile(String name, String email, String phoneNumber) {
-//        this.name = name;
-//        this.email = email;
-//        this.phoneNumber = phoneNumber;
-//    }
+    public RiderProfile(String id, String name, String email, String phoneNumber, boolean status) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+    }
+
+    public RiderProfile(String name, String email, String phoneNumber) {
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
 
     public String getName() {
         return name;
@@ -96,22 +109,6 @@ public class RiderProfile implements Serializable {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getLat() {
-        return lat;
-    }
-
-    public void setLat(String lat) {
-        this.lat = lat;
-    }
-
-    public String getLon() {
-        return lon;
-    }
-
-    public void setLon(String lon) {
-        this.lon = lon;
     }
 }
 

@@ -84,6 +84,8 @@ public class DetailedReservation extends AppCompatActivity {
         notes = findViewById(R.id.notes);
         if(reservation.getNotes() != null)
             notes.setText(reservation.getNotes());
+        else
+            findViewById(R.id.notes_bold).setVisibility(View.GONE);
         if(reservation.getStatus() != 0)
             confirmButton.setVisibility(View.GONE);
 

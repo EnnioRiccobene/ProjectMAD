@@ -6,12 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,12 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.bumptech.glide.request.target.Target;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.Continuation;
@@ -47,8 +40,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.madgroup.sdk.CustomAutoCompleteTextView;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.SmartLogger;
+import com.mapbox.services.commons.models.Position;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.ByteArrayOutputStream;
@@ -67,11 +62,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static androidx.core.os.LocaleListCompat.create;
 
 
 public class ProfileActivity extends AppCompatActivity implements
@@ -84,7 +77,7 @@ public class ProfileActivity extends AppCompatActivity implements
     private EditText email;
     // private EditText password;
     private EditText phone;
-    private EditText address;
+    private CustomAutoCompleteTextView address;
     private EditText additionalInformation;
     private Boolean modifyingInfo;
     private SharedPreferences prefs;
@@ -119,7 +112,7 @@ public class ProfileActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_navigation_drawer);
         ViewStub stub = (ViewStub)findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
-        stub.setLayoutResource(R.layout.activity_main);
+        stub.setLayoutResource(R.layout.activity_profile);
         stub.inflate();
         this.setTitle("Profile");
         prefs = getSharedPreferences("MyData", MODE_PRIVATE);
@@ -140,6 +133,10 @@ public class ProfileActivity extends AppCompatActivity implements
         imgProgressBar = findViewById(R.id.imgProgressBar);
         modifyingInfo = false;
 
+        address.setAccessToken("pk.eyJ1IjoicGRvcjk1IiwiYSI6ImNqdnBkZDhwMTBrbnA0YnFsbjh6Zmh0NWoifQ.Bp-Ctr-VVIKCSbTX5kqNGg");
+        address.setCountry("IT");
+        address.setProximity(Position.fromCoordinates(45.062358, 7.662752));
+
         // Set all field to unclickable
         setFieldUnclickable();
 
@@ -148,7 +145,6 @@ public class ProfileActivity extends AppCompatActivity implements
         //isDefaultImage = true;
         //downloadProfilePic();
         //loadFieldsFromFirebase();
-
 
         if (prefs.contains("currentUser")) {
             // Utente già loggato
@@ -718,6 +714,8 @@ public class ProfileActivity extends AppCompatActivity implements
     }
 
     public void updateNavigatorInformation(){
+        if(FirebaseAuth.getInstance() == null)
+            return;
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")

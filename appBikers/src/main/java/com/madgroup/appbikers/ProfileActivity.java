@@ -1,6 +1,7 @@
 package com.madgroup.appbikers;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -64,6 +65,7 @@ import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madgroup.sdk.MyImageHandler;
+import com.madgroup.sdk.Position;
 import com.madgroup.sdk.RiderProfile;
 import com.madgroup.sdk.SmartLogger;
 import com.tapadoo.alerter.Alerter;
@@ -73,6 +75,7 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -114,6 +117,7 @@ public class ProfileActivity extends AppCompatActivity
 
     private static final String defaultLat = "LAT";
     private static final String defaultLon = "LON";
+    private int locationPerm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,37 +167,30 @@ public class ProfileActivity extends AppCompatActivity
             loadFieldsFromFirebase();
             downloadProfilePic();
             navigationDrawerInitialization();
-
             final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", ""));
             NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
             notify.newOrderListner();
+            locationPerm = checkLocationpermissions();
         } else {
             startLogin();
         }
-
-
-        checkGPSpermissions();
     }
 
-    private void checkGPSpermissions() {
+    private int checkLocationpermissions() {
         int gpsPermission = ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        boolean userPreviousDeniedRequest = ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
         if (gpsPermission == PackageManager.PERMISSION_GRANTED) {
+            // Permessi già accettati: comincio a tracciare la posizione
             LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             LocationListener locationListener = new MyLocationListener(currentUser);
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
-
         } else {
-            if (userPreviousDeniedRequest) {
-                //Toast.makeText(getApplicationContext(), getString(R.string.camerapermission), Toast.LENGTH_SHORT).show();
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, GPS_PERMISSIONS_CODE);
-            }
+            // Richiedo i permessi
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, GPS_PERMISSIONS_CODE);
         }
+        return gpsPermission;
     }
 
 
@@ -426,6 +423,8 @@ public class ProfileActivity extends AppCompatActivity
                 navigationDrawerInitialization();
                 downloadProfilePic();
 
+                locationPerm = checkLocationpermissions();
+
             } else {
                 if (response == null) {
                     // Back button pressed
@@ -468,6 +467,7 @@ public class ProfileActivity extends AppCompatActivity
         }
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -494,20 +494,13 @@ public class ProfileActivity extends AppCompatActivity
             case GPS_PERMISSIONS_CODE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay!
+                    // Permessi accettati
+                    LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    LocationListener locationListener = new MyLocationListener(currentUser);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
                 } else {
                     // permission denied!
-                    // notify user
-                    new AlertDialog.Builder(this)
-                            .setMessage("You have to enable location's permissions.")
-                            .setPositiveButton("Insert string here!!", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                                }
-                            })
-                            .setNegativeButton("Cancel",null)
-                            .show();
+                    Toast.makeText(getApplicationContext(), "Allow the GPS usage in settings to let the app work properly.", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -605,8 +598,9 @@ public class ProfileActivity extends AppCompatActivity
 
         if (id == R.id.nav_deliviries) {
             Intent myIntent = new Intent(this, DeliveryActivity.class);
-            // myIntent.putExtra("key", value); //Optional parameters
-            this.startActivity(myIntent);
+            if (checkLocationpermissions()==PackageManager.PERMISSION_GRANTED) {
+                this.startActivity(myIntent);
+            }
         }
         else if (id == R.id.nav_logout) {
             startLogout();
@@ -625,15 +619,24 @@ public class ProfileActivity extends AppCompatActivity
         progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
-                phone.getText().toString(), additionalInformation.getText().toString(), defaultLat, defaultLon);
+        // RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
+        //         phone.getText().toString(), additionalInformation.getText().toString(), true, defaultPos);
+        //Position position = new Position(defaultLat, defaultLon);
+        HashMap<String, Object> updateValues = new HashMap<>();
+        updateValues.put("name", name.getText().toString());
+        updateValues.put("phone", phone.getText().toString());
+        updateValues.put("additionalInformation", additionalInformation.getText().toString());
+        SmartLogger.d(updateValues.toString());
+
+//        RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
+//                phone.getText().toString(), additionalInformation.getText().toString());
 
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         //database.getReference("Profiles").child("Bikers")
         database.getReference("Rider").child("Profile")
                 .child(currentUid)
-                .setValue(currentUser, new DatabaseReference.CompletionListener() {
+                .updateChildren(updateValues, new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                         if (databaseError != null) {
@@ -818,7 +821,7 @@ public class ProfileActivity extends AppCompatActivity
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
                             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             RiderProfile currentRider = new RiderProfile(user.getUid(), user.getDisplayName(), user.getEmail(),
-                                    "","",false, defaultLat, defaultLon);
+                                    "","",false);
                             String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             //database.getReference("Profiles").child("Bikers")
                             database.getReference("Rider").child("Profile")
