@@ -3,6 +3,8 @@ package com.madgroup.appbikers;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -33,10 +35,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.Haversine;
+import com.madgroup.sdk.Position;
 import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -150,7 +156,7 @@ public class DeliveryPendingTab1 extends Fragment {
                     protected void onBindViewHolder(@NonNull ViewHolder holder, int i, @NonNull final Delivery currentItem) {
                         holder.restaurantName.setText(currentItem.getRestaurantName());
                         holder.restaurantAddress.setText(currentItem.getRestaurantAddress());
-                        holder.distance.setText(currentItem.calculateDistance("123", "123") + " mt");
+                        setDistance(currentItem.getRestaurantAddress(), holder.distance);
                         holder.customerAddress.setText(currentItem.getCustomerAddress());
 //                        holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
 //                            @Override
@@ -305,5 +311,38 @@ public class DeliveryPendingTab1 extends Fragment {
             bikerArrived = itemView.findViewById(R.id.biker_arrived);
         }
 
+    }
+
+    void setDistance(final String restaurantAddress, final TextView distanceTextView){
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference positionRef = database.child("Rider").child("Profile").child(currentUser).child("position");
+        positionRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists() || dataSnapshot == null)
+                    return;
+                Position riderPosition = dataSnapshot.getValue(Position.class);
+                Geocoder geocoder = new Geocoder(getContext());
+                List<Address> addresses;
+                try {
+                    addresses = geocoder.getFromLocationName(restaurantAddress, 1);
+                    if (addresses.size() > 0) {
+                        double latitude = addresses.get(0).getLatitude();
+                        double longitude = addresses.get(0).getLongitude();
+                        final Position restaurantPosition = new Position(latitude, longitude);
+                        double distance = Haversine.distance(restaurantPosition, riderPosition);
+                        distanceTextView.setText(String.valueOf((int)(distance)) + " km");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    distanceTextView.setText("N.A.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

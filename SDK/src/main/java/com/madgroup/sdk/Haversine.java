@@ -21,10 +21,10 @@ public class Haversine {
     public static double distance(Position position1, Position position2) {
 
 
-        double startLat = position1.getLatitude();
-        double startLong = position1.getLongitude();
-        double endLat = position2.getLatitude();
-        double endLong = position2.getLongitude();
+        double startLat = position1.getLat();
+        double startLong = position1.getLon();
+        double endLat = position2.getLat();
+        double endLong = position2.getLon();
 
         double dLat  = Math.toRadians((endLat - startLat));
         double dLong = Math.toRadians((endLong - startLong));

@@ -38,6 +38,7 @@ import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Position;
 import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.RiderProfile;
+import com.madgroup.sdk.SmartLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -251,6 +252,7 @@ public class reservationTab2 extends Fragment {
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren())
                         riderList.add(postSnapshot.getValue(RiderProfile.class));
 
+
                     // Sort Array based on position
                     sortRiderList(riderList);
 
@@ -320,13 +322,12 @@ public class reservationTab2 extends Fragment {
     private void sortRiderList(ArrayList<RiderProfile> riderList) {
         Geocoder geocoder = new Geocoder(getActivity());
         List<Address> addresses;
-        final Position restaurantPosition;
         try {
             addresses = geocoder.getFromLocationName(restaurantAddress, 1);
             if (addresses.size() > 0) {
-                long latitude = (long) addresses.get(0).getLatitude();
-                long longitude = (long) addresses.get(0).getLongitude();
-                restaurantPosition = new Position(latitude, longitude);
+                double latitude = addresses.get(0).getLatitude();
+                double longitude = addresses.get(0).getLongitude();
+                final Position restaurantPosition = new Position(latitude, longitude);
                 Collections.sort(riderList, new Comparator<RiderProfile>() {
                     @Override
                     public int compare(RiderProfile o1, RiderProfile o2) {
