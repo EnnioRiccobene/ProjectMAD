@@ -1,6 +1,9 @@
 package com.madgroup.appbikers;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -8,9 +11,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +32,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
@@ -77,6 +84,7 @@ public class ProfileActivity extends AppCompatActivity
         implements PopupMenu.OnMenuItemClickListener,
         NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int GPS_PERMISSIONS_CODE = 88;
     private String currentUser;
     private CircleImageView personalImage;
     private EditText name;
@@ -104,9 +112,12 @@ public class ProfileActivity extends AppCompatActivity
     private ProgressBar imgProgressBar;
     private NavigationView navigationView;
 
-    String notificationTitle = "MAD Company";
+    String notificationTitle = "MAD Bikers";
     String notificationText;
 
+    private static final String defaultLat = "LAT";
+    private static final String defaultLon = "LON";
+    private int locationPerm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,14 +167,32 @@ public class ProfileActivity extends AppCompatActivity
             loadFieldsFromFirebase();
             downloadProfilePic();
             navigationDrawerInitialization();
-
             final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", ""));
             NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
             notify.newOrderListner();
+            locationPerm = checkLocationpermissions();
         } else {
             startLogin();
         }
     }
+
+    private int checkLocationpermissions() {
+        int gpsPermission = ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (gpsPermission == PackageManager.PERMISSION_GRANTED) {
+            // Permessi già accettati: comincio a tracciare la posizione
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            LocationListener locationListener = new MyLocationListener(currentUser);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
+        } else {
+            // Richiedo i permessi
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, GPS_PERMISSIONS_CODE);
+        }
+        return gpsPermission;
+    }
+
 
     // What happens if I click on a icon on the menu
     @Override
@@ -235,7 +264,7 @@ public class ProfileActivity extends AppCompatActivity
 
     private void setFieldClickable() {
         name.setEnabled(true);
-        email.setEnabled(true);
+        email.setEnabled(false);
         // password.setEnabled(true);
         phone.setEnabled(true);
         additionalInformation.setEnabled(true);
@@ -394,6 +423,8 @@ public class ProfileActivity extends AppCompatActivity
                 navigationDrawerInitialization();
                 downloadProfilePic();
 
+                locationPerm = checkLocationpermissions();
+
             } else {
                 if (response == null) {
                     // Back button pressed
@@ -436,6 +467,7 @@ public class ProfileActivity extends AppCompatActivity
         }
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -458,6 +490,19 @@ public class ProfileActivity extends AppCompatActivity
                     // permission denied!
                     Toast.makeText(getApplicationContext(), getString(R.string.gallerypermission), Toast.LENGTH_SHORT).show();
                 }
+            }
+            case GPS_PERMISSIONS_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permessi accettati
+                    LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    LocationListener locationListener = new MyLocationListener(currentUser);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
+                } else {
+                    // permission denied!
+                    Toast.makeText(getApplicationContext(), "Allow the GPS usage in settings to let the app work properly.", Toast.LENGTH_SHORT).show();
+                }
+                return;
             }
         }
     }
@@ -556,8 +601,9 @@ public class ProfileActivity extends AppCompatActivity
 
         if (id == R.id.nav_deliviries) {
             Intent myIntent = new Intent(this, DeliveryActivity.class);
-            // myIntent.putExtra("key", value); //Optional parameters
-            this.startActivity(myIntent);
+            if (checkLocationpermissions()==PackageManager.PERMISSION_GRANTED) {
+                this.startActivity(myIntent);
+            }
         }
         else if (id == R.id.nav_logout) {
             startLogout();
@@ -576,10 +622,11 @@ public class ProfileActivity extends AppCompatActivity
         progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
+        // RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
+        //         phone.getText().toString(), additionalInformation.getText().toString(), true, defaultPos);
+        //Position position = new Position(defaultLat, defaultLon);
         HashMap<String, Object> updateValues = new HashMap<>();
         updateValues.put("name", name.getText().toString());
-        updateValues.put("email", email.getText().toString());
         updateValues.put("phone", phone.getText().toString());
         updateValues.put("additionalInformation", additionalInformation.getText().toString());
         SmartLogger.d(updateValues.toString());

@@ -61,6 +61,7 @@ public class Delivery {
     }
 
     public int calculateDistance(String customerAddress, String restaurantAddress) {
+//        todo: cambiare metodo e far tornare la distanza vera
         int n = (int) (Math.random() * 100);
 
         return n;

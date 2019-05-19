@@ -223,7 +223,7 @@ public class ProfileActivity extends AppCompatActivity implements
 
     private void setFieldClickable() {
         name.setEnabled(true);
-        email.setEnabled(true);
+        email.setEnabled(false);
         // password.setEnabled(true);
         phone.setEnabled(true);
         address.setEnabled(true);

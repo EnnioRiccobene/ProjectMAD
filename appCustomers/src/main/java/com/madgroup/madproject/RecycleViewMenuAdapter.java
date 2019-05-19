@@ -14,11 +14,14 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.OrderedDish;
 
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuVi
     private ArrayList<OrderedDish> orderedDishes;
     Context mContext;
     private DatabaseReference dishRef;
+    private String restaurantID;
 
     /**
      * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
@@ -38,19 +42,28 @@ public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuVi
      *
      * @param options
      */
-    public RecycleViewMenuAdapter(@NonNull FirebaseRecyclerOptions<Dish> options, DatabaseReference dishRef, Context mContext, ArrayList<OrderedDish> orderedDishes) {
+    public RecycleViewMenuAdapter(@NonNull FirebaseRecyclerOptions<Dish> options, DatabaseReference dishRef, Context mContext, ArrayList<OrderedDish> orderedDishes, String restaurantID) {
         super(options);
         this.dishRef = dishRef;
         this.mContext = mContext;
         this.orderedDishes = orderedDishes;
+        this.restaurantID = restaurantID;
     }
 
     @Override
     protected void onBindViewHolder(@NonNull final MenuViewHolder holder, int i, @NonNull final Dish dish) {
         final int[] orderedQuantity = {0};
-        holder.dishPhoto.setImageBitmap(dish.getPhoto());
+        //holder.dishPhoto.setImageBitmap(dish.getPhoto());
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("dish_pics")
+                .child(restaurantID).child(dish.getId());
+        GlideApp.with(mContext)
+                .load(storageReference)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .error(GlideApp.with(mContext).load(R.drawable.personicon))
+                .into(holder.dishPhoto);
         holder.dishName.setText(dish.getName());
-        holder.dishPrice.setText(dish.getPrice());//todo: gestire la edittext del prezzo come fatto nell'app company
+        holder.dishPrice.setText(dish.getPrice());
         holder.dishIngredientsList.setText(dish.getDescription());
         holder.dishQuantity.setText(String.valueOf(orderedQuantity[0]));
 //        float currDish = Float.valueOf(menu.get(position).getPrice().replace(",", ".").replace("£", "").replace("$", "").replace("€", "").replaceAll("\\s",""));

@@ -147,8 +147,6 @@ public class ShoppingCartActivity extends AppCompatActivity {
         confirm_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //todo: conferma ordine e invia l'oggetto corrispondente al db (e notifica). Fare eventuale email di conferma ordine al cliente e cambiare activity
-                // Creare oggetto Reservation e caricarlo sia sul restaurant (pending) sia nel customer (pending)
 
                 String userID = prefs.getString("currentUser", "Error");
                 final DatabaseReference database = FirebaseDatabase.getInstance().getReference();

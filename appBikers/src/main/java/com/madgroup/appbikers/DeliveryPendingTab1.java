@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -43,6 +44,8 @@ import com.madgroup.sdk.SmartLogger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.widget.Toast.LENGTH_LONG;
 
 
 /**
@@ -158,15 +161,16 @@ public class DeliveryPendingTab1 extends Fragment {
                         holder.restaurantAddress.setText(currentItem.getRestaurantAddress());
                         setDistance(currentItem.getRestaurantAddress(), holder.distance);
                         holder.customerAddress.setText(currentItem.getCustomerAddress());
-//                        holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                // Set action on click
-//
-//                            }
-//                        });
                         holder.bikerArrived.setImageResource(R.drawable.ic_circled_confirm);
                         ImageViewCompat.setImageTintList(holder.bikerArrived, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+
+                        holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                NavigationActivity.start(getContext(), currentItem.getRestaurantAddress(), currentItem.getCustomerAddress());
+                            }
+                        });
+
                         holder.bikerArrived.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -212,13 +216,6 @@ public class DeliveryPendingTab1 extends Fragment {
                                 database.child("Rider").child("Delivery").child("Pending").child(currentUser).child(currentItem.getOrderID()).setValue(null);
                                 database.child("Rider").child("Delivery").child("History").child(currentUser).child(currentItem.getOrderID()).setValue(currentItem);
 
-
-//                                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
-//                                DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser);
-//                                String orderID = currentItem.getOrderID();
-//                                currentItem.setStatus(ReservationActivity.ACCEPTED_RESERVATION_CODE);
-//                                pendingReservationRef.child(orderID).removeValue();
-//                                acceptedReservationRef.child(orderID).setValue(currentItem);
                             }
                         });
                     }
@@ -239,55 +236,6 @@ public class DeliveryPendingTab1 extends Fragment {
         adapter.startListening();
 
 
-//        recyclerView = view.findViewById(R.id.pendingDeliveryRecycleView);
-//        //rootLayout = (CoordinatorLayout)findViewById(R.id.rootLayout);
-//        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-//        adapter = new DeliveryAdapter(deliveriesList);
-//
-//        recyclerView.setLayoutManager(mLayoutManager);
-//        recyclerView.setAdapter(adapter);
-//        recyclerView.setItemAnimator(new DefaultItemAnimator());
-//        // mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-//        adapter.notifyDataSetChanged();
-
-
-//
-//        adapter.setOnItemClickListener(new DeliveryAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(final int position) {
-//                // Scarico dal DB orderedFood
-//                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("OrderedFood");
-//                String orderID = pendingReservation.get(position).getOrderID();
-//                pendingReservationRef.child(orderID).addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        ArrayList<OrderedDish> orderedFood = new ArrayList<>();
-//                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-//                            OrderedDish post = postSnapshot.getValue(OrderedDish.class);
-//                            orderedFood.add(post);
-//                        }
-//                        lastPositionClicked = position;
-//                        Intent openPage = new Intent(getActivity(), DetailedReservation.class);
-//                        openPage.putExtra("Reservation", pendingReservation.get(position));
-//                        openPage.putExtra("OrderedFood", orderedFood);
-//                        startActivityForResult(openPage, CONFIRM_OR_REJECT_CODE);
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                });
-//
-//            }
-//
-//            //This Function is useful if we want to delete an item in the list
-//            @Override
-//            public void onDeleteClick(int position) {
-//                removeItem(position);
-//            }
-//        });
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

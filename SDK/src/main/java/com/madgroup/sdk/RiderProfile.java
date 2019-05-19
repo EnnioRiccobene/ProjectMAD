@@ -11,6 +11,14 @@ public class RiderProfile implements Serializable {
     private boolean status;
     private Position position;
 
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
     public boolean isStatus() {
         return status;
     }
@@ -29,6 +37,16 @@ public class RiderProfile implements Serializable {
         this.phoneNumber = phoneNumber;
         this.additionalInformation = additionalInformation;
         this.status = status;
+    }
+
+    public RiderProfile(String id, String name, String email, String phoneNumber, String additionalInformation, boolean status, Position pos) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.additionalInformation = additionalInformation;
+        this.status = status;
+        this.position = pos;
     }
 
     public RiderProfile(String id, String name, String email, String phoneNumber, String additionalInformation) {
@@ -87,14 +105,6 @@ public class RiderProfile implements Serializable {
     }
     public String getId() {
         return id;
-    }
-
-    public Position getPosition() {
-        return position;
-    }
-
-    public void setPosition(Position position) {
-        this.position = position;
     }
 
     public void setId(String id) {
