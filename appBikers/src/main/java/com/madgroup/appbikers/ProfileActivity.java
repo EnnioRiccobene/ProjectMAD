@@ -58,6 +58,7 @@ import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madgroup.sdk.MyImageHandler;
+import com.madgroup.sdk.Position;
 import com.madgroup.sdk.RiderProfile;
 import com.madgroup.sdk.SmartLogger;
 import com.tapadoo.alerter.Alerter;
@@ -476,19 +477,24 @@ public class ProfileActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         updateNavigatorInformation();
         verifyRiderAvailability();
+        switchInitialization();
+    }
 
+    private void switchInitialization() {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        final DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        final DatabaseReference riderRef = database.child("Rider").child("Profile").child(currentUser);
         riderAvailability.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean newStatus;
-                if (riderAvailability.isChecked())
-                    newStatus = true;
+                if (riderAvailability.isChecked()){
+                    newStatus = true;       // When rider switch to true, new position is 0, 0
+                    riderRef.child("position").setValue(new Position(0, 0));
+                }
                 else
                     newStatus = false;
                 editor.putBoolean("Status", newStatus);
-                riderStatusRef.setValue(newStatus);
+                riderRef.child("status").setValue(newStatus);
                 editor.apply();
             }
         });
@@ -497,9 +503,7 @@ public class ProfileActivity extends AppCompatActivity
     private void verifyRiderAvailability() {
         riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        SmartLogger.d("currentUser: " + currentUser);
         final DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
-        // TODO: Anzichè prenderlo dal DB, prenderlo solo dalle prefs (DEVE ESSERE IMPOSTATO AL LOGIN)
         riderStatusRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

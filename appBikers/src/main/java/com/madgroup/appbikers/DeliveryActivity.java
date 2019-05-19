@@ -35,6 +35,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.madgroup.sdk.Position;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ public class DeliveryActivity extends AppCompatActivity implements
         this.setTitle("Deliveries");
         initializeTabs();
         navigationDrawerInitialization();
+
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         //final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child(prefs.getString("currentUser", ""));
@@ -132,20 +134,21 @@ public class DeliveryActivity extends AppCompatActivity implements
     private void verifyRiderAvailability(NavigationView navigationView) {
         final SwitchCompat riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        final DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        final DatabaseReference riderRef = database.child("Rider").child("Profile").child(currentUser);
         Boolean status = prefs.getBoolean("Status", false);
-        SmartLogger.d("status letto: " + status.toString());
         riderAvailability.setChecked(status);
         riderAvailability.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean newStatus;
-                if (riderAvailability.isChecked())
+                if (riderAvailability.isChecked()){
                     newStatus = true;
+                    riderRef.child("position").setValue(new Position(0, 0));
+                }
                 else
                     newStatus = false;
                 editor.putBoolean("Status", newStatus);
-                riderStatusRef.setValue(newStatus);
+                riderRef.child("status").setValue(newStatus);
                 editor.apply();
             }
         });

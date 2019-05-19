@@ -330,7 +330,7 @@ public class reservationTab2 extends Fragment {
                 final Position restaurantPosition = new Position(latitude, longitude);
                 ArrayList<RiderProfile> notSortableRider = new ArrayList<>();
                 for (RiderProfile element : riderList) {
-                    if (element.getPosition() == null) {
+                    if (element.getPosition() == null || (element.getPosition().getLat() == 0 && element.getPosition().getLon() == 0)) {
                         riderList.remove(element);
                         notSortableRider.add(element);
                     }

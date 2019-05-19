@@ -136,7 +136,7 @@ public class ChooseRiderAdapter extends
     }
 
     String getDistance(String restaurantAddress, Position riderPosition){
-        if(riderPosition == null)
+        if(riderPosition == null || (riderPosition.getLon() == 0 && riderPosition.getLat() == 0))
             return "N.A.";
         Geocoder geocoder = new Geocoder(context);
         List<Address> addresses;
