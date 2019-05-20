@@ -18,7 +18,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ChooseRiderActivity"></activity>
+        <activity android:name=".ChooseRiderActivity"
+            android:parentActivityName=".ReservationActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.madgroup.appcompany.ReservationActivity" />
+        </activity>
         <activity
             android:name=".DetailedReservation"
             android:parentActivityName=".ReservationActivity">

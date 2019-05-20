@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -329,9 +330,12 @@ public class reservationTab2 extends Fragment {
                 double longitude = addresses.get(0).getLongitude();
                 final Position restaurantPosition = new Position(latitude, longitude);
                 ArrayList<RiderProfile> notSortableRider = new ArrayList<>();
-                for (RiderProfile element : riderList) {
+                Iterator<RiderProfile> iterator = riderList.iterator();
+                while(iterator.hasNext()) {
+                    RiderProfile element = iterator.next();
                     if (element.getPosition() == null || (element.getPosition().getLat() == 0 && element.getPosition().getLon() == 0)) {
-                        riderList.remove(element);
+                        iterator.remove();
+                        // riderList.remove(element);
                         notSortableRider.add(element);
                     }
                 }
