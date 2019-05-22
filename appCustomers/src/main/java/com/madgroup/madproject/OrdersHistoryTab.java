@@ -1,7 +1,9 @@
 package com.madgroup.madproject;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -14,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -146,6 +147,28 @@ public class OrdersHistoryTab extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    public void showEvaluationDialog(Activity activity, String title, CharSequence message, final Reservation currentItem) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        if (title != null) builder.setTitle(title);
+
+        builder.setMessage(message);
+        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                EvaluationActivity.start(getContext(), currentItem.getOrderID(), currentItem.getRestaurantID(), currentItem.getCustomerID(), /*todo inserire bikerId*/);
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     private void buildRecyclerView(View view) {
         DatabaseReference pendingRef = FirebaseDatabase.getInstance().getReference().child("Customer").child("Order").child("History").child(currentUser);
         FirebaseRecyclerOptions<Reservation> options = new FirebaseRecyclerOptions.Builder<Reservation>()
@@ -164,9 +187,19 @@ public class OrdersHistoryTab extends Fragment {
                                 .skipMemoryCache(true)
                                 .error(GlideApp.with(OrdersHistoryTab.this).load(R.drawable.personicon))
                                 .into(holder.mImageView);
-                        holder.mTextView1.setText(currentItem.getAddress());
+                        holder.mTextView1.setText(currentItem.getAddress());//todo: correggere con restaurantName
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
+                        holder.evaluate.setImageResource(R.drawable.ic_star);
+                        ImageViewCompat.setImageTintList(holder.evaluate, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+
+                        holder.evaluate.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showEvaluationDialog(getActivity(), getString(R.string.evaluation), getString(R.string.evaluate_dialog_message), currentItem);
+                            }
+                        });
+
                         holder.mView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -200,7 +233,7 @@ public class OrdersHistoryTab extends Fragment {
                     @NonNull
                     @Override
                     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.order_item, parent, false);
+                        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.history_order_item, parent, false);
                         OrderViewHolder evh = new OrderViewHolder(v);
                         return evh;
                     }
@@ -219,6 +252,7 @@ public class OrdersHistoryTab extends Fragment {
         public TextView mTextView2;  // Lunch_time
         public TextView mTextView3;  // Price
         public RelativeLayout viewForeground;
+        public ImageView evaluate;
         View mView;
 
         public OrderViewHolder(@NonNull View itemView) {
@@ -229,6 +263,7 @@ public class OrdersHistoryTab extends Fragment {
             mTextView2 = itemView.findViewById(R.id.lunch_time);
             mTextView3 = itemView.findViewById(R.id.order_price);
             viewForeground = itemView.findViewById(R.id.view_foreground);
+            evaluate = itemView.findViewById(R.id.evaluate);
         }
     }
 }

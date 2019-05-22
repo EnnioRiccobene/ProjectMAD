@@ -1,8 +1,11 @@
 package com.madgroup.madproject;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -10,11 +13,12 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +31,6 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,7 +41,6 @@ import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Reservation;
-import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
 
@@ -150,6 +152,28 @@ public class OrdersPendingTab extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    public void showEvaluationDialog(Activity activity, String title, CharSequence message, final Reservation currentItem) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        if (title != null) builder.setTitle(title);
+
+        builder.setMessage(message);
+        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                EvaluationActivity.start(getContext(), currentItem.getOrderID(), currentItem.getRestaurantID(), currentItem.getCustomerID(), /*todo inserire bikerId*/);
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     private void buildRecyclerView(View view) {
         DatabaseReference pendingRef = FirebaseDatabase.getInstance().getReference().child("Customer").child("Order").child("Pending").child(currentUser);
         FirebaseRecyclerOptions<Reservation> options = new FirebaseRecyclerOptions.Builder<Reservation>()
@@ -170,9 +194,22 @@ public class OrdersPendingTab extends Fragment {
                                 .error(GlideApp.with(OrdersPendingTab.this).load(R.drawable.personicon))
                                 .into(holder.mImageView);
 
-                        holder.mTextView1.setText(currentItem.getAddress());
+                        holder.mTextView1.setText(currentItem.getAddress()); //todo: correggere con restaurantName
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
+                        holder.bikerArrived.setImageResource(R.drawable.ic_circled_confirm);
+                        ImageViewCompat.setImageTintList(holder.bikerArrived, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+
+                        holder.bikerArrived.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //todo: spostare qui la conferma della consegna dell'ordine nel db che al momento è nell'app biker
+
+                                showEvaluationDialog(getActivity(), getString(R.string.evaluation), getString(R.string.evaluate_dialog_message), currentItem);
+
+                            }
+                        });
+
                         holder.mView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -204,7 +241,7 @@ public class OrdersPendingTab extends Fragment {
                     @NonNull
                     @Override
                     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.order_item, parent, false);
+                        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.pending_order_item, parent, false);
                         OrderViewHolder evh = new OrderViewHolder(v);
                         return evh;
                     }
@@ -223,6 +260,7 @@ public class OrdersPendingTab extends Fragment {
         public TextView mTextView2;  // Lunch_time
         public TextView mTextView3;  // Price
         public RelativeLayout viewForeground;
+        public ImageView bikerArrived;
         View mView;
 
         public OrderViewHolder(@NonNull View itemView) {
@@ -233,6 +271,7 @@ public class OrdersPendingTab extends Fragment {
             mTextView2 = itemView.findViewById(R.id.lunch_time);
             mTextView3 = itemView.findViewById(R.id.order_price);
             viewForeground = itemView.findViewById(R.id.view_foreground);
+            bikerArrived = itemView.findViewById(R.id.biker_arrived);
         }
     }
 

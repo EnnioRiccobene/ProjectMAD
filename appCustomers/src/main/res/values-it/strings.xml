@@ -157,5 +157,8 @@
         <item>23:45</item>
     </string-array>
     <string name="order_price">prezzo dell\'ordine</string>
+    <string name="evaluation">Valutazione</string>
+    <string name="yes">SI</string>
+    <string name="evaluate_dialog_message">Vuoi valutare questo ordine?</string>
 
 </resources>
