@@ -8,17 +8,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
-import android.animation.ObjectAnimator;
-import android.animation.StateListAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Base64;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
@@ -36,31 +29,30 @@ import com.google.firebase.storage.StorageReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class OrdersActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener,
-        OrdersHistoryTab.OnFragmentInteractionListener,
-        OrdersPendingTab.OnFragmentInteractionListener {
-
-    private SharedPreferences prefs;
-    private SharedPreferences.Editor editor;
+public class FavoriteActivity extends AppCompatActivity implements
+FavoriteRestaurant.OnFragmentInteractionListener,
+FavoriteTopMeal.OnFragmentInteractionListener,
+FavoriteTopRestaurant.OnFragmentInteractionListener,
+        NavigationView.OnNavigationItemSelectedListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_drawer);
-        ViewStub stub = (ViewStub) findViewById(R.id.stub);
+        ViewStub stub = (ViewStub)findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
-        stub.setLayoutResource(R.layout.activity_orders);
+        stub.setLayoutResource(R.layout.activity_favorite);
         stub.inflate();
-        prefs = getSharedPreferences("MyData", MODE_PRIVATE);
-        editor = prefs.edit();
-        this.setTitle("Orders");
-        initializeTabs();
+        this.setTitle("Favorites");
+        ViewPager viewPager = (ViewPager) findViewById(R.id.favoriteViewPager);
+        FavoritePageAdapter myPagerAdapter = new FavoritePageAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(myPagerAdapter);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
+        tabLayout.setupWithViewPager(viewPager);
         initializeNavigationDrawer();
-
     }
 
-    public void initializeNavigationDrawer() {
+    public void initializeNavigationDrawer(){
 
         // Navigation Drawer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -75,21 +67,8 @@ public class OrdersActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        SharedPreferences prefs = getSharedPreferences("MyData", MODE_PRIVATE);
         // Set the photo of the Navigation Bar Icon (Need to be completed: refresh when new image is updated)
-        updateNavigatorPersonalIcon(navigationView);
-
-        //TODO
-        // Set restaurant name and email on navigation header
-        View headerView = navigationView.getHeaderView(0);
-        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
-        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
-        String name = prefs.getString("Name", "No name inserted");
-        navUsername.setText(name);
-        String email = prefs.getString("Email", "No email inserted");
-        navEmail.setText(email);
-    }
-
-    public void updateNavigatorPersonalIcon(NavigationView navigationView) {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
@@ -101,6 +80,13 @@ public class OrdersActivity extends AppCompatActivity implements
                 .skipMemoryCache(true)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
+
+        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
+        String name = prefs.getString("Name", "No name inserted");
+        navUsername.setText(name);
+        String email = prefs.getString("Email", "No email inserted");
+        navEmail.setText(email);
     }
 
     // Navigation Drawer
@@ -113,16 +99,15 @@ public class OrdersActivity extends AppCompatActivity implements
         if (id == R.id.nav_search_restaurant) {
             Intent myIntent = new Intent(this, SearchRestaurantActivity.class);
             this.startActivity(myIntent);
-           } else if (id == R.id.nav_orders) {
-            onBackPressed();
+        } else if(id == R.id.nav_orders){
+            Intent myIntent = new Intent(this, OrdersActivity.class);
+            this.startActivity(myIntent);
         } else if (id == R.id.nav_profile) {
             Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);
         } else if(id == R.id.nav_favorites){
-            Intent myIntent = new Intent(this, FavoriteActivity.class);
-            this.startActivity(myIntent);
+            onBackPressed();
         } else if (id == R.id.nav_logout) {
-            // LogoutFunction
             startLogout();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -130,97 +115,39 @@ public class OrdersActivity extends AppCompatActivity implements
         return true;
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
     private void startLogout() {
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        SharedPreferences.Editor editor = getSharedPreferences("MyData", MODE_PRIVATE).edit();
                         editor.clear();
                         editor.apply();
                         //startLogin();
-                        Intent intent = new Intent(OrdersActivity.this, ProfileActivity.class);
+                        Intent intent = new Intent(FavoriteActivity.this, ProfileActivity.class);
                         startActivity(intent);
                     }
                 });
     }
 
+    @Override
     public void onBackPressed() {
         DrawerLayout layout = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (layout.isDrawerOpen(GravityCompat.START)) {
             layout.closeDrawer(GravityCompat.START);
+            return;
         }
-    }
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.reservation_menu, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.reservation_reload) {
-//            switch (tabLayout.getSelectedTabPosition()){
-//                case 0:
-//
-//                    break;
-//                case 1:
-//
-//                    break;
-//                case 2:
-//
-//                    break;
-//            }
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
-    // Tabs
-    public void initializeTabs() {
-
-        // Remove black line under toolbar
-        StateListAnimator stateListAnimator = new StateListAnimator();
-        stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(findViewById(android.R.id.content), "elevation", 0));
-        findViewById(R.id.appBarLayout).setStateListAnimator(stateListAnimator);
-
-        // Add tabs
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.reservationViewPager);
-        OrdersPageAdapter myPagerAdapter = new OrdersPageAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(myPagerAdapter);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
-        tabLayout.setupWithViewPager(viewPager);
-
-        // Add actions on tab selected/reselected/unselected
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-        });
-
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
+        super.onBackPressed();
     }
 }

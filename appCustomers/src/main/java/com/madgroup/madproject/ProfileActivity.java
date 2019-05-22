@@ -749,6 +749,9 @@ public class ProfileActivity extends AppCompatActivity implements
         } else if(id == R.id.nav_orders){
             Intent myIntent = new Intent(this, OrdersActivity.class);
             this.startActivity(myIntent);
+        } else if(id == R.id.nav_favorites){
+            Intent myIntent = new Intent(this, FavoriteActivity.class);
+            this.startActivity(myIntent);
         } else if (id == R.id.nav_profile) {
             onBackPressed();
         } else if (id == R.id.nav_logout) {

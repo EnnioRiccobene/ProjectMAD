@@ -12,8 +12,8 @@
     <string name="remove">Rimuovi</string>
     <string name="galleryPermission">Abilita i permessi della galleria dalle impostazioni.</string>
     <string name="cameraPermission">Abilita i permessi della fotocamera dalle impostazioni.</string>
-    <string name="minimum_order">Ordine minimo:</string>
-    <string name="delivery_cost">Costo di consegna:</string>
+    <string name="minimum_order">Ordine minimo:&#160;</string>
+    <string name="delivery_cost">Costo di consegna:&#160;</string>
     <string name="restaurant_name">Nome del ristorante</string>
 
     <!--Food Categories-->

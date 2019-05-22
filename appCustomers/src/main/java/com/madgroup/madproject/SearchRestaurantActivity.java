@@ -12,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,9 +52,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -65,13 +69,14 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SearchRestaurantActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private CircleImageView photo;//temporanea
     private ImageButton btnSearch;
     private ImageButton btnFilter;
     private SearchView searchRestaurant;
     private String restaurantCategory = null;
+    private String currentUser;
 
     private SharedPreferences prefs;
 
@@ -91,12 +96,14 @@ public class SearchRestaurantActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_drawer);
-        ViewStub stub = (ViewStub)findViewById(R.id.stub);
+        ViewStub stub = (ViewStub) findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_searchrestaurant);
         stub.inflate();
         prefs = getSharedPreferences("MyData", MODE_PRIVATE);
+        currentUser = prefs.getString("currentUser", "noUser");
         initializeNavigationDrawer();
+        this.setTitle("Looking for food?");
         // Getting the instance of Firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         restaurantRef = database.getReference().child("Company").child("Profile");
@@ -217,7 +224,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
         FirebaseRecyclerAdapter<Restaurant, FindRestaurantViewHolder> adapter =
                 new FirebaseRecyclerAdapter<Restaurant, FindRestaurantViewHolder>(options) {
                     @Override
-                    protected void onBindViewHolder(@NonNull FindRestaurantViewHolder holder, final int position, @NonNull final Restaurant model) {
+                    protected void onBindViewHolder(@NonNull final FindRestaurantViewHolder holder, final int position, @NonNull final Restaurant model) {
                         holder.restaurant_name.setText(model.getName());
                         holder.food_category.setText(model.getFoodCategory());
                         holder.minimum_order_amount.setText(model.getMinOrder());
@@ -232,15 +239,12 @@ public class SearchRestaurantActivity extends AppCompatActivity
                                 .error(GlideApp.with(SearchRestaurantActivity.this).load(R.drawable.personicon))
                                 .into(holder.restaurant_photo);
 
-
                         holder.cardLayout.setOnClickListener(new View.OnClickListener() {
                             @SuppressLint("ShowToast")
                             @Override
                             public void onClick(View v) {
-
                                 prefs = getSharedPreferences("MyData", MODE_PRIVATE);
-
-                                if (    prefs.getString("Name", "").isEmpty() ||
+                                if (prefs.getString("Name", "").isEmpty() ||
                                         prefs.getString("Email", "").isEmpty() ||
                                         prefs.getString("Phone", "").isEmpty() ||
                                         prefs.getString("Address", "").isEmpty()) {
@@ -249,13 +253,19 @@ public class SearchRestaurantActivity extends AppCompatActivity
 //                                    Toast.makeText(SearchRestaurantActivity.this, "Your profile is not complete", Toast.LENGTH_LONG);
                                     Intent homepage = new Intent(SearchRestaurantActivity.this, ProfileActivity.class);
                                     startActivity(homepage);
-
                                 } else {
                                     //il profilo è pieno e c'è in save preference
                                     //Avvio la seguente Activity
                                     SmartLogger.d(model.getId());
                                     RestaurantMenuActivity.start(mContext, model.getId());
                                 }
+                            }
+                        });
+                        refreshFavoriteList(holder, model);
+                        holder.favoriteCheckBox.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                manageFavorites(holder, model);
                             }
                         });
                     }
@@ -285,6 +295,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
         TextView minimum_order_amount;
         TextView delivery_cost;
         TextView delivery_cost_amount;
+        CheckBox favoriteCheckBox;
 
         public FindRestaurantViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -299,6 +310,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
             minimum_order_amount = itemView.findViewById(R.id.minimum_order_amount);
             delivery_cost = itemView.findViewById(R.id.delivery_cost);
             delivery_cost_amount = itemView.findViewById(R.id.delivery_cost_amount);
+            favoriteCheckBox = itemView.findViewById(R.id.favoriteCheckBox);
         }
     }
 
@@ -371,68 +383,53 @@ public class SearchRestaurantActivity extends AppCompatActivity
         dialogConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Query applyQuery;
-
                 if (restaurantCategory != null) {
-
                     String foodCatChildKey = "foodCategory";
-                    if(restaurantCategory.equals("Pizza"))
+                    if (restaurantCategory.equals("Pizza"))
                         foodCatChildKey = "catPizza";
-                    else if(restaurantCategory.equals("Sandwiches") || restaurantCategory.equals("Panini"))
+                    else if (restaurantCategory.equals("Sandwiches") || restaurantCategory.equals("Panini"))
                         foodCatChildKey = "catSandwiches";
-                    else if(restaurantCategory.equals("Kebab"))
+                    else if (restaurantCategory.equals("Kebab"))
                         foodCatChildKey = "catKebab";
-                    else if(restaurantCategory.equals("Italian") || restaurantCategory.equals("Italiano"))
+                    else if (restaurantCategory.equals("Italian") || restaurantCategory.equals("Italiano"))
                         foodCatChildKey = "catItalian";
-                    else if(restaurantCategory.equals("American") || restaurantCategory.equals("Americano"))
+                    else if (restaurantCategory.equals("American") || restaurantCategory.equals("Americano"))
                         foodCatChildKey = "catAmerican";
-                    else if(restaurantCategory.equals("Desserts") || restaurantCategory.equals("Dolci"))
+                    else if (restaurantCategory.equals("Desserts") || restaurantCategory.equals("Dolci"))
                         foodCatChildKey = "catDesserts";
-                    else if(restaurantCategory.equals("Fry") || restaurantCategory.equals("Fritti"))
+                    else if (restaurantCategory.equals("Fry") || restaurantCategory.equals("Fritti"))
                         foodCatChildKey = "catFry";
-                    else if(restaurantCategory.equals("Vegetarian") || restaurantCategory.equals("Vegetariano"))
+                    else if (restaurantCategory.equals("Vegetarian") || restaurantCategory.equals("Vegetariano"))
                         foodCatChildKey = "catVegetarian";
-                    else if(restaurantCategory.equals("Asian") || restaurantCategory.equals("Asiatico"))
+                    else if (restaurantCategory.equals("Asian") || restaurantCategory.equals("Asiatico"))
                         foodCatChildKey = "catAsian";
-                    else if(restaurantCategory.equals("Mediterranean") || restaurantCategory.equals("Mediterraneo"))
+                    else if (restaurantCategory.equals("Mediterranean") || restaurantCategory.equals("Mediterraneo"))
                         foodCatChildKey = "catMediterranean";
-                    else if(restaurantCategory.equals("South American") || restaurantCategory.equals("Sud Americano"))
+                    else if (restaurantCategory.equals("South American") || restaurantCategory.equals("Sud Americano"))
                         foodCatChildKey = "catSouthAmerican";
 
 
                     if ((!restaurantCategory.equals("All")) && (!restaurantCategory.equals("Qualsiasi"))) {
-
                         //restaurantRef arriva fino a profile
                         String queryText = restaurantCategory;
 //                        applyQuery = restaurantRef.orderByChild("foodCategory").startAt(queryText).endAt(queryText + "\uf8ff");
                         applyQuery = restaurantRef.orderByChild(foodCatChildKey).equalTo("true");
-
-                        if (freeDeliveryCheckbox.isChecked()) {
-
+                        if (freeDeliveryCheckbox.isChecked())
                             applyQuery = restaurantRef.orderByChild(foodCatChildKey + "Del").startAt("true_000").endAt("true_000\uf8ff");
-                        }
 
                     } else {
-
                         applyQuery = restaurantRef;
-
-                        if (freeDeliveryCheckbox.isChecked()) {
-
+                        if (freeDeliveryCheckbox.isChecked())
                             applyQuery = restaurantRef.orderByChild("deliveryCost").startAt("0").endAt("00" + "\uf8ff");
-                        }
                     }
                     options = new FirebaseRecyclerOptions.Builder<Restaurant>()
                             .setQuery(applyQuery, Restaurant.class)
                             .build();
                 } else {
-
                     applyQuery = restaurantRef;
-
-                    if (freeDeliveryCheckbox.isChecked()) {
-
+                    if (freeDeliveryCheckbox.isChecked())
                         applyQuery = restaurantRef.orderByChild("deliveryCost").startAt("0").endAt("00" + "\uf8ff");
-                    }
 
                     options = new FirebaseRecyclerOptions.Builder<Restaurant>()
                             .setQuery(applyQuery, Restaurant.class)
@@ -476,7 +473,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
         return true;
     }
 
-    public void initializeNavigationDrawer(){
+    public void initializeNavigationDrawer() {
 
         // Navigation Drawer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -494,8 +491,6 @@ public class SearchRestaurantActivity extends AppCompatActivity
         // Set the photo of the Navigation Bar Icon (Need to be completed: refresh when new image is updated)
         updateNavigatorPersonalIcon(navigationView);
 
-        //TODO
-        // Set restaurant name and email on navigation header
         View headerView = navigationView.getHeaderView(0);
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
         TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
@@ -505,7 +500,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
         navEmail.setText(email);
     }
 
-    public void updateNavigatorPersonalIcon(NavigationView navigationView){
+    public void updateNavigatorPersonalIcon(NavigationView navigationView) {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
@@ -528,13 +523,15 @@ public class SearchRestaurantActivity extends AppCompatActivity
 
         if (id == R.id.nav_search_restaurant) {
             onBackPressed();
-        } else if(id == R.id.nav_orders){
+        } else if (id == R.id.nav_orders) {
             Intent myIntent = new Intent(this, OrdersActivity.class);
             this.startActivity(myIntent);
         } else if (id == R.id.nav_profile) {
             Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);
-
+        } else if(id == R.id.nav_favorites){
+            Intent myIntent = new Intent(this, FavoriteActivity.class);
+            this.startActivity(myIntent);
         } else if (id == R.id.nav_logout) {
             // LogoutFunction
             startLogout();
@@ -566,13 +563,55 @@ public class SearchRestaurantActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout layout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        if(layout.isDrawerOpen(GravityCompat.START)){
+        DrawerLayout layout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (layout.isDrawerOpen(GravityCompat.START)) {
             layout.closeDrawer(GravityCompat.START);
             return;
         }
         super.onBackPressed();
     }
 
+    public void manageFavorites(FindRestaurantViewHolder holder, final Restaurant model) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference favoriteListRef = database.child("Customer").child("Favorite").child(currentUser).child(model.getId());
+        if (holder.favoriteCheckBox.isChecked()) {
+            // Add to favorite
+            DatabaseReference restaurantRef = database.child("Company").child("Profile").child(model.getId());
+            restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot != null) {
+                        Restaurant newFavorite = dataSnapshot.getValue(Restaurant.class);
+                        favoriteListRef.setValue(newFavorite);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        } else {
+            // Remove from favorite
+            favoriteListRef.removeValue();
+        }
+    }
+
+    public void refreshFavoriteList(final FindRestaurantViewHolder holder, Restaurant model) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference favoritesRef = database.child("Customer").child("Favorite").child(currentUser).child(model.getId());
+        favoritesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists())
+                    holder.favoriteCheckBox.setChecked(true);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
 }
