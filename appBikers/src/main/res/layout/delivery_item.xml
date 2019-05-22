@@ -21,7 +21,7 @@
 
         <TextView
             android:id="@+id/restaurantName"
-            android:layout_width="wrap_content"
+            android:layout_width="309dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Da Michele"
@@ -42,7 +42,7 @@
 
         <TextView
             android:id="@+id/restaurantAddress"
-            android:layout_width="wrap_content"
+            android:layout_width="261dp"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/restaurantAddress_bold"
             android:layout_marginTop="3dp"
@@ -65,7 +65,7 @@
 
         <TextView
             android:id="@+id/customerAddress"
-            android:layout_width="wrap_content"
+            android:layout_width="261dp"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/customerAddress_bold"
             android:layout_marginTop="3dp"
