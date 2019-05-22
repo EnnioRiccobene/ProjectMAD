@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
+
 public class Restaurant implements Parcelable {
 
     private String id;
@@ -23,6 +25,7 @@ public class Restaurant implements Parcelable {
     private String saturdayOpeningHours;
     private String sundayOpeningHours;
     private String fCategoryANDdCost;
+    private Boolean isFavorite;
 
     //campi di supporto per le query al db
     private String catPizza;
@@ -408,6 +411,19 @@ public class Restaurant implements Parcelable {
         this.sundayOpeningHours = in.readString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Restaurant that = (Restaurant) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
     public static final Parcelable.Creator<Restaurant> CREATOR = new Parcelable.Creator<Restaurant>() {
         @Override
         public Restaurant createFromParcel(Parcel source) {
@@ -419,4 +435,12 @@ public class Restaurant implements Parcelable {
             return new Restaurant[size];
         }
     };
+
+    public Boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        isFavorite = favorite;
+    }
 }

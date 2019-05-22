@@ -1,14 +1,31 @@
 package com.madgroup.madproject;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +46,11 @@ public class FavoriteTopRestaurant extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private String currentUser;
+    private SharedPreferences prefs;
+    private FavoriteTopRestaurantAdapter adapter;
+    static public ArrayList<Restaurant> topRestaurant;
+    static public RecyclerView recyclerView;
 
     public FavoriteTopRestaurant() {
         // Required empty public constructor
@@ -64,9 +86,15 @@ public class FavoriteTopRestaurant extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        prefs = this.getActivity().getSharedPreferences("MyData", MODE_PRIVATE);
+        currentUser = prefs.getString("currentUser", "noUser");
+        View view = inflater.inflate(R.layout.fragment_favorite_restaurant, container, false);
+        buildRecyclerView(view);
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorite_top_restaurant, container, false);
+        return view;
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -105,5 +133,31 @@ public class FavoriteTopRestaurant extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void buildRecyclerView(final View view) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference restaurantRef = database.child("Company").child("Profile");
+        topRestaurant = new ArrayList<>();
+        restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists())
+                    return;
+                for (DataSnapshot restaurant : dataSnapshot.getChildren())
+                    topRestaurant.add(restaurant.getValue(Restaurant.class));
+                recyclerView = (RecyclerView) view.findViewById(R.id.favoriteRecyclerViewTab);
+                adapter = new FavoriteTopRestaurantAdapter(getContext(), topRestaurant);
+                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+                recyclerView.setLayoutManager(mLayoutManager);
+                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                recyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

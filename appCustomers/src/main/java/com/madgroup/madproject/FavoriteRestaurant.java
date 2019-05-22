@@ -40,6 +40,7 @@ import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -281,29 +282,13 @@ public class FavoriteRestaurant extends Fragment {
         });
     }
 
-    public void manageFavorites(FavoriteRestaurant.FavoriteViewHolder holder, final Restaurant model) {
+    public void manageFavorites(final FavoriteRestaurant.FavoriteViewHolder holder, final Restaurant model) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference favoriteListRef = database.child("Customer").child("Favorite").child(currentUser).child(model.getId());
-        if (holder.favoriteCheckBox.isChecked()) {
-            // Add to favorite
-            DatabaseReference restaurantRef = database.child("Company").child("Profile").child(model.getId());
-            restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot != null) {
-                        Restaurant newFavorite = dataSnapshot.getValue(Restaurant.class);
-                        favoriteListRef.setValue(newFavorite);
-                    }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        } else {
-            // Remove from favorite
-            favoriteListRef.removeValue();
+        if (!holder.favoriteCheckBox.isChecked()) {
+            favoriteListRef.removeValue();              // Remove from favorite
+            updateTopRestaurantRecyclerView(model);     // Update Top Restaurants Tab's Recycler View
         }
     }
 
@@ -322,5 +307,16 @@ public class FavoriteRestaurant extends Fragment {
 
             }
         });
+    }
+
+    private void updateTopRestaurantRecyclerView(Restaurant model) {
+        if(FavoriteTopRestaurant.topRestaurant != null && FavoriteTopRestaurant.recyclerView != null){
+            if(FavoriteTopRestaurant.recyclerView.getAdapter() == null || FavoriteTopRestaurant.topRestaurant.indexOf(model) == -1)
+                return;
+            int pos = FavoriteTopRestaurant.topRestaurant.indexOf(model);
+            FavoriteTopRestaurant.topRestaurant.get(pos).setFavorite(false);
+            FavoriteTopRestaurant.recyclerView.getAdapter().notifyDataSetChanged();
+            SmartLogger.d("indexOf: " + pos);
+        }
     }
 }
