@@ -43,7 +43,11 @@ import com.madgroup.sdk.SmartLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.widget.Toast.LENGTH_LONG;
 
@@ -189,6 +193,33 @@ public class DeliveryPendingTab1 extends Fragment {
                                         moveReservation.setStatus(3);
                                         database.child("Company").child("Reservation").child("History").child(currentItem.getRestaurantID()).child(currentItem.getOrderID()).setValue(moveReservation);
                                         database.child("Company").child("Reservation").child("Accepted").child(currentItem.getRestaurantID()).child(currentItem.getOrderID()).setValue(null);
+
+                                        // Raf: Inizializzo o incremento il contatore nel nodo TimingOrder per le statistiche. Il contatore equivale al numero di ordini effettuati dal ristorante in una certa fascia ORARIA.
+                                        Calendar calendar = Calendar.getInstance();
+                                        String year = Integer.toString(calendar.get(Calendar.YEAR));
+                                        String month = Integer.toString(calendar.get(Calendar.MONTH));
+                                        String weekOfMonth = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH));
+                                        String node = year+"_"+month+"_"+weekOfMonth;
+                                        String dayOfMonth = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
+                                        String hourOfDay = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY)); // Fascia oraria
+                                        String key = dayOfMonth+"_"+hourOfDay;
+                                        DatabaseReference timingOrderRef = database.child("Company").child("Reservation").child("TimingOrder")
+                                                .child(currentItem.getRestaurantID()).child(node).child(key);
+                                        timingOrderRef.runTransaction(new Transaction.Handler() {
+                                            @Override
+                                            public Transaction.Result doTransaction(MutableData mutableData) {
+                                                Integer amountOfOrders = mutableData.getValue(Integer.class);
+                                                if (amountOfOrders == null)
+                                                    mutableData.setValue(1);
+                                                else
+                                                    mutableData.setValue(amountOfOrders + 1);
+                                                return Transaction.success(mutableData);
+                                            }
+                                            @Override
+                                            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                                                //System.out.println("Transaction completed");
+                                            }
+                                        });
                                     }
 
                                     @Override
