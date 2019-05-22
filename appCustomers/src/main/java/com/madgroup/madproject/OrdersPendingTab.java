@@ -170,7 +170,7 @@ public class OrdersPendingTab extends Fragment {
                                 .error(GlideApp.with(OrdersPendingTab.this).load(R.drawable.personicon))
                                 .into(holder.mImageView);
 
-                        holder.mTextView1.setText(currentItem.getAddress());
+                        holder.mTextView1.setText(currentItem.getRestaurantName());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
                         holder.mView.setOnClickListener(new View.OnClickListener() {

@@ -16,6 +16,7 @@ public class Reservation implements Serializable {
     private String price;
     private Integer status;
     private String notes;
+    private String restaurantName;
     //private boolean seen;
 
 //    Status
@@ -68,7 +69,8 @@ public class Reservation implements Serializable {
         price = df.format(x);
     }
 
-    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, String restaurantID, String deliveryCost ) {
+    public Reservation(String restaurantName, ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, String restaurantID, String deliveryCost ) {
+        this.restaurantName = restaurantName;
         this.orderedDishList = orderedDishList;
         this.address = address;
         this.deliveryTime = deliveryTime;
@@ -184,5 +186,12 @@ public class Reservation implements Serializable {
         this.price = price;
     }
 
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
+    }
 }
 
