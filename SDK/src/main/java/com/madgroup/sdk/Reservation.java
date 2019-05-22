@@ -10,6 +10,7 @@ public class Reservation implements Serializable {
     private String customerID;
     private ArrayList<OrderedDish> orderedDishList;
     private String restaurantID;
+    private String restaurantName;
     private String address;
     private String deliveryTime;
     private String deliveryCost;
@@ -29,46 +30,8 @@ public class Reservation implements Serializable {
     public Reservation() {
     }
 
-    public Reservation(String address, String deliveryTime, Integer status, String price) {
-        this.address = address;
-        this.deliveryTime = deliveryTime;
-        this.status = status;
-        this.price = price;
-        //this.seen = false;
-    }
-
-    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, Integer status) {
-        this.orderedDishList = orderedDishList;
-        this.address = address;
-        this.deliveryTime = deliveryTime;
-        this.status= status;
-        //this.seen = false;
-        // Compute total Price
-        float x = 0;
-        for (OrderedDish element : orderedDishList)
-            x += Float.parseFloat(element.getPrice()) * Float.parseFloat(element.getQuantity());
-        DecimalFormat df = new DecimalFormat("#.##");
-        df.setMinimumFractionDigits(2);
-        price = df.format(x);
-    }
-
-    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, Integer status) {
-        this.orderedDishList = orderedDishList;
-        this.address = address;
-        this.deliveryTime = deliveryTime;
-        this.status= status;
-        this.notes = notes;
-        //this.seen = false;
-        // Compute total Price
-        float x = 0;
-        for (OrderedDish element : orderedDishList)
-            x += Float.parseFloat(element.getPrice()) * Float.parseFloat(element.getQuantity());
-        DecimalFormat df = new DecimalFormat("#.##");
-        df.setMinimumFractionDigits(2);
-        price = df.format(x);
-    }
-
-    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, String restaurantID, String deliveryCost ) {
+    public Reservation(String restaurantName, ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, String restaurantID, String deliveryCost ) {
+        this.restaurantName = restaurantName;
         this.orderedDishList = orderedDishList;
         this.address = address;
         this.deliveryTime = deliveryTime;
@@ -184,5 +147,12 @@ public class Reservation implements Serializable {
         this.price = price;
     }
 
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
+    }
 }
 

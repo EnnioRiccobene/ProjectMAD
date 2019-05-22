@@ -96,16 +96,16 @@ public class DetailedOrder extends AppCompatActivity {
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
         prefs = getSharedPreferences("MyData", MODE_PRIVATE);
-        subtotalPrice.setText(currentReservation.getPrice().replace(",", ".") + currency);
+        final String deliverCost = deliveryCostAmount.replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s", "");
+        float subtotal = Float.valueOf(currentReservation.getPrice().replace(" €", "").replace(",", ".")) - Float.valueOf(deliverCost);
+        subtotalPrice.setText(df.format(subtotal).replace(".", ",") + currency);
         name.setText(prefs.getString("Name", ""));
         address.setText(prefs.getString("Address", ""));
         phone.setText(prefs.getString("Phone", ""));
         time.setText(deliveryTime);
         notes.setText(note);
-        final String deliverCost = deliveryCostAmount.replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s", "");
-        float total = Float.valueOf(deliverCost) + Float.valueOf(currentReservation.getPrice().replace(",", ".").replace("€", "").replace("£", "").replace("$", "").replaceAll("\\s", ""));
-        deliveryPrice.setText(String.valueOf(df.format(Float.valueOf(deliverCost))) + currency);
-        totalPrice.setText(String.valueOf(df.format(total)) + currency);
+        deliveryPrice.setText(df.format(Float.valueOf(deliverCost)) + currency);
+        totalPrice.setText(currentReservation.getPrice() + currency);
         currentReservation.setPrice(totalPrice.getText().toString());
     }
 
