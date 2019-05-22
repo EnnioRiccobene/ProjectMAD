@@ -10,6 +10,7 @@ public class Dish {
     private String price;
     private String availableQuantity;
     private String description;
+    private String orderedQuantityTot;
 
     public Dish() {
     }
@@ -20,6 +21,7 @@ public class Dish {
         this.price = price;
         this.availableQuantity = availableQuantity;
         this.description = description;
+        this.orderedQuantityTot = "0";
     }
 
     public Dish(String id, String name, String price, String availableQuantity) {
@@ -27,6 +29,15 @@ public class Dish {
         this.name = name;
         this.price = price;
         this.availableQuantity = availableQuantity;
+        this.orderedQuantityTot = "0";
+    }
+
+    public String getOrderedQuantityTot() {
+        return orderedQuantityTot;
+    }
+
+    public void setOrderedQuantityTot(String orderedQuantityTot) {
+        this.orderedQuantityTot = orderedQuantityTot;
     }
 
     public String getId() {
