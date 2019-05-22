@@ -10,22 +10,8 @@ public class RiderProfile implements Serializable {
     private String additionalInformation;
     private boolean status;
     private Position position;
-
-    public Position getPosition() {
-        return position;
-    }
-
-    public void setPosition(Position position) {
-        this.position = position;
-    }
-
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
+    private String ratingAvg;
+    private String ratingCounter;
 
     public RiderProfile() {
     }
@@ -37,6 +23,8 @@ public class RiderProfile implements Serializable {
         this.phoneNumber = phoneNumber;
         this.additionalInformation = additionalInformation;
         this.status = status;
+        this.ratingAvg = "0";
+        this.ratingCounter = "0";
     }
 
     public RiderProfile(String id, String name, String email, String phoneNumber, String additionalInformation, boolean status, Position pos) {
@@ -70,6 +58,38 @@ public class RiderProfile implements Serializable {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getRatingAvg() {
+        return ratingAvg;
+    }
+
+    public void setRatingAvg(String ratingAvg) {
+        this.ratingAvg = ratingAvg;
+    }
+
+    public String getRatingCounter() {
+        return ratingCounter;
+    }
+
+    public void setRatingCounter(String ratingCounter) {
+        this.ratingCounter = ratingCounter;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     public String getName() {
