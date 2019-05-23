@@ -161,5 +161,10 @@
     <string name="yes">SI</string>
     <string name="evaluate_dialog_message">Vuoi valutare questo ordine?</string>
     <string name="error_evaluate_toast">Valuta il tuo ordine dopo averlo ricevuto</string>
+    <string name="RatingTitle">Valutazione</string>
+    <string name="rating_restaurant">Ristorante</string>
+    <string name="rating_food">Cibo</string>
+    <string name="rating_service">Servizio di consegna</string>
+    <string name="rating_review">Recensisci il tuo ordine</string>
 
 </resources>
