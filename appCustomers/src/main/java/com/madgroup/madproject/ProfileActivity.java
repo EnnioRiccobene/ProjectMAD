@@ -231,32 +231,6 @@ public class ProfileActivity extends AppCompatActivity implements
         personalImage.setEnabled(true);
     }
 
-//    private void loadFields() {
-//        if (prefs.contains("Name"))
-//            name.setText(prefs.getString("Name", ""));
-//        if (prefs.contains("Email"))
-//            email.setText(prefs.getString("Email", ""));
-//        // if (prefs.contains("Password"))
-//            // password.setText(prefs.getString("Password", ""));
-//        if (prefs.contains("Phone"))
-//            phone.setText(prefs.getString("Phone", ""));
-//        if(prefs.contains("Address"))
-//            address.setText(prefs.getString("Address", ""));
-//        if(prefs.contains("Information"))
-//            additionalInformation.setText(prefs.getString("Information", ""));
-//        restoreImageContent();
-//    }
-//
-//    private void saveFields() {
-//        editor.putString("Name", name.getText().toString());
-//        editor.putString("Email", email.getText().toString());
-//        // editor.putString("Password", password.getText().toString());
-//        editor.putString("Phone", phone.getText().toString());
-//        editor.putString("Address", address.getText().toString());
-//        editor.putString("Information", additionalInformation.getText().toString());
-//        editor.apply();
-//    }
-
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         try {
@@ -492,14 +466,6 @@ public class ProfileActivity extends AppCompatActivity implements
     private void uploadProfilePic() {
 
         imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
-
-        // TODO: Fare il check con l'immagine di default e decommentare
-        // Se è l'immagine di default, non salvo niente ed eventualmente elimino quella presente.
-//        if (isDefaultImage) {
-//            deleteProfilePic();
-//            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-//            return;
-//        }
 
         Bitmap bitmap = ((BitmapDrawable) personalImage.getDrawable()).getBitmap();
 

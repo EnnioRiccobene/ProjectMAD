@@ -1,6 +1,7 @@
 package com.madgroup.madproject;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -17,6 +18,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
@@ -152,6 +155,83 @@ public class EvaluationActivity extends AppCompatActivity {
                     Toast.makeText(EvaluationActivity.this, getString(R.string.mandatory_evaluate), Toast.LENGTH_SHORT).show();
                 } else {
                     //todo: inserisci/aggiorna i valori nel db nelle app Rider, Company  profile e Company rating(nelle prime due con transaction)
+                    //Inserisco la valutazione in Company
+                    companyProfileRef.child("customerId").setValue(customerId);
+                    companyProfileRef.child("orderId").setValue(orderId);
+                    companyProfileRef.child("restaurantRating").setValue(String.valueOf(restaurantRating));
+                    companyProfileRef.child("foodRating").setValue(String.valueOf(foodRating));
+                    companyProfileRef.child("comment").setValue(reviewEditText.getText().toString());
+
+                    //Update restaurant profile
+                    //todo: impedire aggiornamento dei primi due dati se ho già recensito il ristorante. (non eseguire questa transazione)
+                    companyProfileRef.runTransaction(new Transaction.Handler() {
+                        @NonNull
+                        @Override
+                        public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                            String ratingCounter = mutableData.child("ratingCounter").getValue(String.class);
+                            String ratingAvg = mutableData.child("ratingAvg").getValue(String.class);
+                            String foodRatingAvg = mutableData.child("foodRatingAvg").getValue(String.class);
+
+                            if(ratingCounter.equals("0")){
+                                mutableData.child("ratingCounter").setValue("1");
+                            } else {
+                                int a = Integer.valueOf(ratingCounter) + 1;
+                                mutableData.child("ratingCounter").setValue(String.valueOf(a));
+                            }
+
+                            if(ratingAvg.equals("0")){
+                                mutableData.child("ratingAvg").setValue(String.valueOf(restaurantRating));
+                            } else {
+                                float a = (Float.valueOf(ratingAvg) + restaurantRating) / (Integer.valueOf(ratingCounter) + 1);
+                                mutableData.child("ratingAvg").setValue(String.valueOf(a));
+                            }
+
+                            if(foodRatingAvg.equals("0")){
+                                mutableData.child("foodRatingAvg").setValue(String.valueOf(foodRating));
+                            } else {
+                                float a = (Float.valueOf(ratingAvg) + foodRating) / (Integer.valueOf(ratingCounter) + 1);
+                                mutableData.child("foodRatingAvg").setValue(String.valueOf(a));
+                            }
+
+                            return Transaction.success(mutableData);
+                        }
+
+                        @Override
+                        public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+                        }
+                    });
+
+                    //Update Rider profile
+                    riderProfileRef.runTransaction(new Transaction.Handler() {
+                        @NonNull
+                        @Override
+                        public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                            String ratingCounter = mutableData.child("ratingCounter").getValue(String.class);
+                            String ratingAvg = mutableData.child("ratingAvg").getValue(String.class);
+
+                            if(ratingCounter.equals("0")){
+                                mutableData.child("ratingCounter").setValue("1");
+                            } else {
+                                int a = Integer.valueOf(ratingCounter) + 1;
+                                mutableData.child("ratingCounter").setValue(String.valueOf(a));
+                            }
+
+                            if(ratingAvg.equals("0")){
+                                mutableData.child("ratingAvg").setValue(String.valueOf(restaurantRating));
+                            } else {
+                                float a = (Float.valueOf(ratingAvg) + restaurantRating) / (Integer.valueOf(ratingCounter) + 1);
+                                mutableData.child("ratingAvg").setValue(String.valueOf(a));
+                            }
+
+                            return Transaction.success(mutableData);
+                        }
+
+                        @Override
+                        public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+                        }
+                    });
                 }
             }
         });
