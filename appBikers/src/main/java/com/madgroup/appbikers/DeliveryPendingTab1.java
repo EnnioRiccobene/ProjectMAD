@@ -197,12 +197,13 @@ public class DeliveryPendingTab1 extends Fragment {
                                         // Raf: Inizializzo o incremento il contatore nel nodo TimingOrder per le statistiche. Il contatore equivale al numero di ordini effettuati dal ristorante in una certa fascia ORARIA.
                                         Calendar calendar = Calendar.getInstance();
                                         String year = Integer.toString(calendar.get(Calendar.YEAR));
-                                        String month = Integer.toString(calendar.get(Calendar.MONTH));
+                                        String month = Integer.toString(calendar.get(Calendar.MONTH)+1);
                                         String weekOfMonth = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH));
                                         String node = year+"_"+month+"_"+weekOfMonth;
                                         String dayOfMonth = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
+                                        String dayOfWeek = Integer.toString(calendar.get(Calendar.DAY_OF_WEEK));
                                         String hourOfDay = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY)); // Fascia oraria
-                                        String key = dayOfMonth+"_"+hourOfDay;
+                                        String key = dayOfMonth+"_"+dayOfWeek+"_"+hourOfDay;
                                         DatabaseReference timingOrderRef = database.child("Company").child("Reservation").child("TimingOrder")
                                                 .child(currentItem.getRestaurantID()).child(node).child(key);
                                         timingOrderRef.runTransaction(new Transaction.Handler() {
