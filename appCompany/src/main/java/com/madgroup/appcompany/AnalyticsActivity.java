@@ -88,6 +88,8 @@ public class AnalyticsActivity extends AppCompatActivity implements
         initializeNavigationDrawer();
         initializeTabs();
 
+        //initializeDailyHistogram();
+
     }
 
     public void initializeTabs() {
@@ -269,8 +271,10 @@ public class AnalyticsActivity extends AppCompatActivity implements
 //        });
 //    }
 
+    /*
     @Override
     public void onFragmentInteraction(Uri uri) {
 
     }
+    */
 }

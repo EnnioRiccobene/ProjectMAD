@@ -101,9 +101,9 @@ public class AnalyticsTab2 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        anyChartView = view.findViewById(R.id.weekly_histogram);
-        anyChartView.setProgressBar(view.findViewById(R.id.weekly_progress_bar));
-        initializeWeeklyHistogram();
+        //anyChartView = view.findViewById(R.id.weekly_histogram);
+        //anyChartView.setProgressBar(view.findViewById(R.id.weekly_progress_bar));
+        //initializeWeeklyHistogram();
     }
 
 

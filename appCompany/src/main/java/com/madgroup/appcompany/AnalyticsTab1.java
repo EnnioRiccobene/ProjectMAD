@@ -107,9 +107,9 @@ public class AnalyticsTab1 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //anyChartView = view.findViewById(R.id.daily_histogram);
-        //anyChartView.setProgressBar(view.findViewById(R.id.daily_progress_bar));
-        //initializeDailyHistogram();
+        anyChartView = view.findViewById(R.id.daily_histogram);
+        anyChartView.setProgressBar(view.findViewById(R.id.daily_progress_bar));
+        initializeDailyHistogram();
     }
 
     public void initializeDailyHistogram() {
@@ -125,7 +125,7 @@ public class AnalyticsTab1 extends Fragment {
 
         //final String dayOfMonth = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
 
-        final String dayOfMonth = "22";
+        final String dayOfMonth = "23";
 
         DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
                 .child(restaurantID).child(node);
@@ -139,9 +139,9 @@ public class AnalyticsTab1 extends Fragment {
 
                 // Inizializzo un'hashmap con tutti i valori da mostrare sull'asse delle x (cioè le fasce orarie)
                 // Uso TreeMap perchè tiene in ordine le chiavi.
-                TreeMap<String,Integer> hashMap = new TreeMap<>();
-                for (int i=18; i<24; i++) {
-                    hashMap.put(""+i, 0);
+                TreeMap<Integer,Integer> hashMap = new TreeMap<>();
+                for (int i=5; i<24; i++) {
+                    hashMap.put(i, 0);
                 }
 
                 // Leggo il numero di consegne per ogni fascia oraria e aggiorno la mappa
@@ -152,15 +152,15 @@ public class AnalyticsTab1 extends Fragment {
                     if(day_nameDay_hourSlot.startsWith(dayOfMonth)) {
                         String fields[] = day_nameDay_hourSlot.split("_");
                         String hourSlot = fields[2];
-                        hashMap.put(hourSlot, amountOfOrders);
+                        hashMap.put(Integer.parseInt(hourSlot), amountOfOrders);
                         //data.add(new ValueDataEntry(hourSlot, amountOfOrders));
                     }
                 }
 
                 // Converto la mappa in ArrayList (la libreria accetta questo formato)
                 List<DataEntry> data = new ArrayList<>();
-                for (TreeMap.Entry<String, Integer> entry : hashMap.entrySet()) {
-                    String hourSlot = entry.getKey();
+                for (TreeMap.Entry<Integer, Integer> entry : hashMap.entrySet()) {
+                    Integer hourSlot = entry.getKey();
                     Integer amountOfOrders = entry.getValue();
                     data.add(new ValueDataEntry(hourSlot, amountOfOrders));
                 }

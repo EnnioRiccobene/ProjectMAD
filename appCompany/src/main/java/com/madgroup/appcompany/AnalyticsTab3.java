@@ -1,65 +1,73 @@
 package com.madgroup.appcompany;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.anychart.AnyChart;
+import com.anychart.AnyChartView;
+import com.anychart.chart.common.dataentry.DataEntry;
+import com.anychart.chart.common.dataentry.ValueDataEntry;
+import com.anychart.charts.Cartesian;
+import com.anychart.core.cartesian.series.Column;
+import com.anychart.enums.Anchor;
+import com.anychart.enums.HoverMode;
+import com.anychart.enums.Position;
+import com.anychart.enums.TooltipPositionMode;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link AnalyticsTab3.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link AnalyticsTab3#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+
 public class AnalyticsTab3 extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private SharedPreferences.Editor editor;
+    private SharedPreferences prefs;
+    private AnyChartView anyChartView;
+    private Map<String, String> mapDayOfWeek;
 
     public AnalyticsTab3() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AnalyticsTab3.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AnalyticsTab3 newInstance(String param1, String param2) {
-        AnalyticsTab3 fragment = new AnalyticsTab3();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        editor = prefs.edit();
+        initMapDayOfWeek();
+    }
+
+    private void initMapDayOfWeek() {
+        mapDayOfWeek = new HashMap<>();
+        mapDayOfWeek.put("1","Mon");
+        mapDayOfWeek.put("2","Tue");
+        mapDayOfWeek.put("3","Wed");
+        mapDayOfWeek.put("4","Thu");
+        mapDayOfWeek.put("5","Fri");
+        mapDayOfWeek.put("6","Sat");
+        mapDayOfWeek.put("7","Sun");
+
     }
 
     @Override
@@ -67,13 +75,6 @@ public class AnalyticsTab3 extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_analytics_tab3, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -93,18 +94,94 @@ public class AnalyticsTab3 extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+
     }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        //anyChartView = view.findViewById(R.id.monthly_histogram);
+        //anyChartView.setProgressBar(view.findViewById(R.id.monthly_progress_bar));
+        //initializeWeeklyHistogram();
+    }
+
+
+    public void initializeWeeklyHistogram() {
+
+        // Database references
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        String restaurantID = prefs.getString("currentUser", "");
+        Calendar calendar = Calendar.getInstance();
+        String year = "2019";
+        final String month = "5";
+        final String weekOfMonth = "4";
+        String node = year+"_"+month+"_"+weekOfMonth;
+
+
+        DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
+                .child(restaurantID).child(node);
+
+        // Riferimenti all'istogramma
+        final Cartesian cartesian = AnyChart.column();
+
+        timingOrederRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // Inizializzo un'hashmap con tutti i valori da mostrare sull'asse delle x (cioè i giorni della settimana)
+                // Uso TreeMap perchè tiene in ordine le chiavi.
+                TreeMap<String,Integer> hashMap = new TreeMap<>();
+                for (int i=1; i<=7; i++) {
+                    hashMap.put(""+i, 0);
+                }
+
+                // Leggo il numero di consegne per ogni fascia oraria e aggiorno la mappa
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String day_nameDay_hourSlot = ds.getKey();
+                    Integer amountOfOrders = ds.getValue(Integer.class);
+                    String fields[] = day_nameDay_hourSlot.split("_");
+                    String nameDay = fields[1];
+                    Integer currentAmount = hashMap.get(nameDay);
+                    if (currentAmount==null)
+                        hashMap.put(nameDay, amountOfOrders);
+                    else
+                        hashMap.put(nameDay, currentAmount+amountOfOrders);
+                }
+
+                // Converto la mappa in ArrayList (la libreria accetta questo formato)
+                List<DataEntry> data = new ArrayList<>();
+                for (TreeMap.Entry<String, Integer> entry : hashMap.entrySet()) {
+                    String dayOfWeek = entry.getKey();
+                    Integer amountOfOrders = entry.getValue();
+                    String nameDay = mapDayOfWeek.get(dayOfWeek);
+                    data.add(new ValueDataEntry(nameDay, amountOfOrders));
+                }
+
+                Column column = cartesian.column(data);
+                column.tooltip()
+                        .titleFormat("{%X}")
+                        .position(Position.CENTER_TOP)
+                        .anchor(Anchor.CENTER_TOP)
+                        .offsetX(0d)
+                        .offsetY(5d);
+                cartesian.animation(true);
+                cartesian.yScale().minimum(0d);
+                cartesian.yAxis(0).labels().enabled(false);
+                //.format("{%Value}{groupsSeparator: }");
+                cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
+                cartesian.tooltip().title().text("Amount of deliveries");
+                cartesian.tooltip().format("{%value}");
+                cartesian.interactivity().hoverMode(HoverMode.BY_X);
+                cartesian.xAxis(0).title("");
+                cartesian.title(weekOfMonth+"th week of "+month);
+                //cartesian.yAxis(0).title("Amount of orders");
+                anyChartView.setChart(cartesian);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
 }
