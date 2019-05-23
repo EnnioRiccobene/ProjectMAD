@@ -42,6 +42,8 @@ public class EvaluationActivity extends AppCompatActivity {
 
     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     DatabaseReference companyRatingRef = rootRef.child("Company").child("Rating").child(restaurantId).child(customerId);
+    DatabaseReference riderProfileRef = rootRef.child("Rider").child("Profile").child(riderId);
+    DatabaseReference companyProfileRef = rootRef.child("Company").child("Profile").child(restaurantId);
 
     public static void start(Context context, String orderId, String restaurantId, String customerId, String bikerId) {
         Intent starter = new Intent(context, EvaluationActivity.class);
@@ -149,7 +151,7 @@ public class EvaluationActivity extends AppCompatActivity {
                 if(restaurantRating == 0 || foodRating == 0 || serviceRating == 0){
                     Toast.makeText(EvaluationActivity.this, getString(R.string.mandatory_evaluate), Toast.LENGTH_SHORT).show();
                 } else {
-                    //todo: inserisci i valori nel db nelle app Rider, Restaurant e Company (nelle prime due con transaction)
+                    //todo: inserisci/aggiorna i valori nel db nelle app Rider, Company  profile e Company rating(nelle prime due con transaction)
                 }
             }
         });
