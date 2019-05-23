@@ -16,6 +16,7 @@ public class Reservation implements Serializable {
     private String price;
     private Integer status;
     private String notes;
+    private String bikerID;
     //private boolean seen;
 
 //    Status
@@ -34,6 +35,7 @@ public class Reservation implements Serializable {
         this.deliveryTime = deliveryTime;
         this.status = status;
         this.price = price;
+
         //this.seen = false;
     }
 
@@ -50,6 +52,7 @@ public class Reservation implements Serializable {
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
         price = df.format(x);
+        this.bikerID = "";
     }
 
     public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, Integer status) {
@@ -66,6 +69,7 @@ public class Reservation implements Serializable {
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
         price = df.format(x);
+        this.bikerID = "";
     }
 
     public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, String restaurantID, String deliveryCost ) {
@@ -87,6 +91,7 @@ public class Reservation implements Serializable {
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
         price = df.format(x);
+        this.bikerID = "";
     }
 
     public String getOrderID() {
@@ -184,5 +189,12 @@ public class Reservation implements Serializable {
         this.price = price;
     }
 
+    public String getBikerID() {
+        return bikerID;
+    }
+
+    public void setBikerID(String bikerID) {
+        this.bikerID = bikerID;
+    }
 }
 

@@ -116,6 +116,7 @@ public class ChooseRiderAdapter extends
         Delivery.put("customerAddress", reservation.getAddress());
         Delivery.put("orderID", reservation.getOrderID());
         Delivery.put("deliveryTime", reservation.getDeliveryTime());
+        Delivery.put("bikerID", rider.getId());
         //Delivery.put("seen", false);
         deliveriesRef.child("Pending").child(rider.getId()).child(reservation.getOrderID()).setValue(Delivery);
         final DatabaseReference notifyFlagRef = database.child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(rider.getId()).child(reservation.getOrderID()).child("seen");

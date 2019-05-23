@@ -163,5 +163,6 @@
     <string name="evaluation">Evaluation</string>
     <string name="yes">YES</string>
     <string name="evaluate_dialog_message">Do you want to evaluate this order?</string>
+    <string name="error_evaluate_toast">Evaluate your order after receiving it</string>
 
 </resources>
