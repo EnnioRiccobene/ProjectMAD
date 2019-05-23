@@ -8,13 +8,13 @@
     tools:showIn="@layout/app_bar_navigation_drawer">
 
     <com.anychart.AnyChartView
-        android:id="@+id/any_chart_view"
+        android:id="@+id/daily_histogram"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
 
     <ProgressBar
-        android:id="@+id/progress_bar"
+        android:id="@+id/daily_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
