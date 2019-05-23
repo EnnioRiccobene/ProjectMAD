@@ -140,7 +140,7 @@ public class AnalyticsTab1 extends Fragment {
                 // Inizializzo un'hashmap con tutti i valori da mostrare sull'asse delle x (cioè le fasce orarie)
                 // Uso TreeMap perchè tiene in ordine le chiavi.
                 TreeMap<Integer,Integer> hashMap = new TreeMap<>();
-                for (int i=5; i<24; i++) {
+                for (int i=0; i<24; i++) {
                     hashMap.put(i, 0);
                 }
 
