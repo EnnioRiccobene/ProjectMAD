@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -98,14 +99,16 @@ public class ChooseRiderAdapter extends
     }
 
     private void callRider(RiderProfile rider) {
+        Map multipleAtomicQuery = new HashMap();
         String orderID = reservation.getOrderID();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference deliveriesRef = database.child("Rider").child("Delivery");
-        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser).child(orderID);
+        // DatabaseReference deliveriesRef = database.child("Rider").child("Delivery");
+        // DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser).child(orderID);
         reservation.setStatus(2);
-        HashMap<String, Object> statusUpdate = new HashMap<>();
-        statusUpdate.put("status", 2);
-        acceptedReservationRef.updateChildren(statusUpdate);
+        // HashMap<String, Object> statusUpdate = new HashMap<>();
+        // statusUpdate.put("status", 2);
+        // acceptedReservationRef.updateChildren(statusUpdate);
+        multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID + "/status", 2);
 
         // Creating Delivery Item
         HashMap<String, String> Delivery = new HashMap<>();
@@ -117,9 +120,13 @@ public class ChooseRiderAdapter extends
         Delivery.put("orderID", reservation.getOrderID());
         Delivery.put("deliveryTime", reservation.getDeliveryTime());
         //Delivery.put("seen", false);
-        deliveriesRef.child("Pending").child(rider.getId()).child(reservation.getOrderID()).setValue(Delivery);
-        final DatabaseReference notifyFlagRef = database.child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(rider.getId()).child(reservation.getOrderID()).child("seen");
-        notifyFlagRef.setValue(false);
+        // deliveriesRef.child("Pending").child(rider.getId()).child(reservation.getOrderID()).setValue(Delivery);
+        // final DatabaseReference notifyFlagRef = database.child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(rider.getId()).child(reservation.getOrderID()).child("seen");
+        // notifyFlagRef.setValue(false);
+        multipleAtomicQuery.put("Rider/Delivery/Pending/" + rider.getId() + "/" + reservation.getOrderID(), Delivery);
+        multipleAtomicQuery.put("Rider/Delivery/Pending/NotifyFlag/" + rider.getId() + "/" + reservation.getOrderID() + "/seen", false);
+        multipleAtomicQuery.put("Rider/Profile/" + rider.getId() + "/status", false);
+        database.updateChildren(multipleAtomicQuery);
         ((Activity)context).finish();
     }
 

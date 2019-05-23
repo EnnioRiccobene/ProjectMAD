@@ -22,10 +22,9 @@ public class Reservation implements Serializable {
 //    Status
 //    0: Da confermare/rifiutare        Tab1
 //    1: Confermato. Da preparare       Tab2
-//    2: Rider chiamate. In attesa      Tab2
+//    2: Rider chiamato. In attesa      Tab2
 //    3: Consegnato e concluso          Tab3
 //    4: Rifiutato                      Tab3
-
 
     public Reservation() {
     }

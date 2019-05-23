@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +19,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.SmartLogger;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -144,8 +146,24 @@ public class FavoriteTopRestaurant extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(!dataSnapshot.exists())
                     return;
-                for (DataSnapshot restaurant : dataSnapshot.getChildren())
-                    topRestaurant.add(restaurant.getValue(Restaurant.class));
+                for (DataSnapshot restaurant : dataSnapshot.getChildren()){
+                    if(restaurant.getValue(Restaurant.class).getRatingCount() != null && !restaurant.getValue(Restaurant.class).getRatingCount().equals("0"))
+                        topRestaurant.add(restaurant.getValue(Restaurant.class));
+                }
+                // ORDINARE LISTA
+                Collections.sort(topRestaurant, new Comparator<Restaurant>() {
+                    @Override
+                    public int compare(Restaurant o1, Restaurant o2) {
+                        float score1 = Float.parseFloat(o1.getRestaurantRating()) * Float.parseFloat(o1.getRatingCount());
+                        float score2 = Float.parseFloat(o2.getRestaurantRating()) * Float.parseFloat(o2.getRatingCount());
+                        if (score1 > score2)
+                            return 1;
+                        else if (score1 < score2)
+                            return -1;
+                        else
+                            return 0;
+                    }
+                });
                 recyclerView = (RecyclerView) view.findViewById(R.id.favoriteRecyclerViewTab);
                 adapter = new FavoriteTopRestaurantAdapter(getContext(), topRestaurant);
                 RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());

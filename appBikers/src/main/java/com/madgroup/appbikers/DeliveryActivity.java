@@ -59,6 +59,7 @@ public class DeliveryActivity extends AppCompatActivity implements
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private String currentUser;
+    private ValueEventListener riderAvabilityListener;
     String notificationTitle = "MAD Bikers";
     String notificationText;
 
@@ -121,6 +122,14 @@ public class DeliveryActivity extends AppCompatActivity implements
         checkLocationpermissions();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference pendingDeliveryRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        pendingDeliveryRef.removeEventListener(riderAvabilityListener);
+    }
+
     private void checkLocationpermissions() {
         int gpsPermission = ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -150,7 +159,28 @@ public class DeliveryActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         updateNavigatorInformation(navigationView);
-        verifyRiderAvailability(navigationView);
+        // verifyRiderAvailability(navigationView);
+        createRiderStatusListener(navigationView);
+    }
+
+    private void createRiderStatusListener(NavigationView navigationView) {
+        SwitchCompat  riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        riderAvabilityListener = riderStatusRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists())
+                    return;
+                boolean riderStatus = dataSnapshot.getValue(boolean.class);
+                riderAvailability.setChecked(riderStatus);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void verifyRiderAvailability(NavigationView navigationView) {
