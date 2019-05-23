@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatRatingBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
@@ -62,6 +63,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madgroup.sdk.SmartLogger;
+import com.mapbox.mapboxsdk.style.layers.Property;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -268,6 +270,11 @@ public class SearchRestaurantActivity extends AppCompatActivity
                                 manageFavorites(holder, model);
                             }
                         });
+
+                        if(model.getRestaurantRating() != null && !model.getRestaurantRating().equals("0"))
+                            holder.ratingBar.setRating(Float.parseFloat(model.getRestaurantRating()));
+                        else
+                            holder.ratingBar.setVisibility(View.GONE);
                     }
 
                     @NonNull
@@ -296,6 +303,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
         TextView delivery_cost;
         TextView delivery_cost_amount;
         CheckBox favoriteCheckBox;
+        AppCompatRatingBar ratingBar;
 
         public FindRestaurantViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -311,6 +319,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
             delivery_cost = itemView.findViewById(R.id.delivery_cost);
             delivery_cost_amount = itemView.findViewById(R.id.delivery_cost_amount);
             favoriteCheckBox = itemView.findViewById(R.id.favoriteCheckBox);
+            ratingBar = itemView.findViewById(R.id.ratingBar);
         }
     }
 

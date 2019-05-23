@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatRatingBar;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -62,6 +63,7 @@ public class FavoriteTopRestaurantAdapter extends
         TextView delivery_cost;
         TextView delivery_cost_amount;
         CheckBox favoriteCheckBox;
+        AppCompatRatingBar ratingBar;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,6 +79,7 @@ public class FavoriteTopRestaurantAdapter extends
             delivery_cost = itemView.findViewById(R.id.delivery_cost);
             delivery_cost_amount = itemView.findViewById(R.id.delivery_cost_amount);
             favoriteCheckBox = itemView.findViewById(R.id.favoriteCheckBox);
+            ratingBar = itemView.findViewById(R.id.ratingBar);
         }
     }
 
@@ -98,6 +101,7 @@ public class FavoriteTopRestaurantAdapter extends
         final Restaurant model = topRestaurants.get(position);
         if(model.isFavorite() != null)
             holder.favoriteCheckBox.setChecked(model.isFavorite());
+
         holder.restaurant_name.setText(model.getName());
         holder.food_category.setText(model.getFoodCategory());
         holder.minimum_order_amount.setText(model.getMinOrder());
@@ -138,7 +142,8 @@ public class FavoriteTopRestaurantAdapter extends
                 manageFavorites(holder, model);
             }
         });
-
+        if(model.getRestaurantRating() != "0" || model.getRestaurantRating() != null)
+            holder.ratingBar.setRating(Float.parseFloat(model.getRestaurantRating()));
     }
 
     public void refreshFavoriteList(final ViewHolder holder, final Restaurant model) {
