@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -40,6 +41,7 @@ public class EvaluationActivity extends AppCompatActivity {
     private String restaurantReview = "";
 
     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+    DatabaseReference companyRatingRef = rootRef.child("Company").child("Rating").child(restaurantId).child(customerId);
 
     public static void start(Context context, String orderId, String restaurantId, String customerId, String bikerId) {
         Intent starter = new Intent(context, EvaluationActivity.class);
@@ -65,28 +67,13 @@ public class EvaluationActivity extends AppCompatActivity {
         reviewEditText = findViewById(R.id.review_edit_text);
         sendBtn = findViewById(R.id.sendReview);
 
+        restaurantRating = handleStarRating(restaurantBar);
+        foodRating = handleStarRating(foodBar);
+        serviceRating = handleStarRating(serviceBar);
 
-        rootRef.child("Company").child("Rating").child(restaurantId).child(customerId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    SmartLogger.d("Il nodo esiste");
-                    hiddenMessage.setVisibility(View.VISIBLE);
-                    restaurantBar.setIsIndicator(true);
-                    foodBar.setIsIndicator(true);
-                    reviewEditText.setEnabled(false);
-                }
-            }
+        checkPreviousEvaluation();
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                SmartLogger.d("Il nodo non esiste");
-            }
-        });
-        /*todo: se ristorante già valutato:
-        restaurantBar.setIsIndicator(true);
-        foodBar.setIsIndicator(true);
-        reviewEditText.setEnabled(false); e setta il suo contenuto dal db*/
+
     }
 
     private void getIncomingIntent() {
@@ -96,5 +83,75 @@ public class EvaluationActivity extends AppCompatActivity {
             customerId = getIntent().getStringExtra("CustomerId");
             riderId = getIntent().getStringExtra("RiderId");
         }
+    }
+
+    private void checkPreviousEvaluation(){
+
+        companyRatingRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    SmartLogger.d("Il nodo esiste");
+                    restaurantReview = (String) snapshot.child("comment").getValue();
+                    restaurantRating = (int) snapshot.child("restaurantRating").getValue();
+                    foodRating = (int) snapshot.child("foodRating").getValue();
+                    reviewEditText.setText(restaurantReview);
+                    restaurantBar.setRating(restaurantRating);
+                    foodBar.setRating(foodRating);
+                    hiddenMessage.setVisibility(View.VISIBLE);
+                    restaurantBar.setIsIndicator(true);
+                    foodBar.setIsIndicator(true);
+                    reviewEditText.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private int handleStarRating(RatingBar mRatingBar){
+        final int[] vote = {0};
+        mRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
+
+                switch ((int) ratingBar.getRating()) {
+                    case 1:
+                        vote[0] = 1;
+                        break;
+                    case 2:
+                        vote[0] = 2;
+                        break;
+                    case 3:
+                        vote[0] = 3;
+                        break;
+                    case 4:
+                        vote[0] = 4;
+                        break;
+                    case 5:
+                        vote[0] = 5;
+                        break;
+                    default:
+                        vote[0] = 0;
+                }
+            }
+        });
+        return vote[0];
+    }
+
+    public void sendEvaluation(){
+        sendBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(restaurantRating == 0 || foodRating == 0 || serviceRating == 0){
+                    Toast.makeText(EvaluationActivity.this, getString(R.string.mandatory_evaluate), Toast.LENGTH_SHORT).show();
+                } else {
+                    //todo: inserisci i valori nel db nelle app Rider, Restaurant e Company (nelle prime due con transaction)
+                }
+            }
+        });
     }
 }
