@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -116,9 +117,20 @@ public class ChooseRiderAdapter extends
         Delivery.put("customerAddress", reservation.getAddress());
         Delivery.put("orderID", reservation.getOrderID());
         Delivery.put("deliveryTime", reservation.getDeliveryTime());
-        Delivery.put("bikerID", rider.getId());
+//        Delivery.put("bikerID", rider.getId());//todo:non aggiorna
         //Delivery.put("seen", false);
         deliveriesRef.child("Pending").child(rider.getId()).child(reservation.getOrderID()).setValue(Delivery);
+
+        Map<String, Object> updateBikerID = new HashMap<>();
+        updateBikerID.put("/" + "bikerID", rider.getId());
+        DatabaseReference restaurantOrderRef = database.child("Company").child("Reservation").child("Accepted").child(reservation.getRestaurantID())
+                .child(reservation.getOrderID());
+        restaurantOrderRef.updateChildren(updateBikerID);
+
+        DatabaseReference customerOrderRef = database.child("Customer").child("Order").child("Pending").child(reservation.getCustomerID())
+                .child(reservation.getOrderID());
+        customerOrderRef.updateChildren(updateBikerID);
+
         final DatabaseReference notifyFlagRef = database.child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(rider.getId()).child(reservation.getOrderID()).child("seen");
         notifyFlagRef.setValue(false);
         ((Activity)context).finish();

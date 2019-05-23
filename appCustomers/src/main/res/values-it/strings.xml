@@ -166,5 +166,7 @@
     <string name="rating_food">Cibo</string>
     <string name="rating_service">Servizio di consegna</string>
     <string name="rating_review">Recensisci il tuo ordine</string>
+    <string name="shopping_cart_title">Carrello</string>
+    <string name="evaluate_hidden_message">Hai già recensito questo ristorante. Puoi solo valutare il servizio di consegna.</string>
 
 </resources>

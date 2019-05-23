@@ -169,5 +169,7 @@
     <string name="rating_food">Food</string>
     <string name="rating_service">Delivery service</string>
     <string name="rating_review">Review your order</string>
+    <string name="shopping_cart_title">Shopping Cart</string>
+    <string name="evaluate_hidden_message">You have already reviewed this restaurant. You can only evaluate the delivery service.</string>
 
 </resources>
