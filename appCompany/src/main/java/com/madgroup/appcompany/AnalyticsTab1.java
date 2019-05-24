@@ -58,7 +58,6 @@ public class AnalyticsTab1 extends Fragment {
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         editor = prefs.edit();
         initMapMonths();
-
     }
 
     private void initMapMonths() {
@@ -82,7 +81,11 @@ public class AnalyticsTab1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_analytics_tab1, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_analytics_tab1, container, false);
+        anyChartView = rootView.findViewById(R.id.daily_histogram);
+        anyChartView.setProgressBar(rootView.findViewById(R.id.daily_progress_bar));
+        initializeDailyHistogram();
+        return rootView;
     }
 
     @Override
@@ -97,8 +100,19 @@ public class AnalyticsTab1 extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
+        anyChartView.clear();
         mListener = null;
     }
 
@@ -109,9 +123,7 @@ public class AnalyticsTab1 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        anyChartView = view.findViewById(R.id.daily_histogram);
-        anyChartView.setProgressBar(view.findViewById(R.id.daily_progress_bar));
-        initializeDailyHistogram();
+
     }
 
     public void initializeDailyHistogram() {
@@ -159,8 +171,7 @@ public class AnalyticsTab1 extends Fragment {
                     data.add(new ValueDataEntry(hourSlot, amountOfOrders));
                 }
 
-                Column column = cartesian.column(data);
-                column.tooltip()
+                cartesian.column(data).tooltip()
                         .titleFormat("{%X}")
                         .position(Position.CENTER_TOP)
                         .anchor(Anchor.CENTER_TOP)
@@ -175,7 +186,7 @@ public class AnalyticsTab1 extends Fragment {
                 cartesian.tooltip().format("{%value}");
                 cartesian.interactivity().hoverMode(HoverMode.BY_X);
                 cartesian.xAxis(0).title("");
-                //cartesian.yAxis(0).title("Amount of orders");
+                cartesian.yAxis(0).enabled(false);
                 String wordMonth = months.get(month);
                 cartesian.title(dayOfMonth+" "+wordMonth+" "+year);
                 anyChartView.setChart(cartesian);

@@ -104,8 +104,9 @@ public class AnalyticsTab3 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //anyChartView = view.findViewById(R.id.monthly_histogram);
-        //anyChartView.setProgressBar(view.findViewById(R.id.monthly_progress_bar));
+        anyChartView = view.findViewById(R.id.monthly_histogram);
+        anyChartView.setProgressBar(view.findViewById(R.id.monthly_progress_bar));
+    initializeMonthlyHistogram();
     }
 
 
@@ -182,6 +183,7 @@ public class AnalyticsTab3 extends Fragment {
                 cartesian.tooltip().format("{%value}");
                 cartesian.interactivity().hoverMode(HoverMode.BY_X);
                 cartesian.xAxis(0).title("");
+                cartesian.yAxis(0).enabled(false);
                 String wordMonth = months.get(month);
                 cartesian.title(wordMonth+" "+year);
                 //cartesian.yAxis(0).title("Amount of orders");

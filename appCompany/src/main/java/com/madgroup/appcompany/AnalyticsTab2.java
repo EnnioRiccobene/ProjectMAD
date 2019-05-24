@@ -84,7 +84,10 @@ public class AnalyticsTab2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_analytics_tab2, container, false);
+        View view = inflater.inflate(R.layout.fragment_analytics_tab2, container, false);
+        anyChartView = view.findViewById(R.id.weekly_histogram);
+        anyChartView.setProgressBar(view.findViewById(R.id.weekly_progress_bar));
+        return view;
     }
 
     @Override
@@ -184,6 +187,7 @@ public class AnalyticsTab2 extends Fragment {
                 cartesian.tooltip().format("{%value}");
                 cartesian.interactivity().hoverMode(HoverMode.BY_X);
                 cartesian.xAxis(0).title("");
+                cartesian.yAxis(0).enabled(false);
                 cartesian.title(weekOfMonth+"th week of "+month);
                 //cartesian.yAxis(0).title("Amount of orders");
                 anyChartView.setChart(cartesian);
