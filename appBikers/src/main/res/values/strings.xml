@@ -24,8 +24,8 @@
     <string name="access_token" translatable="false">pk.eyJ1IjoiZW5uaW9yaWNjb2JlbmUiLCJhIjoiY2p2cDAwaWpiMWM2cTRhdm4xa2doMWR4aSJ9.13f4K6NH4ybrj9iPVzG7kA</string>
     <string name="user_location_permission_explanation">This app needs location permissions to show its functionality.</string>
     <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>
-    <string name="to_restaurant">to Restaurant</string>
-    <string name="to_customer">to Customer</string>
+    <string name="to_restaurant">Restaurant</string>
+    <string name="to_customer">Customer</string>
     <string name="start_navigation">Start navigation</string>
     <string name="road_to">Road to</string>
 </resources>

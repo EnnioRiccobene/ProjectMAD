@@ -19,8 +19,8 @@
 
     <string name="user_location_permission_explanation">Quest\'app necessita pei permessi di localizzazione per funzionare.</string>
     <string name="user_location_permission_not_granted">Non hai dato i permessi sulla localizzazione.</string>
-    <string name="to_restaurant">verso il Ristorante</string>
-    <string name="to_customer">verso il Cliente</string>
+    <string name="to_restaurant">il Ristorante</string>
+    <string name="to_customer">il Cliente</string>
     <string name="start_navigation">Inizia la navigazione</string>
     <string name="road_to">Vai verso</string>
 </resources>
