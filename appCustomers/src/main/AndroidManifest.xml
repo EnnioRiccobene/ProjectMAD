@@ -19,6 +19,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".EvaluationActivity"
+            android:parentActivityName=".OrdersActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".OrdersActivity"

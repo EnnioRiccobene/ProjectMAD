@@ -2,7 +2,9 @@ package com.madgroup.madproject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.Intent;
@@ -62,13 +64,21 @@ public class EvaluationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_evaluation);
 
+        // init Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        this.setTitle(R.string.RatingTitle);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+
         getIncomingIntent();
 
         companyRatingRef = rootRef.child("Company").child("Rating").child(restaurantId).child(customerId);
         riderProfileRef = rootRef.child("Rider").child("Profile").child(riderId);
         companyProfileRef = rootRef.child("Company").child("Profile").child(restaurantId);
 
-        this.setTitle(R.string.RatingTitle);
+
         hiddenMessage = findViewById(R.id.textViewHiddenMessage);
         restaurantBar = findViewById(R.id.ratingRestaurant);
         foodBar = findViewById(R.id.ratingFood);
