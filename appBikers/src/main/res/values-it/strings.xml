@@ -22,4 +22,5 @@
     <string name="to_restaurant">verso il Ristorante</string>
     <string name="to_customer">verso il Cliente</string>
     <string name="start_navigation">Inizia la navigazione</string>
+    <string name="road_to">Vai verso</string>
 </resources>
