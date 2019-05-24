@@ -12,6 +12,8 @@ public class RiderProfile implements Serializable {
     private Position position;
     private String ratingAvg;
     private String ratingCounter;
+    private String deliveryNumber;
+    private String totDistance;
 
     public RiderProfile() {
     }
@@ -25,39 +27,24 @@ public class RiderProfile implements Serializable {
         this.status = status;
         this.ratingAvg = "0";
         this.ratingCounter = "0";
+        this.deliveryNumber = "0";
+        this.totDistance = "0";
     }
 
-    public RiderProfile(String id, String name, String email, String phoneNumber, String additionalInformation, boolean status, Position pos) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.additionalInformation = additionalInformation;
-        this.status = status;
-        this.position = pos;
+    public String getDeliveryNumber() {
+        return deliveryNumber;
     }
 
-    public RiderProfile(String id, String name, String email, String phoneNumber, String additionalInformation) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.additionalInformation = additionalInformation;
-        this.status = status;
+    public void setDeliveryNumber(String deliveryNumber) {
+        this.deliveryNumber = deliveryNumber;
     }
 
-    public RiderProfile(String id, String name, String email, String phoneNumber, boolean status) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.status = status;
+    public String getTotDistance() {
+        return totDistance;
     }
 
-    public RiderProfile(String name, String email, String phoneNumber) {
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
+    public void setTotDistance(String totDistance) {
+        this.totDistance = totDistance;
     }
 
     public String getRatingAvg() {
