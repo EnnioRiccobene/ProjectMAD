@@ -51,12 +51,14 @@ public class AnalyticsTab1 extends Fragment {
         // Required empty public constructor
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         editor = prefs.edit();
         initMapMonths();
+
     }
 
     private void initMapMonths() {
@@ -117,22 +119,15 @@ public class AnalyticsTab1 extends Fragment {
         // Database references
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String restaurantID = prefs.getString("currentUser", "");
-        Calendar calendar = Calendar.getInstance();
         final String year = "2019";
         final String month = "5";
         String weekOfMonth = "4";
         String node = year+"_"+month+"_"+weekOfMonth;
-
-        //final String dayOfMonth = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
-
         final String dayOfMonth = "23";
-
         DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
                 .child(restaurantID).child(node);
 
-        // Riferimenti all'istogramma
         final Cartesian cartesian = AnyChart.column();
-
         timingOrederRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -153,7 +148,6 @@ public class AnalyticsTab1 extends Fragment {
                         String fields[] = day_nameDay_hourSlot.split("_");
                         String hourSlot = fields[2];
                         hashMap.put(Integer.parseInt(hourSlot), amountOfOrders);
-                        //data.add(new ValueDataEntry(hourSlot, amountOfOrders));
                     }
                 }
 

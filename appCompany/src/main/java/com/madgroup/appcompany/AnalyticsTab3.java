@@ -30,8 +30,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,9 +47,20 @@ public class AnalyticsTab3 extends Fragment {
     private SharedPreferences prefs;
     private AnyChartView anyChartView;
     private Map<String, String> mapDayOfWeek;
+    private Map<String, String> months;
 
     public AnalyticsTab3() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            //initializeMonthlyHistogram();
+        } else {
+
+        }
     }
 
     @Override
@@ -56,19 +69,9 @@ public class AnalyticsTab3 extends Fragment {
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         editor = prefs.edit();
         initMapDayOfWeek();
+        initMapMonths();
     }
 
-    private void initMapDayOfWeek() {
-        mapDayOfWeek = new HashMap<>();
-        mapDayOfWeek.put("1","Mon");
-        mapDayOfWeek.put("2","Tue");
-        mapDayOfWeek.put("3","Wed");
-        mapDayOfWeek.put("4","Thu");
-        mapDayOfWeek.put("5","Fri");
-        mapDayOfWeek.put("6","Sat");
-        mapDayOfWeek.put("7","Sun");
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -103,24 +106,20 @@ public class AnalyticsTab3 extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         //anyChartView = view.findViewById(R.id.monthly_histogram);
         //anyChartView.setProgressBar(view.findViewById(R.id.monthly_progress_bar));
-        //initializeWeeklyHistogram();
     }
 
 
-    public void initializeWeeklyHistogram() {
+    public void initializeMonthlyHistogram() {
 
         // Database references
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String restaurantID = prefs.getString("currentUser", "");
-        Calendar calendar = Calendar.getInstance();
-        String year = "2019";
+        final String year = "2019";
         final String month = "5";
         final String weekOfMonth = "4";
-        String node = year+"_"+month+"_"+weekOfMonth;
-
 
         DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
-                .child(restaurantID).child(node);
+                .child(restaurantID);
 
         // Riferimenti all'istogramma
         final Cartesian cartesian = AnyChart.column();
@@ -129,33 +128,42 @@ public class AnalyticsTab3 extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                // Get the number of days in that month
+                Calendar mycal = new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month)-1, 1);
+                int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH);
+
                 // Inizializzo un'hashmap con tutti i valori da mostrare sull'asse delle x (cioè i giorni della settimana)
                 // Uso TreeMap perchè tiene in ordine le chiavi.
-                TreeMap<String,Integer> hashMap = new TreeMap<>();
-                for (int i=1; i<=7; i++) {
-                    hashMap.put(""+i, 0);
+                TreeMap<Integer,Long> hashMap = new TreeMap<>();
+                for (int i=1; i<=daysInMonth; i++) {
+                    hashMap.put(i, 0L);
                 }
 
-                // Leggo il numero di consegne per ogni fascia oraria e aggiorno la mappa
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    String day_nameDay_hourSlot = ds.getKey();
-                    Integer amountOfOrders = ds.getValue(Integer.class);
-                    String fields[] = day_nameDay_hourSlot.split("_");
-                    String nameDay = fields[1];
-                    Integer currentAmount = hashMap.get(nameDay);
-                    if (currentAmount==null)
-                        hashMap.put(nameDay, amountOfOrders);
-                    else
-                        hashMap.put(nameDay, currentAmount+amountOfOrders);
+
+                    String year_month_week = ds.getKey();
+                    if (year_month_week.startsWith(year+"_"+month)) {
+                        HashMap<String, Long> mapValues = (HashMap<String, Long>) ds.getValue();
+                        for (Map.Entry<String, Long> entry : mapValues.entrySet()) {
+                            String dayMonth_dayName_hourSlot = entry.getKey();
+                            Long amount = entry.getValue();
+                            String fields[] = dayMonth_dayName_hourSlot.split("_");
+                            String dayMonth = fields[0];
+                            Long currentAmount = hashMap.get(Integer.parseInt(dayMonth));
+                            if (currentAmount==null)
+                                hashMap.put(Integer.parseInt(dayMonth), amount);
+                            else
+                                hashMap.put(Integer.parseInt(dayMonth), currentAmount+amount);
+                        }
+                    }
                 }
 
                 // Converto la mappa in ArrayList (la libreria accetta questo formato)
                 List<DataEntry> data = new ArrayList<>();
-                for (TreeMap.Entry<String, Integer> entry : hashMap.entrySet()) {
-                    String dayOfWeek = entry.getKey();
-                    Integer amountOfOrders = entry.getValue();
-                    String nameDay = mapDayOfWeek.get(dayOfWeek);
-                    data.add(new ValueDataEntry(nameDay, amountOfOrders));
+                for (TreeMap.Entry<Integer, Long> entry : hashMap.entrySet()) {
+                    Integer dayOfMonth = entry.getKey();
+                    Long amountOfOrders = entry.getValue();
+                    data.add(new ValueDataEntry(dayOfMonth, amountOfOrders));
                 }
 
                 Column column = cartesian.column(data);
@@ -174,7 +182,8 @@ public class AnalyticsTab3 extends Fragment {
                 cartesian.tooltip().format("{%value}");
                 cartesian.interactivity().hoverMode(HoverMode.BY_X);
                 cartesian.xAxis(0).title("");
-                cartesian.title(weekOfMonth+"th week of "+month);
+                String wordMonth = months.get(month);
+                cartesian.title(wordMonth+" "+year);
                 //cartesian.yAxis(0).title("Amount of orders");
                 anyChartView.setChart(cartesian);
             }
@@ -183,5 +192,29 @@ public class AnalyticsTab3 extends Fragment {
             }
         });
     }
-
+    private void initMapMonths() {
+        months = new HashMap<>();
+        months.put("1", "January");
+        months.put("2", "February");
+        months.put("3", "March");
+        months.put("4", "April");
+        months.put("5", "May");
+        months.put("6", "June");
+        months.put("7", "July");
+        months.put("8", "August");
+        months.put("9", "September");
+        months.put("10", "October");
+        months.put("11", "November");
+        months.put("12", "December");
+    }
+    private void initMapDayOfWeek() {
+        mapDayOfWeek = new HashMap<>();
+        mapDayOfWeek.put("1","Mon");
+        mapDayOfWeek.put("2","Tue");
+        mapDayOfWeek.put("3","Wed");
+        mapDayOfWeek.put("4","Thu");
+        mapDayOfWeek.put("5","Fri");
+        mapDayOfWeek.put("6","Sat");
+        mapDayOfWeek.put("7","Sun");
+    }
 }
