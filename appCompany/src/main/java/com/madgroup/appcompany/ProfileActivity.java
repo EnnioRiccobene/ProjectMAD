@@ -59,6 +59,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -793,17 +794,36 @@ public class ProfileActivity extends AppCompatActivity
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
 
-        RestaurantProfile currentUser = new RestaurantProfile(uid, name.getText().toString(), phone.getText().toString(),
-                address.getText().toString(), email.getText().toString(), editCategory.getText().toString(),
-                minimumOrder.getText().toString(), deliveryCost.getText().toString(), mondayHour.getText().toString(), tuesdayHour.getText().toString(),
-                wednesdayHour.getText().toString(), thursdayHour.getText().toString(), fridayHour.getText().toString(),
-                saturdayHour.getText().toString(), sundayHour.getText().toString(), additionalInformation.getText().toString());
+        HashMap<String, Object> updateValues = new HashMap<>();
+        updateValues.put("name", name.getText().toString());
+        updateValues.put("phone", phone.getText().toString());
+        updateValues.put("address", address.getText().toString());
+        updateValues.put("foodCategory", editCategory.getText().toString());
+        //todo: calcolare e aggiornare anche tutti i campi di supporto per categoria e prezzo del cibo
+
+        updateValues.put("minOrder", minimumOrder.getText().toString());
+        updateValues.put("deliveryCost", deliveryCost.getText().toString());
+        updateValues.put("mondayOpeningHours", mondayHour.getText().toString());
+        updateValues.put("tuesdayOpeningHours", tuesdayHour.getText().toString());
+        updateValues.put("wednesdayOpeningHours", wednesdayHour.getText().toString());
+        updateValues.put("thursdayOpeningHours", thursdayHour.getText().toString());
+        updateValues.put("fridayOpeningHours", fridayHour.getText().toString());
+        updateValues.put("saturdayOpeningHours", saturdayHour.getText().toString());
+        updateValues.put("sundayOpeningHours", sundayHour.getText().toString());
+        updateValues.put("additionalInformation", additionalInformation.getText().toString());
+        SmartLogger.d(updateValues.toString());
+
+//        RestaurantProfile currentUser = new RestaurantProfile(uid, name.getText().toString(), phone.getText().toString(),
+//                address.getText().toString(), email.getText().toString(), editCategory.getText().toString(),
+//                minimumOrder.getText().toString(), deliveryCost.getText().toString(), mondayHour.getText().toString(), tuesdayHour.getText().toString(),
+//                wednesdayHour.getText().toString(), thursdayHour.getText().toString(), fridayHour.getText().toString(),
+//                saturdayHour.getText().toString(), sundayHour.getText().toString(), additionalInformation.getText().toString());
 
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         database.getReference("Company").child("Profile")
                 .child(currentUid)
-                .setValue(currentUser, new DatabaseReference.CompletionListener() {
+                .updateChildren(updateValues, new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                         if (databaseError != null) {
