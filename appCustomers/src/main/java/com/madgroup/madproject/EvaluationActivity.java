@@ -21,7 +21,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
-import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
 
 public class EvaluationActivity extends AppCompatActivity {
@@ -42,11 +41,12 @@ public class EvaluationActivity extends AppCompatActivity {
     private int foodRating = 0;
     private int serviceRating = 0;
     private String restaurantReview = "";
+    private boolean justReviewed = false;
 
     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-    DatabaseReference companyRatingRef = rootRef.child("Company").child("Rating").child(restaurantId).child(customerId);
-    DatabaseReference riderProfileRef = rootRef.child("Rider").child("Profile").child(riderId);
-    DatabaseReference companyProfileRef = rootRef.child("Company").child("Profile").child(restaurantId);
+    DatabaseReference companyRatingRef;
+    DatabaseReference riderProfileRef;
+    DatabaseReference companyProfileRef;
 
     public static void start(Context context, String orderId, String restaurantId, String customerId, String bikerId) {
         Intent starter = new Intent(context, EvaluationActivity.class);
@@ -64,6 +64,10 @@ public class EvaluationActivity extends AppCompatActivity {
 
         getIncomingIntent();
 
+        companyRatingRef = rootRef.child("Company").child("Rating").child(restaurantId).child(customerId);
+        riderProfileRef = rootRef.child("Rider").child("Profile").child(riderId);
+        companyProfileRef = rootRef.child("Company").child("Profile").child(restaurantId);
+
         this.setTitle(R.string.RatingTitle);
         hiddenMessage = findViewById(R.id.textViewHiddenMessage);
         restaurantBar = findViewById(R.id.ratingRestaurant);
@@ -72,13 +76,13 @@ public class EvaluationActivity extends AppCompatActivity {
         reviewEditText = findViewById(R.id.review_edit_text);
         sendBtn = findViewById(R.id.sendReview);
 
-        restaurantRating = handleStarRating(restaurantBar);
-        foodRating = handleStarRating(foodBar);
-        serviceRating = handleStarRating(serviceBar);
+        handleStarRating(restaurantBar, 1);
+        handleStarRating(foodBar, 2);
+        handleStarRating(serviceBar, 3);
 
         checkPreviousEvaluation();
 
-
+        sendEvaluation();
     }
 
     private void getIncomingIntent() {
@@ -98,8 +102,8 @@ public class EvaluationActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     SmartLogger.d("Il nodo esiste");
                     restaurantReview = (String) snapshot.child("comment").getValue();
-                    restaurantRating = (int) snapshot.child("restaurantRating").getValue();
-                    foodRating = (int) snapshot.child("foodRating").getValue();
+                    restaurantRating = Integer.valueOf((String)snapshot.child("restaurantRating").getValue());
+                    foodRating = Integer.valueOf((String) snapshot.child("foodRating").getValue());
                     reviewEditText.setText(restaurantReview);
                     restaurantBar.setRating(restaurantRating);
                     foodBar.setRating(foodRating);
@@ -107,6 +111,7 @@ public class EvaluationActivity extends AppCompatActivity {
                     restaurantBar.setIsIndicator(true);
                     foodBar.setIsIndicator(true);
                     reviewEditText.setEnabled(false);
+                    justReviewed = true;
                 }
             }
 
@@ -117,7 +122,7 @@ public class EvaluationActivity extends AppCompatActivity {
         });
     }
 
-    private int handleStarRating(RatingBar mRatingBar){
+    private void handleStarRating(RatingBar mRatingBar, final int x){
         final int[] vote = {0};
         mRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
@@ -142,9 +147,17 @@ public class EvaluationActivity extends AppCompatActivity {
                     default:
                         vote[0] = 0;
                 }
+
+                if(x == 1) {
+                    restaurantRating = vote[0];
+                } else if(x == 2) {
+                    foodRating = vote[0];
+                } else if(x == 3){
+                    serviceRating = vote[0];
+                }
             }
         });
-        return vote[0];
+
     }
 
     public void sendEvaluation(){
@@ -154,53 +167,57 @@ public class EvaluationActivity extends AppCompatActivity {
                 if(restaurantRating == 0 || foodRating == 0 || serviceRating == 0){
                     Toast.makeText(EvaluationActivity.this, getString(R.string.mandatory_evaluate), Toast.LENGTH_SHORT).show();
                 } else {
-                    //todo: inserisci/aggiorna i valori nel db nelle app Rider, Company  profile e Company rating(nelle prime due con transaction)
-                    //Inserisco la valutazione in Company
-                    companyProfileRef.child("customerId").setValue(customerId);
-                    companyProfileRef.child("orderId").setValue(orderId);
-                    companyProfileRef.child("restaurantRating").setValue(String.valueOf(restaurantRating));
-                    companyProfileRef.child("foodRating").setValue(String.valueOf(foodRating));
-                    companyProfileRef.child("comment").setValue(reviewEditText.getText().toString());
 
-                    //Update restaurant profile
-                    //todo: impedire aggiornamento dei primi due dati se ho già recensito il ristorante. (non eseguire questa transazione)
-                    companyProfileRef.runTransaction(new Transaction.Handler() {
-                        @NonNull
-                        @Override
-                        public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                            String ratingCounter = mutableData.child("ratingCounter").getValue(String.class);
-                            String ratingAvg = mutableData.child("ratingAvg").getValue(String.class);
-                            String foodRatingAvg = mutableData.child("foodRatingAvg").getValue(String.class);
+                    if(!justReviewed){
+                        //Inserisco la valutazione in Company
+                        companyRatingRef.child("customerId").setValue(customerId);
+                        companyRatingRef.child("orderId").setValue(orderId);
+                        companyRatingRef.child("restaurantRating").setValue(String.valueOf(restaurantRating));
+                        companyRatingRef.child("foodRating").setValue(String.valueOf(foodRating));
+                        companyRatingRef.child("comment").setValue(reviewEditText.getText().toString());
 
-                            if(ratingCounter.equals("0")){
-                                mutableData.child("ratingCounter").setValue("1");
-                            } else {
-                                int a = Integer.valueOf(ratingCounter) + 1;
-                                mutableData.child("ratingCounter").setValue(String.valueOf(a));
+                        //Update restaurant profile
+                        companyProfileRef.runTransaction(new Transaction.Handler() {
+                            @NonNull
+                            @Override
+                            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                                String ratingCounter = mutableData.child("ratingCounter").getValue(String.class);
+                                String ratingAvg = mutableData.child("ratingAvg").getValue(String.class);
+                                String foodRatingAvg = mutableData.child("foodRatingAvg").getValue(String.class);
+
+                                assert ratingCounter != null;
+                                if(ratingCounter.equals("0")){
+                                    mutableData.child("ratingCounter").setValue("1");
+                                } else {
+                                    int a = Integer.valueOf(ratingCounter) + 1;
+                                    mutableData.child("ratingCounter").setValue(String.valueOf(a));
+                                }
+
+                                assert ratingAvg != null;
+                                if(ratingAvg.equals("0")){
+                                    mutableData.child("ratingAvg").setValue(String.valueOf(restaurantRating));
+                                } else {
+                                    float a = (Float.valueOf(ratingAvg) + restaurantRating) / (Integer.valueOf(ratingCounter) + 1);
+                                    mutableData.child("ratingAvg").setValue(String.valueOf(a));
+                                }
+
+                                assert foodRatingAvg != null;
+                                if(foodRatingAvg.equals("0")){
+                                    mutableData.child("foodRatingAvg").setValue(String.valueOf(foodRating));
+                                } else {
+                                    float a = (Float.valueOf(ratingAvg) + foodRating) / (Integer.valueOf(ratingCounter) + 1);
+                                    mutableData.child("foodRatingAvg").setValue(String.valueOf(a));
+                                }
+
+                                return Transaction.success(mutableData);
                             }
 
-                            if(ratingAvg.equals("0")){
-                                mutableData.child("ratingAvg").setValue(String.valueOf(restaurantRating));
-                            } else {
-                                float a = (Float.valueOf(ratingAvg) + restaurantRating) / (Integer.valueOf(ratingCounter) + 1);
-                                mutableData.child("ratingAvg").setValue(String.valueOf(a));
+                            @Override
+                            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
                             }
-
-                            if(foodRatingAvg.equals("0")){
-                                mutableData.child("foodRatingAvg").setValue(String.valueOf(foodRating));
-                            } else {
-                                float a = (Float.valueOf(ratingAvg) + foodRating) / (Integer.valueOf(ratingCounter) + 1);
-                                mutableData.child("foodRatingAvg").setValue(String.valueOf(a));
-                            }
-
-                            return Transaction.success(mutableData);
-                        }
-
-                        @Override
-                        public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-
-                        }
-                    });
+                        });
+                    }
 
                     //Update Rider profile
                     riderProfileRef.runTransaction(new Transaction.Handler() {
@@ -210,6 +227,7 @@ public class EvaluationActivity extends AppCompatActivity {
                             String ratingCounter = mutableData.child("ratingCounter").getValue(String.class);
                             String ratingAvg = mutableData.child("ratingAvg").getValue(String.class);
 
+                            assert ratingCounter != null;
                             if(ratingCounter.equals("0")){
                                 mutableData.child("ratingCounter").setValue("1");
                             } else {
@@ -217,10 +235,11 @@ public class EvaluationActivity extends AppCompatActivity {
                                 mutableData.child("ratingCounter").setValue(String.valueOf(a));
                             }
 
+                            assert ratingAvg != null;
                             if(ratingAvg.equals("0")){
-                                mutableData.child("ratingAvg").setValue(String.valueOf(restaurantRating));
+                                mutableData.child("ratingAvg").setValue(String.valueOf(serviceRating));
                             } else {
-                                float a = (Float.valueOf(ratingAvg) + restaurantRating) / (Integer.valueOf(ratingCounter) + 1);
+                                float a = (Float.valueOf(ratingAvg) + serviceRating) / (Integer.valueOf(ratingCounter) + 1);
                                 mutableData.child("ratingAvg").setValue(String.valueOf(a));
                             }
 
@@ -233,6 +252,7 @@ public class EvaluationActivity extends AppCompatActivity {
                         }
                     });
                 }
+                //todo: redirect all'activity precedente
             }
         });
     }

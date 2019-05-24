@@ -597,7 +597,7 @@ public class ProfileActivity extends AppCompatActivity implements
                             Customer currentUser = new Customer(user.getUid(), user.getDisplayName(), user.getEmail(),
                                     "","","");
                             String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            //database.getReference("Profiles").child("Customers")
+
                             database.getReference("Customer").child("Profile")
                                     .child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
                                 @Override
@@ -624,8 +624,6 @@ public class ProfileActivity extends AppCompatActivity implements
                     }
                 });
     }
-
-
 
     private void startLogin() {
         // Choose authentication providers

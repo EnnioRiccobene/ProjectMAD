@@ -756,15 +756,6 @@ public class ProfileActivity extends AppCompatActivity
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
 
-//        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-//        if (!ImageBitmap.equals("NoImage")) {
-//            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
-//            nav_profile_icon.setImageBitmap(bitmap);
-//        } else {
-//            Drawable defaultImg = getResources().getDrawable(R.mipmap.ic_launcher_round);
-//            nav_profile_icon.setImageDrawable(defaultImg);
-//        }
 
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
         TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
@@ -797,64 +788,6 @@ public class ProfileActivity extends AppCompatActivity
         startActivityForResult(intentHours, TEXT_REQUEST);
     }
 
-    //todo: aggiungere il menù nell'activity per la modifica degli orari con backbutton e conferma
-
-
-//    public void populateDatabaseWithDummyValues() {
-//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//        database.child("Company").removeValue();
-//
-//        ArrayList<RestaurantProfile> mRestaurantList = new ArrayList<>();
-//        mRestaurantList.add(new RestaurantProfile("Name1", "111", "Via malta", "email1", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
-//        mRestaurantList.add(new RestaurantProfile("Name2", "222", "Via malta", "email2", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
-//        mRestaurantList.add(new RestaurantProfile("Name3", "333", "Via malta", "email3", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
-//        mRestaurantList.add(new RestaurantProfile("Name4", "444", "Via malta", "email4", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
-//        DatabaseReference profileRef = database.child("Company").child("Profile");
-//
-//        for (RestaurantProfile element : mRestaurantList) {
-//            String email = element.getEmail();
-//            profileRef.child(email).setValue(element);
-//        }
-//
-//        ArrayList<OrderedDish> orderedDishList = new ArrayList<>();
-//        orderedDishList.add(new OrderedDish("Food1", 2, 6.4f));
-//        orderedDishList.add(new OrderedDish("Food2", 6, 10.4f));
-//        orderedDishList.add(new OrderedDish("Food3", 3, 6f));
-//        orderedDishList.add(new OrderedDish("Food4", 5, 9.4f));
-//        orderedDishList.add(new OrderedDish("Food5", 7, 1.5f));
-//
-//        // Compute total Price
-//        float x = 0;
-//        for (OrderedDish element : orderedDishList)
-//            x += element.getPrice() * element.getQuantity();
-//        DecimalFormat df = new DecimalFormat("#.##");
-//        df.setMinimumFractionDigits(2);
-//        String price = df.format(x);
-//
-//        ArrayList<Reservation> mReservationList = new ArrayList<>();
-//        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 0, price));
-//        mReservationList.add(new Reservation("Piazza Sabotino 8", "19:00", 0, price));
-//        mReservationList.add(new Reservation("Via Villarbasse 12", "20:45", 0, price));
-//        mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 0, price));
-//        mReservationList.add(new Reservation("Address5", "Delivery Time", 0, price));
-//        mReservationList.add(new Reservation("Address6", "Delivery Time", 0, price));
-//        mReservationList.add(new Reservation("Address7", "Delivery Time", 0, price));
-//        mReservationList.add(new Reservation("Address8", "Delivery Time", 0, price));
-//
-//        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
-//        DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood");
-//
-//        for (int i = 1; i < 5; i++) {
-//            for (Reservation element : mReservationList) {
-//                String orderID = pendingReservationRef.push().getKey();
-//                element.setOrderID(orderID);
-//                pendingReservationRef.child("email" + i).child(orderID).setValue(element);
-//                orderedFoodRef.child(orderID).setValue(orderedDishList);
-//            }
-//        }
-//
-//    }
-
     private void saveFieldsOnFirebase() {
         // progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
@@ -867,7 +800,7 @@ public class ProfileActivity extends AppCompatActivity
                 saturdayHour.getText().toString(), sundayHour.getText().toString(), additionalInformation.getText().toString());
 
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //database.getReference("Profiles").child("Restaurants")
+
         database.getReference("Company").child("Profile")
                 .child(currentUid)
                 .setValue(currentUser, new DatabaseReference.CompletionListener() {
