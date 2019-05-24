@@ -226,9 +226,7 @@ public class ProfileActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference pendingDeliveryRef = database.child("Rider").child("Delivery").child("Pending").child(currentUser);
-        pendingDeliveryRef.removeEventListener(childEventListener);
+
     }
 
     // What happens if I press back button
