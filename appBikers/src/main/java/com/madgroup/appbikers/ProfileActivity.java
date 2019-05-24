@@ -625,7 +625,7 @@ public class ProfileActivity extends AppCompatActivity
 
         HashMap<String, Object> updateValues = new HashMap<>();
         updateValues.put("name", name.getText().toString());
-        updateValues.put("phone", phone.getText().toString());
+        updateValues.put("phoneNumber", phone.getText().toString());
         updateValues.put("additionalInformation", additionalInformation.getText().toString());
         SmartLogger.d(updateValues.toString());
 
