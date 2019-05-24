@@ -163,7 +163,7 @@
     <string name="error_evaluate_toast">Valuta il tuo ordine dopo averlo ricevuto</string>
     <string name="RatingTitle">Valutazione</string>
     <string name="rating_restaurant">Ristorante</string>
-    <string name="rating_food">Cibo</string>
+    <string name="rating_food">Costo dei piatti</string>
     <string name="rating_service">Servizio di consegna</string>
     <string name="rating_review">Recensisci il tuo ordine</string>
     <string name="shopping_cart_title">Carrello</string>

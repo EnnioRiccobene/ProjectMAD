@@ -166,7 +166,7 @@
     <string name="error_evaluate_toast">Evaluate your order after receiving it</string>
     <string name="RatingTitle">Rating</string>
     <string name="rating_restaurant">Restaurant</string>
-    <string name="rating_food">Food</string>
+    <string name="rating_food">Food cost</string>
     <string name="rating_service">Delivery service</string>
     <string name="rating_review">Review your order</string>
     <string name="shopping_cart_title">Shopping Cart</string>

@@ -195,7 +195,7 @@ public class OrdersHistoryTab extends Fragment {
                         holder.mTextView1.setText(currentItem.getAddress());//todo: correggere con restaurantName
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
-                        holder.evaluate.setImageResource(R.drawable.ic_star);
+                        holder.evaluate.setImageResource(R.drawable.ic_like);
                         ImageViewCompat.setImageTintList(holder.evaluate, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
 
                         holder.evaluate.setOnClickListener(new View.OnClickListener() {
