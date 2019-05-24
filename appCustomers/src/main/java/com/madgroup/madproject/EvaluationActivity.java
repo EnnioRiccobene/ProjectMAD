@@ -263,6 +263,8 @@ public class EvaluationActivity extends AppCompatActivity {
                     });
                 }
                 //todo: redirect all'activity precedente
+                Intent myIntent = new Intent(EvaluationActivity.this, OrdersActivity.class);
+                EvaluationActivity.this.startActivity(myIntent);
             }
         });
     }
