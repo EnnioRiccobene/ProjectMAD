@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,6 @@ public class AnalyticsTab3 extends Fragment {
     private OnFragmentInteractionListener mListener;
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
-    private AnyChartView anyChartView;
     private Map<String, String> mapDayOfWeek;
     private Map<String, String> months;
 
@@ -104,13 +104,12 @@ public class AnalyticsTab3 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        anyChartView = view.findViewById(R.id.monthly_histogram);
+        AnyChartView anyChartView = view.findViewById(R.id.monthly_histogram);
         anyChartView.setProgressBar(view.findViewById(R.id.monthly_progress_bar));
-    initializeMonthlyHistogram();
+        initializeMonthlyHistogram(anyChartView);
     }
 
-
-    public void initializeMonthlyHistogram() {
+    public void initializeMonthlyHistogram(final AnyChartView anyChartView) {
 
         // Database references
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -123,11 +122,12 @@ public class AnalyticsTab3 extends Fragment {
                 .child(restaurantID);
 
         // Riferimenti all'istogramma
-        final Cartesian cartesian = AnyChart.column();
+        Log.d("chart","prima di interrogare firebase");
 
         timingOrederRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d("chart","onDataChanged()");
 
                 // Get the number of days in that month
                 Calendar mycal = new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month)-1, 1);
@@ -167,14 +167,16 @@ public class AnalyticsTab3 extends Fragment {
                     data.add(new ValueDataEntry(dayOfMonth, amountOfOrders));
                 }
 
+                Cartesian cartesian = AnyChart.column();
                 Column column = cartesian.column(data);
+                Log.d("chart","size: "+data.size());
                 column.tooltip()
                         .titleFormat("{%X}")
                         .position(Position.CENTER_TOP)
                         .anchor(Anchor.CENTER_TOP)
                         .offsetX(0d)
                         .offsetY(5d);
-                cartesian.animation(true);
+                cartesian.animation(false);
                 cartesian.yScale().minimum(0d);
                 cartesian.yAxis(0).labels().enabled(false);
                 //.format("{%Value}{groupsSeparator: }");

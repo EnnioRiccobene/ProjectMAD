@@ -96,6 +96,7 @@ public class AnalyticsActivity extends AppCompatActivity implements
         ViewPager viewPager = (ViewPager) findViewById(R.id.analytics_pager);
         AnalyticsPageAdapter myPagerAdapter = new AnalyticsPageAdapter(getSupportFragmentManager());
         viewPager.setAdapter(myPagerAdapter);
+        viewPager.setCurrentItem(0, true);
         tabLayout = (TabLayout) findViewById(R.id.analytics_tab_layout);
         tabLayout.setupWithViewPager(viewPager);
     }

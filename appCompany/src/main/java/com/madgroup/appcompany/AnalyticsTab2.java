@@ -114,13 +114,13 @@ public class AnalyticsTab2 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //anyChartView = view.findViewById(R.id.weekly_histogram);
-        //anyChartView.setProgressBar(view.findViewById(R.id.weekly_progress_bar));
-        //initializeWeeklyHistogram();
+        AnyChartView anyChartView = view.findViewById(R.id.weekly_histogram);
+        anyChartView.setProgressBar(view.findViewById(R.id.weekly_progress_bar));
+        initializeWeeklyHistogram(anyChartView);
     }
 
 
-    public void initializeWeeklyHistogram() {
+    public void initializeWeeklyHistogram(final AnyChartView anyChartView) {
 
         // Database references
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -136,7 +136,7 @@ public class AnalyticsTab2 extends Fragment {
                 .child(restaurantID).child(node);
 
         // Riferimenti all'istogramma
-        final Cartesian cartesian = AnyChart.column();
+
 
         timingOrederRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -171,6 +171,7 @@ public class AnalyticsTab2 extends Fragment {
                     data.add(new ValueDataEntry(nameDay, amountOfOrders));
                 }
 
+                Cartesian cartesian = AnyChart.column();
                 Column column = cartesian.column(data);
                 column.tooltip()
                         .titleFormat("{%X}")
@@ -178,7 +179,7 @@ public class AnalyticsTab2 extends Fragment {
                         .anchor(Anchor.CENTER_TOP)
                         .offsetX(0d)
                         .offsetY(5d);
-                cartesian.animation(true);
+                cartesian.animation(false);
                 cartesian.yScale().minimum(0d);
                 cartesian.yAxis(0).labels().enabled(false);
                 //.format("{%Value}{groupsSeparator: }");

@@ -43,7 +43,6 @@ public class AnalyticsTab1 extends Fragment {
     private OnFragmentInteractionListener mListener;
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
-    private AnyChartView anyChartView;
     private Map<String, String> months;
 
 
@@ -80,12 +79,11 @@ public class AnalyticsTab1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_analytics_tab1, container, false);
-        anyChartView = rootView.findViewById(R.id.daily_histogram);
-        anyChartView.setProgressBar(rootView.findViewById(R.id.daily_progress_bar));
-        initializeDailyHistogram();
-        return rootView;
+        View view = inflater.inflate(R.layout.fragment_analytics_tab1, container, false);
+        AnyChartView anyChartView = view.findViewById(R.id.daily_histogram);
+        anyChartView.setProgressBar(view.findViewById(R.id.daily_progress_bar));
+        initializeDailyHistogram(anyChartView);
+        return view;
     }
 
     @Override
@@ -102,6 +100,7 @@ public class AnalyticsTab1 extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
     }
 
     @Override
@@ -112,7 +111,6 @@ public class AnalyticsTab1 extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        anyChartView.clear();
         mListener = null;
     }
 
@@ -123,10 +121,13 @@ public class AnalyticsTab1 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //AnyChartView anyChartView = view.findViewById(R.id.daily_histogram);
+        //anyChartView.setProgressBar(view.findViewById(R.id.daily_progress_bar));
+        //initializeDailyHistogram(anyChartView);
 
     }
 
-    public void initializeDailyHistogram() {
+    public void initializeDailyHistogram(final AnyChartView anyChartView) {
 
         // Database references
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -139,7 +140,7 @@ public class AnalyticsTab1 extends Fragment {
         DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
                 .child(restaurantID).child(node);
 
-        final Cartesian cartesian = AnyChart.column();
+
         timingOrederRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -170,14 +171,16 @@ public class AnalyticsTab1 extends Fragment {
                     Integer amountOfOrders = entry.getValue();
                     data.add(new ValueDataEntry(hourSlot, amountOfOrders));
                 }
+                Cartesian cartesian = AnyChart.column();
 
-                cartesian.column(data).tooltip()
+                Column column = cartesian.column(data);
+                column.tooltip()
                         .titleFormat("{%X}")
                         .position(Position.CENTER_TOP)
                         .anchor(Anchor.CENTER_TOP)
                         .offsetX(0d)
                         .offsetY(5d);
-                cartesian.animation(true);
+                cartesian.animation(false);
                 cartesian.yScale().minimum(0d);
                 cartesian.yAxis(0).labels().enabled(false);
                 //.format("{%Value}{groupsSeparator: }");
@@ -189,7 +192,9 @@ public class AnalyticsTab1 extends Fragment {
                 cartesian.yAxis(0).enabled(false);
                 String wordMonth = months.get(month);
                 cartesian.title(dayOfMonth+" "+wordMonth+" "+year);
+
                 anyChartView.setChart(cartesian);
+
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
