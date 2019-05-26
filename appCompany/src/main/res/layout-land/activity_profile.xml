@@ -33,15 +33,41 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/personicon" />
 
+            <!--<com.google.android.material.textfield.TextInputLayout-->
+            <!--android:id="@+id/editTextNameLayout"-->
+            <!--style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="20dp"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toEndOf="@+id/imagePersonalPhoto"-->
+            <!--app:layout_constraintTop_toTopOf="parent">-->
+
+            <!--<com.google.android.material.textfield.TextInputEditText-->
+            <!--android:id="@+id/editTextName"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="8dp"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:layout_marginEnd="8dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:hint="@string/form_name"-->
+            <!--android:inputType="textPersonName"-->
+            <!--android:maxLength="50" />-->
+
+            <!--</com.google.android.material.textfield.TextInputLayout>-->
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/nameInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imagePersonalPhoto"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -55,13 +81,15 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/mailInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imagePersonalPhoto"
                 app:layout_constraintTop_toBottomOf="@+id/nameInputLayout">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextEmail"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -87,73 +115,78 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/phoneInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imagePersonalPhoto"
-                app:layout_constraintTop_toBottomOf="@+id/mailInputLayout" >
+                app:layout_constraintStart_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/mailInputLayout">
 
-            <EditText
-                android:id="@+id/editTextPhone"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:hint="@string/form_phone"
-                android:inputType="phone"/>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:hint="@string/form_phone"
+                    android:inputType="phone" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/addressInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/phoneInputLayout" >
+                app:layout_constraintTop_toBottomOf="@+id/phoneInputLayout">
 
-            <EditText
-                android:id="@+id/editTextAddress"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/vertical_margin"
-                android:ems="10"
-                android:hint="@string/form_address"
-                android:inputType="textPostalAddress"/>
+                <com.madgroup.sdk.CustomAutoCompleteTextView
+                    android:id="@+id/editTextAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:dropDownAnchor="@id/addressInputLayout"
+                    android:hint="@string/form_address"
+                    android:inputType="textPostalAddress" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/informationInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addressInputLayout" >
+                app:layout_constraintTop_toBottomOf="@+id/addressInputLayout">
 
-
-            <EditText
-                android:id="@+id/additionalInformation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/vertical_margin"
-                android:gravity="top|start"
-                android:hint="@string/form_info"
-                android:inputType="textMultiLine"
-                android:maxLength="150"
-                android:maxLines="5"
-                android:minLines="1"
-                android:scrollbars="vertical"/>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/additionalInformation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:gravity="top|start"
+                    android:hint="@string/form_info"
+                    android:inputType="textMultiLine"
+                    android:maxLength="150"
+                    android:maxLines="5"
+                    android:minLines="1"
+                    android:scrollbars="vertical" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/deliveryCostInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/informationInputLayout">
@@ -163,8 +196,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_margin"
-                    android:hint="@string/delivery_cost"
                     android:ems="10"
+                    android:hint="@string/delivery_cost"
                     android:inputType="numberDecimal"
                     app:decimal_digits="2" />
 
@@ -172,9 +205,10 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/minimumOrderInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/deliveryCostInputLayout">
@@ -184,33 +218,56 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_margin"
-                    android:hint="@string/minimum_order"
                     android:ems="10"
+                    android:hint="@string/minimum_order"
                     android:inputType="numberDecimal"
                     app:decimal_digits="2" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <EditText
-                android:id="@+id/editTextFoodCategory"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editTextFoodCategoryLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/vertical_margin"
-                android:ems="10"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:hint="@string/form_food_category_btn"
-                android:inputType="textPersonName"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/minimumOrderInputLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/minimumOrderInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextFoodCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:ems="10"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:hint="@string/form_food_category_btn"
+                    android:inputType="textPersonName" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--<com.google.android.material.textfield.TextInputEditText-->
+                <!--android:id="@+id/editTextFoodCategory"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginTop="@dimen/vertical_margin"-->
+                <!--android:ems="10"-->
+                <!--android:focusable="false"-->
+                <!--android:focusableInTouchMode="false"-->
+                <!--android:hint="@string/form_food_category_btn"-->
+                <!--android:inputType="textPersonName"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintStart_toStartOf="parent"-->
+                <!--app:layout_constraintTop_toBottomOf="@+id/minimumOrderInputLayout" />-->
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editTextFoodCategory">
+                app:layout_constraintTop_toBottomOf="@+id/editTextFoodCategoryLayout">
 
                 <LinearLayout
                     android:id="@+id/orarilayout"
