@@ -178,6 +178,50 @@ public class OrdersPendingTab extends Fragment {
         });
         builder.show();
     }
+    private void confirmOrderReceived(final Reservation currentItemR){
+        // Ordine Arrivato:
+        // Company: passare da accepted a history
+        // Customer: passare da pending a history
+        // Rider: passare da pending a history
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        // Company: prendo reservation, pongo status = 3, metto su history, rimuovo da pending
+        DatabaseReference companyReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentItemR.getRestaurantID()).child(currentItemR.getOrderID());
+        DatabaseReference customerReservationRef = database.child("Customer").child("Order").child("Pending").child(currentItemR.getCustomerID()).child(currentItemR.getOrderID());
+        companyReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Reservation moveReservation = (Reservation) dataSnapshot.getValue(Reservation.class);
+                moveReservation.setStatus(3);
+                database.child("Company").child("Reservation").child("History").child(currentItemR.getRestaurantID()).child(currentItemR.getOrderID()).setValue(moveReservation);
+                database.child("Company").child("Reservation").child("Accepted").child(currentItemR.getRestaurantID()).child(currentItemR.getOrderID()).setValue(null);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        customerReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Customer: prendo reservation, pongo status = 1, metto su history, rimuovo da pending
+                Reservation moveReservation = (Reservation) dataSnapshot.getValue(Reservation.class);
+                moveReservation.setStatus(1);
+                database.child("Customer").child("Order").child("History").child(currentItemR.getCustomerID()).child(currentItemR.getOrderID()).setValue(moveReservation);
+                database.child("Customer").child("Order").child("Pending").child(currentItemR.getCustomerID()).child(currentItemR.getOrderID()).setValue(null);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        // Rider: rimuovo da pending e pongo su history
+        database.child("Rider").child("Delivery").child("Pending").child(currentUser).child(currentItemR.getOrderID()).setValue(null);
+        database.child("Rider").child("Delivery").child("History").child(currentUser).child(currentItemR.getOrderID()).setValue(currentItemR);
+
+    }
 
     private void buildRecyclerView(View view) {
         DatabaseReference pendingRef = FirebaseDatabase.getInstance().getReference().child("Customer").child("Order").child("Pending").child(currentUser);
@@ -208,7 +252,8 @@ public class OrdersPendingTab extends Fragment {
                         holder.bikerArrived.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                //todo: spostare qui la conferma della consegna dell'ordine nel db che al momento è nell'app biker
+                                //conferma della ricezione dell'ordine e aggiornamento del db
+                                confirmOrderReceived(currentItem);
 
                                 showEvaluationDialog(getActivity(), getString(R.string.evaluation), getString(R.string.evaluate_dialog_message), currentItem);
 
