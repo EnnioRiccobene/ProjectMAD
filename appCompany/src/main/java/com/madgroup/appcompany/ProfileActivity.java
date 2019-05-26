@@ -118,6 +118,32 @@ public class ProfileActivity extends AppCompatActivity
     private ProgressBar progressBar;
     private ProgressBar imgProgressBar;
 
+    //campi di supporto per le query al db
+    private String fCategoryANDdCost;
+    private String catPizza;
+    private String catSandwiches;
+    private String catKebab;
+    private String catItalian;
+    private String catAmerican;
+    private String catDesserts;
+    private String catFry;
+    private String catVegetarian;
+    private String catAsian;
+    private String catMediterranean;
+    private String catSouthAmerican;
+
+    private String catPizzaDel;
+    private String catSandwichesDel;
+    private String catKebabDel;
+    private String catItalianDel;
+    private String catAmericanDel;
+    private String catDessertsDel;
+    private String catFryDel;
+    private String catVegetarianDel;
+    private String catAsianDel;
+    private String catMediterraneanDel;
+    private String catSouthAmericanDel;
+
     String notificationTitle = "MAD Company";
     String notificationText;
 
@@ -789,8 +815,80 @@ public class ProfileActivity extends AppCompatActivity
         startActivityForResult(intentHours, TEXT_REQUEST);
     }
 
+    public void setRProfileSupportFields(){
+        fCategoryANDdCost = editCategory.getText().toString() + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Pizza"))
+            catPizza = "true";
+        else
+            catPizza = "false";
+        catPizzaDel = catPizza + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Sandwiches") || editCategory.getText().toString().contains("Panini"))
+            catSandwiches = "true";
+        else
+            catSandwiches = "false";
+        catSandwichesDel = catSandwiches + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Kebab"))
+            catKebab = "true";
+        else
+            catKebab = "false";
+        catKebabDel = catKebab + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Italian") || editCategory.getText().toString().contains("Italiano"))
+            catItalian = "true";
+        else
+            catItalian = "false";
+        catItalianDel = catItalian + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("American") || editCategory.getText().toString().contains("Americano"))
+            catAmerican = "true";
+        else
+            catAmerican = "false";
+        catAmericanDel = catAmerican + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Desserts") || editCategory.getText().toString().contains("Dolci"))
+            catDesserts = "true";
+        else
+            catDesserts = "false";
+        catDessertsDel = catDesserts + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Fry") || editCategory.getText().toString().contains("Fritti"))
+            catFry = "true";
+        else
+            catFry = "false";
+        catFryDel = catFry + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Vegetarian") || editCategory.getText().toString().contains("Vegetariano"))
+            catVegetarian = "true";
+        else
+            catVegetarian = "false";
+        catVegetarianDel = catVegetarian + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Asian") || editCategory.getText().toString().contains("Asiatico"))
+            catAsian = "true";
+        else
+            catAsian = "false";
+        this.catAsianDel = catAsian + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Mediterranean") || editCategory.getText().toString().contains("Mediterraneo"))
+            catMediterranean = "true";
+        else
+            catMediterranean = "false";
+        this.catMediterraneanDel = catMediterranean + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("South American") || editCategory.getText().toString().contains("Sud Americano"))
+            catSouthAmerican = "true";
+        else
+            catSouthAmerican = "false";
+        catSouthAmericanDel = catSouthAmerican + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+    }
+
     private void saveFieldsOnFirebase() {
         // progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
+
+        setRProfileSupportFields();
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
 
@@ -799,7 +897,30 @@ public class ProfileActivity extends AppCompatActivity
         updateValues.put("phone", phone.getText().toString());
         updateValues.put("address", address.getText().toString());
         updateValues.put("foodCategory", editCategory.getText().toString());
-        //todo: calcolare e aggiornare anche tutti i campi di supporto per categoria e prezzo del cibo
+
+        updateValues.put("fCategoryANDdCost", fCategoryANDdCost);
+        updateValues.put("catPizza", catPizza);
+        updateValues.put("catSandwiches", catSandwiches);
+        updateValues.put("catKebab", catKebab);
+        updateValues.put("catItalian", catItalian);
+        updateValues.put("catAmerican", catAmerican);
+        updateValues.put("catDesserts", catDesserts);
+        updateValues.put("catFry", catFry);
+        updateValues.put("catVegetarian", catVegetarian);
+        updateValues.put("catAsian", catAsian);
+        updateValues.put("catMediterranean", catMediterranean);
+        updateValues.put("catSouthAmerican", catSouthAmerican);
+        updateValues.put("catPizzaDel", catPizzaDel);
+        updateValues.put("catSandwichesDel", catSandwichesDel);
+        updateValues.put("catKebabDel", catKebabDel);
+        updateValues.put("catItalianDel", catItalianDel);
+        updateValues.put("catAmericanDel", catAmericanDel);
+        updateValues.put("catDessertsDel", catDessertsDel);
+        updateValues.put("catFryDel", catFryDel);
+        updateValues.put("catVegetarianDel", catVegetarianDel);
+        updateValues.put("catAsianDel", catAsianDel);
+        updateValues.put("catMediterraneanDel", catMediterraneanDel);
+        updateValues.put("catSouthAmericanDel", catSouthAmericanDel);
 
         updateValues.put("minOrder", minimumOrder.getText().toString());
         updateValues.put("deliveryCost", deliveryCost.getText().toString());
