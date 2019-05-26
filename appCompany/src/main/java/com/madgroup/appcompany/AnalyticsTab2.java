@@ -24,6 +24,10 @@ import com.anychart.enums.Anchor;
 import com.anychart.enums.HoverMode;
 import com.anychart.enums.Position;
 import com.anychart.enums.TooltipPositionMode;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -84,9 +88,7 @@ public class AnalyticsTab2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_analytics_tab2, container, false);
-        anyChartView = view.findViewById(R.id.weekly_histogram);
-        anyChartView.setProgressBar(view.findViewById(R.id.weekly_progress_bar));
+        View view = inflater.inflate(R.layout.fragment_analytics_tab1, container, false);
         return view;
     }
 
@@ -114,13 +116,12 @@ public class AnalyticsTab2 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        AnyChartView anyChartView = view.findViewById(R.id.weekly_histogram);
-        anyChartView.setProgressBar(view.findViewById(R.id.weekly_progress_bar));
-        initializeWeeklyHistogram(anyChartView);
+        BarChart chart = view.findViewById(R.id.bar_chart);
+        initializeWeeklyHistogram(chart, "4");
     }
 
 
-    public void initializeWeeklyHistogram(final AnyChartView anyChartView) {
+    public void initializeWeeklyHistogram(final BarChart chart, final String weekOfMonth) {
 
         // Database references
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -128,7 +129,6 @@ public class AnalyticsTab2 extends Fragment {
         Calendar calendar = Calendar.getInstance();
         String year = "2019";
         final String month = "5";
-        final String weekOfMonth = "4";
         String node = year+"_"+month+"_"+weekOfMonth;
 
 
@@ -163,35 +163,28 @@ public class AnalyticsTab2 extends Fragment {
                 }
 
                 // Converto la mappa in ArrayList (la libreria accetta questo formato)
-                List<DataEntry> data = new ArrayList<>();
+                List<BarEntry> entries = new ArrayList<>();
+                int i =1;
                 for (TreeMap.Entry<String, Integer> entry : hashMap.entrySet()) {
                     String dayOfWeek = entry.getKey();
                     Integer amountOfOrders = entry.getValue();
                     String nameDay = mapDayOfWeek.get(dayOfWeek);
-                    data.add(new ValueDataEntry(nameDay, amountOfOrders));
+                    entries.add(new BarEntry(i, amountOfOrders));
+                    i++;
                 }
 
-                Cartesian cartesian = AnyChart.column();
-                Column column = cartesian.column(data);
-                column.tooltip()
-                        .titleFormat("{%X}")
-                        .position(Position.CENTER_TOP)
-                        .anchor(Anchor.CENTER_TOP)
-                        .offsetX(0d)
-                        .offsetY(5d);
-                cartesian.animation(false);
-                cartesian.yScale().minimum(0d);
-                cartesian.yAxis(0).labels().enabled(false);
-                //.format("{%Value}{groupsSeparator: }");
-                cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
-                cartesian.tooltip().title().text("Amount of deliveries");
-                cartesian.tooltip().format("{%value}");
-                cartesian.interactivity().hoverMode(HoverMode.BY_X);
-                cartesian.xAxis(0).title("");
-                cartesian.yAxis(0).enabled(false);
-                cartesian.title(weekOfMonth+"th week of "+month);
-                //cartesian.yAxis(0).title("Amount of orders");
-                anyChartView.setChart(cartesian);
+                BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
+                dataSet.setDrawValues(false);
+                BarData lineData = new BarData(dataSet);
+                chart.getAxisLeft().setDrawGridLines(false);
+                chart.getXAxis().setDrawGridLines(false);
+                chart.getAxisRight().setDrawGridLines(false);
+                chart.getDescription().setEnabled(false);
+                chart.getLegend().setEnabled(false);
+                chart.setDrawGridBackground(false);
+
+                chart.setData(lineData);
+                chart.invalidate(); // refresh
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {

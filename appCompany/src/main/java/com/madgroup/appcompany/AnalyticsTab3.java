@@ -2,6 +2,7 @@ package com.madgroup.appcompany;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -25,6 +26,10 @@ import com.anychart.enums.Anchor;
 import com.anychart.enums.HoverMode;
 import com.anychart.enums.Position;
 import com.anychart.enums.TooltipPositionMode;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -77,7 +82,7 @@ public class AnalyticsTab3 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_analytics_tab3, container, false);
+        return inflater.inflate(R.layout.fragment_analytics_tab1, container, false);
     }
 
     @Override
@@ -104,18 +109,16 @@ public class AnalyticsTab3 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        AnyChartView anyChartView = view.findViewById(R.id.monthly_histogram);
-        anyChartView.setProgressBar(view.findViewById(R.id.monthly_progress_bar));
-        initializeMonthlyHistogram(anyChartView);
+        BarChart chart = view.findViewById(R.id.bar_chart);
+        initializeMonthlyHistogram(chart, "5");
     }
 
-    public void initializeMonthlyHistogram(final AnyChartView anyChartView) {
+    public void initializeMonthlyHistogram(final BarChart chart, final String month) {
 
         // Database references
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String restaurantID = prefs.getString("currentUser", "");
         final String year = "2019";
-        final String month = "5";
         final String weekOfMonth = "4";
 
         DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
@@ -160,36 +163,30 @@ public class AnalyticsTab3 extends Fragment {
                 }
 
                 // Converto la mappa in ArrayList (la libreria accetta questo formato)
-                List<DataEntry> data = new ArrayList<>();
+                List<BarEntry> entries = new ArrayList<>();
                 for (TreeMap.Entry<Integer, Long> entry : hashMap.entrySet()) {
                     Integer dayOfMonth = entry.getKey();
                     Long amountOfOrders = entry.getValue();
-                    data.add(new ValueDataEntry(dayOfMonth, amountOfOrders));
+                    entries.add(new BarEntry(dayOfMonth, amountOfOrders));
                 }
 
-                Cartesian cartesian = AnyChart.column();
-                Column column = cartesian.column(data);
-                Log.d("chart","size: "+data.size());
-                column.tooltip()
-                        .titleFormat("{%X}")
-                        .position(Position.CENTER_TOP)
-                        .anchor(Anchor.CENTER_TOP)
-                        .offsetX(0d)
-                        .offsetY(5d);
-                cartesian.animation(false);
-                cartesian.yScale().minimum(0d);
-                cartesian.yAxis(0).labels().enabled(false);
-                //.format("{%Value}{groupsSeparator: }");
-                cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
-                cartesian.tooltip().title().text("Amount of deliveries");
-                cartesian.tooltip().format("{%value}");
-                cartesian.interactivity().hoverMode(HoverMode.BY_X);
-                cartesian.xAxis(0).title("");
-                cartesian.yAxis(0).enabled(false);
-                String wordMonth = months.get(month);
-                cartesian.title(wordMonth+" "+year);
-                //cartesian.yAxis(0).title("Amount of orders");
-                anyChartView.setChart(cartesian);
+                BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
+                dataSet.setColor(Color.BLUE); //resolved color
+                dataSet.setBarBorderColor(Color.BLACK);
+                dataSet.setBarBorderWidth(2);
+                dataSet.setBarShadowColor(Color.BLUE);
+                dataSet.setDrawValues(false);
+                BarData lineData = new BarData(dataSet);
+                chart.getAxisLeft().setDrawGridLines(false);
+                chart.getXAxis().setDrawGridLines(false);
+                chart.getAxisRight().setDrawGridLines(false);
+                chart.getDescription().setEnabled(false);
+                chart.getLegend().setEnabled(false);
+                chart.setDrawGridBackground(false);
+
+                chart.setData(lineData);
+                chart.invalidate(); // refresh
+
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {

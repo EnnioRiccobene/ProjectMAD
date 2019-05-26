@@ -72,6 +72,7 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-ui:2.2.9'
 
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
 
 }
