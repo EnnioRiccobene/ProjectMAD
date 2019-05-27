@@ -176,8 +176,6 @@ public class ProfileActivity extends AppCompatActivity
         } else {
             startLogin();
         }
-
-
     }
 
     private int checkLocationpermissions() {

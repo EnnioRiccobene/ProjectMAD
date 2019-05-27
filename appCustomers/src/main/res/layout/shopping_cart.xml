@@ -130,14 +130,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/dishesText"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="32dp"
                     android:scrollbars="vertical"/>
 
                 <View
                     android:id="@+id/first_view"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="24dp"
                     android:background="@color/colorPrimaryDark"
                     android:layout_below="@id/recycler_view" />
 
@@ -168,7 +168,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/subtotalPrice_bold"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     android:text="@string/delivery_cost"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp"
