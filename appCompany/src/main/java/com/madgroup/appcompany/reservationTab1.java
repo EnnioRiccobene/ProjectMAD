@@ -174,7 +174,7 @@ public class reservationTab1 extends Fragment {
                                 currentItem.setStatus(ReservationActivity.ACCEPTED_RESERVATION_CODE);
                                 // pendingReservationRef.child(orderID).removeValue();
                                 // acceptedReservationRef.child(orderID).setValue(currentItem);
-                                Map multipleAtomicQuery = new HashMap();
+                                HashMap<String, Object> multipleAtomicQuery = new HashMap<>();
                                 multipleAtomicQuery.put("Company/Reservation/Pending/" + currentUser + "/" + orderID, null);
                                 multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID, currentItem);
                                 database.updateChildren(multipleAtomicQuery);

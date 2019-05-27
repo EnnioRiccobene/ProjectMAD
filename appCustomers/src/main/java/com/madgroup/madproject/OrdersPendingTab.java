@@ -36,11 +36,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
+import com.madgroup.sdk.Delivery;
 import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -159,13 +162,11 @@ public class OrdersPendingTab extends Fragment {
                 new FirebaseRecyclerAdapter<Reservation, OrderViewHolder>(options) {
                     @Override
                     protected void onBindViewHolder(@NonNull OrderViewHolder holder, int i, @NonNull final Reservation currentItem) {
-                        //downloadProfilePic(currentItem.getRestaurantID(), holder.mImageView);
-
                         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
                                 .child("restaurants").child(currentItem.getRestaurantID());
                         GlideApp.with(OrdersPendingTab.this)
                                 .load(storageReference)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                                 .skipMemoryCache(false)
                                 .error(GlideApp.with(OrdersPendingTab.this).load(R.drawable.personicon))
                                 .into(holder.mImageView);
@@ -199,14 +200,60 @@ public class OrdersPendingTab extends Fragment {
                                 });
                             }
                         });
+
+                        holder.confirmOrder.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Ordine Arrivato:
+                                // Company: passare da accepted a history
+                                // Customer: passare da pending a history
+                                // Rider: passare da pending a history
+                                final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+                                // I want atomic queries -> create a map and do a single updateChilden on that map
+                                final HashMap<String, Object> multipleAtomicQuery = new HashMap<>();
+
+                                // 1. Company: prendo reservation, pongo status = 3, metto su history, rimuovo da pending
+                                multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentItem.getRestaurantID() + "/" + currentItem.getOrderID(), null);
+                                currentItem.setStatus(3);
+                                multipleAtomicQuery.put("Company/Reservation/History/" + currentItem.getRestaurantID() + "/" + currentItem.getOrderID(), currentItem);
+
+                                // 2. Customer: prendo reservation, pongo status = 1, metto su history, rimuovo da pending
+                                multipleAtomicQuery.put("Customer/Order/Pending/" + currentItem.getCustomerID() + "/" + currentItem.getOrderID(), null);
+                                currentItem.setStatus(2);
+                                multipleAtomicQuery.put("Customer/Order/History/" + currentItem.getCustomerID() + "/" + currentItem.getOrderID(), currentItem);
+
+                                // 3. Rider: rimuovo da pending e pongo su history
+                                DatabaseReference bikerDeliveryRef = database.child("Rider").child("Delivery").child("Pending");
+                                bikerDeliveryRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if(!dataSnapshot.exists())
+                                            return;
+                                        Delivery currentDelivery = dataSnapshot.getValue(Delivery.class);
+                                        multipleAtomicQuery.put("Rider/Delivery/Pending/" + currentItem.getBikerID() + "/" + currentItem.getOrderID(), null);
+                                        multipleAtomicQuery.put("Rider/Delivery/History/" + currentItem.getBikerID() + "/" + currentItem.getOrderID(), currentDelivery);
+                                        database.updateChildren(multipleAtomicQuery);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        });
+
+                        //                                        database.child("Rider").child("Delivery").child("Pending").child(currentUser).child(currentItem.getOrderID()).setValue(null);
+//                                        database.child("Rider").child("Delivery").child("History").child(currentUser).child(currentItem.getOrderID()).setValue(currentItem);
+
                     }
 
                     @NonNull
                     @Override
                     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.order_item, parent, false);
-                        OrderViewHolder evh = new OrderViewHolder(v);
-                        return evh;
+                        return new OrderViewHolder(v);
                     }
                 };
 
@@ -218,11 +265,12 @@ public class OrdersPendingTab extends Fragment {
     }
 
     public static class OrderViewHolder extends RecyclerView.ViewHolder {
-        public CircleImageView mImageView;
-        public TextView mTextView1;  // Address
-        public TextView mTextView2;  // Lunch_time
-        public TextView mTextView3;  // Price
-        public RelativeLayout viewForeground;
+        private CircleImageView mImageView;
+        private TextView mTextView1;  // Address
+        private TextView mTextView2;  // Lunch_time
+        private TextView mTextView3;  // Price
+        private RelativeLayout viewForeground;
+        private ImageView confirmOrder;
         View mView;
 
         public OrderViewHolder(@NonNull View itemView) {
@@ -233,31 +281,7 @@ public class OrdersPendingTab extends Fragment {
             mTextView2 = itemView.findViewById(R.id.lunch_time);
             mTextView3 = itemView.findViewById(R.id.order_price);
             viewForeground = itemView.findViewById(R.id.view_foreground);
+            confirmOrder = itemView.findViewById(R.id.confirmOrder);
         }
     }
-
-    private void downloadProfilePic(String restaurantId, final CircleImageView mImageView) {
-        final long ONE_MEGABYTE = 1024 * 1024;
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics").child("restaurants").child(restaurantId);
-        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                // Scarico l'immagine e la setto
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                mImageView.setImageBitmap(bitmap);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-                int errorCode = ((StorageException) exception).getErrorCode();
-                if (errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
-                    // La foto non è presente: carico immagine di default
-                    Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
-                    mImageView.setImageDrawable(defaultImg);
-                }
-            }
-        });
-    }
-
 }

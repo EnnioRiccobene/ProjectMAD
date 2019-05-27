@@ -273,7 +273,7 @@ public class SearchRestaurantTab1 extends Fragment {
 
                         GlideApp.with(mContext)
                                 .load(storageReference)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                                 .skipMemoryCache(false)
                                 .error(GlideApp.with(mContext).load(R.drawable.personicon))
                                 .into(holder.restaurant_photo);

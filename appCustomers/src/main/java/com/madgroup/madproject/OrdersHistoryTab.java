@@ -160,13 +160,14 @@ public class OrdersHistoryTab extends Fragment {
                                 .child("restaurants").child(currentItem.getRestaurantID());
                         GlideApp.with(OrdersHistoryTab.this)
                                 .load(storageReference)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                                 .skipMemoryCache(false)
                                 .error(GlideApp.with(OrdersHistoryTab.this).load(R.drawable.personicon))
                                 .into(holder.mImageView);
                         holder.mTextView1.setText(currentItem.getRestaurantName());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
+                        holder.confirmOrder.setVisibility(View.GONE);
                         holder.mView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -219,6 +220,7 @@ public class OrdersHistoryTab extends Fragment {
         public TextView mTextView2;  // Lunch_time
         public TextView mTextView3;  // Price
         public RelativeLayout viewForeground;
+        private ImageView confirmOrder;
         View mView;
 
         public OrderViewHolder(@NonNull View itemView) {
@@ -229,6 +231,7 @@ public class OrdersHistoryTab extends Fragment {
             mTextView2 = itemView.findViewById(R.id.lunch_time);
             mTextView3 = itemView.findViewById(R.id.order_price);
             viewForeground = itemView.findViewById(R.id.view_foreground);
+            confirmOrder = itemView.findViewById(R.id.confirmOrder);
         }
     }
 }

@@ -107,7 +107,7 @@ public class SearchRestaurantTab2Adapter extends
 
         GlideApp.with(context)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .skipMemoryCache(false)
                 .error(GlideApp.with(context).load(R.drawable.personicon))
                 .into(holder.restaurant_photo);
@@ -172,7 +172,7 @@ public class SearchRestaurantTab2Adapter extends
             restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot != null) {
+                    if (dataSnapshot.exists()) {
                         Restaurant newFavorite = dataSnapshot.getValue(Restaurant.class);
                         favoriteListRef.setValue(newFavorite);
                         model.setFavorite(true);

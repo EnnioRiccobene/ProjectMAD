@@ -8,8 +8,9 @@ public class Reservation implements Serializable {
 
     private String orderID;
     private String customerID;
-    private ArrayList<OrderedDish> orderedDishList;
     private String restaurantID;
+    private String bikerID;
+    private ArrayList<OrderedDish> orderedDishList;
     private String restaurantName;
     private String address;
     private String deliveryTime;
@@ -19,12 +20,22 @@ public class Reservation implements Serializable {
     private String notes;
     //private boolean seen;
 
-//    Status
+//    Status for Company
 //    0: Da confermare/rifiutare        Tab1
 //    1: Confermato. Da preparare       Tab2
 //    2: Rider chiamato. In attesa      Tab2
 //    3: Consegnato e concluso          Tab3
 //    4: Rifiutato                      Tab3
+
+//    Status for Biker
+//    0: Accettato                      Tab1
+//    1: Concluso                       Tab2
+
+//    Status for Customer
+//    0: Da confermare/rifiutare        Tab1
+//    1: Confermato. Da preparare       Tab1
+//    2: Consegnato e concluso          Tab2
+//    3: Rifiutato                      Tab2
 
     public Reservation() {
     }
@@ -152,6 +163,14 @@ public class Reservation implements Serializable {
 
     public void setRestaurantName(String restaurantName) {
         this.restaurantName = restaurantName;
+    }
+
+    public String getBikerID() {
+        return bikerID;
+    }
+
+    public void setBikerID(String bikerID) {
+        this.bikerID = bikerID;
     }
 }
 

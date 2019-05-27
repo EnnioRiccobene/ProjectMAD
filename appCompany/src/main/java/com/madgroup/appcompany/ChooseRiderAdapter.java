@@ -110,7 +110,7 @@ public class ChooseRiderAdapter extends
     }
 
     private void callRider(RiderProfile rider) {
-        Map multipleAtomicQuery = new HashMap();
+        HashMap<String, Object> multipleAtomicQuery = new HashMap<>();
         String orderID = reservation.getOrderID();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         // DatabaseReference deliveriesRef = database.child("Rider").child("Delivery");
@@ -120,6 +120,9 @@ public class ChooseRiderAdapter extends
         // statusUpdate.put("status", 2);
         // acceptedReservationRef.updateChildren(statusUpdate);
         multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID + "/status", 2);
+        multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID + "/bikerID", rider.getId());
+        multipleAtomicQuery.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID + "/bikerID", rider.getId());
+        multipleAtomicQuery.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID + "/status", 1);
 
         // Creating Delivery Item
         HashMap<String, String> Delivery = new HashMap<>();
@@ -148,7 +151,7 @@ public class ChooseRiderAdapter extends
 
         GlideApp.with(context)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .skipMemoryCache(false)
                 .error(GlideApp.with(context).load(R.drawable.personicon))
                 .into(holder.riderPhoto);

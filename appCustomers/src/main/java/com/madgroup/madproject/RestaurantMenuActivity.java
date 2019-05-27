@@ -254,7 +254,6 @@ public class RestaurantMenuActivity extends AppCompatActivity {
                 String currentCustomer = getSharedPreferences("MyData", MODE_PRIVATE).getString("currentUser", "noUser");
                 Reservation currentReservation = new Reservation(restaurantName.getText().toString(), orderedDishes, address, deliveryTime, notes, restaurantID, delivery_cost_amount);
                 currentReservation.setCustomerID(currentCustomer);
-
                 ShoppingCartActivity.start(RestaurantMenuActivity.this, currentReservation, minimumOrder);
                 dialog.dismiss();
             }

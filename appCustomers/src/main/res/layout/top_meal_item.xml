@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_layout"
         android:layout_width="match_parent"
@@ -18,7 +13,7 @@
             android:id="@+id/dish_item_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="4dp">
+            android:padding="10dp">
 
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -49,13 +44,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerInParent="true"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="2dp"
                 android:tint="@color/colorPrimary" />
 
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
-
-
-
-</RelativeLayout>

@@ -1,4 +1,4 @@
-package com.madgroup.appbikers;
+package com.madgroup.sdk;
 
 public class Delivery {
 

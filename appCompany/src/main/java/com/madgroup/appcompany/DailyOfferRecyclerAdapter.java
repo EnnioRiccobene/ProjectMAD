@@ -76,7 +76,7 @@ public class DailyOfferRecyclerAdapter extends
                 .child(restaurantUID).child(dish.getId());
         GlideApp.with(mContext)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .skipMemoryCache(true)
                 .error(GlideApp.with(mContext).load(R.drawable.ic_dish))
                 .into(viewHolder.dishPhoto);

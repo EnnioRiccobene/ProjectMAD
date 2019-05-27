@@ -207,7 +207,7 @@ public class DeliveryActivity extends AppCompatActivity implements
 
         GlideApp.with(this)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .skipMemoryCache(false)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);

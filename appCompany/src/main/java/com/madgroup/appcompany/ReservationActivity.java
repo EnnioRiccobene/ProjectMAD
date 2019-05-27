@@ -203,7 +203,7 @@ public class ReservationActivity extends AppCompatActivity implements
                 .child("restaurants").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         GlideApp.with(this)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .skipMemoryCache(false)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
