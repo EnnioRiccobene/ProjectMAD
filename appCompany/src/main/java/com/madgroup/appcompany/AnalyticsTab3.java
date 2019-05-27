@@ -219,6 +219,8 @@ public class AnalyticsTab3 extends Fragment {
 
                 chart.setData(lineData);
                 chart.invalidate(); // refresh
+                chart.animateY(1000);
+
 
             }
             @Override

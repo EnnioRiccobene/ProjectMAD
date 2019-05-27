@@ -158,7 +158,7 @@ public class AnalyticsTab2 extends Fragment {
                     selectedWeek = Integer.toString(Integer.parseInt(selectedWeek) - 1);
                 }
                 currentFilter.setText("Week " + selectedWeek + " of " + months.get(selectedMonth) + " " + selectedYear);
-                initializeWeeklyHistogram(chart, selectedWeek);
+                initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
             }
         });
 
@@ -177,11 +177,11 @@ public class AnalyticsTab2 extends Fragment {
                     selectedWeek = Integer.toString(Integer.parseInt(selectedWeek)+1);
                 }
                 currentFilter.setText("Week " + selectedWeek + " of " + months.get(selectedMonth) + " " + selectedYear);
-                initializeWeeklyHistogram(chart, selectedWeek);
+                initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
             }
         });
 
-        initializeWeeklyHistogram(chart, selectedWeek);
+        initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
 
 
 
@@ -203,14 +203,13 @@ public class AnalyticsTab2 extends Fragment {
     }
 
 
-    public void initializeWeeklyHistogram(final BarChart chart, final String weekOfMonth) {
+    public void initializeWeeklyHistogram(final BarChart chart, final String weekOfMonth, final String month,
+                                          final String year) {
 
         // Database references
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String restaurantID = prefs.getString("currentUser", "");
         Calendar calendar = Calendar.getInstance();
-        String year = "2019";
-        final String month = "5";
         String node = year+"_"+month+"_"+weekOfMonth;
 
 
@@ -276,6 +275,8 @@ public class AnalyticsTab2 extends Fragment {
 
                 chart.setData(lineData);
                 chart.invalidate(); // refresh
+                chart.animateY(1000);
+
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {

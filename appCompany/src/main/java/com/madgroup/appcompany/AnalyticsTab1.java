@@ -28,7 +28,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -192,7 +195,8 @@ public class AnalyticsTab1 extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String restaurantID = prefs.getString("currentUser", "");
 
-        String weekOfMonth = "4";
+        String weekOfMonth = getWeekOfMonth(dayOfMonth, month, year);
+
         String node = year+"_"+month+"_"+weekOfMonth;
         DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
                 .child(restaurantID).child(node);
@@ -249,8 +253,12 @@ public class AnalyticsTab1 extends Fragment {
                 chart.getAxisRight().setDrawLabels(false);
                 chart.getXAxis().setLabelCount(entries.size());
 
+                chart.getAxisRight().setEnabled(false);
+                chart.getAxisLeft().setEnabled(false);
+
                 chart.setData(lineData);
                 chart.invalidate(); // refresh
+                chart.animateY(1000);
 
             }
             @Override
@@ -259,8 +267,25 @@ public class AnalyticsTab1 extends Fragment {
         });
     }
 
+    @NotNull
+    private String getWeekOfMonth(String dayOfMonth, String month, String year) {
 
-
+        if (month.length()==1)
+            month = "0"+month;
+        String input = year+"/"+month+"/"+dayOfMonth;
+        String format = "yyyy/MM/dd";
+        SimpleDateFormat df = new SimpleDateFormat(format);
+        Date date = null;
+        try {
+            date = df.parse(input);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        Integer weekOfMonth = cal.get(Calendar.WEEK_OF_MONTH);
+        return Integer.toString(weekOfMonth);
+    }
 
 
     public static String getNextDay(String curDate) {
