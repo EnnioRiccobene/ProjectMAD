@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +36,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -123,74 +125,17 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
         if (!hiddenHours.isExpanded())
             hiddenHours.collapse();
-//        if (!hiddenMenu.isExpanded())
-//            hiddenHours.collapse();
-//        if (!hiddenFavorite.isExpanded())
-//            hiddenHours.collapse();
         getIncomingIntent();
-
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         restaurantRef = database.getReference().child("Company").child("Profile").child(restaurantID);
         dishRef = database.getReference().child("Company").child("Menu").child(restaurantID);
-
         SharedPreferences prefs = getSharedPreferences("MyData", MODE_PRIVATE);
         address = prefs.getString("Address", "No address defined");
-
-        // Carico l'immagine del ristorante
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
-                .child("restaurants").child(restaurantID);
-        GlideApp.with(this)
-                .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .error(GlideApp.with(this).load(R.drawable.personicon))
-                .into(restaurantPhoto);
-
+        loadRestaurantPhoto();
         initRecyclerView();
-
-        restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Restaurant currentRestaurant = dataSnapshot.getValue(Restaurant.class);
-//                restaurantPhoto
-                restaurantName.setText(currentRestaurant.getName());
-                foodCategories.setText(currentRestaurant.getFoodCategory());
-                minimumOrderAmount.setText(currentRestaurant.getMinOrder());
-                deliveryCostAmount.setText(currentRestaurant.getDeliveryCost());
-                mondayHours.setText(currentRestaurant.getMondayOpeningHours());
-                tuesdayHours.setText(currentRestaurant.getTuesdayOpeningHours());
-                wednesdayHours.setText(currentRestaurant.getWednesdayOpeningHours());
-                thursdayHours.setText(currentRestaurant.getThursdayOpeningHours());
-                fridayHours.setText(currentRestaurant.getFridayOpeningHours());
-                saturdayHours.setText(currentRestaurant.getSaturdayOpeningHours());
-                sundayHours.setText(currentRestaurant.getSundayOpeningHours());
-
-                StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/projectmad-18b01.appspot.com/o/uploads%2Fdish.png?alt=media&token=37431f23-81a7-4d57-8686-4b93640b29ad");
-
-//                GlideApp.with(RestaurantMenuActivity.this).load(storageReference).into(restaurantPhoto);
-
-                final long ONE_MEGABYTE = 1024 * 1024;
-                storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        // Data for "images/island.jpg" is returns, use this as needed
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        restaurantPhoto.setImageBitmap(bitmap);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        loadRestaurantInformation();
     }
+
 
     @Override
     protected void onStart() {
@@ -205,16 +150,48 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
+        // Menu Recycler View
         options = new FirebaseRecyclerOptions.Builder<Dish>()
                 .setQuery(dishRef, Dish.class)
                 .build();
 
-        RecyclerView recyclerView = findViewById(R.id.menu_recycleView);
+        RecyclerView menuRecycler = findViewById(R.id.menu_recycleView);
 //        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(this, menu, orderedDishes);
         adapter = new RecycleViewMenuAdapter(options, dishRef, RestaurantMenuActivity.this, orderedDishes, restaurantID);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        menuRecycler.setAdapter(adapter);
+        menuRecycler.setLayoutManager(new LinearLayoutManager(this));
         adapter.startListening();
+
+        // Favorites Recycler View
+        final ArrayList<Dish> topRatedDish = new ArrayList<>();
+        Query query = dishRef.orderByChild("orderedQuantityTot");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists())
+                    return;
+                int i = 0;
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if(i == 3)
+                        break;
+                    Dish currentDish = postSnapshot.getValue(Dish.class);
+                    topRatedDish.add(currentDish);
+                    i++;
+                }
+                RecyclerView favoriteRecycler = (RecyclerView) findViewById(R.id.favorite_recycleView);
+                FavoriteTopMealAdapter adapter = new FavoriteTopMealAdapter(getApplicationContext(), topRatedDish, restaurantID);
+                favoriteRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                favoriteRecycler.setItemAnimator(new DefaultItemAnimator());
+                favoriteRecycler.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     public void showHoursDetails(View view) {
@@ -293,12 +270,68 @@ public class RestaurantMenuActivity extends AppCompatActivity {
                 showDialog();
                 break;
         }
-            return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.restaurant_menu, menu);
         return true;
+    }
+
+    private void loadRestaurantInformation() {
+        restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Restaurant currentRestaurant = dataSnapshot.getValue(Restaurant.class);
+//                restaurantPhoto
+                restaurantName.setText(currentRestaurant.getName());
+                foodCategories.setText(currentRestaurant.getFoodCategory());
+                minimumOrderAmount.setText(currentRestaurant.getMinOrder());
+                deliveryCostAmount.setText(currentRestaurant.getDeliveryCost());
+                mondayHours.setText(currentRestaurant.getMondayOpeningHours());
+                tuesdayHours.setText(currentRestaurant.getTuesdayOpeningHours());
+                wednesdayHours.setText(currentRestaurant.getWednesdayOpeningHours());
+                thursdayHours.setText(currentRestaurant.getThursdayOpeningHours());
+                fridayHours.setText(currentRestaurant.getFridayOpeningHours());
+                saturdayHours.setText(currentRestaurant.getSaturdayOpeningHours());
+                sundayHours.setText(currentRestaurant.getSundayOpeningHours());
+
+                StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/projectmad-18b01.appspot.com/o/uploads%2Fdish.png?alt=media&token=37431f23-81a7-4d57-8686-4b93640b29ad");
+
+//                GlideApp.with(RestaurantMenuActivity.this).load(storageReference).into(restaurantPhoto);
+
+                final long ONE_MEGABYTE = 1024 * 1024;
+                storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        // Data for "images/island.jpg" is returns, use this as needed
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        restaurantPhoto.setImageBitmap(bitmap);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void loadRestaurantPhoto() {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
+                .child("restaurants").child(restaurantID);
+        GlideApp.with(this)
+                .load(storageReference)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .error(GlideApp.with(this).load(R.drawable.personicon))
+                .into(restaurantPhoto);
     }
 }
