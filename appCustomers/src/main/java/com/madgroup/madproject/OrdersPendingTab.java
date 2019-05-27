@@ -255,6 +255,8 @@ public class OrdersPendingTab extends Fragment {
                                 //conferma della ricezione dell'ordine e aggiornamento del db
                                 confirmOrderReceived(currentItem);
 
+                                //todo: inserire metodo che aggiorna dati nel db del Rider (deliveryNumber e totDistance)
+
                                 showEvaluationDialog(getActivity(), getString(R.string.evaluation), getString(R.string.evaluate_dialog_message), currentItem);
 
                             }
