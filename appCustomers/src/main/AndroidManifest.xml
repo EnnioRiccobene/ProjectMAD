@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".FavoriteActivity"></activity>
+        <activity android:name=".SearchRestaurantActivity"></activity>
         <activity
             android:name=".OrdersActivity"
             android:windowSoftInputMode="adjustPan" />
@@ -38,9 +38,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".SearchRestaurantActivity"
-            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".RestaurantMenuActivity"
             android:parentActivityName=".SearchRestaurantActivity"

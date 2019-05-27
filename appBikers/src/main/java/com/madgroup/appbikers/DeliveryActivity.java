@@ -159,7 +159,7 @@ public class DeliveryActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         updateNavigatorInformation(navigationView);
-        // verifyRiderAvailability(navigationView);
+        switchSetOnClickListener(navigationView);
         createRiderStatusListener(navigationView);
     }
 
@@ -183,25 +183,17 @@ public class DeliveryActivity extends AppCompatActivity implements
         });
     }
 
-    private void verifyRiderAvailability(NavigationView navigationView) {
+    private void switchSetOnClickListener(NavigationView navigationView) {
         final SwitchCompat riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference riderRef = database.child("Rider").child("Profile").child(currentUser);
-        Boolean status = prefs.getBoolean("Status", false);
-        riderAvailability.setChecked(status);
         riderAvailability.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean newStatus;
-                if (riderAvailability.isChecked()){
-                    newStatus = true;
+                boolean newStatus = riderAvailability.isChecked();
+                if (newStatus)
                     riderRef.child("position").setValue(new Position(0, 0));
-                }
-                else
-                    newStatus = false;
-                editor.putBoolean("Status", newStatus);
                 riderRef.child("status").setValue(newStatus);
-                editor.apply();
             }
         });
     }
@@ -216,7 +208,7 @@ public class DeliveryActivity extends AppCompatActivity implements
         GlideApp.with(this)
                 .load(storageReference)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
+                .skipMemoryCache(false)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
 

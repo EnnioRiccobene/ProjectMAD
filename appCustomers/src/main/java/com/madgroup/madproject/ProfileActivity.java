@@ -37,7 +37,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madgroup.sdk.CustomAutoCompleteTextView;
@@ -748,9 +747,6 @@ public class ProfileActivity extends AppCompatActivity implements
             this.startActivity(myIntent);
         } else if(id == R.id.nav_orders){
             Intent myIntent = new Intent(this, OrdersActivity.class);
-            this.startActivity(myIntent);
-        } else if(id == R.id.nav_favorites){
-            Intent myIntent = new Intent(this, FavoriteActivity.class);
             this.startActivity(myIntent);
         } else if (id == R.id.nav_profile) {
             onBackPressed();

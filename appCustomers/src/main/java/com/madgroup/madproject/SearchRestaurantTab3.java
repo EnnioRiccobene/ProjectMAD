@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatRatingBar;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,11 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
-import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.SmartLogger;
-
-import java.util.ArrayList;
-import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -50,12 +47,12 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FavoriteRestaurant.OnFragmentInteractionListener} interface
+ * {@link SearchRestaurantTab3.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FavoriteRestaurant#newInstance} factory method to
+ * Use the {@link SearchRestaurantTab3#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FavoriteRestaurant extends Fragment {
+public class SearchRestaurantTab3 extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -69,7 +66,7 @@ public class FavoriteRestaurant extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public FavoriteRestaurant() {
+    public SearchRestaurantTab3() {
         // Required empty public constructor
     }
 
@@ -79,11 +76,11 @@ public class FavoriteRestaurant extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FavoriteRestaurant.
+     * @return A new instance of fragment SearchRestaurantTab3.
      */
     // TODO: Rename and change types and number of parameters
-    public static FavoriteRestaurant newInstance(String param1, String param2) {
-        FavoriteRestaurant fragment = new FavoriteRestaurant();
+    public static SearchRestaurantTab3 newInstance(String param1, String param2) {
+        SearchRestaurantTab3 fragment = new SearchRestaurantTab3();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -167,7 +164,7 @@ public class FavoriteRestaurant extends Fragment {
         final FirebaseRecyclerAdapter<Restaurant, FavoriteViewHolder> adapter =
                 new FirebaseRecyclerAdapter<Restaurant, FavoriteViewHolder>(options) {
                     @Override
-                    protected void onBindViewHolder(@NonNull final FavoriteRestaurant.FavoriteViewHolder holder, final int position, @NonNull final Restaurant model) {
+                    protected void onBindViewHolder(@NonNull final SearchRestaurantTab3.FavoriteViewHolder holder, final int position, @NonNull final Restaurant model) {
                         holder.restaurant_name.setText(model.getName());
                         holder.food_category.setText(model.getFoodCategory());
                         holder.minimum_order_amount.setText(model.getMinOrder());
@@ -175,11 +172,11 @@ public class FavoriteRestaurant extends Fragment {
                         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
                                 .child("restaurants").child(model.getId());
 
-                        GlideApp.with(FavoriteRestaurant.this)
+                        GlideApp.with(SearchRestaurantTab3.this)
                                 .load(storageReference)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .skipMemoryCache(true)
-                                .error(GlideApp.with(FavoriteRestaurant.this).load(R.drawable.personicon))
+                                .skipMemoryCache(false)
+                                .error(GlideApp.with(SearchRestaurantTab3.this).load(R.drawable.personicon))
                                 .into(holder.restaurant_photo);
 
 
@@ -193,7 +190,6 @@ public class FavoriteRestaurant extends Fragment {
                                         prefs.getString("Address", "").isEmpty()) {
 
                                     //Il profilo è da riempire
-//                                    Toast.makeText(SearchRestaurantActivity.this, "Your profile is not complete", Toast.LENGTH_LONG);
                                     Intent homepage = new Intent(getContext(), ProfileActivity.class);
                                     startActivity(homepage);
                                 }
@@ -210,6 +206,10 @@ public class FavoriteRestaurant extends Fragment {
                                 manageFavorites(holder, model);
                             }
                         });
+                        if(model.getRatingAvg() != null && model.getRatingAvg() != "0")
+                            holder.ratingBar.setRating(Float.parseFloat(model.getRatingAvg()));
+                        else
+                            holder.ratingBar.setVisibility(View.GONE);
                     }
 
                     @NonNull
@@ -240,6 +240,8 @@ public class FavoriteRestaurant extends Fragment {
         TextView delivery_cost;
         TextView delivery_cost_amount;
         CheckBox favoriteCheckBox;
+        AppCompatRatingBar ratingBar;
+
 
         public FavoriteViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -255,6 +257,7 @@ public class FavoriteRestaurant extends Fragment {
             delivery_cost = itemView.findViewById(R.id.delivery_cost);
             delivery_cost_amount = itemView.findViewById(R.id.delivery_cost_amount);
             favoriteCheckBox = itemView.findViewById(R.id.favoriteCheckBox);
+            ratingBar = itemView.findViewById(R.id.ratingBar);
         }
     }
 
@@ -282,7 +285,7 @@ public class FavoriteRestaurant extends Fragment {
         });
     }
 
-    public void manageFavorites(final FavoriteRestaurant.FavoriteViewHolder holder, final Restaurant model) {
+    public void manageFavorites(final SearchRestaurantTab3.FavoriteViewHolder holder, final Restaurant model) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference favoriteListRef = database.child("Customer").child("Favorite").child(currentUser).child(model.getId());
 
@@ -292,7 +295,7 @@ public class FavoriteRestaurant extends Fragment {
         }
     }
 
-    public void refreshFavoriteList(final FavoriteRestaurant.FavoriteViewHolder holder, Restaurant model) {
+    public void refreshFavoriteList(final SearchRestaurantTab3.FavoriteViewHolder holder, Restaurant model) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference favoritesRef = database.child("Customer").child("Favorite").child(currentUser).child(model.getId());
         favoritesRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -310,13 +313,16 @@ public class FavoriteRestaurant extends Fragment {
     }
 
     private void updateTopRestaurantRecyclerView(Restaurant model) {
-        if(FavoriteTopRestaurant.topRestaurant != null && FavoriteTopRestaurant.recyclerView != null){
-            if(FavoriteTopRestaurant.recyclerView.getAdapter() == null || FavoriteTopRestaurant.topRestaurant.indexOf(model) == -1)
+        if(SearchRestaurantTab2.topRestaurant != null && SearchRestaurantTab2.recyclerView != null){
+            if(SearchRestaurantTab2.recyclerView.getAdapter() == null || SearchRestaurantTab2.topRestaurant.indexOf(model) == -1)
                 return;
-            int pos = FavoriteTopRestaurant.topRestaurant.indexOf(model);
-            FavoriteTopRestaurant.topRestaurant.get(pos).setFavorite(false);
-            FavoriteTopRestaurant.recyclerView.getAdapter().notifyDataSetChanged();
+            int pos = SearchRestaurantTab2.topRestaurant.indexOf(model);
+            SearchRestaurantTab2.topRestaurant.get(pos).setFavorite(false);
+            SearchRestaurantTab2.recyclerView.getAdapter().notifyDataSetChanged();
             SmartLogger.d("indexOf: " + pos);
         }
     }
+
+
+
 }

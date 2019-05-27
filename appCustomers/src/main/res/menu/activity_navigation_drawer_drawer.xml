@@ -12,10 +12,6 @@
         android:icon="@drawable/ic_action_food"
         android:title="Orders" />
     <item
-        android:id="@+id/nav_favorites"
-        android:icon="@drawable/ic_nav_favorites"
-        android:title="Favorite" />
-    <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/ic_action_user"
         android:title="Profile" />

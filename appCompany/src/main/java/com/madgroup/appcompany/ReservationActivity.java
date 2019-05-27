@@ -204,7 +204,7 @@ public class ReservationActivity extends AppCompatActivity implements
         GlideApp.with(this)
                 .load(storageReference)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
+                .skipMemoryCache(false)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
     }

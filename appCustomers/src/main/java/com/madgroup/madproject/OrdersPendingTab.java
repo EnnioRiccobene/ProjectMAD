@@ -166,7 +166,7 @@ public class OrdersPendingTab extends Fragment {
                         GlideApp.with(OrdersPendingTab.this)
                                 .load(storageReference)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .skipMemoryCache(true)
+                                .skipMemoryCache(false)
                                 .error(GlideApp.with(OrdersPendingTab.this).load(R.drawable.personicon))
                                 .into(holder.mImageView);
 

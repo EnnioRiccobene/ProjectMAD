@@ -8,17 +8,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
-import android.animation.ObjectAnimator;
-import android.animation.StateListAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Base64;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
@@ -98,7 +91,7 @@ public class OrdersActivity extends AppCompatActivity implements
         GlideApp.with(this)
                 .load(storageReference)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
+                .skipMemoryCache(false)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
     }
@@ -117,9 +110,6 @@ public class OrdersActivity extends AppCompatActivity implements
             onBackPressed();
         } else if (id == R.id.nav_profile) {
             Intent myIntent = new Intent(this, ProfileActivity.class);
-            this.startActivity(myIntent);
-        } else if(id == R.id.nav_favorites){
-            Intent myIntent = new Intent(this, FavoriteActivity.class);
             this.startActivity(myIntent);
         } else if (id == R.id.nav_logout) {
             // LogoutFunction

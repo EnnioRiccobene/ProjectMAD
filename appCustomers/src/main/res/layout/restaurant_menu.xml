@@ -142,13 +142,11 @@
                 android:layout_marginBottom="8dp"
                 android:background="@color/colorPrimary" />
 
-            <!--todo: cambiare i valori in base al db-->
             <RelativeLayout
                 android:id="@+id/oraarirelativelayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/line_menu_2"
-                android:layout_marginBottom="6dp">
+                android:layout_below="@+id/line_menu_2">
 
                 <LinearLayout
                     android:id="@+id/orarilinearlayout"
@@ -168,16 +166,22 @@
                             android:id="@+id/hours"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:drawableLeft="@drawable/ic_clock"
+                            android:drawableLeft="@drawable/ic_circular_clock_tool"
                             android:drawablePadding="8dp"
                             android:drawableTint="@color/colorPrimary"
+                            android:gravity="center"
                             android:text="@string/opening_hours"
                             android:textColor="#3d3d3d"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+
                         <ImageView
-                            android:id="@+id/arrowbtn"
+                            android:id="@+id/arrowbtn_hour"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -342,6 +346,81 @@
 
             </RelativeLayout>
 
+
+            <LinearLayout
+                android:id="@+id/favorite_linear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/oraarirelativelayout"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/favorite_onClickLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="showFavorite"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp">
+
+                    <TextView
+                        android:id="@+id/favorite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_nav_favorites"
+                        android:drawablePadding="8dp"
+                        android:drawableTint="@color/colorPrimary"
+                        android:gravity="center"
+                        android:text="Best Meals"
+                        android:textColor="#3d3d3d"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:id="@+id/arrowbtn_favorite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="16dp"
+                        android:drawablePadding="8dp"
+                        android:src="@drawable/ic_sort_down"
+                        android:tint="@color/colorPrimary" />
+                </LinearLayout>
+
+                <!--<com.github.aakira.expandablelayout.ExpandableRelativeLayout-->
+                <!--android:id="@+id/hiddenFavorite"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:paddingTop="8dp"-->
+                <!--android:paddingBottom="8dp"-->
+                <!--app:ael_duration="200"-->
+                <!--app:ael_expanded="false"-->
+                <!--app:ael_interpolator="accelerate"-->
+                <!--app:ael_orientation="vertical">-->
+
+                <net.cachapa.expandablelayout.ExpandableLayout
+                    android:id="@+id/hiddenFavorite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:el_duration="200"
+                    app:el_expanded="false"
+                    app:el_parallax="0.5">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/favorite_recycleView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp" />
+                </net.cachapa.expandablelayout.ExpandableLayout>
+                <!--</com.github.aakira.expandablelayout.ExpandableRelativeLayout>-->
+
+            </LinearLayout>
+
             <!--<ImageButton-->
             <!--android:id="@+id/imageButtonCart"-->
             <!--android:layout_width="wrap_content"-->
@@ -352,25 +431,81 @@
             <!--android:background="@color/colorPrimary"-->
             <!--android:layout_below="@+id/oraarirelativelayout"-->
             <!--app:srcCompat="@drawable/ic_shopping_cart" />-->
-
-            <TextView
-                android:id="@+id/MenuView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/oraarirelativelayout"
-                android:text="Menù"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/menu_recycleView"
+            <LinearLayout
+                android:id="@+id/menu_linear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/MenuView"
-                android:layout_marginTop="8dp">
+                android:layout_below="@+id/favorite_linear"
+                android:layout_marginBottom="6dp"
+                android:orientation="vertical">
 
-            </androidx.recyclerview.widget.RecyclerView>
+                <LinearLayout
+                    android:id="@+id/menu_onClickLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="showMenu"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp">
 
+                    <TextView
+                        android:id="@+id/menu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_fast_food"
+                        android:drawablePadding="8dp"
+                        android:drawableTint="@color/colorPrimary"
+                        android:gravity="center"
+                        android:text="Menu"
+                        android:textColor="#3d3d3d"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:id="@+id/arrowbtn_menu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="16dp"
+                        android:drawablePadding="8dp"
+                        android:src="@drawable/ic_sort_down"
+                        android:tint="@color/colorPrimary" />
+                </LinearLayout>
+
+                <!--<com.github.aakira.expandablelayout.ExpandableRelativeLayout-->
+                <!--android:id="@+id/hiddenMenu"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:paddingTop="8dp"-->
+                <!--android:paddingBottom="8dp"-->
+                <!--app:ael_duration="200"-->
+                <!--app:ael_expanded="false"-->
+                <!--app:ael_interpolator="accelerate"-->
+                <!--app:ael_orientation="vertical">-->
+
+                <net.cachapa.expandablelayout.ExpandableLayout
+                    android:id="@+id/hiddenMenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:el_duration="1000"
+                    app:el_expanded="false"
+                    app:el_parallax="0.5">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/menu_recycleView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp" />
+                </net.cachapa.expandablelayout.ExpandableLayout>
+
+                <!--</com.github.aakira.expandablelayout.ExpandableRelativeLayout>-->
+
+            </LinearLayout>
         </RelativeLayout>
 
     </androidx.core.widget.NestedScrollView>

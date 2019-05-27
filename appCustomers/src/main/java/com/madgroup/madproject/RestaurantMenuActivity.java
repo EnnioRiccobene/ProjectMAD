@@ -27,10 +27,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.github.aakira.expandablelayout.ExpandableLayout;
+import com.github.aakira.expandablelayout.ExpandableLinearLayout;
 import com.github.aakira.expandablelayout.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -67,8 +67,9 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     TextView foodCategories;
     TextView minimumOrderAmount;
     TextView deliveryCostAmount;
-    ImageView arrowbtn;
+    ImageView arrowbtnHours, arrowbtnMenu, arrowbtnFavorite;
     ExpandableLayout hiddenHours;
+    net.cachapa.expandablelayout.ExpandableLayout hiddenFavorite, hiddenMenu;
     TextView mondayHours;
     TextView tuesdayHours;
     TextView wednesdayHours;
@@ -80,6 +81,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     private DatabaseReference dishRef;
     private String restaurantID;
     FirebaseRecyclerOptions<Dish> options;
+    private RecycleViewMenuAdapter adapter;
 
     public static void start(Context context, String restaurantId) {
         Intent starter = new Intent(context, RestaurantMenuActivity.class);
@@ -105,7 +107,11 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         minimumOrderAmount = findViewById(R.id.minimum_order_amount);
         deliveryCostAmount = findViewById(R.id.delivery_cost_amount);
         hiddenHours = findViewById(R.id.hiddenhours);
-        arrowbtn = findViewById(R.id.arrowbtn);
+        hiddenMenu = findViewById(R.id.hiddenMenu);
+        hiddenFavorite = findViewById(R.id.hiddenFavorite);
+        arrowbtnHours = findViewById(R.id.arrowbtn_hour);
+        arrowbtnMenu = findViewById(R.id.arrowbtn_menu);
+        arrowbtnFavorite = findViewById(R.id.arrowbtn_favorite);
         mondayHours = findViewById(R.id.mondayhour);
         tuesdayHours = findViewById(R.id.tuesdayhour);
         wednesdayHours = findViewById(R.id.wednesdayhour);
@@ -115,10 +121,12 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         sundayHours = findViewById(R.id.sundayhour);
 
         //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
-        if (!hiddenHours.isExpanded()) {
+        if (!hiddenHours.isExpanded())
             hiddenHours.collapse();
-        }
-
+//        if (!hiddenMenu.isExpanded())
+//            hiddenHours.collapse();
+//        if (!hiddenFavorite.isExpanded())
+//            hiddenHours.collapse();
         getIncomingIntent();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -138,7 +146,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(restaurantPhoto);
 
-        initRecicleView();
+        initRecyclerView();
 
         restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -193,42 +201,44 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     private void getIncomingIntent() {
         if (getIntent().hasExtra("Restaurant")) {
             restaurantID = getIntent().getStringExtra("Restaurant");
-//            restaurant.setId(restaurantID);//l'oggetto restaurant non è stato costruito e non ho gli attributi per farlo oltre all'id
-            //todo: una volta ottenuto l'id del ristorante tramite intent, fare una query al database per ottenere i campi del ristorante con quell'id (photo, Name, foodcategories, orari di apertura, ordine minimo e costo consegna)
-            //todo: poi fare un'altra query al db per ottenere tutti i piatti del ristorante con quell'id e riempire l'ArrayList di Dish per la recycleview
         }
     }
 
-    private void initRecicleView() {
-        //todo temporanea, poi prendere dal db e usare il costruttore che mette anche le foto'
-//        menu.add(new Dish(1, "Margherita", 5, 30));
-//        menu.add(new Dish(1, "Capricciosa", 7.5f, 30));
-//        menu.add(new Dish(1, "Quattro salumi", 7, 30));
-//        menu.add(new Dish(1, "Quattro formaggi", 8, 30));
-//        menu.add(new Dish(1, "Parmiggiana", 7.5f, 30));
-//        menu.add(new Dish(1, "Prosciutto", 6, 30));
-//        menu.add(new Dish(1, "Burrata", 10, 30));
-
+    private void initRecyclerView() {
         options = new FirebaseRecyclerOptions.Builder<Dish>()
                 .setQuery(dishRef, Dish.class)
                 .build();
 
         RecyclerView recyclerView = findViewById(R.id.menu_recycleView);
 //        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(this, menu, orderedDishes);
-        RecycleViewMenuAdapter adapter = new RecycleViewMenuAdapter(options, dishRef, RestaurantMenuActivity.this, orderedDishes, restaurantID);
+        adapter = new RecycleViewMenuAdapter(options, dishRef, RestaurantMenuActivity.this, orderedDishes, restaurantID);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         adapter.startListening();
     }
 
     public void showHoursDetails(View view) {
-        if (hiddenHours.isExpanded()) {
-            createRotateAnimator(arrowbtn, 180f, 0f).start();
-        } else {
-            createRotateAnimator(arrowbtn, 0f, 180f).start();
-        }
+        if (hiddenHours.isExpanded())
+            createRotateAnimator(arrowbtnHours, 180f, 0f).start();
+        else
+            createRotateAnimator(arrowbtnHours, 0f, 180f).start();
         hiddenHours.toggle();
+    }
+
+    public void showMenu(View view) {
+        if (hiddenMenu.isExpanded())
+            createRotateAnimator(arrowbtnMenu, 180f, 0f).start();
+        else
+            createRotateAnimator(arrowbtnMenu, 0f, 180f).start();
+        hiddenMenu.toggle();
+    }
+
+    public void showFavorite(View view) {
+        if (hiddenFavorite.isExpanded())
+            createRotateAnimator(arrowbtnFavorite, 180f, 0f).start();
+        else
+            createRotateAnimator(arrowbtnFavorite, 0f, 180f).start();
+        hiddenFavorite.toggle();
     }
 
     private ObjectAnimator createRotateAnimator(final View target, final float from, final float to) {

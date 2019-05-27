@@ -26,9 +26,9 @@ public class Restaurant implements Parcelable {
     private String sundayOpeningHours;
     private String fCategoryANDdCost;
     private Boolean isFavorite;
-    private String restaurantRating;
-    private String foodRating;
-    private String ratingCount;
+    private String ratingAvg;
+    private String foodRatingAvg;
+    private String ratingCounter;
 
     //campi di supporto per le query al db
     private String catPizza;
@@ -447,27 +447,27 @@ public class Restaurant implements Parcelable {
         isFavorite = favorite;
     }
 
-    public String getRestaurantRating() {
-        return restaurantRating;
+    public String getRatingAvg() {
+        return ratingAvg;
     }
 
-    public void setRestaurantRating(String restaurantRating) {
-        this.restaurantRating = restaurantRating;
+    public void setRatingAvg(String ratingAvg) {
+        this.ratingAvg = ratingAvg;
     }
 
-    public String getFoodRating() {
-        return foodRating;
+    public String getFoodRatingAvg() {
+        return foodRatingAvg;
     }
 
-    public void setFoodRating(String foodRating) {
-        this.foodRating = foodRating;
+    public void setFoodRatingAvg(String foodRatingAvg) {
+        this.foodRatingAvg = foodRatingAvg;
     }
 
-    public String getRatingCount() {
-        return ratingCount;
+    public String getRatingCounter() {
+        return ratingCounter;
     }
 
-    public void setRatingCount(String ratingCount) {
-        this.ratingCount = ratingCount;
+    public void setRatingCounter(String ratingCounter) {
+        this.ratingCounter = ratingCounter;
     }
 }

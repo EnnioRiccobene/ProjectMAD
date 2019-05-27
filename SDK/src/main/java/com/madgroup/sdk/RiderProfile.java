@@ -10,6 +10,7 @@ public class RiderProfile implements Serializable {
     private String additionalInformation;
     private boolean status;
     private Position position;
+    private String ratingAvg;
 
     public Position getPosition() {
         return position;
@@ -109,6 +110,14 @@ public class RiderProfile implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getRatingAvg() {
+        return ratingAvg;
+    }
+
+    public void setRatingAvg(String ratingAvg) {
+        this.ratingAvg = ratingAvg;
     }
 }
 

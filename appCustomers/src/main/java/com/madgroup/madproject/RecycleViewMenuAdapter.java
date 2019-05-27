@@ -59,7 +59,7 @@ public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuVi
         GlideApp.with(mContext)
                 .load(storageReference)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
+                .skipMemoryCache(false)
                 .error(GlideApp.with(mContext).load(R.drawable.personicon))
                 .into(holder.dishPhoto);
         holder.dishName.setText(dish.getName());
@@ -133,9 +133,8 @@ public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuVi
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dish_item, parent, false);
         MenuViewHolder holder = new MenuViewHolder(view);
 
-        if (!holder.expandableDishQuantity.isExpanded()) {
+        if (!holder.expandableDishQuantity.isExpanded())
             holder.expandableDishQuantity.collapse();
-        }
 
         return holder;
     }

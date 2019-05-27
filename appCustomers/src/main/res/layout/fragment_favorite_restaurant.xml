@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.madgroup.madproject.FavoriteRestaurant">
+    tools:context="com.madgroup.madproject.SearchRestaurantTab3">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favoriteRecyclerViewTab"

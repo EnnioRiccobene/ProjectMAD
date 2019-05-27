@@ -4,9 +4,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-public class FavoritePageAdapter extends FragmentStatePagerAdapter {
+public class SearchRestaurantPageAdapter extends FragmentStatePagerAdapter {
 
-    public FavoritePageAdapter(FragmentManager fm) {
+    public SearchRestaurantPageAdapter(FragmentManager fm) {
         super(fm);
     }
 
@@ -14,11 +14,11 @@ public class FavoritePageAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new FavoriteRestaurant();
+                return new SearchRestaurantTab1();
             case 1:
-                return new FavoriteTopRestaurant();
+                return new SearchRestaurantTab2();
             case 2:
-                return new FavoriteTopMeal();
+                return new SearchRestaurantTab3();
             default:
                 return null;
         }
@@ -33,11 +33,11 @@ public class FavoritePageAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Favorites";
+                return "Search";
             case 1:
                 return "Top Restaurant";
             case 2:
-                return "Top Meals";
+                return "Favorite";
             default:
                 return null;
         }

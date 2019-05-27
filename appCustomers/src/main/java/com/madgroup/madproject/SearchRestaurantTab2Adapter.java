@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.madgroup.sdk.OrderedDish;
-import com.madgroup.sdk.SmartLogger;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -36,14 +32,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static android.content.Context.MODE_PRIVATE;
 
 
-public class FavoriteTopRestaurantAdapter extends
-        RecyclerView.Adapter<FavoriteTopRestaurantAdapter.ViewHolder> {
+public class SearchRestaurantTab2Adapter extends
+        RecyclerView.Adapter<SearchRestaurantTab2Adapter.ViewHolder> {
     private ArrayList<Restaurant> topRestaurants;
     private SharedPreferences prefs;
     private String currentUser;
     private Context context;
 
-    public FavoriteTopRestaurantAdapter(Context context, ArrayList<Restaurant> topRestaurants) {
+    public SearchRestaurantTab2Adapter(Context context, ArrayList<Restaurant> topRestaurants) {
         this.topRestaurants = topRestaurants;
         this.context = context;
         prefs = context.getSharedPreferences("MyData", MODE_PRIVATE);
@@ -112,7 +108,7 @@ public class FavoriteTopRestaurantAdapter extends
         GlideApp.with(context)
                 .load(storageReference)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
+                .skipMemoryCache(false)
                 .error(GlideApp.with(context).load(R.drawable.personicon))
                 .into(holder.restaurant_photo);
 
@@ -142,8 +138,8 @@ public class FavoriteTopRestaurantAdapter extends
                 manageFavorites(holder, model);
             }
         });
-        if(model.getRestaurantRating() != "0" || model.getRestaurantRating() != null)
-            holder.ratingBar.setRating(Float.parseFloat(model.getRestaurantRating()));
+        if(model.getRatingAvg() != "0" || model.getRatingAvg() != null)
+            holder.ratingBar.setRating(Float.parseFloat(model.getRatingAvg()));
     }
 
     public void refreshFavoriteList(final ViewHolder holder, final Restaurant model) {

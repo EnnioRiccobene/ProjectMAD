@@ -161,7 +161,7 @@ public class OrdersHistoryTab extends Fragment {
                         GlideApp.with(OrdersHistoryTab.this)
                                 .load(storageReference)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .skipMemoryCache(true)
+                                .skipMemoryCache(false)
                                 .error(GlideApp.with(OrdersHistoryTab.this).load(R.drawable.personicon))
                                 .into(holder.mImageView);
                         holder.mTextView1.setText(currentItem.getRestaurantName());

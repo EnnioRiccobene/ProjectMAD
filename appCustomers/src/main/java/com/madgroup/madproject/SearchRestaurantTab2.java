@@ -19,9 +19,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,12 +30,12 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FavoriteTopRestaurant.OnFragmentInteractionListener} interface
+ * {@link SearchRestaurantTab2.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FavoriteTopRestaurant#newInstance} factory method to
+ * Use the {@link SearchRestaurantTab2#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FavoriteTopRestaurant extends Fragment {
+public class SearchRestaurantTab2 extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -50,11 +48,11 @@ public class FavoriteTopRestaurant extends Fragment {
     private OnFragmentInteractionListener mListener;
     private String currentUser;
     private SharedPreferences prefs;
-    private FavoriteTopRestaurantAdapter adapter;
+    private SearchRestaurantTab2Adapter adapter;
     static public ArrayList<Restaurant> topRestaurant;
     static public RecyclerView recyclerView;
 
-    public FavoriteTopRestaurant() {
+    public SearchRestaurantTab2() {
         // Required empty public constructor
     }
 
@@ -64,11 +62,11 @@ public class FavoriteTopRestaurant extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FavoriteTopRestaurant.
+     * @return A new instance of fragment SearchRestaurantTab2.
      */
     // TODO: Rename and change types and number of parameters
-    public static FavoriteTopRestaurant newInstance(String param1, String param2) {
-        FavoriteTopRestaurant fragment = new FavoriteTopRestaurant();
+    public static SearchRestaurantTab2 newInstance(String param1, String param2) {
+        SearchRestaurantTab2 fragment = new SearchRestaurantTab2();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -147,15 +145,15 @@ public class FavoriteTopRestaurant extends Fragment {
                 if(!dataSnapshot.exists())
                     return;
                 for (DataSnapshot restaurant : dataSnapshot.getChildren()){
-                    if(restaurant.getValue(Restaurant.class).getRatingCount() != null && !restaurant.getValue(Restaurant.class).getRatingCount().equals("0"))
+                    if(restaurant.getValue(Restaurant.class).getRatingCounter() != null && !restaurant.getValue(Restaurant.class).getRatingCounter().equals("0"))
                         topRestaurant.add(restaurant.getValue(Restaurant.class));
                 }
                 // ORDINARE LISTA
                 Collections.sort(topRestaurant, new Comparator<Restaurant>() {
                     @Override
                     public int compare(Restaurant o1, Restaurant o2) {
-                        float score1 = Float.parseFloat(o1.getRestaurantRating()) * Float.parseFloat(o1.getRatingCount());
-                        float score2 = Float.parseFloat(o2.getRestaurantRating()) * Float.parseFloat(o2.getRatingCount());
+                        float score1 = Float.parseFloat(o1.getRatingAvg()) * Float.parseFloat(o1.getRatingCounter());
+                        float score2 = Float.parseFloat(o2.getRatingAvg()) * Float.parseFloat(o2.getRatingCounter());
                         if (score1 > score2)
                             return 1;
                         else if (score1 < score2)
@@ -165,7 +163,7 @@ public class FavoriteTopRestaurant extends Fragment {
                     }
                 });
                 recyclerView = (RecyclerView) view.findViewById(R.id.favoriteRecyclerViewTab);
-                adapter = new FavoriteTopRestaurantAdapter(getContext(), topRestaurant);
+                adapter = new SearchRestaurantTab2Adapter(getContext(), topRestaurant);
                 RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
                 recyclerView.setLayoutManager(mLayoutManager);
                 recyclerView.setItemAnimator(new DefaultItemAnimator());
