@@ -155,9 +155,9 @@ public class AnalyticsTab1 extends Fragment {
                 String prevDate = getPreviousDay(selectedDate);
                 String prevYear = (prevDate.split("/"))[0];
                 String prevMonth = Integer.toString(Integer.parseInt((prevDate.split("/"))[1]));
-                String nextDay = (prevDate.split("/"))[2];
-                currentFilter.setText(nextDay + " " + months.get(prevMonth) + " " + prevYear);
-                selectedDay = nextDay;
+                String prevDay = (prevDate.split("/"))[2];
+                currentFilter.setText(prevDay + " " + months.get(prevMonth) + " " + prevYear);
+                selectedDay = prevDay;
                 selectedMonth = prevMonth;
                 selectedYear = prevYear;
                 initializeDailyHistogram(chart, selectedDay, selectedMonth, selectedYear);
@@ -192,6 +192,7 @@ public class AnalyticsTab1 extends Fragment {
         // Database references
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String restaurantID = prefs.getString("currentUser", "");
+
         String weekOfMonth = "4";
         String node = year+"_"+month+"_"+weekOfMonth;
         DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")

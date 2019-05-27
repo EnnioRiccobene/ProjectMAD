@@ -13,6 +13,8 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
@@ -24,8 +26,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +45,10 @@ public class AnalyticsTab3 extends Fragment {
     private SharedPreferences prefs;
     private Map<String, String> mapDayOfWeek;
     private Map<String, String> months;
+    private String selectedDay = "";
+    private String selectedMonth = "";
+    private String selectedYear = "";
+    private TextView currentFilter;
 
     public AnalyticsTab3() {
         // Required empty public constructor
@@ -96,16 +105,63 @@ public class AnalyticsTab3 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        BarChart chart = view.findViewById(R.id.bar_chart);
-        initializeMonthlyHistogram(chart, "5");
+        final BarChart chart = view.findViewById(R.id.bar_chart);
+        ImageView previousButton = view.findViewById(R.id.previous_button);
+        ImageView nextButton = view.findViewById(R.id.next_button);
+        currentFilter = view.findViewById(R.id.current_filter);
+
+        Calendar calendar = Calendar.getInstance();
+        String currentDay = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
+        String currentMonth = Integer.toString(calendar.get(Calendar.MONTH)+1);
+        String currentYear = Integer.toString(calendar.get(Calendar.YEAR));
+        currentFilter.setText(months.get(currentMonth) + " " + currentYear);
+        this.selectedDay = currentDay;
+        this.selectedMonth = currentMonth;
+        this.selectedYear = currentYear;
+
+        previousButton.setBackgroundColor(Color.RED);
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String selectedDate = selectedYear+"/"+selectedMonth+"/"+selectedDay;
+                String prevDate = getPreviousMonth(selectedDate);
+                String prevYear = (prevDate.split("/"))[0];
+                String prevMonth = Integer.toString(Integer.parseInt((prevDate.split("/"))[1]));
+                String prevDay = (prevDate.split("/"))[2];
+                currentFilter.setText(months.get(prevMonth) + " " + prevYear);
+                selectedDay = prevDay;
+                selectedMonth = prevMonth;
+                selectedYear = prevYear;
+                initializeMonthlyHistogram(chart, selectedMonth, selectedYear);
+            }
+        });
+
+        nextButton.setBackgroundColor(Color.RED);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String selectedDate = selectedYear+"/"+selectedMonth+"/"+selectedDay;
+                String nextDate = getNextMonth(selectedDate);
+                String nextYear = (nextDate.split("/"))[0];
+                String nextMonth = Integer.toString(Integer.parseInt((nextDate.split("/"))[1]));
+                String nextDay = (nextDate.split("/"))[2];
+                currentFilter.setText(months.get(nextMonth) + " " + nextYear);
+                selectedDay = nextDay;
+                selectedMonth = nextMonth;
+                selectedYear = nextYear;
+                initializeMonthlyHistogram(chart, selectedMonth, selectedYear);
+
+            }
+        });
+
+        initializeMonthlyHistogram(chart, selectedMonth, selectedYear);
     }
 
-    public void initializeMonthlyHistogram(final BarChart chart, final String month) {
+    public void initializeMonthlyHistogram(final BarChart chart, final String month, final String year) {
 
         // Database references
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String restaurantID = prefs.getString("currentUser", "");
-        final String year = "2019";
 
         DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
                 .child(restaurantID);
@@ -197,5 +253,35 @@ public class AnalyticsTab3 extends Fragment {
         mapDayOfWeek.put("5","Fri");
         mapDayOfWeek.put("6","Sat");
         mapDayOfWeek.put("7","Sun");
+    }
+
+    public static String getNextMonth(String curDate) {
+        String nextDate = "";
+        try {
+            Calendar today = Calendar.getInstance();
+            DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+            Date date = format.parse(curDate);
+            today.setTime(date);
+            today.add(Calendar.MONTH, 1);
+            nextDate = format.format(today.getTime());
+        } catch (Exception e) {
+            return nextDate;
+        }
+        return nextDate;
+    }
+
+    public static String getPreviousMonth(String curDate) {
+        String previousDate = "";
+        try {
+            Calendar today = Calendar.getInstance();
+            DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+            Date date = format.parse(curDate);
+            today.setTime(date);
+            today.add(Calendar.MONTH, -1);
+            previousDate = format.format(today.getTime());
+        } catch (Exception e) {
+            return previousDate;
+        }
+        return previousDate;
     }
 }

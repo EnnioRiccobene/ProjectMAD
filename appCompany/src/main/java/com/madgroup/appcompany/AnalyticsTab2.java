@@ -2,6 +2,7 @@ package com.madgroup.appcompany;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,8 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.anychart.AnyChartView;
 import com.github.mikephil.charting.charts.BarChart;
@@ -24,8 +27,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +46,13 @@ public class AnalyticsTab2 extends Fragment {
     private SharedPreferences prefs;
     private AnyChartView anyChartView;
     private Map<String, String> mapDayOfWeek;
+    private String selectedMonth;
+    private String selectedWeek;
+    private String selectedYear;
+    private TextView currentFilter;
+    private Map<String, String> months;
+
+
 
     public AnalyticsTab2() {
         // Required empty public constructor
@@ -60,6 +74,7 @@ public class AnalyticsTab2 extends Fragment {
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         editor = prefs.edit();
         initMapDayOfWeek();
+        initMapMonths();
     }
 
     private void initMapDayOfWeek() {
@@ -106,8 +121,85 @@ public class AnalyticsTab2 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        BarChart chart = view.findViewById(R.id.bar_chart);
-        initializeWeeklyHistogram(chart, "4");
+        final BarChart chart = view.findViewById(R.id.bar_chart);
+        ImageView previousButton = view.findViewById(R.id.previous_button);
+        ImageView nextButton = view.findViewById(R.id.next_button);
+        currentFilter = view.findViewById(R.id.current_filter);
+
+        Calendar calendar = Calendar.getInstance();
+        String currentWeek = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH));
+        String currentMonth = Integer.toString(calendar.get(Calendar.MONTH)+1);
+        String currentYear = Integer.toString(calendar.get(Calendar.YEAR));
+        currentFilter.setText("Week " + currentWeek + " of " + months.get(currentMonth) + " " + currentYear);
+        this.selectedMonth = currentMonth;
+        this.selectedYear = currentYear;
+        this.selectedWeek = currentWeek;
+
+        previousButton.setBackgroundColor(Color.RED);
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if ( Integer.parseInt(selectedWeek) == 1 ) {
+                    String selectedDate = selectedYear+"/"+selectedMonth+"/01";
+                    String prevDate = getPreviousMonth(selectedDate);
+                    String prevMonth = Integer.toString(Integer.parseInt((prevDate.split("/"))[1]));
+                    if (prevMonth.equals("12")) {
+                        Integer numWeeks = getNumberOfWeeks(Integer.toString(Integer.parseInt(selectedYear)-1), prevMonth);
+                        selectedWeek = Integer.toString(numWeeks);
+                        selectedMonth = prevMonth;
+                        selectedYear = Integer.toString(Integer.parseInt(selectedYear)-1);
+                    } else {
+                        Integer numWeeks = getNumberOfWeeks(selectedYear, prevMonth);
+                        selectedWeek = Integer.toString(numWeeks);
+                        selectedMonth = prevMonth;
+                    }
+                } else {
+                    selectedWeek = Integer.toString(Integer.parseInt(selectedWeek) - 1);
+                }
+                currentFilter.setText("Week " + selectedWeek + " of " + months.get(selectedMonth) + " " + selectedYear);
+                initializeWeeklyHistogram(chart, selectedWeek);
+            }
+        });
+
+        nextButton.setBackgroundColor(Color.RED);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Integer numberOfWeeks = getNumberOfWeeks(selectedYear, selectedMonth);
+                if (Integer.parseInt(selectedWeek) == numberOfWeeks) {
+                    String selectedDate = selectedYear+"/"+selectedMonth+"/01";
+                    String nextMonth = getNextMonth(selectedDate);
+                    selectedMonth = nextMonth;
+                    selectedWeek= "1";
+                    if(selectedMonth.equals("01"))
+                        selectedYear = Integer.toString(Integer.parseInt(selectedYear)+1);
+                } else {
+                    selectedWeek = Integer.toString(Integer.parseInt(selectedWeek)+1);
+                }
+                currentFilter.setText("Week " + selectedWeek + " of " + months.get(selectedMonth) + " " + selectedYear);
+                initializeWeeklyHistogram(chart, selectedWeek);
+            }
+        });
+
+        initializeWeeklyHistogram(chart, selectedWeek);
+
+
+
+    }
+
+    private Integer getNumberOfWeeks(String selectedYear, String selectedMonth) {
+        Calendar calendar = Calendar.getInstance();
+        DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+        String selectedDate = selectedYear+"/"+selectedMonth+"/01";
+        Date date = null;
+        try {
+            date = format.parse(selectedDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        calendar.setTime(date);
+        Integer numberOfWeeks = calendar.getActualMaximum(Calendar.WEEK_OF_MONTH);
+        return numberOfWeeks;
     }
 
 
@@ -182,4 +274,58 @@ public class AnalyticsTab2 extends Fragment {
         });
     }
 
+    private void initMapMonths() {
+        months = new HashMap<>();
+        months.put("1", "January");
+        months.put("2", "February");
+        months.put("3", "March");
+        months.put("4", "April");
+        months.put("5", "May");
+        months.put("6", "June");
+        months.put("7", "July");
+        months.put("8", "August");
+        months.put("9", "September");
+        months.put("01", "January");
+        months.put("02", "February");
+        months.put("03", "March");
+        months.put("04", "April");
+        months.put("05", "May");
+        months.put("06", "June");
+        months.put("07", "July");
+        months.put("08", "August");
+        months.put("09", "September");
+        months.put("10", "October");
+        months.put("11", "November");
+        months.put("12", "December");
+    }
+
+    public static String getPreviousMonth(String curDate) {
+        String previousDate = "";
+        try {
+            Calendar today = Calendar.getInstance();
+            DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+            Date date = format.parse(curDate);
+            today.setTime(date);
+            today.add(Calendar.MONTH, -1);
+            previousDate = format.format(today.getTime());
+        } catch (Exception e) {
+            return previousDate;
+        }
+        return previousDate;
+    }
+
+    public static String getNextMonth(String curDate) {
+        String nextDate = "";
+        try {
+            Calendar today = Calendar.getInstance();
+            DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+            Date date = format.parse(curDate);
+            today.setTime(date);
+            today.add(Calendar.MONTH, 1);
+            nextDate = format.format(today.getTime());
+        } catch (Exception e) {
+            return nextDate;
+        }
+        return ((nextDate.split("/"))[1]);
+    }
 }
