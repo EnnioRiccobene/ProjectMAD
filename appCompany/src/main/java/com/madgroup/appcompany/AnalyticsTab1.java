@@ -2,7 +2,7 @@ package com.madgroup.appcompany;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,31 +13,27 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.anychart.AnyChart;
-import com.anychart.AnyChartView;
-import com.anychart.chart.common.dataentry.DataEntry;
-import com.anychart.chart.common.dataentry.ValueDataEntry;
-import com.anychart.charts.Cartesian;
-import com.anychart.core.cartesian.series.Column;
-import com.anychart.enums.Anchor;
-import com.anychart.enums.HoverMode;
-import com.anychart.enums.Position;
-import com.anychart.enums.TooltipPositionMode;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.ChartData;
-import com.github.mikephil.charting.data.Entry;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +46,10 @@ public class AnalyticsTab1 extends Fragment {
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
     private Map<String, String> months;
+    private String selectedDay = "";
+    private String selectedMonth = "";
+    private String selectedYear = "";
+    private TextView currentFilter;
 
 
     public AnalyticsTab1() {
@@ -76,6 +76,15 @@ public class AnalyticsTab1 extends Fragment {
         months.put("7", "July");
         months.put("8", "August");
         months.put("9", "September");
+        months.put("01", "January");
+        months.put("02", "February");
+        months.put("03", "March");
+        months.put("04", "April");
+        months.put("05", "May");
+        months.put("06", "June");
+        months.put("07", "July");
+        months.put("08", "August");
+        months.put("09", "September");
         months.put("10", "October");
         months.put("11", "November");
         months.put("12", "December");
@@ -85,7 +94,7 @@ public class AnalyticsTab1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_analytics_tab1, container, false);
+        View view = inflater.inflate(R.layout.fragment_analytics, container, false);
         return view;
     }
 
@@ -124,17 +133,65 @@ public class AnalyticsTab1 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        BarChart chart = view.findViewById(R.id.bar_chart);
-        initializeDailyHistogram(chart, "23");
+        final BarChart chart = view.findViewById(R.id.bar_chart);
+        ImageView previousButton = view.findViewById(R.id.previous_button);
+        ImageView nextButton = view.findViewById(R.id.next_button);
+        currentFilter = view.findViewById(R.id.current_filter);
+
+        Calendar calendar = Calendar.getInstance();
+        String currentDay = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
+        String currentMonth = Integer.toString(calendar.get(Calendar.MONTH)+1);
+        String currentYear = Integer.toString(calendar.get(Calendar.YEAR));
+        currentFilter.setText(currentDay + " " + months.get(currentMonth) + " " + currentYear);
+        this.selectedDay = currentDay;
+        this.selectedMonth = currentMonth;
+        this.selectedYear = currentYear;
+
+        previousButton.setBackgroundColor(Color.RED);
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String selectedDate = selectedYear+"/"+selectedMonth+"/"+selectedDay;
+                String prevDate = getPreviousDay(selectedDate);
+                String prevYear = (prevDate.split("/"))[0];
+                String prevMonth = Integer.toString(Integer.parseInt((prevDate.split("/"))[1]));
+                String nextDay = (prevDate.split("/"))[2];
+                currentFilter.setText(nextDay + " " + months.get(prevMonth) + " " + prevYear);
+                selectedDay = nextDay;
+                selectedMonth = prevMonth;
+                selectedYear = prevYear;
+                initializeDailyHistogram(chart, selectedDay, selectedMonth, selectedYear);
+            }
+        });
+
+        nextButton.setBackgroundColor(Color.RED);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String selectedDate = selectedYear+"/"+selectedMonth+"/"+selectedDay;
+                String nextDate = getNextDay(selectedDate);
+                String nextYear = (nextDate.split("/"))[0];
+                String nextMonth = Integer.toString(Integer.parseInt((nextDate.split("/"))[1]));
+                String nextDay = (nextDate.split("/"))[2];
+                currentFilter.setText(nextDay + " " + months.get(nextMonth) + " " + nextYear);
+                selectedDay = nextDay;
+                selectedMonth = nextMonth;
+                selectedYear = nextYear;
+                initializeDailyHistogram(chart, selectedDay, selectedMonth, selectedYear);
+
+            }
+        });
+
+        initializeDailyHistogram(chart, currentDay, currentMonth, currentYear);
     }
 
-    public void initializeDailyHistogram(final BarChart chart, final String dayOfMonth) {
+
+    public void initializeDailyHistogram(final BarChart chart, final String dayOfMonth, final String month,
+                                         final String year ) {
 
         // Database references
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String restaurantID = prefs.getString("currentUser", "");
-        final String year = "2019";
-        final String month = "5";
         String weekOfMonth = "4";
         String node = year+"_"+month+"_"+weekOfMonth;
         DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
@@ -191,5 +248,39 @@ public class AnalyticsTab1 extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+    }
+
+
+
+
+
+    public static String getNextDay(String curDate) {
+        String nextDate = "";
+        try {
+            Calendar today = Calendar.getInstance();
+            DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+            Date date = format.parse(curDate);
+            today.setTime(date);
+            today.add(Calendar.DAY_OF_YEAR, 1);
+            nextDate = format.format(today.getTime());
+        } catch (Exception e) {
+            return nextDate;
+        }
+        return nextDate;
+    }
+
+    public static String getPreviousDay(String curDate) {
+        String previousDate = "";
+        try {
+            Calendar today = Calendar.getInstance();
+            DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+            Date date = format.parse(curDate);
+            today.setTime(date);
+            today.add(Calendar.DAY_OF_YEAR, -1);
+            previousDate = format.format(today.getTime());
+        } catch (Exception e) {
+            return previousDate;
+        }
+        return previousDate;
     }
 }
