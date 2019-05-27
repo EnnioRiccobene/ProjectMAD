@@ -119,7 +119,6 @@ public class AnalyticsTab3 extends Fragment {
         this.selectedMonth = currentMonth;
         this.selectedYear = currentYear;
 
-        previousButton.setBackgroundColor(Color.RED);
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,7 +135,6 @@ public class AnalyticsTab3 extends Fragment {
             }
         });
 
-        nextButton.setBackgroundColor(Color.RED);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -207,10 +205,9 @@ public class AnalyticsTab3 extends Fragment {
                 }
 
                 BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
-                dataSet.setColor(Color.BLUE); //resolved color
-                dataSet.setBarBorderColor(Color.BLACK);
-                dataSet.setBarBorderWidth(2);
-                dataSet.setBarShadowColor(Color.BLUE);
+                dataSet.setColor(Color.parseColor("#42B0F4")); //resolved color
+                dataSet.setBarBorderColor(Color.parseColor("#41A9F4"));
+                dataSet.setBarBorderWidth(1);
                 dataSet.setDrawValues(false);
                 BarData lineData = new BarData(dataSet);
                 chart.getAxisLeft().setDrawGridLines(false);

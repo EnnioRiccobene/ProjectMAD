@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -147,7 +148,6 @@ public class AnalyticsTab1 extends Fragment {
         this.selectedMonth = currentMonth;
         this.selectedYear = currentYear;
 
-        previousButton.setBackgroundColor(Color.RED);
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,7 +164,6 @@ public class AnalyticsTab1 extends Fragment {
             }
         });
 
-        nextButton.setBackgroundColor(Color.RED);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -232,14 +231,23 @@ public class AnalyticsTab1 extends Fragment {
                 }
 
                 BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
+                dataSet.setColor(Color.parseColor("#42B0F4")); //resolved color
+                dataSet.setBarBorderColor(Color.parseColor("#41A9F4"));
+                dataSet.setBarBorderWidth(1);
                 dataSet.setDrawValues(false);
                 BarData lineData = new BarData(dataSet);
-                chart.getAxisLeft().setDrawGridLines(false);
+                chart.getAxisLeft().setDrawGridLines(true); // linee orizzontali
                 chart.getXAxis().setDrawGridLines(false);
+                chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
                 chart.getAxisRight().setDrawGridLines(false);
                 chart.getDescription().setEnabled(false);
                 chart.getLegend().setEnabled(false);
                 chart.setDrawGridBackground(false);
+                chart.getAxisLeft().setDrawLabels(true);    // valori delle y
+                chart.getAxisLeft().setValueFormatter(new IntegerFormatter());
+                chart.getAxisLeft().setAxisMinimum(0f);
+                chart.getAxisRight().setDrawLabels(false);
+                chart.getXAxis().setLabelCount(entries.size());
 
                 chart.setData(lineData);
                 chart.invalidate(); // refresh
