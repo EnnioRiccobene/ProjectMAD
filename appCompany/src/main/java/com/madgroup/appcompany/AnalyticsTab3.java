@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -205,22 +206,29 @@ public class AnalyticsTab3 extends Fragment {
                 }
 
                 BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
+
                 dataSet.setColor(Color.parseColor("#42B0F4")); //resolved color
                 dataSet.setBarBorderColor(Color.parseColor("#41A9F4"));
                 dataSet.setBarBorderWidth(1);
                 dataSet.setDrawValues(false);
-                BarData lineData = new BarData(dataSet);
-                chart.getAxisLeft().setDrawGridLines(false);
+
+                chart.getAxisRight().setEnabled(false);
+                chart.getAxisLeft().setEnabled(false);
+                chart.getAxisLeft().setAxisMinimum(0f);
+
                 chart.getXAxis().setDrawGridLines(false);
-                chart.getAxisRight().setDrawGridLines(false);
+                chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+                chart.getXAxis().setLabelCount(20);
+
                 chart.getDescription().setEnabled(false);
                 chart.getLegend().setEnabled(false);
                 chart.setDrawGridBackground(false);
 
+                BarData lineData = new BarData(dataSet);
                 chart.setData(lineData);
+
                 chart.invalidate(); // refresh
                 chart.animateY(1000);
-
 
             }
             @Override

@@ -235,28 +235,29 @@ public class AnalyticsTab1 extends Fragment {
                 }
 
                 BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
+
                 dataSet.setColor(Color.parseColor("#42B0F4")); //resolved color
                 dataSet.setBarBorderColor(Color.parseColor("#41A9F4"));
                 dataSet.setBarBorderWidth(1);
                 dataSet.setDrawValues(false);
-                BarData lineData = new BarData(dataSet);
-                chart.getAxisLeft().setDrawGridLines(true); // linee orizzontali
-                chart.getXAxis().setDrawGridLines(false);
-                chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-                chart.getAxisRight().setDrawGridLines(false);
-                chart.getDescription().setEnabled(false);
-                chart.getLegend().setEnabled(false);
-                chart.setDrawGridBackground(false);
-                chart.getAxisLeft().setDrawLabels(true);    // valori delle y
-                chart.getAxisLeft().setValueFormatter(new IntegerFormatter());
-                chart.getAxisLeft().setAxisMinimum(0f);
-                chart.getAxisRight().setDrawLabels(false);
-                chart.getXAxis().setLabelCount(entries.size());
 
                 chart.getAxisRight().setEnabled(false);
                 chart.getAxisLeft().setEnabled(false);
+                chart.getAxisLeft().setAxisMinimum(0f);
 
+                chart.getXAxis().setDrawGridLines(false);
+                chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+                chart.getXAxis().setLabelCount(entries.size());
+
+                chart.getDescription().setEnabled(false);
+                chart.getLegend().setEnabled(false);
+                chart.setDrawGridBackground(false);
+
+                BarData lineData = new BarData(dataSet);
                 chart.setData(lineData);
+                chart.setPinchZoom(false);
+                chart.setDoubleTapToZoomEnabled(false);
+
                 chart.invalidate(); // refresh
                 chart.animateY(1000);
 
