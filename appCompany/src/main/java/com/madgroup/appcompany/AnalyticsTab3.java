@@ -154,6 +154,7 @@ public class AnalyticsTab3 extends Fragment {
         });
 
         initializeMonthlyHistogram(chart, selectedMonth, selectedYear);
+        getTopMealOfMonth(selectedMonth,selectedYear);
     }
 
     public void initializeMonthlyHistogram(final BarChart chart, final String month, final String year) {
@@ -162,7 +163,8 @@ public class AnalyticsTab3 extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String restaurantID = prefs.getString("currentUser", "");
 
-        DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
+        DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation")
+                .child("TimingOrder")
                 .child(restaurantID);
 
         timingOrederRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -236,6 +238,62 @@ public class AnalyticsTab3 extends Fragment {
             }
         });
     }
+
+    private void getTopMealOfMonth(final String month, final String year) {
+
+        // Database references
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        String restaurantID = prefs.getString("currentUser", "");
+
+        DatabaseReference topMealsRef = database.getReference().child("Company").child("Reservation")
+                .child("TopMeals")
+                .child(restaurantID);
+
+        final HashMap<String, Integer> dishesIDQuantity = new HashMap<>();
+        topMealsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // Per ogni nodo relativo al mese
+                for (DataSnapshot yearMonthWeek : dataSnapshot.getChildren()) {
+                    if(yearMonthWeek.getKey().startsWith(year+"_"+month)) {
+                        // Per ogni sottonodo
+                        for (DataSnapshot dayHourSlot : yearMonthWeek.getChildren()) {
+                            // Per ogni ID
+                            for(DataSnapshot dishIDQuantity : dayHourSlot.getChildren()) {
+                                Integer amount = dishIDQuantity.getValue(Integer.class);
+                                Integer previousAmount = dishesIDQuantity.get(dishIDQuantity.getKey());
+                                if (previousAmount==null)
+                                    dishesIDQuantity.put(dishIDQuantity.getKey(), amount);
+                                else
+                                    dishesIDQuantity.put(dishIDQuantity.getKey(), amount+previousAmount);
+                            }
+                        }
+                    }
+                }
+
+                // Cerco il massimo
+                Map.Entry<String, Integer> maxEntry = null;
+                for (Map.Entry<String, Integer> entry : dishesIDQuantity.entrySet())
+                {
+                    if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+                        maxEntry = entry;
+                }
+
+                String topDishID = maxEntry.getKey();
+                Integer topDishQuantity = maxEntry.getValue();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
     private void initMapMonths() {
         months = new HashMap<>();
         months.put("1", "January");
