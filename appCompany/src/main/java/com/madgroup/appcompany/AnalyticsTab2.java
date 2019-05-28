@@ -183,8 +183,6 @@ public class AnalyticsTab2 extends Fragment {
 
         initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
 
-
-
     }
 
     private Integer getNumberOfWeeks(String selectedYear, String selectedMonth) {
