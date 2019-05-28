@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,6 +33,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
@@ -207,7 +210,7 @@ public class OrdersPendingTab extends Fragment {
                                 // Ordine Arrivato:
                                 // Company: passare da accepted a history
                                 // Customer: passare da pending a history
-                                // Rider: passare da pending a history
+                                // Rider: passare da pending a history, incrementare deliveryNumber e totDistance
                                 final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
                                 // I want atomic queries -> create a map and do a single updateChilden on that map
@@ -222,18 +225,56 @@ public class OrdersPendingTab extends Fragment {
                                 multipleAtomicQuery.put("Customer/Order/Pending/" + currentItem.getCustomerID() + "/" + currentItem.getOrderID(), null);
                                 currentItem.setStatus(2);
                                 multipleAtomicQuery.put("Customer/Order/History/" + currentItem.getCustomerID() + "/" + currentItem.getOrderID(), currentItem);
+                                database.updateChildren(multipleAtomicQuery);
 
-                                // 3. Rider: rimuovo da pending e pongo su history
+                                // 3.1 Rider: rimuovo da pending e pongo su history
                                 DatabaseReference bikerDeliveryRef = database.child("Rider").child("Delivery").child("Pending");
                                 bikerDeliveryRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        if(!dataSnapshot.exists())
+                                        if (!dataSnapshot.exists())
                                             return;
                                         Delivery currentDelivery = dataSnapshot.getValue(Delivery.class);
-                                        multipleAtomicQuery.put("Rider/Delivery/Pending/" + currentItem.getBikerID() + "/" + currentItem.getOrderID(), null);
-                                        multipleAtomicQuery.put("Rider/Delivery/History/" + currentItem.getBikerID() + "/" + currentItem.getOrderID(), currentDelivery);
-                                        database.updateChildren(multipleAtomicQuery);
+                                        database.child("Rider").child("Delivery").child("Pending").child(currentItem.getBikerID()).child(currentItem.getOrderID()).setValue(null);
+                                        database.child("Rider").child("Delivery").child("History").child(currentItem.getBikerID()).child(currentItem.getOrderID()).setValue(currentDelivery);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                                // 3.2 Rider: incrementare deliveryNumber e totDistance
+                                final DatabaseReference riderProfileRef = database.child("Rider").child("Profile").child(currentItem.getBikerID());
+                                bikerDeliveryRef.child(currentItem.getBikerID()).child(currentItem.getOrderID()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (!dataSnapshot.exists())
+                                            return;
+                                        final String distance = dataSnapshot.child("restaurantCustomerDistance").getValue(String.class);
+                                        riderProfileRef.runTransaction(new Transaction.Handler() {
+                                            @NonNull
+                                            @Override
+                                            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                                                String totDistance = "0";
+                                                String deliveryNumber = "0";
+                                                if (mutableData.child("totDistance").getValue() != null &&
+                                                        mutableData.child("deliveryNumber").getValue() != null) {
+                                                    totDistance = mutableData.child("totDistance").getValue(String.class);
+                                                    deliveryNumber = mutableData.child("deliveryNumber").getValue(String.class);
+                                                }
+                                                totDistance = String.valueOf(Float.valueOf(totDistance) + Float.valueOf(distance));
+                                                deliveryNumber = String.valueOf(Integer.valueOf(deliveryNumber) + 1);
+                                                mutableData.child("totDistance").setValue(totDistance);
+                                                mutableData.child("deliveryNumber").setValue(deliveryNumber);
+                                                return Transaction.success(mutableData);
+                                            }
+
+                                            @Override
+                                            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+                                            }
+                                        });
                                     }
 
                                     @Override
