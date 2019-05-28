@@ -24,6 +24,9 @@ public class RestaurantProfile implements Parcelable {
     private String sundayOpeningHours;
     private String additionalInformation;
     private String fCategoryANDdCost;
+    private String ratingAvg;
+    private String ratingCounter;
+    private String foodRatingAvg;
 
     //campi di supporto per le query al db
     private String catPizza;
@@ -86,6 +89,9 @@ public class RestaurantProfile implements Parcelable {
         this.sundayOpeningHours = "Closed";
         this.additionalInformation = "Closed";
         this.fCategoryANDdCost = foodCategory + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.ratingAvg = "0";
+        this.foodRatingAvg = "0";
+        this.ratingCounter = "0";
 
         if(foodCategory.contains("Pizza"))
             this.catPizza = "true";
@@ -172,6 +178,9 @@ public class RestaurantProfile implements Parcelable {
         this.sundayOpeningHours = sundayOpeningHours;
         this.additionalInformation = additionalInformation;
         this.fCategoryANDdCost = foodCategory + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.ratingAvg = "0";
+        this.foodRatingAvg = "0";
+        this.ratingCounter = "0";
 
         if(foodCategory.contains("Pizza"))
             this.catPizza = "true";
@@ -272,7 +281,29 @@ public class RestaurantProfile implements Parcelable {
         this.address = address;
     }
 
+    public String getRatingAvg() {
+        return ratingAvg;
+    }
 
+    public void setRatingAvg(String ratingAvg) {
+        this.ratingAvg = ratingAvg;
+    }
+
+    public String getRatingCounter() {
+        return ratingCounter;
+    }
+
+    public void setRatingCounter(String ratingCounter) {
+        this.ratingCounter = ratingCounter;
+    }
+
+    public String getFoodRatingAvg() {
+        return foodRatingAvg;
+    }
+
+    public void setFoodRatingAvg(String foodRatingAvg) {
+        this.foodRatingAvg = foodRatingAvg;
+    }
 
     public String getFoodCategory() {
         return foodCategory;

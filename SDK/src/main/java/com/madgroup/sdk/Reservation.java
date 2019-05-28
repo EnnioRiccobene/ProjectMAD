@@ -60,6 +60,7 @@ public class Reservation implements Serializable {
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
         price = df.format(x);
+        this.bikerID = "";
     }
 
     public String getOrderID() {

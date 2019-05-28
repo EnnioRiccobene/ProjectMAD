@@ -1,7 +1,9 @@
 package com.madgroup.madproject;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -14,13 +16,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -146,6 +148,32 @@ public class OrdersHistoryTab extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    public void showEvaluationDialog(Activity activity, String title, CharSequence message, final Reservation currentItem) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        if (title != null) builder.setTitle(title);
+
+        builder.setMessage(message);
+        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(currentItem.getBikerID().equals("")){
+                    Toast.makeText(getActivity(),getString(R.string.error_evaluate_toast),Toast.LENGTH_SHORT).show();
+                } else {
+                    EvaluationActivity.start(getContext(), currentItem.getOrderID(), currentItem.getRestaurantID(), currentItem.getCustomerID(), currentItem.getBikerID());
+                }
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     private void buildRecyclerView(View view) {
         DatabaseReference pendingRef = FirebaseDatabase.getInstance().getReference().child("Customer").child("Order").child("History").child(currentUser);
         FirebaseRecyclerOptions<Reservation> options = new FirebaseRecyclerOptions.Builder<Reservation>()
@@ -167,7 +195,15 @@ public class OrdersHistoryTab extends Fragment {
                         holder.mTextView1.setText(currentItem.getRestaurantName());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
-                        holder.confirmOrder.setVisibility(View.GONE);
+                        holder.evaluateOrder.setImageResource(R.drawable.ic_like);
+                        ImageViewCompat.setImageTintList(holder.evaluateOrder, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                        holder.evaluateOrder.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showEvaluationDialog(getActivity(), getString(R.string.evaluation), getString(R.string.evaluate_dialog_message), currentItem);
+                            }
+                        });
+
                         holder.mView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -220,7 +256,7 @@ public class OrdersHistoryTab extends Fragment {
         public TextView mTextView2;  // Lunch_time
         public TextView mTextView3;  // Price
         public RelativeLayout viewForeground;
-        private ImageView confirmOrder;
+        private ImageView evaluateOrder;
         View mView;
 
         public OrderViewHolder(@NonNull View itemView) {
@@ -231,7 +267,7 @@ public class OrdersHistoryTab extends Fragment {
             mTextView2 = itemView.findViewById(R.id.lunch_time);
             mTextView3 = itemView.findViewById(R.id.order_price);
             viewForeground = itemView.findViewById(R.id.view_foreground);
-            confirmOrder = itemView.findViewById(R.id.confirmOrder);
+            evaluateOrder = itemView.findViewById(R.id.confirmOrEvaluate);
         }
     }
 }

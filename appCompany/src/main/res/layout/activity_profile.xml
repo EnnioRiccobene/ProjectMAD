@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -33,7 +34,6 @@
             android:paddingEnd="16dp"
             tools:context=".ProfileActivity">
 
-
             <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/imagePersonalPhoto"
                 android:layout_width="120dp"
@@ -48,21 +48,21 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/personicon" />
 
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/nameInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:focusableInTouchMode="true"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imagePersonalPhoto">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
                     android:layout_weight="1"
                     android:hint="@string/form_name"
                     android:inputType="textPersonName|textCapWords"
@@ -70,25 +70,69 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!--<com.google.android.material.textfield.TextInputLayout-->
+                <!--android:id="@+id/nameInputLayout"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginTop="12dp"-->
+                <!--android:focusableInTouchMode="true"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintStart_toStartOf="parent"-->
+                <!--app:layout_constraintTop_toBottomOf="@+id/imagePersonalPhoto">-->
+
+                <!--<EditText-->
+                    <!--android:id="@+id/editTextName"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:hint="@string/form_name"-->
+                    <!--android:inputType="textPersonName"-->
+                    <!--android:maxLength="50" />-->
+
+            <!--</com.google.android.material.textfield.TextInputLayout>-->
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/emailInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/nameInputLayout">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:layout_marginTop="28dp"
+                    android:layout_weight="1"
                     android:hint="@string/form_email"
                     android:inputType="textEmailAddress"
                     android:maxLength="50" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <!--<com.google.android.material.textfield.TextInputLayout-->
+                <!--android:id="@+id/emailInputLayout"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginTop="12dp"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintStart_toStartOf="parent"-->
+                <!--app:layout_constraintTop_toBottomOf="@+id/nameInputLayout">-->
+
+                <!--<EditText-->
+                    <!--android:id="@+id/editTextEmail"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginTop="@dimen/vertical_margin"-->
+                    <!--android:hint="@string/form_email"-->
+                    <!--android:inputType="textEmailAddress"-->
+                    <!--android:maxLength="50" />-->
+
+            <!--</com.google.android.material.textfield.TextInputLayout>-->
+
             <!--<EditText-->
             <!--android:id="@+id/editTextPassword"-->
             <!--android:layout_width="match_parent"-->
@@ -103,14 +147,15 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/phoneInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/emailInputLayout">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -122,9 +167,10 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/addressInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/phoneInputLayout">
@@ -141,14 +187,15 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/additionalInformationInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/addressInputLayout">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/additionalInformation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -164,9 +211,10 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/deliveryCostInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/additionalInformationInputLayout">
@@ -185,9 +233,10 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/minimumOrderInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/deliveryCostInputLayout">
@@ -204,19 +253,42 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <EditText
-                android:id="@+id/editTextFoodCategory"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editTextFoodCategoryLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:ems="10"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:hint="@string/form_food_category_btn"
-                android:inputType="textPersonName"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/minimumOrderInputLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/minimumOrderInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextFoodCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:ems="10"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:hint="@string/form_food_category_btn"
+                    android:inputType="textPersonName" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--<EditText-->
+                <!--android:id="@+id/editTextFoodCategory"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginTop="12dp"-->
+                <!--android:ems="10"-->
+                <!--android:focusable="false"-->
+                <!--android:focusableInTouchMode="false"-->
+                <!--android:hint="@string/form_food_category_btn"-->
+                <!--android:inputType="textPersonName"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintStart_toStartOf="parent"-->
+                <!--app:layout_constraintTop_toBottomOf="@+id/minimumOrderInputLayout" />-->
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -224,7 +296,7 @@
                 android:layout_marginBottom="6dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editTextFoodCategory">
+                app:layout_constraintTop_toBottomOf="@+id/editTextFoodCategoryLayout">
 
                 <LinearLayout
                     android:id="@+id/orarilayout"
@@ -244,7 +316,7 @@
                             android:id="@+id/hours"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:drawableLeft="@drawable/ic_circular_clock_tool"
+                            android:drawableStart="@drawable/ic_clock"
                             android:drawablePadding="8dp"
                             android:drawableTint="@color/colorPrimary"
                             android:text="@string/opening_hours"

@@ -625,21 +625,15 @@ public class ProfileActivity extends AppCompatActivity
         progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        // RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
-        //         phone.getText().toString(), additionalInformation.getText().toString(), true, defaultPos);
-        //Position position = new Position(defaultLat, defaultLon);
+
         HashMap<String, Object> updateValues = new HashMap<>();
         updateValues.put("name", name.getText().toString());
-        updateValues.put("phone", phone.getText().toString());
+        updateValues.put("phoneNumber", phone.getText().toString());
         updateValues.put("additionalInformation", additionalInformation.getText().toString());
         SmartLogger.d(updateValues.toString());
 
-//        RiderProfile currentUser = new RiderProfile(uid, name.getText().toString(), email.getText().toString(),
-//                phone.getText().toString(), additionalInformation.getText().toString());
-
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        //database.getReference("Profiles").child("Bikers")
         database.getReference("Rider").child("Profile")
                 .child(currentUid)
                 .updateChildren(updateValues, new DatabaseReference.CompletionListener() {
@@ -722,32 +716,6 @@ public class ProfileActivity extends AppCompatActivity
 
     private void downloadProfilePic() {
 
-//        final long ONE_MEGABYTE = 1024 * 1024;
-//        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
-//                .child("bikers")
-//                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-//        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-//            @Override
-//            public void onSuccess(byte[] bytes) {
-//                // Scarico l'immagine e la setto
-//                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//                personalImage.setImageBitmap(bitmap);
-//                isDefaultImage = false;
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception exception) {
-//                // Handle any errors
-//                int errorCode = ((StorageException) exception).getErrorCode();
-//                if (errorCode==StorageException.ERROR_OBJECT_NOT_FOUND) {
-//                    // La foto non è presente: carico immagine di default
-//                    Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
-//                    personalImage.setImageDrawable(defaultImg);
-//                    isDefaultImage = true;
-//                }
-//            }
-//        });
-
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
                 .child("bikers")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -797,7 +765,6 @@ public class ProfileActivity extends AppCompatActivity
 
     private void loadFieldsFromFirebase() {
         database = FirebaseDatabase.getInstance();
-        //database.getReference("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
         database.getReference("Rider").child("Profile").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -860,8 +827,6 @@ public class ProfileActivity extends AppCompatActivity
                     }
                 });
     }
-
-
 
     private void startLogin() {
         // Choose authentication providers

@@ -250,41 +250,37 @@ public class DeliveryPendingTab1 extends Fragment {
     }
 
     void setDistance(final String restaurantAddress, final TextView distanceTextView){
-//        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//        DatabaseReference positionRef = database.child("Rider").child("Profile").child(currentUser).child("position");
-//        positionRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if(!dataSnapshot.exists()){
-//                    distanceTextView.setText("N.A.");
-//                    return;
-//                }
-//                Position riderPosition = dataSnapshot.getValue(Position.class);
-//                if(riderPosition.getLat() == 0 && riderPosition.getLon() == 0){
-//                    distanceTextView.setText("N.A.");
-//                    return;
-//                }
-//                Geocoder geocoder = new Geocoder(getContext());
-//                List<Address> addresses;
-//                try {
-//                    addresses = geocoder.getFromLocationName(restaurantAddress, 1);
-//                    if (addresses.size() > 0) {
-//                        double latitude = addresses.get(0).getLatitude();
-//                        double longitude = addresses.get(0).getLongitude();
-//                        final Position restaurantPosition = new Position(latitude, longitude);
-//                        double distance = Haversine.distance(restaurantPosition, riderPosition);
-//                        distanceTextView.setText(String.valueOf((int)(distance)) + " km");
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    distanceTextView.setText("N.A.");
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference positionRef = database.child("Rider").child("Profile").child(currentUser).child("position");
+        positionRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists() || dataSnapshot == null){
+                    distanceTextView.setText("N.A.");
+                    return;
+                }
+                Position riderPosition = dataSnapshot.getValue(Position.class);
+                Geocoder geocoder = new Geocoder(getContext());
+                List<Address> addresses;
+                try {
+                    addresses = geocoder.getFromLocationName(restaurantAddress, 1);
+                    if (addresses.size() > 0) {
+                        double latitude = addresses.get(0).getLatitude();
+                        double longitude = addresses.get(0).getLongitude();
+                        final Position restaurantPosition = new Position(latitude, longitude);
+                        double distance = Haversine.distance(restaurantPosition, riderPosition);
+                        distanceTextView.setText(String.valueOf((int)(distance)) + " km");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    distanceTextView.setText("N.A.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }
