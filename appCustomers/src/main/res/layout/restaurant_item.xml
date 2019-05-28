@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:text="Restaurant name"
                 android:textColor="#000"
-                android:textSize="16sp"
+                android:textSize="17sp"
                 android:textStyle="bold"/>
 
             <TextView
@@ -47,7 +47,7 @@
                 android:layout_marginTop="3dp"
                 android:text="Food category list"
                 android:textColor="#777"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
         </RelativeLayout>
 
@@ -94,6 +94,22 @@
             android:textColor="#777"
             android:textSize="13sp" />
 
-    </RelativeLayout>
+        <CheckBox
+            android:id="@+id/favoriteCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:button="@drawable/favorite" />
 
+        <androidx.appcompat.widget.AppCompatRatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_alignBaseline="@+id/minimum_order"
+            android:layout_alignParentRight="true"
+            android:isIndicator="true"
+            android:stepSize="0.1"/>
+
+    </RelativeLayout>
 </androidx.cardview.widget.CardView>

@@ -8,17 +8,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
-import android.animation.ObjectAnimator;
-import android.animation.StateListAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Base64;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
@@ -98,7 +91,7 @@ public class OrdersActivity extends AppCompatActivity implements
         GlideApp.with(this)
                 .load(storageReference)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
+                .skipMemoryCache(false)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
     }
@@ -182,12 +175,6 @@ public class OrdersActivity extends AppCompatActivity implements
 
     // Tabs
     public void initializeTabs() {
-
-        // Remove black line under toolbar
-        StateListAnimator stateListAnimator = new StateListAnimator();
-        stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(findViewById(android.R.id.content), "elevation", 0));
-        findViewById(R.id.appBarLayout).setStateListAnimator(stateListAnimator);
-
         // Add tabs
         final ViewPager viewPager = (ViewPager) findViewById(R.id.reservationViewPager);
         OrdersPageAdapter myPagerAdapter = new OrdersPageAdapter(getSupportFragmentManager());

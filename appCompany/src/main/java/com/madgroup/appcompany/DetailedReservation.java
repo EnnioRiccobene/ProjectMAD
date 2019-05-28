@@ -22,6 +22,7 @@ import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Reservation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 
@@ -125,17 +126,25 @@ public class DetailedReservation extends AppCompatActivity {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.reject_order:
-                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
-                DatabaseReference historyReservationRef = database.child("Company").child("Reservation").child("History").child(currentUser);
-                String orderID = reservation.getOrderID();
-                reservation.setStatus(ReservationActivity.HISTORY_REJECT_RESERVATION_CODE);
-                pendingReservationRef.child(orderID).removeValue();
-                historyReservationRef.child(orderID).setValue(reservation);
+                rejectOrder();
                 finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void rejectOrder() {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        HashMap<String, Object> multipleAtomicQueries = new HashMap<>();
+        String orderID = reservation.getOrderID();
+        multipleAtomicQueries.put("Company/Reservation/Pending/" + currentUser + "/" + orderID, null);
+        reservation.setStatus(ReservationActivity.HISTORY_REJECT_RESERVATION_CODE);
+        multipleAtomicQueries.put("Company/Reservation/History/" + currentUser + "/" + orderID, reservation);
+        // DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
+        // DatabaseReference historyReservationRef = database.child("Company").child("Reservation").child("History").child(currentUser);
+        // pendingReservationRef.child(orderID).removeValue();
+        // historyReservationRef.child(orderID).setValue(reservation);
+        database.updateChildren(multipleAtomicQueries);
     }
 }

@@ -1,479 +1,74 @@
 package com.madgroup.madproject;
 
-import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Bundle;
-import android.util.Base64;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewStub;
-import android.webkit.MimeTypeMap;
-import android.widget.CheckBox;
-import android.widget.ImageButton;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
-import android.widget.SearchView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewStub;
+import android.widget.TextView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.madgroup.sdk.SmartLogger;
-
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SearchRestaurantActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+public class SearchRestaurantActivity extends AppCompatActivity implements
+SearchRestaurantTab3.OnFragmentInteractionListener,
+SearchRestaurantTab1.OnFragmentInteractionListener,
+SearchRestaurantTab2.OnFragmentInteractionListener,
+        NavigationView.OnNavigationItemSelectedListener{
 
-    private CircleImageView photo;//temporanea
-    private ImageButton btnSearch;
-    private ImageButton btnFilter;
-    private SearchView searchRestaurant;
-    private String restaurantCategory = null;
-
-    private SharedPreferences prefs;
-
-    private ArrayList<Restaurant> searchedRestaurantList = new ArrayList<>();
-    private DatabaseReference restaurantRef;
-    private StorageReference mStorageRef;
-    private DatabaseReference mDatabaseRef; //di prova
-    private SharedPreferences.Editor editor;
-
-
-    private FirebaseRecyclerOptions<Restaurant> options;
-
-    RecyclerView recyclerView;
-    Context mContext;
+    private TabLayout tabLayout;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_drawer);
         ViewStub stub = (ViewStub)findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
-        stub.setLayoutResource(R.layout.activity_searchrestaurant);
+        stub.setLayoutResource(R.layout.activity_favorite);
         stub.inflate();
-        prefs = getSharedPreferences("MyData", MODE_PRIVATE);
+        this.setTitle("Looking for food?");
+        ViewPager viewPager = (ViewPager) findViewById(R.id.favoriteViewPager);
+        SearchRestaurantPageAdapter myPagerAdapter = new SearchRestaurantPageAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(myPagerAdapter);
+        tabLayout = (TabLayout) findViewById(R.id.tablayout);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        tabLayout.setupWithViewPager(viewPager);
         initializeNavigationDrawer();
-        // Getting the instance of Firebase
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        restaurantRef = database.getReference().child("Company").child("Profile");
-
-        mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads");
-
-        //uploadFile();
-
-        mContext = this;
-
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.personicon);
-
-        photo = findViewById(R.id.restaurant_photo);
-        searchRestaurant = findViewById(R.id.searchWidget);
-
-        searchRestaurant.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-
-                Query applyQuery = restaurantRef.orderByChild("name").startAt(query).endAt(query + "\uf8ff");
-                options = new FirebaseRecyclerOptions.Builder<Restaurant>()
-                        .setQuery(applyQuery, Restaurant.class)
-                        .build();
-                onStart();
-                return false;
-
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Query applyQuery = restaurantRef.orderByChild("name").startAt(newText).endAt(newText + "\uf8ff");
-                options = new FirebaseRecyclerOptions.Builder<Restaurant>()
-                        .setQuery(applyQuery, Restaurant.class)
-                        .build();
-                onStart();
-                return true;
-            }
-        });
-
-        recyclerView = findViewById(R.id.restaurantsrecycleview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        options = new FirebaseRecyclerOptions.Builder<Restaurant>()
-                .setQuery(restaurantRef, Restaurant.class)
-                .build();
-    }
-
-    //Il metodo serve a prendere l'estensione dell'immagine
-    private String getFileExtension(Uri uri) {
-        ContentResolver cR = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
-    }
-
-
-    private void uploadFile() {
-
-        //https://firebase.google.com/docs/storage/android/upload-files
-        Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
-        Bitmap bitmap = ((BitmapDrawable) defaultImg).getBitmap();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        byte[] data = stream.toByteArray();
-
-        final StorageReference fileReference = mStorageRef.child(System.currentTimeMillis() + ".bmp");
-
-        UploadTask uploadTask = fileReference.putBytes(data); // Salvo l'immagine nello storage
-
-        /* Gestione successo e insuccesso */
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                Toast.makeText(SearchRestaurantActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(SearchRestaurantActivity.this, "Upload Successful", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        /* Ricavo Uri e lo inserisco nel db */
-        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-            @Override
-            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                if (!task.isSuccessful()) {
-                    throw task.getException();
-                }
-                // Continue with the task to get the download URL
-                return fileReference.getDownloadUrl();
-            }
-        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-            @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult(); // URI Dell'immagine
-                    mDatabaseRef.setValue(downloadUri.toString());
-
-                } else {
-                    // Handle failures
-                    // ...
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-//        FirebaseRecyclerOptions<Restaurant> options =
-//                new FirebaseRecyclerOptions.Builder<Restaurant>()
-//                        .setQuery(restaurantRef, Restaurant.class)
-//                        .build();
-
-        FirebaseRecyclerAdapter<Restaurant, FindRestaurantViewHolder> adapter =
-                new FirebaseRecyclerAdapter<Restaurant, FindRestaurantViewHolder>(options) {
-                    @Override
-                    protected void onBindViewHolder(@NonNull FindRestaurantViewHolder holder, final int position, @NonNull final Restaurant model) {
-                        holder.restaurant_name.setText(model.getName());
-                        holder.food_category.setText(model.getFoodCategory());
-                        holder.minimum_order_amount.setText(model.getMinOrder());
-                        holder.delivery_cost_amount.setText(model.getDeliveryCost());
-                        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
-                                .child("restaurants").child(model.getId());
-
-                        GlideApp.with(SearchRestaurantActivity.this)
-                                .load(storageReference)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .skipMemoryCache(true)
-                                .error(GlideApp.with(SearchRestaurantActivity.this).load(R.drawable.personicon))
-                                .into(holder.restaurant_photo);
-
-
-                        holder.cardLayout.setOnClickListener(new View.OnClickListener() {
-                            @SuppressLint("ShowToast")
-                            @Override
-                            public void onClick(View v) {
-
-                                prefs = getSharedPreferences("MyData", MODE_PRIVATE);
-
-                                if (    prefs.getString("Name", "").isEmpty() ||
-                                        prefs.getString("Email", "").isEmpty() ||
-                                        prefs.getString("Phone", "").isEmpty() ||
-                                        prefs.getString("Address", "").isEmpty()) {
-
-                                    //Il profilo è da riempire
-//                                    Toast.makeText(SearchRestaurantActivity.this, "Your profile is not complete", Toast.LENGTH_LONG);
-                                    Intent homepage = new Intent(SearchRestaurantActivity.this, ProfileActivity.class);
-                                    startActivity(homepage);
-
-                                } else {
-                                    //il profilo è pieno e c'è in save preference
-                                    //Avvio la seguente Activity
-                                    SmartLogger.d(model.getId());
-                                    RestaurantMenuActivity.start(mContext, model.getId());
-                                }
-                            }
-                        });
-                    }
-
-                    @NonNull
-                    @Override
-                    public FindRestaurantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.restaurant_item, parent, false);
-                        FindRestaurantViewHolder viewHolder = new FindRestaurantViewHolder(view);
-                        return viewHolder;
-                    }
-                };
-
-        recyclerView.setAdapter(adapter);
-        adapter.startListening();
-    }
-
-    public static class FindRestaurantViewHolder extends RecyclerView.ViewHolder {
-
-        CardView cardLayout;
-        RelativeLayout restaurant_item_layout;
-        CircleImageView restaurant_photo;
-        RelativeLayout name_button_layout;
-        TextView restaurant_name;
-        TextView food_category;
-        TextView minimum_order;
-        TextView minimum_order_amount;
-        TextView delivery_cost;
-        TextView delivery_cost_amount;
-
-        public FindRestaurantViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            cardLayout = itemView.findViewById(R.id.cardLayout);
-            restaurant_item_layout = itemView.findViewById(R.id.restaurant_item_layout);
-            restaurant_photo = itemView.findViewById(R.id.restaurant_photo);
-            name_button_layout = itemView.findViewById(R.id.name_button_layout);
-            restaurant_name = itemView.findViewById(R.id.restaurant_name);
-            food_category = itemView.findViewById(R.id.food_category);
-            minimum_order = itemView.findViewById(R.id.minimum_order);
-            minimum_order_amount = itemView.findViewById(R.id.minimum_order_amount);
-            delivery_cost = itemView.findViewById(R.id.delivery_cost);
-            delivery_cost_amount = itemView.findViewById(R.id.delivery_cost_amount);
-        }
-    }
-
-    private void showFilterDialog() {
-        //custom Dialog
-        final Dialog dialog = new Dialog(this);
-        dialog.setTitle(getString(R.string.filter_restaurants));
-        dialog.setCancelable(true);
-        dialog.setContentView(R.layout.restaurant_filter_dialog);
-
-        TextView dialogDismiss = dialog.findViewById(R.id.dialogCancel);
-        TextView dialogConfirm = dialog.findViewById(R.id.dialogConfirm);
-        final TextView food_category = dialog.findViewById(R.id.food_category);
-        RadioGroup radioGroupFoodCategory = dialog.findViewById(R.id.radio_group_food_category);
-        RadioButton radioAll = dialog.findViewById(R.id.radio_all);
-        RadioButton radioPizza = dialog.findViewById(R.id.radio_pizza);
-        RadioButton radioSandwiches = dialog.findViewById(R.id.radio_sandwiches);
-        RadioButton radioKebab = dialog.findViewById(R.id.radio_kebab);
-        RadioButton radioItalian = dialog.findViewById(R.id.radio_italian);
-        RadioButton radioAmerican = dialog.findViewById(R.id.radio_american);
-        RadioButton radioDessert = dialog.findViewById(R.id.radio_desserts);
-        RadioButton radioFry = dialog.findViewById(R.id.radio_fry);
-        RadioButton radioVegetarian = dialog.findViewById(R.id.radio_vegetarian);
-        RadioButton radioAsian = dialog.findViewById(R.id.radio_asian);
-        RadioButton radioMediterranean = dialog.findViewById(R.id.radio_mediterranean);
-        RadioButton radioSouthAmerican = dialog.findViewById(R.id.radio_south_american);
-        final CheckBox freeDeliveryCheckbox = dialog.findViewById(R.id.freeDeliveryCheckBox);
-
-        radioGroupFoodCategory.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                // find which radio button is selected
-                if (checkedId == R.id.radio_all) {
-                    restaurantCategory = getResources().getString(R.string.All);
-                } else if (checkedId == R.id.radio_pizza) {
-                    restaurantCategory = getResources().getString(R.string.Pizza);
-                } else if (checkedId == R.id.radio_sandwiches) {
-                    restaurantCategory = getResources().getString(R.string.Sandwiches);
-                } else if (checkedId == R.id.radio_kebab) {
-                    restaurantCategory = getResources().getString(R.string.Kebab);
-                } else if (checkedId == R.id.radio_italian) {
-                    restaurantCategory = getResources().getString(R.string.Italian);
-                } else if (checkedId == R.id.radio_american) {
-                    restaurantCategory = getResources().getString(R.string.American);
-                } else if (checkedId == R.id.radio_desserts) {
-                    restaurantCategory = getResources().getString(R.string.Desserts);
-                } else if (checkedId == R.id.radio_fry) {
-                    restaurantCategory = getResources().getString(R.string.Fry);
-                } else if (checkedId == R.id.radio_vegetarian) {
-                    restaurantCategory = getResources().getString(R.string.Vegetarian);
-                } else if (checkedId == R.id.radio_asian) {
-                    restaurantCategory = getResources().getString(R.string.Asian);
-                } else if (checkedId == R.id.radio_mediterranean) {
-                    restaurantCategory = getResources().getString(R.string.Mediterranean);
-                } else if (checkedId == R.id.radio_south_american) {
-                    restaurantCategory = getResources().getString(R.string.South_American);
-                }
-            }
-        });
-
-        dialogDismiss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                restaurantCategory = null;
-
-                dialog.dismiss();
-            }
-        });
-
-        dialogConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Query applyQuery;
-
-                if (restaurantCategory != null) {
-
-                    String foodCatChildKey = "foodCategory";
-                    if(restaurantCategory.equals("Pizza"))
-                        foodCatChildKey = "catPizza";
-                    else if(restaurantCategory.equals("Sandwiches") || restaurantCategory.equals("Panini"))
-                        foodCatChildKey = "catSandwiches";
-                    else if(restaurantCategory.equals("Kebab"))
-                        foodCatChildKey = "catKebab";
-                    else if(restaurantCategory.equals("Italian") || restaurantCategory.equals("Italiano"))
-                        foodCatChildKey = "catItalian";
-                    else if(restaurantCategory.equals("American") || restaurantCategory.equals("Americano"))
-                        foodCatChildKey = "catAmerican";
-                    else if(restaurantCategory.equals("Desserts") || restaurantCategory.equals("Dolci"))
-                        foodCatChildKey = "catDesserts";
-                    else if(restaurantCategory.equals("Fry") || restaurantCategory.equals("Fritti"))
-                        foodCatChildKey = "catFry";
-                    else if(restaurantCategory.equals("Vegetarian") || restaurantCategory.equals("Vegetariano"))
-                        foodCatChildKey = "catVegetarian";
-                    else if(restaurantCategory.equals("Asian") || restaurantCategory.equals("Asiatico"))
-                        foodCatChildKey = "catAsian";
-                    else if(restaurantCategory.equals("Mediterranean") || restaurantCategory.equals("Mediterraneo"))
-                        foodCatChildKey = "catMediterranean";
-                    else if(restaurantCategory.equals("South American") || restaurantCategory.equals("Sud Americano"))
-                        foodCatChildKey = "catSouthAmerican";
-
-
-                    if ((!restaurantCategory.equals("All")) && (!restaurantCategory.equals("Qualsiasi"))) {
-
-                        //restaurantRef arriva fino a profile
-                        String queryText = restaurantCategory;
-//                        applyQuery = restaurantRef.orderByChild("foodCategory").startAt(queryText).endAt(queryText + "\uf8ff");
-                        applyQuery = restaurantRef.orderByChild(foodCatChildKey).equalTo("true");
-
-                        if (freeDeliveryCheckbox.isChecked()) {
-
-                            applyQuery = restaurantRef.orderByChild(foodCatChildKey + "Del").startAt("true_000").endAt("true_000\uf8ff");
-                        }
-
-                    } else {
-
-                        applyQuery = restaurantRef;
-
-                        if (freeDeliveryCheckbox.isChecked()) {
-
-                            applyQuery = restaurantRef.orderByChild("deliveryCost").startAt("0").endAt("00" + "\uf8ff");
-                        }
-                    }
-                    options = new FirebaseRecyclerOptions.Builder<Restaurant>()
-                            .setQuery(applyQuery, Restaurant.class)
-                            .build();
-                } else {
-
-                    applyQuery = restaurantRef;
-
-                    if (freeDeliveryCheckbox.isChecked()) {
-
-                        applyQuery = restaurantRef.orderByChild("deliveryCost").startAt("0").endAt("00" + "\uf8ff");
-                    }
-
-                    options = new FirebaseRecyclerOptions.Builder<Restaurant>()
-                            .setQuery(applyQuery, Restaurant.class)
-                            .build();
-                }
-
-                restaurantCategory = null;
-                dialog.dismiss();
-                onStart();
-            }
-        });
-
-        dialog.show();
-    }
-
-    //todo, occuparsi del comportamento della searchView che popoli l'arrayList di ristoranti in base al nome digitato
-
-    // What happens if I click on a icon on the menu
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.searchItem:
-                if (searchRestaurant.getVisibility() == View.GONE) {
-                    searchRestaurant.setVisibility(View.VISIBLE);
-                    searchRestaurant.onActionViewExpanded();
-                    searchRestaurant.requestFocus();
-                } else
-                    searchRestaurant.setVisibility(View.GONE);
-
-                break;
-            case R.id.filterItem:
-                showFilterDialog();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.search_restaurant_menu, menu);
-        return true;
     }
 
     public void initializeNavigationDrawer(){
@@ -491,21 +86,8 @@ public class SearchRestaurantActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        SharedPreferences prefs = getSharedPreferences("MyData", MODE_PRIVATE);
         // Set the photo of the Navigation Bar Icon (Need to be completed: refresh when new image is updated)
-        updateNavigatorPersonalIcon(navigationView);
-
-        //TODO
-        // Set restaurant name and email on navigation header
-        View headerView = navigationView.getHeaderView(0);
-        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
-        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
-        String name = prefs.getString("Name", "No name inserted");
-        navUsername.setText(name);
-        String email = prefs.getString("Email", "No email inserted");
-        navEmail.setText(email);
-    }
-
-    public void updateNavigatorPersonalIcon(NavigationView navigationView){
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
@@ -513,10 +95,17 @@ public class SearchRestaurantActivity extends AppCompatActivity
 
         GlideApp.with(this)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .skipMemoryCache(false)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
+
+        TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
+        TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
+        String name = prefs.getString("Name", "No name inserted");
+        navUsername.setText(name);
+        String email = prefs.getString("Email", "No email inserted");
+        navEmail.setText(email);
     }
 
     // Navigation Drawer
@@ -534,9 +123,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
         } else if (id == R.id.nav_profile) {
             Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);
-
         } else if (id == R.id.nav_logout) {
-            // LogoutFunction
             startLogout();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -544,6 +131,15 @@ public class SearchRestaurantActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
 
     private void startLogout() {
         AuthUI.getInstance()
@@ -551,9 +147,7 @@ public class SearchRestaurantActivity extends AppCompatActivity
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     public void onComplete(@NonNull Task<Void> task) {
                         // ...
-                        prefs = getSharedPreferences("MyData", MODE_PRIVATE);
-                        editor = prefs.edit();
-
+                        SharedPreferences.Editor editor = getSharedPreferences("MyData", MODE_PRIVATE).edit();
                         editor.clear();
                         editor.apply();
                         //startLogin();
@@ -563,16 +157,36 @@ public class SearchRestaurantActivity extends AppCompatActivity
                 });
     }
 
-
     @Override
     public void onBackPressed() {
-        DrawerLayout layout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        if(layout.isDrawerOpen(GravityCompat.START)){
+        DrawerLayout layout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (layout.isDrawerOpen(GravityCompat.START)) {
             layout.closeDrawer(GravityCompat.START);
             return;
         }
         super.onBackPressed();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_restaurant_menu, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean returnValue = super.onPrepareOptionsMenu(menu);
+        try {
+            if(tabLayout.getSelectedTabPosition() == 0){
+                menu.findItem(R.id.searchItem).setVisible(true);
+                menu.findItem(R.id.filterItem).setVisible(true);
+            } else {
+                menu.findItem(R.id.searchItem).setVisible(false);
+                menu.findItem(R.id.filterItem).setVisible(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return returnValue;
+    }
 }

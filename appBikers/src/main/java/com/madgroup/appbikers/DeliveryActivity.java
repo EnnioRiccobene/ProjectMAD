@@ -59,6 +59,7 @@ public class DeliveryActivity extends AppCompatActivity implements
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private String currentUser;
+    private ValueEventListener riderAvabilityListener;
     String notificationTitle = "MAD Bikers";
     String notificationText;
 
@@ -121,6 +122,14 @@ public class DeliveryActivity extends AppCompatActivity implements
         checkLocationpermissions();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference pendingDeliveryRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        pendingDeliveryRef.removeEventListener(riderAvabilityListener);
+    }
+
     private void checkLocationpermissions() {
         int gpsPermission = ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -150,28 +159,41 @@ public class DeliveryActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         updateNavigatorInformation(navigationView);
-        verifyRiderAvailability(navigationView);
+        switchSetOnClickListener(navigationView);
+        createRiderStatusListener(navigationView);
     }
 
-    private void verifyRiderAvailability(NavigationView navigationView) {
+    private void createRiderStatusListener(NavigationView navigationView) {
+        SwitchCompat  riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        riderAvabilityListener = riderStatusRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists())
+                    return;
+                boolean riderStatus = dataSnapshot.getValue(boolean.class);
+                riderAvailability.setChecked(riderStatus);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void switchSetOnClickListener(NavigationView navigationView) {
         final SwitchCompat riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference riderRef = database.child("Rider").child("Profile").child(currentUser);
-        Boolean status = prefs.getBoolean("Status", false);
-        riderAvailability.setChecked(status);
         riderAvailability.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean newStatus;
-                if (riderAvailability.isChecked()){
-                    newStatus = true;
+                boolean newStatus = riderAvailability.isChecked();
+                if (newStatus)
                     riderRef.child("position").setValue(new Position(0, 0));
-                }
-                else
-                    newStatus = false;
-                editor.putBoolean("Status", newStatus);
                 riderRef.child("status").setValue(newStatus);
-                editor.apply();
             }
         });
     }
@@ -185,8 +207,8 @@ public class DeliveryActivity extends AppCompatActivity implements
 
         GlideApp.with(this)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .skipMemoryCache(false)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
 
@@ -224,11 +246,6 @@ public class DeliveryActivity extends AppCompatActivity implements
 
     // Tabs
     public void initializeTabs() {
-        // Remove black line under toolbar
-        StateListAnimator stateListAnimator = new StateListAnimator();
-        stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(findViewById(android.R.id.content), "elevation", 0));
-        findViewById(R.id.appBarLayout).setStateListAnimator(stateListAnimator);
-
         // Add tabs
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         DeliveryPageAdapter myPagerAdapter = new DeliveryPageAdapter(getSupportFragmentManager());

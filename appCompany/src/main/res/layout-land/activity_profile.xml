@@ -8,9 +8,20 @@
     tools:context=".ProfileActivity"
     tools:showIn="@layout/app_bar_navigation_drawer">
 
-    <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -91,17 +102,17 @@
                 android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imagePersonalPhoto"
-                app:layout_constraintTop_toBottomOf="@+id/mailInputLayout" >
+                app:layout_constraintTop_toBottomOf="@+id/mailInputLayout">
 
-            <EditText
-                android:id="@+id/editTextPhone"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:hint="@string/form_phone"
-                android:inputType="phone"/>
+                <EditText
+                    android:id="@+id/editTextPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:hint="@string/form_phone"
+                    android:inputType="phone" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -111,16 +122,15 @@
                 android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/phoneInputLayout" >
+                app:layout_constraintTop_toBottomOf="@+id/phoneInputLayout">
 
-            <EditText
-                android:id="@+id/editTextAddress"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/vertical_margin"
-                android:ems="10"
-                android:hint="@string/form_address"
-                android:inputType="textPostalAddress"/>
+                <com.madgroup.sdk.CustomAutoCompleteTextView
+                    android:id="@+id/editTextAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:dropDownAnchor="@id/addressInputLayout"
+                    android:hint="@string/form_address"
+                    android:inputType="textPostalAddress" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -131,21 +141,21 @@
                 android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addressInputLayout" >
+                app:layout_constraintTop_toBottomOf="@+id/addressInputLayout">
 
 
-            <EditText
-                android:id="@+id/additionalInformation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/vertical_margin"
-                android:gravity="top|start"
-                android:hint="@string/form_info"
-                android:inputType="textMultiLine"
-                android:maxLength="150"
-                android:maxLines="5"
-                android:minLines="1"
-                android:scrollbars="vertical"/>
+                <EditText
+                    android:id="@+id/additionalInformation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:gravity="top|start"
+                    android:hint="@string/form_info"
+                    android:inputType="textMultiLine"
+                    android:maxLength="150"
+                    android:maxLines="5"
+                    android:minLines="1"
+                    android:scrollbars="vertical" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -163,8 +173,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_margin"
-                    android:hint="@string/delivery_cost"
                     android:ems="10"
+                    android:hint="@string/delivery_cost"
                     android:inputType="numberDecimal"
                     app:decimal_digits="2" />
 
@@ -184,8 +194,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_margin"
-                    android:hint="@string/minimum_order"
                     android:ems="10"
+                    android:hint="@string/minimum_order"
                     android:inputType="numberDecimal"
                     app:decimal_digits="2" />
 

@@ -90,6 +90,8 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     private Point customerPoint;
     MapboxGeocoding mapboxGeocoding;
 
+    private boolean readyToNavigate = false;
+
     public static void start(Context context, String restaurantAddress, String customerAddress) {
         Intent starter = new Intent(context, NavigationActivity.class);
         starter.putExtra("restaurantAddress", restaurantAddress);
@@ -216,22 +218,37 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                     @Override
                     public void onClick(View v) {
 
-                        if(customerBtn.getVisibility() != View.VISIBLE){
-                            restaurantBtn.setEnabled(true);
-                            restaurantBtn.setBackgroundResource(R.color.mapboxBlue);
-                            restaurantBtn.setVisibility(View.VISIBLE);
+                        if(!readyToNavigate) {
 
-                            customerBtn.setEnabled(true);
-                            customerBtn.setBackgroundResource(R.color.mapboxBlue);
-                            customerBtn.setVisibility(View.VISIBLE);
+                            if(customerBtn.getVisibility() != View.VISIBLE){
+                                restaurantBtn.setEnabled(true);
+                                restaurantBtn.setBackgroundResource(R.color.mapboxBlue);
+                                restaurantBtn.setVisibility(View.VISIBLE);
+
+                                customerBtn.setEnabled(true);
+                                customerBtn.setBackgroundResource(R.color.mapboxBlue);
+                                customerBtn.setVisibility(View.VISIBLE);
+                            } else {
+                                restaurantBtn.setEnabled(false);
+                                restaurantBtn.setBackgroundResource(R.color.mapboxGrayLight);
+                                restaurantBtn.setVisibility(View.GONE);
+
+                                customerBtn.setEnabled(false);
+                                customerBtn.setBackgroundResource(R.color.mapboxGrayLight);
+                                customerBtn.setVisibility(View.GONE);
+                            }
+
                         } else {
-                            restaurantBtn.setEnabled(false);
-                            restaurantBtn.setBackgroundResource(R.color.mapboxGrayLight);
-                            restaurantBtn.setVisibility(View.GONE);
 
-                            customerBtn.setEnabled(false);
-                            customerBtn.setBackgroundResource(R.color.mapboxGrayLight);
-                            customerBtn.setVisibility(View.GONE);
+                            boolean simulateRoute = false;
+                            NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                                    .directionsRoute(currentRoute)
+                                    .shouldSimulateRoute(simulateRoute)
+                                    .build();
+                            // Call this method with Context from within an Activity
+//                        NavigationLauncher.startNavigation(NavigationActivity.this, options);
+                            MyNavigationLauncher.startNavigation(NavigationActivity.this, options);
+
                         }
 
                     }
@@ -240,6 +257,10 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                 restaurantBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        button.setEnabled(false);
+                        button.setBackgroundResource(R.color.mapboxGrayLight);
+                        button.setText(R.string.start_navigation);
 
                         Point destinationPoint = restaurantPoint;
                         Point originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
@@ -252,20 +273,24 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
                         getRoute(originPoint, destinationPoint);
 
-                        boolean simulateRoute = false;
-                        NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                                .directionsRoute(currentRoute)
-                                .shouldSimulateRoute(simulateRoute)
-                                .build();
-                        // Call this method with Context from within an Activity
-//                        NavigationLauncher.startNavigation(NavigationActivity.this, options);
-                        MyNavigationLauncher.startNavigation(NavigationActivity.this, options);
+//                        boolean simulateRoute = false;
+//                        NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+//                                .directionsRoute(currentRoute)
+//                                .shouldSimulateRoute(simulateRoute)
+//                                .build();
+//                        // Call this method with Context from within an Activity
+////                        NavigationLauncher.startNavigation(NavigationActivity.this, options);
+//                        MyNavigationLauncher.startNavigation(NavigationActivity.this, options);
                     }
                 });
 
                 customerBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        button.setEnabled(false);
+                        button.setBackgroundResource(R.color.mapboxGrayLight);
+                        button.setText(R.string.start_navigation);
 
                         Point destinationPoint = customerPoint;
                         Point originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
@@ -278,14 +303,14 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
                         getRoute(originPoint, destinationPoint);
 
-                        boolean simulateRoute = false;
-                        NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                                .directionsRoute(currentRoute)
-                                .shouldSimulateRoute(simulateRoute)
-                                .build();
-                        // Call this method with Context from within an Activity
-//                        NavigationLauncher.startNavigation(NavigationActivity.this, options);
-                        MyNavigationLauncher.startNavigation(NavigationActivity.this, options);
+//                        boolean simulateRoute = false;
+//                        NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+//                                .directionsRoute(currentRoute)
+//                                .shouldSimulateRoute(simulateRoute)
+//                                .build();
+//                        // Call this method with Context from within an Activity
+////                        NavigationLauncher.startNavigation(NavigationActivity.this, options);
+//                        MyNavigationLauncher.startNavigation(NavigationActivity.this, options);
                     }
                 });
             }
@@ -388,6 +413,10 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
                             navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
                         }
                         navigationMapRoute.addRoute(currentRoute);
+
+                        readyToNavigate = true;
+                        button.setBackgroundResource(R.color.mapboxBlue);
+                        button.setEnabled(true);
                     }
 
                     @Override

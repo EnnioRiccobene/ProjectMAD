@@ -62,7 +62,7 @@
             android:layout_marginTop="28dp"
             android:layout_weight="1"
             android:hint="@string/form_name"
-            android:inputType="textPersonName"
+            android:inputType="textPersonName|textCapWords"
             android:maxLength="50"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

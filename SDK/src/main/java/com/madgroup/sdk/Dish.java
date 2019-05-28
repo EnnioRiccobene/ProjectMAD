@@ -10,6 +10,7 @@ public class Dish {
     private String price;
     private String availableQuantity;
     private String description;
+    private String orderedQuantityTot;
 
     public Dish() {
     }
@@ -20,13 +21,6 @@ public class Dish {
         this.price = price;
         this.availableQuantity = availableQuantity;
         this.description = description;
-    }
-
-    public Dish(String id, String name, String price, String availableQuantity) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.availableQuantity = availableQuantity;
     }
 
     public String getId() {
@@ -76,5 +70,13 @@ public class Dish {
         Dish dish = (Dish) obj;
         if (name != dish.getName()) return true;
         return false;
+    }
+
+    public String getOrderedQuantityTot() {
+        return orderedQuantityTot;
+    }
+
+    public void setOrderedQuantityTot(String orderedQuantityTot) {
+        this.orderedQuantityTot = orderedQuantityTot;
     }
 }

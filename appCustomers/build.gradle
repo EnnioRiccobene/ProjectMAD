@@ -60,4 +60,5 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:4.8.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-ui:2.2.9'
 
+    implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
 }

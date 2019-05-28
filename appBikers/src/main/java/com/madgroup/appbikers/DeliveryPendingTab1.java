@@ -2,30 +2,23 @@ package com.madgroup.appbikers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -33,13 +26,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.Delivery;
 import com.madgroup.sdk.Haversine;
 import com.madgroup.sdk.Position;
-import com.madgroup.sdk.Reservation;
-import com.madgroup.sdk.SmartLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,8 +38,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static android.widget.Toast.LENGTH_LONG;
 
 
 /**
@@ -165,8 +153,8 @@ public class DeliveryPendingTab1 extends Fragment {
                         holder.restaurantAddress.setText(currentItem.getRestaurantAddress());
                         setDistance(currentItem.getRestaurantAddress(), holder.distance);
                         holder.customerAddress.setText(currentItem.getCustomerAddress());
-                        holder.bikerArrived.setImageResource(R.drawable.ic_circled_confirm);
-                        ImageViewCompat.setImageTintList(holder.bikerArrived, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                        // holder.bikerArrived.setImageResource(R.drawable.ic_circled_confirm);
+                        // ImageViewCompat.setImageTintList(holder.bikerArrived, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
 
                         holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -175,81 +163,53 @@ public class DeliveryPendingTab1 extends Fragment {
                             }
                         });
 
-                        holder.bikerArrived.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // Ordine Arrivato:
-                                // Company: passare da accepted a history
-                                // Customer: passare da pending a history
-                                // Rider: passare da pending a history
-                                final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                                // Company: prendo reservation, pongo status = 3, metto su history, rimuovo da pending
-                                DatabaseReference companyReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentItem.getRestaurantID()).child(currentItem.getOrderID());
-                                DatabaseReference customerReservationRef = database.child("Customer").child("Order").child("Pending").child(currentItem.getCustomerID()).child(currentItem.getOrderID());
-                                companyReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        Reservation moveReservation = (Reservation) dataSnapshot.getValue(Reservation.class);
-                                        moveReservation.setStatus(3);
-                                        database.child("Company").child("Reservation").child("History").child(currentItem.getRestaurantID()).child(currentItem.getOrderID()).setValue(moveReservation);
-                                        database.child("Company").child("Reservation").child("Accepted").child(currentItem.getRestaurantID()).child(currentItem.getOrderID()).setValue(null);
-
-                                        // Raf: Inizializzo o incremento il contatore nel nodo TimingOrder per le statistiche. Il contatore equivale al numero di ordini effettuati dal ristorante in una certa fascia ORARIA.
-                                        Calendar calendar = Calendar.getInstance();
-                                        String year = Integer.toString(calendar.get(Calendar.YEAR));
-                                        String month = Integer.toString(calendar.get(Calendar.MONTH)+1);
-                                        String weekOfMonth = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH));
-                                        String node = year+"_"+month+"_"+weekOfMonth;
-                                        String dayOfMonth = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
-                                        String dayOfWeek = Integer.toString(calendar.get(Calendar.DAY_OF_WEEK));
-                                        String hourOfDay = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY)); // Fascia oraria
-                                        String key = dayOfMonth+"_"+dayOfWeek+"_"+hourOfDay;
-                                        DatabaseReference timingOrderRef = database.child("Company").child("Reservation").child("TimingOrder")
-                                                .child(currentItem.getRestaurantID()).child(node).child(key);
-                                        timingOrderRef.runTransaction(new Transaction.Handler() {
-                                            @Override
-                                            public Transaction.Result doTransaction(MutableData mutableData) {
-                                                Integer amountOfOrders = mutableData.getValue(Integer.class);
-                                                if (amountOfOrders == null)
-                                                    mutableData.setValue(1);
-                                                else
-                                                    mutableData.setValue(amountOfOrders + 1);
-                                                return Transaction.success(mutableData);
-                                            }
-                                            @Override
-                                            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
-                                                //System.out.println("Transaction completed");
-                                            }
-                                        });
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-
-                                customerReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        // Customer: prendo reservation, pongo status = 1, metto su history, rimuovo da pending
-                                        Reservation moveReservation = (Reservation) dataSnapshot.getValue(Reservation.class);
-                                        moveReservation.setStatus(1);
-                                        database.child("Customer").child("Order").child("History").child(currentItem.getCustomerID()).child(currentItem.getOrderID()).setValue(moveReservation);
-                                        database.child("Customer").child("Order").child("Pending").child(currentItem.getCustomerID()).child(currentItem.getOrderID()).setValue(null);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-                                // Rider: rimuovo da pending e pongo su history
-                                database.child("Rider").child("Delivery").child("Pending").child(currentUser).child(currentItem.getOrderID()).setValue(null);
-                                database.child("Rider").child("Delivery").child("History").child(currentUser).child(currentItem.getOrderID()).setValue(currentItem);
-
-                            }
-                        });
+//                        holder.bikerArrived.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                // Ordine Arrivato:
+//                                // Company: passare da accepted a history
+//                                // Customer: passare da pending a history
+//                                // Rider: passare da pending a history
+//                                final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+//                                // Company: prendo reservation, pongo status = 3, metto su history, rimuovo da pending
+//                                DatabaseReference companyReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentItem.getRestaurantID()).child(currentItem.getOrderID());
+//                                DatabaseReference customerReservationRef = database.child("Customer").child("Order").child("Pending").child(currentItem.getCustomerID()).child(currentItem.getOrderID());
+//                                companyReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                    @Override
+//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                        Reservation moveReservation = (Reservation) dataSnapshot.getValue(Reservation.class);
+//                                        moveReservation.setStatus(3);
+//                                        database.child("Company").child("Reservation").child("History").child(currentItem.getRestaurantID()).child(currentItem.getOrderID()).setValue(moveReservation);
+//                                        database.child("Company").child("Reservation").child("Accepted").child(currentItem.getRestaurantID()).child(currentItem.getOrderID()).setValue(null);
+//                                    }
+//
+//                                    @Override
+//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                    }
+//                                });
+//
+//                                customerReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                    @Override
+//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                        // Customer: prendo reservation, pongo status = 1, metto su history, rimuovo da pending
+//                                        Reservation moveReservation = (Reservation) dataSnapshot.getValue(Reservation.class);
+//                                        moveReservation.setStatus(1);
+//                                        database.child("Customer").child("Order").child("History").child(currentItem.getCustomerID()).child(currentItem.getOrderID()).setValue(moveReservation);
+//                                        database.child("Customer").child("Order").child("Pending").child(currentItem.getCustomerID()).child(currentItem.getOrderID()).setValue(null);
+//                                    }
+//
+//                                    @Override
+//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                    }
+//                                });
+//                                // Rider: rimuovo da pending e pongo su history
+//                                database.child("Rider").child("Delivery").child("Pending").child(currentUser).child(currentItem.getOrderID()).setValue(null);
+//                                database.child("Rider").child("Delivery").child("History").child(currentUser).child(currentItem.getOrderID()).setValue(currentItem);
+//
+//                            }
+//                        });
                     }
 
                     @NonNull
@@ -278,7 +238,7 @@ public class DeliveryPendingTab1 extends Fragment {
         TextView restaurantAddress;
         TextView distance;
         TextView customerAddress;
-        ImageView bikerArrived;
+//        ImageView bikerArrived;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -288,7 +248,7 @@ public class DeliveryPendingTab1 extends Fragment {
             restaurantAddress = itemView.findViewById(R.id.restaurantAddress);
             distance = itemView.findViewById(R.id.distance);
             customerAddress = itemView.findViewById(R.id.customerAddress);
-            bikerArrived = itemView.findViewById(R.id.biker_arrived);
+            // bikerArrived = itemView.findViewById(R.id.biker_arrived);
         }
 
     }

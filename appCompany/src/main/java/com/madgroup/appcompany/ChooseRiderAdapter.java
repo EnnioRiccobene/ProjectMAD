@@ -9,9 +9,11 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatRatingBar;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -23,15 +25,13 @@ import com.madgroup.sdk.Haversine;
 import com.madgroup.sdk.Position;
 import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.RiderProfile;
-import com.madgroup.sdk.SmartLogger;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -51,6 +51,7 @@ public class ChooseRiderAdapter extends
         TextView riderName;
         CircleImageView riderPhoto;
         TextView riderDistance;
+        AppCompatRatingBar rating;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -58,6 +59,7 @@ public class ChooseRiderAdapter extends
             riderName = itemView.findViewById(R.id.rider_name);
             riderDistance = itemView.findViewById(R.id.rider_distance);
             riderPhoto = itemView.findViewById(R.id.rider_photo);
+            rating = itemView.findViewById(R.id.ratingBar);
         }
     }
 
@@ -95,17 +97,32 @@ public class ChooseRiderAdapter extends
                 callRider(rider);
             }
         });
+        if(rider.getRatingAvg() != null && rider.getRatingAvg().equals("0"))
+            holder.rating.setRating(Float.parseFloat(rider.getRatingAvg()));
+        else{
+            holder.rating.setVisibility(View.GONE);
+            // when there isn't rating  -> "centerInParent = true" for the riderName
+            RelativeLayout.LayoutParams layoutParams =
+                    (RelativeLayout.LayoutParams)holder.riderName.getLayoutParams();
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            holder.riderName.setLayoutParams(layoutParams);
+        }
     }
 
     private void callRider(RiderProfile rider) {
+        HashMap<String, Object> multipleAtomicQuery = new HashMap<>();
         String orderID = reservation.getOrderID();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference deliveriesRef = database.child("Rider").child("Delivery");
-        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser).child(orderID);
+        // DatabaseReference deliveriesRef = database.child("Rider").child("Delivery");
+        // DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser).child(orderID);
         reservation.setStatus(2);
-        HashMap<String, Object> statusUpdate = new HashMap<>();
-        statusUpdate.put("status", 2);
-        acceptedReservationRef.updateChildren(statusUpdate);
+        // HashMap<String, Object> statusUpdate = new HashMap<>();
+        // statusUpdate.put("status", 2);
+        // acceptedReservationRef.updateChildren(statusUpdate);
+        multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID + "/status", 2);
+        multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID + "/bikerID", rider.getId());
+        multipleAtomicQuery.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID + "/bikerID", rider.getId());
+        multipleAtomicQuery.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID + "/status", 1);
 
         // Creating Delivery Item
         HashMap<String, String> Delivery = new HashMap<>();
@@ -116,10 +133,15 @@ public class ChooseRiderAdapter extends
         Delivery.put("customerAddress", reservation.getAddress());
         Delivery.put("orderID", reservation.getOrderID());
         Delivery.put("deliveryTime", reservation.getDeliveryTime());
+
         //Delivery.put("seen", false);
-        deliveriesRef.child("Pending").child(rider.getId()).child(reservation.getOrderID()).setValue(Delivery);
-        final DatabaseReference notifyFlagRef = database.child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(rider.getId()).child(reservation.getOrderID()).child("seen");
-        notifyFlagRef.setValue(false);
+        // deliveriesRef.child("Pending").child(rider.getId()).child(reservation.getOrderID()).setValue(Delivery);
+        // final DatabaseReference notifyFlagRef = database.child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(rider.getId()).child(reservation.getOrderID()).child("seen");
+        // notifyFlagRef.setValue(false);
+        multipleAtomicQuery.put("Rider/Delivery/Pending/" + rider.getId() + "/" + reservation.getOrderID(), Delivery);
+        multipleAtomicQuery.put("Rider/Delivery/Pending/NotifyFlag/" + rider.getId() + "/" + reservation.getOrderID() + "/seen", false);
+        multipleAtomicQuery.put("Rider/Profile/" + rider.getId() + "/status", false);
+        database.updateChildren(multipleAtomicQuery);
         ((Activity)context).finish();
     }
 
@@ -129,8 +151,8 @@ public class ChooseRiderAdapter extends
 
         GlideApp.with(context)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .skipMemoryCache(false)
                 .error(GlideApp.with(context).load(R.drawable.personicon))
                 .into(holder.riderPhoto);
     }

@@ -66,23 +66,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/dishesText"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="24dp"
                     android:scrollbars="vertical" />
 
                 <View
-                    android:layout_marginTop="8dp"
+                    android:id="@+id/firs_view"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@id/recycler_view"
+                    android:layout_marginTop="16dp"
                     android:background="@color/colorPrimaryDark" />
 
                 <TextView
                     android:id="@+id/totalPrice_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/recycler_view"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_below="@+id/firs_view"
+                    android:layout_marginTop="16dp"
                     android:text="Total: "
                     android:textColor="#3d3d3d"
                     android:textSize="16sp"
@@ -93,17 +93,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/totalPrice_bold"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_marginTop="18dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="18dp"
+                    android:layout_marginEnd="16dp"
                     android:text="3 €"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
 
                 <View
+                    android:id="@+id/second_view"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
                     android:layout_below="@id/totalPrice_bold"
                     android:background="@color/colorPrimaryDark" />
 
@@ -111,7 +112,7 @@
                     android:id="@+id/address_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/totalPrice_bold"
+                    android:layout_below="@+id/second_view"
                     android:layout_marginTop="16dp"
                     android:text="Address: "
                     android:textColor="#3d3d3d"
@@ -123,7 +124,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/address_bold"
-                    android:layout_toRightOf="@+id/address_bold"
+                    android:layout_toEndOf="@+id/address_bold"
                     android:text="Via del buio"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
@@ -132,7 +133,7 @@
                     android:id="@+id/time_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/address_bold"
+                    android:layout_below="@+id/address"
                     android:layout_marginTop="16dp"
                     android:text="Lunch time: "
                     android:textColor="#3d3d3d"
@@ -144,7 +145,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/time_bold"
-                    android:layout_toRightOf="@+id/time_bold"
+                    android:layout_toEndOf="@+id/time_bold"
                     android:text="11:50"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
@@ -153,7 +154,7 @@
                     android:id="@+id/notes_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/time_bold"
+                    android:layout_below="@+id/time"
                     android:layout_marginTop="16dp"
                     android:text="Notes: "
                     android:textColor="#3d3d3d"

@@ -203,20 +203,14 @@ public class ReservationActivity extends AppCompatActivity implements
                 .child("restaurants").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         GlideApp.with(this)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .skipMemoryCache(false)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
     }
 
     // Tabs
     public void initializeTabs(){
-
-        // Remove black line under toolbar
-        StateListAnimator stateListAnimator = new StateListAnimator();
-        stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(findViewById(android.R.id.content), "elevation", 0));
-        findViewById(R.id.appBarLayout).setStateListAnimator(stateListAnimator);
-
         // Add tabs
         final ViewPager viewPager = (ViewPager) findViewById(R.id.reservationViewPager);
         reservationPageAdapter myPagerAdapter = new reservationPageAdapter(getSupportFragmentManager());

@@ -21,7 +21,7 @@
 
         <TextView
             android:id="@+id/restaurantName"
-            android:layout_width="wrap_content"
+            android:layout_width="309dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Da Michele"
@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/restaurantName"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="6dp"
             android:text="Pick-up: "
             android:textColor="#000"
             android:textSize="13sp"
@@ -42,9 +42,9 @@
 
         <TextView
             android:id="@+id/restaurantAddress"
-            android:layout_width="wrap_content"
+            android:layout_width="261dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/restaurantName"
+            android:layout_alignBaseline="@+id/restaurantAddress_bold"
             android:layout_marginTop="3dp"
             android:layout_toRightOf="@+id/restaurantAddress_bold"
             android:text="Via del pollo 33"
@@ -55,7 +55,7 @@
             android:id="@+id/customerAddress_bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/restaurantAddress_bold"
+            android:layout_below="@+id/restaurantAddress"
             android:layout_marginTop="3dp"
             android:maxWidth="250dip"
             android:text="Delivery: "
@@ -65,9 +65,9 @@
 
         <TextView
             android:id="@+id/customerAddress"
-            android:layout_width="wrap_content"
+            android:layout_width="261dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/restaurantAddress_bold"
+            android:layout_alignBaseline="@+id/customerAddress_bold"
             android:layout_marginTop="3dp"
             android:layout_toRightOf="@+id/customerAddress_bold"
             android:maxWidth="250dip"
@@ -85,11 +85,5 @@
             android:textSize="13sp"
             android:textStyle="italic" />
 
-        <ImageView
-            android:id="@+id/biker_arrived"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="@string/form_name"
-                    android:inputType="textPersonName"
+                    android:inputType="textPersonName|textCapWords"
                     android:maxLength="50" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -244,13 +244,19 @@
                             android:id="@+id/hours"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:drawableLeft="@drawable/ic_clock"
+                            android:drawableLeft="@drawable/ic_circular_clock_tool"
                             android:drawablePadding="8dp"
                             android:drawableTint="@color/colorPrimary"
                             android:text="@string/opening_hours"
+                            android:gravity="center"
                             android:textColor="#3d3d3d"
                             android:textSize="16sp"
                             android:textStyle="bold" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
 
                         <ImageView
                             android:id="@+id/arrowbtn"

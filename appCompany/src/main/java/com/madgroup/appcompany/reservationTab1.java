@@ -34,6 +34,8 @@ import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -166,12 +168,16 @@ public class reservationTab1 extends Fragment {
                             @Override
                             public void onClick(View v) {
                                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                                DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
-                                DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser);
+                                // DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
+                                // DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser);
                                 String orderID = currentItem.getOrderID();
                                 currentItem.setStatus(ReservationActivity.ACCEPTED_RESERVATION_CODE);
-                                pendingReservationRef.child(orderID).removeValue();
-                                acceptedReservationRef.child(orderID).setValue(currentItem);
+                                // pendingReservationRef.child(orderID).removeValue();
+                                // acceptedReservationRef.child(orderID).setValue(currentItem);
+                                HashMap<String, Object> multipleAtomicQuery = new HashMap<>();
+                                multipleAtomicQuery.put("Company/Reservation/Pending/" + currentUser + "/" + orderID, null);
+                                multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID, currentItem);
+                                database.updateChildren(multipleAtomicQuery);
                             }
                         });
                         holder.mTextView1.setText(currentItem.getAddress());

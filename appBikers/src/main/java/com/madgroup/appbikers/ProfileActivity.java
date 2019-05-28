@@ -103,6 +103,7 @@ public class ProfileActivity extends AppCompatActivity
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
     public int iteration = 0;
     private ChildEventListener childEventListener;
+    private ValueEventListener riderAvabilityListener;
 
     private static final int RC_SIGN_IN = 3;
     private FirebaseDatabase database;
@@ -167,6 +168,7 @@ public class ProfileActivity extends AppCompatActivity
             loadFieldsFromFirebase();
             downloadProfilePic();
             navigationDrawerInitialization();
+            createRiderStatusListener();
             final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", ""));
             NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
             notify.newOrderListner();
@@ -227,8 +229,8 @@ public class ProfileActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference pendingDeliveryRef = database.child("Rider").child("Delivery").child("Pending").child(currentUser);
-        pendingDeliveryRef.removeEventListener(childEventListener);
+        DatabaseReference pendingDeliveryRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        pendingDeliveryRef.removeEventListener(riderAvabilityListener);
     }
 
     // What happens if I press back button
@@ -521,11 +523,12 @@ public class ProfileActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         updateNavigatorInformation();
-        verifyRiderAvailability();
+        // verifyRiderAvailability();
         switchInitialization();
     }
 
     private void switchInitialization() {
+        riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference riderRef = database.child("Rider").child("Profile").child(currentUser);
         riderAvailability.setOnClickListener(new View.OnClickListener() {
@@ -538,9 +541,9 @@ public class ProfileActivity extends AppCompatActivity
                 }
                 else
                     newStatus = false;
-                editor.putBoolean("Status", newStatus);
+                // editor.putBoolean("Status", newStatus);
                 riderRef.child("status").setValue(newStatus);
-                editor.apply();
+                // editor.apply();
             }
         });
     }
@@ -553,10 +556,10 @@ public class ProfileActivity extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    Boolean riderStatus = (Boolean) dataSnapshot.getValue();
-                    editor.putBoolean("Status", riderStatus);
-                    editor.apply();
-                    riderAvailability.setChecked(riderStatus);
+                    // Boolean riderStatus = (Boolean) dataSnapshot.getValue();
+                    // editor.putBoolean("Status", riderStatus);
+                    // editor.apply();
+                    // riderAvailability.setChecked(riderStatus);
                 }
             }
 
@@ -818,7 +821,7 @@ public class ProfileActivity extends AppCompatActivity
                             editor.putString("Phone", rider.getPhoneNumber());
                             editor.apply();
                             updateNavigatorInformation();
-                            verifyRiderAvailability();
+                            // verifyRiderAvailability();
 
                         } else {
                             // Utente appena registrato: inserisco un nodo nel database e setto i campi nome e email
@@ -842,12 +845,12 @@ public class ProfileActivity extends AppCompatActivity
                                                 currentUser = user.getUid();
                                                 editor.putString("Name", user.getDisplayName());
                                                 editor.putString("Email", user.getEmail());
-                                                editor.putBoolean("Status", false);
+                                                // editor.putBoolean("Status", false);
                                                 editor.apply();
                                                 showFields();
                                             }
                                             updateNavigatorInformation();
-                                            verifyRiderAvailability();
+                                            // verifyRiderAvailability();
                                         }
                                     });
                         }
@@ -890,5 +893,25 @@ public class ProfileActivity extends AppCompatActivity
                         startActivity(intent);
                     }
                 });
+    }
+
+    private void createRiderStatusListener() {
+        riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        riderAvabilityListener = riderStatusRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists())
+                    return;
+                boolean riderStatus = dataSnapshot.getValue(boolean.class);
+                riderAvailability.setChecked(riderStatus);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

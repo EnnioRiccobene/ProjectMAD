@@ -244,25 +244,27 @@ public class reservationTab2 extends Fragment {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    if (dataSnapshot == null || dataSnapshot.getValue() == null) {
-                        Toast.makeText(getActivity(), "No rider available", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    ArrayList<RiderProfile> riderList = new ArrayList<>();
-                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren())
-                        riderList.add(postSnapshot.getValue(RiderProfile.class));
-
-
-                    // Sort Array based on position
-                    sortRiderList(riderList);
-
-                    // Change Activity
-                    Intent openRiderListActivity = new Intent(getContext(), ChooseRiderActivity.class);
-                    openRiderListActivity.putExtra("riderList", riderList);
-                    openRiderListActivity.putExtra("reservation", currentItem);
-                    getActivity().startActivity(openRiderListActivity);
+                if (!dataSnapshot.exists() || dataSnapshot.getChildrenCount() == 0) {
+                    Toast.makeText(getActivity(), "No rider available", Toast.LENGTH_LONG).show();
+                    return;
                 }
+                ArrayList<RiderProfile> riderList = new ArrayList<>();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren())
+                    riderList.add(postSnapshot.getValue(RiderProfile.class));
+
+                if (riderList.size() == 0) {
+                    Toast.makeText(getActivity(), "No rider available", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                // Sort Array based on position
+                sortRiderList(riderList);
+
+                // Change Activity
+                Intent openRiderListActivity = new Intent(getContext(), ChooseRiderActivity.class);
+                openRiderListActivity.putExtra("riderList", riderList);
+                openRiderListActivity.putExtra("reservation", currentItem);
+                getActivity().startActivity(openRiderListActivity);
             }
 
             @Override
@@ -331,7 +333,7 @@ public class reservationTab2 extends Fragment {
                 final Position restaurantPosition = new Position(latitude, longitude);
                 ArrayList<RiderProfile> notSortableRider = new ArrayList<>();
                 Iterator<RiderProfile> iterator = riderList.iterator();
-                while(iterator.hasNext()) {
+                while (iterator.hasNext()) {
                     RiderProfile element = iterator.next();
                     if (element.getPosition() == null || (element.getPosition().getLat() == 0 && element.getPosition().getLon() == 0)) {
                         iterator.remove();
@@ -352,7 +354,7 @@ public class reservationTab2 extends Fragment {
                             return 0;
                     }
                 });
-                for (RiderProfile element: notSortableRider)
+                for (RiderProfile element : notSortableRider)
                     riderList.add(element);
             }
         } catch (IOException e) {

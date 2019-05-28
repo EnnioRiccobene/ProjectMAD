@@ -43,6 +43,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -59,8 +61,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -864,32 +868,89 @@ public class ProfileActivity extends AppCompatActivity
     private void saveFieldsOnFirebase() {
         // progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
+        final String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        RestaurantProfile currentUser = new RestaurantProfile(uid, name.getText().toString(), phone.getText().toString(),
+        final HashMap<String, Object> updateFavorite = new HashMap<>();
+        updateFavorite.put("id", currentUid);
+        updateFavorite.put("name", name.getText().toString());
+        // updateFavorite.put("phone", phone.getText().toString());
+        updateFavorite.put("address", address.getText().toString());
+        // updateFavorite.put("email", email.getText().toString());
+        updateFavorite.put("foodCategory", editCategory.getText().toString());
+        updateFavorite.put("minOrder", minimumOrder.getText().toString());
+        updateFavorite.put("deliveryCost", deliveryCost.getText().toString());
+        updateFavorite.put("mondayOpeningHours", mondayHour.getText().toString());
+        updateFavorite.put("tuesdayOpeningHours", tuesdayHour.getText().toString());
+        updateFavorite.put("wednesdayOpeningHours", wednesdayHour.getText().toString());
+        updateFavorite.put("thursdayOpeningHours", thursdayHour.getText().toString());
+        updateFavorite.put("fridayOpeningHours", fridayHour.getText().toString());
+        updateFavorite.put("saturdayOpeningHours", saturdayHour.getText().toString());
+        updateFavorite.put("sundayOpeningHours", sundayHour.getText().toString());
+        updateFavorite.put("additionalInformation", additionalInformation.getText().toString());
+
+        final RestaurantProfile currentUser = new RestaurantProfile(currentUid, name.getText().toString(), phone.getText().toString(),
                 address.getText().toString(), email.getText().toString(), editCategory.getText().toString(),
                 minimumOrder.getText().toString(), deliveryCost.getText().toString(), mondayHour.getText().toString(), tuesdayHour.getText().toString(),
                 wednesdayHour.getText().toString(), thursdayHour.getText().toString(), fridayHour.getText().toString(),
                 saturdayHour.getText().toString(), sundayHour.getText().toString(), additionalInformation.getText().toString());
 
-        String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //database.getReference("Profiles").child("Restaurants")
-        database.getReference("Company").child("Profile")
-                .child(currentUid)
-                .setValue(currentUser, new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                        if (databaseError != null) {
-                            // progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                            Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
-                        } else {
-                            // Dati salvati correttamente nel db
-                            // Aggiorno le shared prefs
-                            saveFields();
-                            // progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                        }
-                    }
-                });
+
+        final Map updateChildren = new HashMap();
+        updateChildren.put("Company/Profile/" + currentUid, currentUser);
+
+        final DatabaseReference favoriteRef = database.getReference().child("Customer").child("Favorite");
+        database.getReference().child("Company").child("Profile").child(currentUid).setValue(currentUser);
+        favoriteRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists())
+                    for (DataSnapshot child : dataSnapshot.getChildren())
+                        if (child.child(currentUid).getValue() != null)
+                            updateChildren.put("Customer/Favorite/" + child.getKey() + "/" + currentUid, updateFavorite);
+                            //favoriteRef.child(child.getKey()).child(currentUid).updateChildren(updateFavorite);
+                database.getReference().updateChildren(updateChildren);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+//        database.getReference().runTransaction(new Transaction.Handler() {
+//            @NonNull
+//            @Override
+//            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+//                mutableData.child("Company").child("Profile").child(currentUid).setValue(currentUser);
+//                Iterable<MutableData> it = mutableData.child("Customer").child("Favorite").getChildren();
+//                for (MutableData child : it){
+//                    if(child.child(currentUid).getValue() != null);
+//                        child.child(currentUid).setValue(updateValues);
+//                }
+//                return Transaction.success(mutableData);
+//            }
+//
+//            @Override
+//            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+//
+//            }
+//        });
+//        database.getReference("Company").child("Profile")
+//                .child(currentUid)
+//                .setValue(currentUser, new DatabaseReference.CompletionListener() {
+//                    @Override
+//                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+//                        if (databaseError != null) {
+//                            // progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+//                            Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
+//                        } else {
+//                            // Dati salvati correttamente nel db: aggiorno le shared prefs
+//                            saveFields();
+//                            // progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+//                        }
+//                    }
+//                });
+
     }
 
     private void uploadProfilePic(Bitmap bitmap) {

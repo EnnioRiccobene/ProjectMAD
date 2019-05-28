@@ -8,8 +8,10 @@ public class Reservation implements Serializable {
 
     private String orderID;
     private String customerID;
-    private ArrayList<OrderedDish> orderedDishList;
     private String restaurantID;
+    private String bikerID;
+    private ArrayList<OrderedDish> orderedDishList;
+    private String restaurantName;
     private String address;
     private String deliveryTime;
     private String deliveryCost;
@@ -18,57 +20,28 @@ public class Reservation implements Serializable {
     private String notes;
     //private boolean seen;
 
-//    Status
+//    Status for Company
 //    0: Da confermare/rifiutare        Tab1
 //    1: Confermato. Da preparare       Tab2
-//    2: Rider chiamate. In attesa      Tab2
+//    2: Rider chiamato. In attesa      Tab2
 //    3: Consegnato e concluso          Tab3
 //    4: Rifiutato                      Tab3
 
+//    Status for Biker
+//    0: Accettato                      Tab1
+//    1: Concluso                       Tab2
+
+//    Status for Customer
+//    0: Da confermare/rifiutare        Tab1
+//    1: Confermato. Da preparare       Tab1
+//    2: Consegnato e concluso          Tab2
+//    3: Rifiutato                      Tab2
 
     public Reservation() {
     }
 
-    public Reservation(String address, String deliveryTime, Integer status, String price) {
-        this.address = address;
-        this.deliveryTime = deliveryTime;
-        this.status = status;
-        this.price = price;
-        //this.seen = false;
-    }
-
-    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, Integer status) {
-        this.orderedDishList = orderedDishList;
-        this.address = address;
-        this.deliveryTime = deliveryTime;
-        this.status= status;
-        //this.seen = false;
-        // Compute total Price
-        float x = 0;
-        for (OrderedDish element : orderedDishList)
-            x += Float.parseFloat(element.getPrice()) * Float.parseFloat(element.getQuantity());
-        DecimalFormat df = new DecimalFormat("#.##");
-        df.setMinimumFractionDigits(2);
-        price = df.format(x);
-    }
-
-    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, Integer status) {
-        this.orderedDishList = orderedDishList;
-        this.address = address;
-        this.deliveryTime = deliveryTime;
-        this.status= status;
-        this.notes = notes;
-        //this.seen = false;
-        // Compute total Price
-        float x = 0;
-        for (OrderedDish element : orderedDishList)
-            x += Float.parseFloat(element.getPrice()) * Float.parseFloat(element.getQuantity());
-        DecimalFormat df = new DecimalFormat("#.##");
-        df.setMinimumFractionDigits(2);
-        price = df.format(x);
-    }
-
-    public Reservation(ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, String restaurantID, String deliveryCost ) {
+    public Reservation(String restaurantName, ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, String restaurantID, String deliveryCost ) {
+        this.restaurantName = restaurantName;
         this.orderedDishList = orderedDishList;
         this.address = address;
         this.deliveryTime = deliveryTime;
@@ -184,5 +157,20 @@ public class Reservation implements Serializable {
         this.price = price;
     }
 
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
+    }
+
+    public String getBikerID() {
+        return bikerID;
+    }
+
+    public void setBikerID(String bikerID) {
+        this.bikerID = bikerID;
+    }
 }
 

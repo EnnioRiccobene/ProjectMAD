@@ -13,30 +13,30 @@
         android:id="@+id/dish_item_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp">
-
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/dish_photo"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@mipmap/ic_launcher"
-            app:civ_border_width="1dp" />
+        android:padding="10dp">
 
         <RelativeLayout
             android:id="@+id/name_button_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_toEndOf="@id/dish_photo">
+            android:layout_height="wrap_content">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/dish_photo"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@mipmap/ic_launcher"
+                app:civ_border_width="1dp" />
 
             <TextView
                 android:id="@+id/dish_name"
+                android:layout_toEndOf="@+id/dish_photo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Dish name"
                 android:textColor="#000"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:maxEms="12"
+                android:layout_marginStart="6dp"/>
 
             <ImageView
                 android:id="@+id/incrementButton"
@@ -51,9 +51,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/dish_name"
+                android:layout_toEndOf="@id/dish_photo"
                 android:layout_marginTop="3dp"
-                android:text="5€"
-                android:textSize="16sp" />
+                android:text="5 €"
+                android:textSize="16sp"
+                android:layout_marginStart="6dp"/>
 
         </RelativeLayout>
 
@@ -61,7 +63,7 @@
             android:id="@+id/dish_ingredients"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/dish_photo"
+            android:layout_below="@id/name_button_layout"
             android:layout_marginTop="8dp"
             android:text="Ingredients:"
             android:textSize="13sp" />
@@ -70,10 +72,10 @@
             android:id="@+id/dish_ingredients_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/dish_photo"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_toEndOf="@id/dish_ingredients"
+            android:layout_alignBaseline="@+id/dish_ingredients"
             android:text="Ingredients list"
             android:textSize="13sp" />
 
