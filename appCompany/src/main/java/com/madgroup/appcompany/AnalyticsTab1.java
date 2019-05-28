@@ -26,6 +26,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import org.jetbrains.annotations.NotNull;
@@ -183,6 +185,7 @@ public class AnalyticsTab1 extends Fragment {
         });
 
         initializeDailyHistogram(chart, currentDay, currentMonth, currentYear);
+        getTopMealOfDay(currentDay, currentMonth, currentYear);
     }
 
 
@@ -260,6 +263,56 @@ public class AnalyticsTab1 extends Fragment {
                 chart.animateY(1000);
 
             }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
+
+    private void getTopMealOfDay(final String dayOfMonth, final String month, final String year) {
+
+        // Database references
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        String restaurantID = prefs.getString("currentUser", "");
+
+        String weekOfMonth = getWeekOfMonth(dayOfMonth, month, year);
+
+        String node = year+"_"+month+"_"+weekOfMonth;
+        DatabaseReference topMealRef = database.getReference().child("Company").child("Reservation")
+                .child("TopMeals")
+                .child(restaurantID).child(node);
+
+        final HashMap<String, Integer> dishesIDQuantity = new HashMap<>();
+        topMealRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // Per ogni fascia oraria
+                for (DataSnapshot hourSlot : dataSnapshot.getChildren()) {
+                    // Per ogni ID
+                    for (DataSnapshot dishIDQuantity : hourSlot.getChildren()) {
+                        Integer amount = dishIDQuantity.getValue(Integer.class);
+                        Integer previousAmount = dishesIDQuantity.get(dishIDQuantity.getKey());
+                        if (previousAmount==null)
+                            dishesIDQuantity.put(dishIDQuantity.getKey(), amount);
+                        else
+                            dishesIDQuantity.put(dishIDQuantity.getKey(), amount+previousAmount);
+                    }
+                }
+
+                // Cerco il massimo tra tutte le fasce orarie
+                Map.Entry<String, Integer> maxEntry = null;
+                for (Map.Entry<String, Integer> entry : dishesIDQuantity.entrySet())
+                {
+                    if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+                        maxEntry = entry;
+                }
+                String topDishID = maxEntry.getKey();
+                Integer topDishQuantity = maxEntry.getValue();
+
+            }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
