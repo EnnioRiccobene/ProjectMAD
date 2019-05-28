@@ -208,6 +208,7 @@ public class AnalyticsTab2 extends Fragment {
         });
 
         initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
+        getTopMealOfWeek(selectedWeek, selectedMonth, selectedYear);
 
     }
 
@@ -309,6 +310,61 @@ public class AnalyticsTab2 extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+    }
+
+    private void getTopMealOfWeek(final String weekOfMonth, final String month,
+                                  final String year) {
+
+        // Database references
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        String restaurantID = prefs.getString("currentUser", "");
+        Calendar calendar = Calendar.getInstance();
+        String node = year+"_"+month+"_"+weekOfMonth;
+
+        DatabaseReference topMealRef = database.getReference().child("Company").child("Reservation")
+                .child("TopMeals")
+                .child(restaurantID).child(node);
+
+        final HashMap<String, Integer> dishesIDQuantity = new HashMap<>();
+        topMealRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // Per ogni fascia oraria
+                for (DataSnapshot hourSlot : dataSnapshot.getChildren()) {
+                        // Per ogni ID
+                        for (DataSnapshot dishIDQuantity : hourSlot.getChildren()) {
+                            Integer amount = dishIDQuantity.getValue(Integer.class);
+                            Integer previousAmount = dishesIDQuantity.get(dishIDQuantity.getKey());
+                            if (previousAmount==null)
+                                dishesIDQuantity.put(dishIDQuantity.getKey(), amount);
+                            else
+                                dishesIDQuantity.put(dishIDQuantity.getKey(), amount+previousAmount);
+                        }
+                }
+
+                // Cerco il massimo
+                Map.Entry<String, Integer> maxEntry = null;
+                for (Map.Entry<String, Integer> entry : dishesIDQuantity.entrySet())
+                {
+                    if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+                        maxEntry = entry;
+                }
+                String topDishID = maxEntry.getKey();
+                Integer topDishQuantity = maxEntry.getValue();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
+
     }
 
     private void initMapMonths() {

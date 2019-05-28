@@ -288,16 +288,18 @@ public class AnalyticsTab1 extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                // Per ogni fascia oraria
+                // Per ogni fascia oraria relativa al giorno
                 for (DataSnapshot hourSlot : dataSnapshot.getChildren()) {
-                    // Per ogni ID
-                    for (DataSnapshot dishIDQuantity : hourSlot.getChildren()) {
-                        Integer amount = dishIDQuantity.getValue(Integer.class);
-                        Integer previousAmount = dishesIDQuantity.get(dishIDQuantity.getKey());
-                        if (previousAmount==null)
-                            dishesIDQuantity.put(dishIDQuantity.getKey(), amount);
-                        else
-                            dishesIDQuantity.put(dishIDQuantity.getKey(), amount+previousAmount);
+                    if(hourSlot.getKey().startsWith(dayOfMonth)) {
+                        // Per ogni ID
+                        for (DataSnapshot dishIDQuantity : hourSlot.getChildren()) {
+                            Integer amount = dishIDQuantity.getValue(Integer.class);
+                            Integer previousAmount = dishesIDQuantity.get(dishIDQuantity.getKey());
+                            if (previousAmount==null)
+                                dishesIDQuantity.put(dishIDQuantity.getKey(), amount);
+                            else
+                                dishesIDQuantity.put(dishIDQuantity.getKey(), amount+previousAmount);
+                        }
                     }
                 }
 
