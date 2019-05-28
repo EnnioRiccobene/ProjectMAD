@@ -262,7 +262,7 @@ public class OrdersPendingTab extends Fragment {
                                 String hourOfDay = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY)); // Fascia oraria
                                 final String key = dayOfMonth+"_"+dayOfWeek+"_"+hourOfDay;
 
-                                DatabaseReference timingOrderRef = database.child("Company").child("Reservation").child("TimingOrder")
+                                DatabaseReference timingOrderRef = database.child("Analytics").child("TimingOrder")
                                         .child(currentItem.getRestaurantID()).child(node).child(key);
                                 timingOrderRef.runTransaction(new Transaction.Handler() {
                                     @Override
@@ -297,7 +297,7 @@ public class OrdersPendingTab extends Fragment {
                                         if(dishesIDQuantity.size() == 0)
                                             return;
 
-                                        DatabaseReference topMealsRef = database.child("Company").child("Reservation").child("TopMeals")
+                                        DatabaseReference topMealsRef = database.child("Analytics").child("TopMeals")
                                                 .child(currentItem.getRestaurantID()).child(node).child(key);
                                         for (HashMap.Entry<String, Integer> entry : dishesIDQuantity.entrySet()) {
                                             final String dishID = entry.getKey();

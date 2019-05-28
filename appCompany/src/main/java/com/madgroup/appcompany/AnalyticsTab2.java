@@ -249,7 +249,8 @@ public class AnalyticsTab2 extends Fragment {
         String node = year+"_"+month+"_"+weekOfMonth;
 
 
-        DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
+        DatabaseReference timingOrederRef = database.getReference()
+                .child("Analytics").child("TimingOrder")
                 .child(restaurantID).child(node);
 
         // Riferimenti all'istogramma
@@ -332,8 +333,8 @@ public class AnalyticsTab2 extends Fragment {
         Calendar calendar = Calendar.getInstance();
         String node = year+"_"+month+"_"+weekOfMonth;
 
-        DatabaseReference topMealRef = database.getReference().child("Company").child("Reservation")
-                .child("TopMeals")
+        DatabaseReference topMealRef = database.getReference()
+                .child("Analytics").child("TopMeals")
                 .child(restaurantID).child(node);
 
         final HashMap<String, Integer> dishesIDQuantity = new HashMap<>();

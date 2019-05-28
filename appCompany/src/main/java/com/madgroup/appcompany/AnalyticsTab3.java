@@ -183,7 +183,7 @@ public class AnalyticsTab3 extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String restaurantID = prefs.getString("currentUser", "");
 
-        DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation")
+        DatabaseReference timingOrederRef = database.getReference().child("Analytics")
                 .child("TimingOrder")
                 .child(restaurantID);
 
@@ -266,7 +266,7 @@ public class AnalyticsTab3 extends Fragment {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final String restaurantID = prefs.getString("currentUser", "");
 
-        DatabaseReference topMealsRef = database.getReference().child("Company").child("Reservation")
+        DatabaseReference topMealsRef = database.getReference().child("Analytics")
                 .child("TopMeals")
                 .child(restaurantID);
 

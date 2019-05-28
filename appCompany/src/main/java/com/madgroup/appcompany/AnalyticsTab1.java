@@ -205,7 +205,8 @@ public class AnalyticsTab1 extends Fragment {
         String weekOfMonth = getWeekOfMonth(dayOfMonth, month, year);
 
         String node = year+"_"+month+"_"+weekOfMonth;
-        DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
+        DatabaseReference timingOrederRef = database.getReference()
+                .child("Analytics").child("TimingOrder")
                 .child(restaurantID).child(node);
 
 
@@ -286,8 +287,7 @@ public class AnalyticsTab1 extends Fragment {
         String weekOfMonth = getWeekOfMonth(dayOfMonth, month, year);
 
         String node = year+"_"+month+"_"+weekOfMonth;
-        DatabaseReference topMealRef = database.getReference().child("Company").child("Reservation")
-                .child("TopMeals")
+        DatabaseReference topMealRef = database.getReference().child("Analytics").child("TopMeals")
                 .child(restaurantID).child(node);
 
         final HashMap<String, Integer> dishesIDQuantity = new HashMap<>();
