@@ -37,7 +37,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
 
@@ -355,7 +354,7 @@ public class SearchRestaurantTab1 extends Fragment {
             delivery_cost = itemView.findViewById(R.id.delivery_cost);
             delivery_cost_amount = itemView.findViewById(R.id.delivery_cost_amount);
             favoriteCheckBox = itemView.findViewById(R.id.favoriteCheckBox);
-            ratingBar = itemView.findViewById(R.id.ratingBar);
+            ratingBar = itemView.findViewById(R.id.restaurantRating);
         }
     }
 
