@@ -2,21 +2,19 @@ package com.madgroup.appcompany;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -26,12 +24,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
-
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.madgroup.sdk.Dish;
 import org.jetbrains.annotations.NotNull;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class AnalyticsTab1 extends Fragment {
@@ -54,6 +52,9 @@ public class AnalyticsTab1 extends Fragment {
     private String selectedMonth = "";
     private String selectedYear = "";
     private TextView currentFilter;
+    private CircleImageView topMeal;
+    private TextView salesTextView;
+    private TextView topDishName;
 
 
     public AnalyticsTab1() {
@@ -141,6 +142,10 @@ public class AnalyticsTab1 extends Fragment {
         ImageView previousButton = view.findViewById(R.id.previous_button);
         ImageView nextButton = view.findViewById(R.id.next_button);
         currentFilter = view.findViewById(R.id.current_filter);
+        topMeal = view.findViewById(R.id.top_meal);
+        salesTextView = view.findViewById(R.id.sales_number);
+        topDishName = view.findViewById(R.id.top_dish_name);
+        final Resources res = getResources();
 
         Calendar calendar = Calendar.getInstance();
         String currentDay = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
@@ -164,6 +169,7 @@ public class AnalyticsTab1 extends Fragment {
                 selectedMonth = prevMonth;
                 selectedYear = prevYear;
                 initializeDailyHistogram(chart, selectedDay, selectedMonth, selectedYear);
+                getTopMealOfDay(res, topMeal, salesTextView, topDishName, selectedDay, selectedMonth, selectedYear);
             }
         });
 
@@ -180,12 +186,12 @@ public class AnalyticsTab1 extends Fragment {
                 selectedMonth = nextMonth;
                 selectedYear = nextYear;
                 initializeDailyHistogram(chart, selectedDay, selectedMonth, selectedYear);
-
+                getTopMealOfDay(res, topMeal, salesTextView, topDishName, selectedDay, selectedMonth, selectedYear);
             }
         });
 
         initializeDailyHistogram(chart, currentDay, currentMonth, currentYear);
-        getTopMealOfDay(currentDay, currentMonth, currentYear);
+        getTopMealOfDay(res, topMeal,salesTextView, topDishName, currentDay, currentMonth, currentYear);
     }
 
 
@@ -270,11 +276,12 @@ public class AnalyticsTab1 extends Fragment {
     }
 
 
-    private void getTopMealOfDay(final String dayOfMonth, final String month, final String year) {
+    private void getTopMealOfDay(final Resources res, final CircleImageView topMeal, final TextView salesTextView, final TextView topDishName,
+                                 final String dayOfMonth, final String month, final String year) {
 
         // Database references
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        String restaurantID = prefs.getString("currentUser", "");
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final String restaurantID = prefs.getString("currentUser", "");
 
         String weekOfMonth = getWeekOfMonth(dayOfMonth, month, year);
 
@@ -310,9 +317,40 @@ public class AnalyticsTab1 extends Fragment {
                     if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
                         maxEntry = entry;
                 }
-                String topDishID = maxEntry.getKey();
-                Integer topDishQuantity = maxEntry.getValue();
+                if (maxEntry!=null) {
+                    final String topDishID = maxEntry.getKey();
+                    final Integer topDishQuantity = maxEntry.getValue();
 
+                    StorageReference storageReference = FirebaseStorage.getInstance()
+                            .getReference("dish_pics").child(restaurantID)
+                            .child(topDishID);
+                    GlideApp.with(AnalyticsTab1.this)
+                            .load(storageReference)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .placeholder(res.getDrawable(R.drawable.ic_sand_clock))
+                            .error(GlideApp.with(AnalyticsTab1.this).load(R.drawable.ic_dish))
+                            .into(topMeal);
+
+                    DatabaseReference ref = database.getReference().child("Company").child("Menu")
+                            .child(restaurantID).child(topDishID);
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Dish dish = dataSnapshot.getValue(Dish.class);
+                            topDishName.setText(dish.getName() + " (" + dish.getPrice() + ")");
+                            salesTextView.setText(topDishQuantity + " sales");
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+                }
+                else {
+                    topMeal.setImageResource(R.drawable.ic_dish);
+                    topDishName.setText("");
+                    salesTextView.setText("No sales detected in this day.");
+                }
             }
 
             @Override

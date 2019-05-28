@@ -47,19 +47,96 @@
             android:src="@drawable/ic_next_arrow"/>
 
     </LinearLayout>
-    
 
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/bar_chart"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Top meal"
+            android:textSize="15sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:textStyle="normal|bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:id="@+id/top_meal"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="16dp"/>
+
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_weight="0.65"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="16dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:textStyle="normal"
+                    android:textSize="14sp"
+                    android:id="@+id/top_dish_name"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:textStyle="italic"
+                    android:textSize="14sp"
+                    android:id="@+id/sales_number"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/current_filter"
-        tools:layout_editor_absoluteX="16dp">
+        android:orientation="vertical">
 
-    </com.github.mikephil.charting.charts.BarChart>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Timing order"
+            android:textSize="15sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:textStyle="normal|bold" />
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/bar_chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/current_filter"
+            tools:layout_editor_absoluteX="16dp" >
+        </com.github.mikephil.charting.charts.BarChart>
+
+
+    </LinearLayout>
+
+
+
+
+
 
 
 </LinearLayout>
