@@ -117,7 +117,8 @@
             android:textSize="15sp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:textStyle="normal|bold" />
+            android:textStyle="normal|bold"
+            />
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/bar_chart"

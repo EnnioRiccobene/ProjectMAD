@@ -52,7 +52,6 @@ public class AnalyticsTab1 extends Fragment {
     private String selectedMonth = "";
     private String selectedYear = "";
     private TextView currentFilter;
-    private CircleImageView topMeal;
     private TextView salesTextView;
     private TextView topDishName;
 
@@ -142,7 +141,7 @@ public class AnalyticsTab1 extends Fragment {
         ImageView previousButton = view.findViewById(R.id.previous_button);
         ImageView nextButton = view.findViewById(R.id.next_button);
         currentFilter = view.findViewById(R.id.current_filter);
-        topMeal = view.findViewById(R.id.top_meal);
+        final CircleImageView topMeal = view.findViewById(R.id.top_meal);
         salesTextView = view.findViewById(R.id.sales_number);
         topDishName = view.findViewById(R.id.top_dish_name);
         final Resources res = getResources();
