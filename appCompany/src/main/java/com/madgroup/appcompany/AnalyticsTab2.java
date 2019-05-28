@@ -132,7 +132,16 @@ public class AnalyticsTab2 extends Fragment {
         String currentWeek = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH));
         String currentMonth = Integer.toString(calendar.get(Calendar.MONTH)+1);
         String currentYear = Integer.toString(calendar.get(Calendar.YEAR));
-        currentFilter.setText("Week " + currentWeek + " of " + months.get(currentMonth) + " " + currentYear);
+        String titleWeek = "";
+        if (currentWeek.equals("1"))
+            titleWeek = currentWeek + "st";
+        else if (currentWeek.equals("2"))
+            titleWeek = currentWeek + "nd";
+        else if (currentWeek.equals("3"))
+            titleWeek = currentWeek + "rd";
+        else
+            titleWeek = currentWeek + "th";
+        currentFilter.setText(titleWeek + " Week " + " of " + months.get(currentMonth) + " " + currentYear);
         this.selectedMonth = currentMonth;
         this.selectedYear = currentYear;
         this.selectedWeek = currentWeek;
@@ -157,8 +166,16 @@ public class AnalyticsTab2 extends Fragment {
                 } else {
                     selectedWeek = Integer.toString(Integer.parseInt(selectedWeek) - 1);
                 }
-                currentFilter.setText("Week " + selectedWeek + " of " + months.get(selectedMonth) + " " + selectedYear);
-                initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
+                String titleWeek = "";
+                if (selectedWeek.equals("1"))
+                    titleWeek = selectedWeek + "st";
+                else if (selectedWeek.equals("2"))
+                    titleWeek = selectedWeek + "nd";
+                else if (selectedWeek.equals("3"))
+                    titleWeek = selectedWeek + "rd";
+                else
+                    titleWeek = selectedWeek + "th";
+                currentFilter.setText(titleWeek + " Week " + " of " + months.get(selectedMonth) + " " + selectedYear);                initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
             }
         });
 
@@ -176,7 +193,16 @@ public class AnalyticsTab2 extends Fragment {
                 } else {
                     selectedWeek = Integer.toString(Integer.parseInt(selectedWeek)+1);
                 }
-                currentFilter.setText("Week " + selectedWeek + " of " + months.get(selectedMonth) + " " + selectedYear);
+                String titleWeek = "";
+                if (selectedWeek.equals("1"))
+                    titleWeek = selectedWeek + "st";
+                else if (selectedWeek.equals("2"))
+                    titleWeek = selectedWeek + "nd";
+                else if (selectedWeek.equals("3"))
+                    titleWeek = selectedWeek + "rd";
+                else
+                    titleWeek = selectedWeek + "th";
+                currentFilter.setText(titleWeek + " Week " + " of " + months.get(selectedMonth) + " " + selectedYear);
                 initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
             }
         });
