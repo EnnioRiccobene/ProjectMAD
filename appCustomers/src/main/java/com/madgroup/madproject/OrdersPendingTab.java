@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,6 +33,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
@@ -42,8 +45,14 @@ import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.TreeMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -241,12 +250,84 @@ public class OrdersPendingTab extends Fragment {
 
                                     }
                                 });
+
+                                // Raf: Inizializzo o incremento il contatore nel nodo TimingOrder per le statistiche. Il contatore equivale al numero di ordini effettuati dal ristorante in una certa fascia ORARIA.
+                                Calendar calendar = Calendar.getInstance();
+                                String year = Integer.toString(calendar.get(Calendar.YEAR));
+                                String month = Integer.toString(calendar.get(Calendar.MONTH)+1);
+                                String weekOfMonth = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH));
+                                final String node = year+"_"+month+"_"+weekOfMonth;
+                                String dayOfMonth = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
+                                String dayOfWeek = Integer.toString(calendar.get(Calendar.DAY_OF_WEEK)-1);
+                                String hourOfDay = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY)); // Fascia oraria
+                                final String key = dayOfMonth+"_"+dayOfWeek+"_"+hourOfDay;
+
+                                DatabaseReference timingOrderRef = database.child("Company").child("Reservation").child("TimingOrder")
+                                        .child(currentItem.getRestaurantID()).child(node).child(key);
+                                timingOrderRef.runTransaction(new Transaction.Handler() {
+                                    @Override
+                                    public Transaction.Result doTransaction(MutableData mutableData) {
+                                        Integer amountOfOrders = mutableData.getValue(Integer.class);
+                                        if (amountOfOrders == null)
+                                            mutableData.setValue(1);
+                                        else
+                                            mutableData.setValue(amountOfOrders + 1);
+                                        return Transaction.success(mutableData);
+                                    }
+                                    @Override
+                                    public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                                        //System.out.println("Transaction completed");
+                                    }
+                                });
+
+                                // Aggiorno la tabella TopMeals
+                                final HashMap<String, Integer> dishesIDQuantity = new HashMap<>();
+                                DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood").child(currentItem.getRestaurantID()).child(currentItem.getOrderID());
+                                orderedFoodRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if(!dataSnapshot.exists())
+                                            return;
+                                        for(DataSnapshot currentDish : dataSnapshot.getChildren()) {
+                                            //dishesID.add(currentDish.getValue(Dish.class).getId());
+                                            String dishID = currentDish.getValue(OrderedDish.class).getId();
+                                            Integer dishQuantity = Integer.parseInt(currentDish.getValue(OrderedDish.class).getQuantity());
+                                            dishesIDQuantity.put(dishID, dishQuantity);
+                                        }
+                                        if(dishesIDQuantity.size() == 0)
+                                            return;
+
+                                        DatabaseReference topMealsRef = database.child("Company").child("Reservation").child("TopMeals")
+                                                .child(currentItem.getRestaurantID()).child(node).child(key);
+                                        for (HashMap.Entry<String, Integer> entry : dishesIDQuantity.entrySet()) {
+                                            final String dishID = entry.getKey();
+                                            Integer dishQuantity = entry.getValue();
+                                            topMealsRef.child(dishID).runTransaction(new Transaction.Handler() {
+                                                @Override
+                                                public Transaction.Result doTransaction(MutableData mutableData) {
+                                                    Integer amountOfOrders = mutableData.getValue(Integer.class);
+                                                    Integer dishQuantity = dishesIDQuantity.get(dishID);
+                                                    if (amountOfOrders == null)
+                                                        mutableData.setValue(dishQuantity);
+                                                    else
+                                                        mutableData.setValue(amountOfOrders + dishQuantity);
+                                                    return Transaction.success(mutableData);
+                                                }
+                                                @Override
+                                                public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                                                    //System.out.println("Transaction completed");
+                                                }
+                                            });
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
                             }
                         });
-
-                        //                                        database.child("Rider").child("Delivery").child("Pending").child(currentUser).child(currentItem.getOrderID()).setValue(null);
-//                                        database.child("Rider").child("Delivery").child("History").child(currentUser).child(currentItem.getOrderID()).setValue(currentItem);
-
                     }
 
                     @NonNull
