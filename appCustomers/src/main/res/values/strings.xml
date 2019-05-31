@@ -51,7 +51,7 @@
     <string name="subtotal">Subtotal: </string>
     <string name="address">Address: </string>
     <string name="lunch_time">Delivery time: </string>
-    <string name="notes">Notes </string>
+    <string name="notes">Notes: </string>
     <string name="confirm_order">Confirm Order</string>
     <string name="total">Total</string>
     <string name="name">Name:</string>

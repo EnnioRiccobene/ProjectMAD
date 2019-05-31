@@ -25,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -58,6 +59,7 @@ public class SearchRestaurantTab2Adapter extends
         TextView minimum_order_amount;
         TextView delivery_cost;
         TextView delivery_cost_amount;
+        TextView foodRating;
         CheckBox favoriteCheckBox;
         AppCompatRatingBar ratingBar;
 
@@ -76,6 +78,7 @@ public class SearchRestaurantTab2Adapter extends
             delivery_cost_amount = itemView.findViewById(R.id.delivery_cost_amount);
             favoriteCheckBox = itemView.findViewById(R.id.favoriteCheckBox);
             ratingBar = itemView.findViewById(R.id.restaurantRating);
+            foodRating = itemView.findViewById(R.id.foodRating);
         }
     }
 
@@ -138,8 +141,12 @@ public class SearchRestaurantTab2Adapter extends
                 manageFavorites(holder, model);
             }
         });
-        if(model.getRatingAvg() != "0" || model.getRatingAvg() != null)
+
+        if(model.getRatingAvg() != null || !model.getRatingAvg().equals("0")){
             holder.ratingBar.setRating(Float.parseFloat(model.getRatingAvg()));
+            holder.foodRating.setText(translateFoodRating(model.getFoodRatingAvg()));
+        }
+
     }
 
     public void refreshFavoriteList(final ViewHolder holder, final Restaurant model) {
@@ -191,5 +198,24 @@ public class SearchRestaurantTab2Adapter extends
         }
     }
 
+    private String translateFoodRating(String foodRatingAvg) {
+        String restaurantPrice = "";
+        String[] removeDecimal = foodRatingAvg.split("\\.");
+        foodRatingAvg = removeDecimal[0];
+        switch (Integer.parseInt(foodRatingAvg)){
+            case 1:
+                restaurantPrice = "€";
+                break;
+            case 2:
+                restaurantPrice = "€€";
+                break;
+            case 3:
+                restaurantPrice = "€€€";
+                break;
+            default:
+                break;
+        }
+        return restaurantPrice;
+    }
 
 }

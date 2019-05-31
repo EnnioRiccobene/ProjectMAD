@@ -123,7 +123,7 @@ public class ChooseRiderAdapter extends
         multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID + "/status", 2);
         multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID + "/bikerID", rider.getId());
         multipleAtomicQuery.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID + "/bikerID", rider.getId());
-        multipleAtomicQuery.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID + "/status", 1);
+        multipleAtomicQuery.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID + "/status", 2);
 
         // Creating Delivery Item
         HashMap<String, String> Delivery = new HashMap<>();
@@ -194,11 +194,13 @@ public class ChooseRiderAdapter extends
                 double latitude = restaurantGeocoder.get(0).getLatitude();
                 double longitude = restaurantGeocoder.get(0).getLongitude();
                 Position restaurantPosition = new Position(latitude, longitude);
-                latitude = restaurantGeocoder.get(0).getLatitude();
-                longitude = restaurantGeocoder.get(0).getLongitude();
+                latitude = customerGeocoder.get(0).getLatitude();
+                longitude = customerGeocoder.get(0).getLongitude();
                 Position customerPosition = new Position(latitude, longitude);
                 double distance = Haversine.distance(restaurantPosition, customerPosition);
-                return String.valueOf(distance);
+                DecimalFormat df = new DecimalFormat("#.##");
+                df.setMinimumFractionDigits(2);
+                return df.format(distance);
             }
         } catch (IOException e) {
             e.printStackTrace();

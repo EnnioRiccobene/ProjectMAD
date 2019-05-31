@@ -50,7 +50,7 @@
                 android:layout_marginTop="28dp"
                 android:layout_weight="1"
                 android:hint="@string/form_name"
-                android:inputType="textPersonName"
+                android:inputType="textPersonName|textCapWords"
                 android:maxLength="50" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -155,6 +155,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextPhoneLayout">

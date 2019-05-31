@@ -39,6 +39,8 @@ import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.SmartLogger;
 
+import java.text.DecimalFormat;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -206,10 +208,16 @@ public class SearchRestaurantTab3 extends Fragment {
                                 manageFavorites(holder, model);
                             }
                         });
-                        if(model.getRatingAvg() != null && model.getRatingAvg() != "0")
+
+                        if(model.getRatingAvg() != null && !model.getRatingAvg().equals("0")){
                             holder.ratingBar.setRating(Float.parseFloat(model.getRatingAvg()));
-                        else
+                            holder.foodRating.setText(translateFoodRating(model.getFoodRatingAvg()));
+                        }
+
+                        else{
                             holder.ratingBar.setVisibility(View.GONE);
+                            holder.foodRating.setVisibility(View.GONE);
+                        }
                     }
 
                     @NonNull
@@ -239,6 +247,7 @@ public class SearchRestaurantTab3 extends Fragment {
         TextView minimum_order_amount;
         TextView delivery_cost;
         TextView delivery_cost_amount;
+        TextView foodRating;
         CheckBox favoriteCheckBox;
         AppCompatRatingBar ratingBar;
 
@@ -258,31 +267,8 @@ public class SearchRestaurantTab3 extends Fragment {
             delivery_cost_amount = itemView.findViewById(R.id.delivery_cost_amount);
             favoriteCheckBox = itemView.findViewById(R.id.favoriteCheckBox);
             ratingBar = itemView.findViewById(R.id.restaurantRating);
+            foodRating = itemView.findViewById(R.id.foodRating);
         }
-    }
-
-    private void downloadProfilePic(String restaurantId, final CircleImageView mImageView) {
-        final long ONE_MEGABYTE = 1024 * 1024;
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics").child("restaurants").child(restaurantId);
-        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                // Scarico l'immagine e la setto
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                mImageView.setImageBitmap(bitmap);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-                int errorCode = ((StorageException) exception).getErrorCode();
-                if (errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
-                    // La foto non è presente: carico immagine di default
-                    Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
-                    mImageView.setImageDrawable(defaultImg);
-                }
-            }
-        });
     }
 
     public void manageFavorites(final SearchRestaurantTab3.FavoriteViewHolder holder, final Restaurant model) {
@@ -323,6 +309,24 @@ public class SearchRestaurantTab3 extends Fragment {
         }
     }
 
-
+    private String translateFoodRating(String foodRatingAvg) {
+        String restaurantPrice = "";
+        String[] removeDecimal = foodRatingAvg.split("\\.");
+        foodRatingAvg = removeDecimal[0];
+        switch (Integer.parseInt(foodRatingAvg)){
+            case 1:
+                restaurantPrice = "€";
+                break;
+            case 2:
+                restaurantPrice = "€€";
+                break;
+            case 3:
+                restaurantPrice = "€€€";
+                break;
+            default:
+                break;
+        }
+        return restaurantPrice;
+    }
 
 }

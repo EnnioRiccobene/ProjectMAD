@@ -212,21 +212,35 @@ public class ProfileActivity extends AppCompatActivity implements
     // Functions
     private void setFieldUnclickable() {
         name.setEnabled(false);
+        name.setFocusable(false);
         email.setEnabled(false);
+        email.setFocusable(false);
         // password.setEnabled(false);
         phone.setEnabled(false);
+        phone.setFocusable(false);
         address.setEnabled(false);
+        address.setFocusable(false);
         additionalInformation.setEnabled(false);
+        additionalInformation.setFocusable(false);
         personalImage.setEnabled(false);
+        personalImage.setFocusable(false);
     }
 
     private void setFieldClickable() {
         name.setEnabled(true);
+        name.setFocusable(true);
+        name.setFocusableInTouchMode(true);
         email.setEnabled(false);
         // password.setEnabled(true);
         phone.setEnabled(true);
+        phone.setFocusable(true);
+        phone.setFocusableInTouchMode(true);
         address.setEnabled(true);
+        address.setFocusable(true);
+        address.setFocusableInTouchMode(true);
         additionalInformation.setEnabled(true);
+        additionalInformation.setFocusable(true);
+        additionalInformation.setFocusableInTouchMode(true);
         personalImage.setEnabled(true);
     }
 

@@ -176,22 +176,83 @@ public class OrdersPendingTab extends Fragment {
     }
     private void confirmOrderReceived(final Reservation currentItem){
         // Ordine Arrivato:
-        // Company: passare da accepted a history
+        // Company: passare da accepted a history + Analytics
         // Customer: passare da pending a history
-        // Rider: passare da pending a history, incrementare deliveryNumber e totDistance
+        // Rider: passare da pending a history, + Analytics
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
         // I want atomic queries -> create a map and do a single updateChilden on that map
         final HashMap<String, Object> multipleAtomicQuery = new HashMap<>();
 
-        // 1. Company: prendo reservation, pongo status = 3, metto su history, rimuovo da pending
+        // 1.1 Company: prendo reservation, pongo status = 3, metto su history, rimuovo da pending
         multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentItem.getRestaurantID() + "/" + currentItem.getOrderID(), null);
         currentItem.setStatus(3);
         multipleAtomicQuery.put("Company/Reservation/History/" + currentItem.getRestaurantID() + "/" + currentItem.getOrderID(), currentItem);
 
-        // 2. Customer: prendo reservation, pongo status = 1, metto su history, rimuovo da pending
+        // 1.2 Company:
+        DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood").child(currentItem.getRestaurantID()).child(currentItem.getOrderID());
+        final DatabaseReference analyticRef = database.child("Company").child("Analytics");
+
+        orderedFoodRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists() || dataSnapshot.getValue() == null)
+                    return;
+                final HashMap<String, String> orderedFoodMap = new HashMap<>();
+                for(DataSnapshot currentFood : dataSnapshot.getChildren()){
+                    String key = currentFood.getValue(OrderedDish.class).getId();
+                    String value = currentFood.getValue(OrderedDish.class).getQuantity();
+                    orderedFoodMap.put(key, value);
+                }
+
+                analyticRef.runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                        String quantity = "0";
+                        for (HashMap.Entry<String, String> entry : orderedFoodMap.entrySet()) {
+                            String key = entry.getKey();
+                            String value = entry.getValue();
+                            
+                        }
+
+
+
+
+//                        String totDistance = "0";
+//                        String deliveryNumber = "0";
+//                        if (mutableData.child("totDistance").getValue() != null &&
+//                                mutableData.child("deliveryNumber").getValue() != null) {
+//                            totDistance = mutableData.child("totDistance").getValue(String.class);
+//                            deliveryNumber = mutableData.child("deliveryNumber").getValue(String.class);
+//                        }
+//                        totDistance = String.valueOf(Float.valueOf(totDistance) + Float.valueOf(distance));
+//                        deliveryNumber = String.valueOf(Integer.valueOf(deliveryNumber) + 1);
+//                        mutableData.child("totDistance").setValue(totDistance);
+//                        mutableData.child("deliveryNumber").setValue(deliveryNumber);
+//                        return Transaction.success(mutableData);
+
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+                    }
+                });
+
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        // 2. Customer: prendo reservation, pongo status = 3, metto su history, rimuovo da pending
         multipleAtomicQuery.put("Customer/Order/Pending/" + currentItem.getCustomerID() + "/" + currentItem.getOrderID(), null);
-        currentItem.setStatus(2);
+        currentItem.setStatus(3);
         multipleAtomicQuery.put("Customer/Order/History/" + currentItem.getCustomerID() + "/" + currentItem.getOrderID(), currentItem);
         database.updateChildren(multipleAtomicQuery);
 
@@ -212,6 +273,7 @@ public class OrdersPendingTab extends Fragment {
 
             }
         });
+
         // 3.2 Rider: incrementare deliveryNumber e totDistance
         final DatabaseReference riderProfileRef = database.child("Rider").child("Profile").child(currentItem.getBikerID());
         bikerDeliveryRef.child(currentItem.getBikerID()).child(currentItem.getOrderID()).addListenerForSingleValueEvent(new ValueEventListener() {

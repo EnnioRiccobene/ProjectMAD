@@ -417,29 +417,53 @@ public class ProfileActivity extends AppCompatActivity
     // Functions
     private void setFieldUnclickable() {
         name.setEnabled(false);
+        name.setFocusable(false);
         email.setEnabled(false);
+        email.setFocusable(false);
         // password.setEnabled(false);
         phone.setEnabled(false);
+        phone.setFocusable(false);
         address.setEnabled(false);
+        address.setFocusable(false);
         additionalInformation.setEnabled(false);
+        additionalInformation.setFocusable(false);
         deliveryCost.setEnabled(false);
+        deliveryCost.setFocusable(false);
         minimumOrder.setEnabled(false);
+        minimumOrder.setFocusable(false);
         personalImage.setEnabled(false);
+        personalImage.setFocusable(false);
         editCategory.setEnabled(false);
+        editCategory.setFocusable(false);
         modifyHours.setEnabled(false);
     }
 
     private void setFieldClickable() {
         name.setEnabled(true);
-        email.setEnabled(false);
-        // password.setEnabled(true);
+        name.setFocusable(true);
+        name.setFocusableInTouchMode(true);
+        // email.setEnabled(false);
+        email.setFocusable(true);
         phone.setEnabled(true);
+        phone.setFocusable(true);
+        phone.setFocusableInTouchMode(true);
         address.setEnabled(true);
+        address.setFocusable(true);
+        address.setFocusableInTouchMode(true);
         additionalInformation.setEnabled(true);
+        additionalInformation.setFocusable(true);
+        additionalInformation.setFocusableInTouchMode(true);
         deliveryCost.setEnabled(true);
+        deliveryCost.setFocusable(true);
+        deliveryCost.setFocusableInTouchMode(true);
         minimumOrder.setEnabled(true);
+        minimumOrder.setFocusable(true);
+        minimumOrder.setFocusableInTouchMode(true);
         personalImage.setEnabled(true);
+        personalImage.setFocusable(true);
+        personalImage.setFocusableInTouchMode(true);
         editCategory.setEnabled(true);
+        editCategory.setFocusable(true);
         modifyHours.setEnabled(true);
     }
 

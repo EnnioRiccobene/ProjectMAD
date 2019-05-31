@@ -92,9 +92,9 @@ public class ShoppingCartActivity extends AppCompatActivity {
         nestedScrollView2 = findViewById(R.id.nestedScrollView2);
         emptyCartLayout = findViewById(R.id.emptyCartLayout);
         notEnoughCartLayout = findViewById(R.id.notEnoughCartLayout);
-
         getIncomingIntent();
-
+        if(note == null || note.equals(""))
+            findViewById(R.id.notes_bold).setVisibility(View.GONE);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         ShoppingCartReservationAdapter adapter = new ShoppingCartReservationAdapter(this, currentReservation.getOrderedDishList());
         recyclerView.setAdapter(adapter);

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,10 +12,10 @@
         android:id="@+id/progressBar"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
@@ -71,23 +70,23 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <!--<com.google.android.material.textfield.TextInputLayout-->
-                <!--android:id="@+id/nameInputLayout"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginTop="12dp"-->
-                <!--android:focusableInTouchMode="true"-->
-                <!--app:layout_constraintEnd_toEndOf="parent"-->
-                <!--app:layout_constraintStart_toStartOf="parent"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/imagePersonalPhoto">-->
+            <!--android:id="@+id/nameInputLayout"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="12dp"-->
+            <!--android:focusableInTouchMode="true"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/imagePersonalPhoto">-->
 
-                <!--<EditText-->
-                    <!--android:id="@+id/editTextName"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:hint="@string/form_name"-->
-                    <!--android:inputType="textPersonName"-->
-                    <!--android:maxLength="50" />-->
+            <!--<EditText-->
+            <!--android:id="@+id/editTextName"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:hint="@string/form_name"-->
+            <!--android:inputType="textPersonName"-->
+            <!--android:maxLength="50" />-->
 
             <!--</com.google.android.material.textfield.TextInputLayout>-->
 
@@ -114,22 +113,22 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <!--<com.google.android.material.textfield.TextInputLayout-->
-                <!--android:id="@+id/emailInputLayout"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginTop="12dp"-->
-                <!--app:layout_constraintEnd_toEndOf="parent"-->
-                <!--app:layout_constraintStart_toStartOf="parent"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/nameInputLayout">-->
+            <!--android:id="@+id/emailInputLayout"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="12dp"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/nameInputLayout">-->
 
-                <!--<EditText-->
-                    <!--android:id="@+id/editTextEmail"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginTop="@dimen/vertical_margin"-->
-                    <!--android:hint="@string/form_email"-->
-                    <!--android:inputType="textEmailAddress"-->
-                    <!--android:maxLength="50" />-->
+            <!--<EditText-->
+            <!--android:id="@+id/editTextEmail"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="@dimen/vertical_margin"-->
+            <!--android:hint="@string/form_email"-->
+            <!--android:inputType="textEmailAddress"-->
+            <!--android:maxLength="50" />-->
 
             <!--</com.google.android.material.textfield.TextInputLayout>-->
 
@@ -179,9 +178,10 @@
                     android:id="@+id/editTextAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:dropDownAnchor="@id/addressInputLayout"
                     android:hint="@string/form_address"
-                    android:inputType="textPostalAddress"
-                    android:dropDownAnchor="@id/addressInputLayout"/>
+                    android:layout_marginStart="6dp"
+                    android:inputType="textPostalAddress" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -223,6 +223,7 @@
                     android:id="@+id/deliveryCost"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
                     android:layout_marginTop="@dimen/vertical_margin"
                     android:ems="10"
                     android:hint="@string/delivery_cost"
@@ -245,6 +246,7 @@
                     android:id="@+id/minimumOrder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
                     android:layout_marginTop="@dimen/vertical_margin"
                     android:ems="10"
                     android:hint="@string/minimum_order"
@@ -277,18 +279,18 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <!--<EditText-->
-                <!--android:id="@+id/editTextFoodCategory"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginTop="12dp"-->
-                <!--android:ems="10"-->
-                <!--android:focusable="false"-->
-                <!--android:focusableInTouchMode="false"-->
-                <!--android:hint="@string/form_food_category_btn"-->
-                <!--android:inputType="textPersonName"-->
-                <!--app:layout_constraintEnd_toEndOf="parent"-->
-                <!--app:layout_constraintStart_toStartOf="parent"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/minimumOrderInputLayout" />-->
+            <!--android:id="@+id/editTextFoodCategory"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="12dp"-->
+            <!--android:ems="10"-->
+            <!--android:focusable="false"-->
+            <!--android:focusableInTouchMode="false"-->
+            <!--android:hint="@string/form_food_category_btn"-->
+            <!--android:inputType="textPersonName"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/minimumOrderInputLayout" />-->
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -319,8 +321,8 @@
                             android:drawableStart="@drawable/ic_clock"
                             android:drawablePadding="8dp"
                             android:drawableTint="@color/colorPrimary"
-                            android:text="@string/opening_hours"
                             android:gravity="center"
+                            android:text="@string/opening_hours"
                             android:textColor="#3d3d3d"
                             android:textSize="16sp"
                             android:textStyle="bold" />
