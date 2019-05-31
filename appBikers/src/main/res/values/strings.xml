@@ -28,4 +28,9 @@
     <string name="to_customer">Customer</string>
     <string name="start_navigation">Start navigation</string>
     <string name="road_to">Road to</string>
+    <string name="average_rating">Average Rating</string>
+    <string name="number_deliveries">Number of deliveries</string>
+    <string name="km_travelled">Km travelled</string>
+    <string name="money_earned">Money earned</string>
+
 </resources>

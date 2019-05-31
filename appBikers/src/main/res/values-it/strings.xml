@@ -23,4 +23,8 @@
     <string name="to_customer">il Cliente</string>
     <string name="start_navigation">Inizia la navigazione</string>
     <string name="road_to">Vai verso</string>
+    <string name="average_rating">Valutazione Media</string>
+    <string name="number_deliveries">Numero di consegne</string>
+    <string name="km_travelled">Km percorsi</string>
+    <string name="money_earned">Incasso totale</string>
 </resources>

@@ -3,7 +3,6 @@ package com.madgroup.appbikers;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,7 +15,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,14 +23,12 @@ import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
@@ -40,8 +36,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.auth.AuthUI;
@@ -61,14 +55,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.Position;
 import com.madgroup.sdk.RiderProfile;
 import com.madgroup.sdk.SmartLogger;
-import com.tapadoo.alerter.Alerter;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.ByteArrayOutputStream;
@@ -78,6 +70,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class ProfileActivity extends AppCompatActivity
@@ -607,8 +601,10 @@ public class ProfileActivity extends AppCompatActivity
             if (checkLocationpermissions()==PackageManager.PERMISSION_GRANTED) {
                 this.startActivity(myIntent);
             }
-        }
-        else if (id == R.id.nav_logout) {
+        }else if (id==R.id.nav_analytic) {
+            Intent myIntent = new Intent(this, AnalyticsActivity.class);
+            this.startActivity(myIntent);
+        }else if (id == R.id.nav_logout) {
             startLogout();
         }
         if(id  == R.id.nav_switch)
