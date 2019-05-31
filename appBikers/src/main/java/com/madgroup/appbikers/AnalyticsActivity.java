@@ -7,12 +7,14 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.GridLayout;
+import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,14 +25,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,25 +39,44 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.madgroup.sdk.Position;
+import com.madgroup.sdk.SmartLogger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class DeliveryActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener,
-        DeliveryPendingTab1.OnFragmentInteractionListener,
-        DeliveryHistoryTab2.OnFragmentInteractionListener {
+// To do:
+// Add NavigationDrawer and add to navigationdrawer Analytic Page
+// Transizione come le altre activity
+// Ricorda di implementare (dove?) la funzione che aggiorna i km percorsi una volta che il rider ha effettuato la consegna
+// Lo stesso per aumentare il numero di consegne totali
+//
+public class AnalyticsActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener {
 
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private String currentUser;
-    private ValueEventListener riderAvabilityListener;
+    private RatingBar ratingBar;
+    private TextView numberDeliveries;
+    private TextView kmTravelled;
+    private TextView mEarned;
+    private TextView ratingCounter;
+    private TextView textView;
+    private TextView textView1;
+    private TextView textView2;
+    private TextView textView3;
+    private ProgressBar progressBar;
+    private GridLayout gridLayout;
+
+    private FirebaseDatabase database;
+
     String notificationTitle = "MAD Bikers";
     String notificationText;
+
+
+    //Nel profilo del Biker ratingCounter e ratingAvg ne definiscono il rating;
 
 
     @Override
@@ -66,58 +85,72 @@ public class DeliveryActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_navigation_drawer);
         ViewStub stub = (ViewStub) findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
-        stub.setLayoutResource(R.layout.activity_deliveries);
+        stub.setLayoutResource(R.layout.activity_analytics);
         stub.inflate();
+        this.setTitle("Analytics");
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        currentUser = prefs.getString("currentUser", "");
+        currentUser = prefs.getString("currentUser", "noUser");
+        if (currentUser.equals("noUser")) {
+            SmartLogger.e("Error noUser");
+        }
         editor = prefs.edit();
-        this.setTitle(R.string.Deliveries);
-        initializeTabs();
+
         navigationDrawerInitialization();
 
+        ratingBar = findViewById(R.id.ratingBar);  //problema stessa lettera maiuscola B?
+        numberDeliveries = findViewById(R.id.ndeliveries);
+        kmTravelled = findViewById(R.id.kmtravelled);
+        mEarned = findViewById(R.id.mearned);
+        ratingCounter = findViewById(R.id.ratingcounter);
+        textView = findViewById(R.id.textView);
+        textView1 = findViewById(R.id.textView1);
+        textView2 = findViewById(R.id.textView2);
+        textView3 = findViewById(R.id.textView3);
+        progressBar = findViewById(R.id.progress);
+        gridLayout = findViewById(R.id.gridLayout);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        //final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child(prefs.getString("currentUser", ""));
+
+
+        gridLayout.setVisibility(View.GONE);
+        database = FirebaseDatabase.getInstance();
         final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", ""));
-
-
-        final Map<String, Object> childUpdates = new HashMap<>();
-        final ArrayList<String> reservationKeys = new ArrayList<>();
-
-        //aggiorno il db con i nuovi valori di "seen"
-        newOrderRef.addValueEventListener(new ValueEventListener() {
+        NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+        notify.newOrderListner();
+        checkLocationpermissions();
+        DatabaseReference statsReference = FirebaseDatabase.getInstance().getReference().child("Rider").child("Profile").child(currentUser);
+        statsReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if (dataSnapshot != null && dataSnapshot.getValue() != null) {
-                    HashMap<String, Object> data = (HashMap<String, Object>) dataSnapshot.getValue();
-                    for ( String key : data.keySet() ) {
-                        reservationKeys.add(key);
-                    }
-
-                    for(int i = 0; i < reservationKeys.size(); i++){
-                        childUpdates.put("/" + reservationKeys.get(i) + "/" + "seen", true);
-                    }
-                    newOrderRef.updateChildren(childUpdates);
-
-                }
+                if(!dataSnapshot.exists())
+                    return;
+                numberDeliveries.setText(dataSnapshot.child("deliveryNumber").getValue(String.class));
+                ratingCounter.setText("(" + (dataSnapshot.child("ratingCounter").getValue(String.class) + ")" ));
+                kmTravelled.setText(dataSnapshot.child("totDistance").getValue(String.class));
+                ratingBar.setRating(Float.parseFloat(dataSnapshot.child("ratingAvg").getValue(String.class)));
+                getMoneyEarned(numberDeliveries.getText().toString(), kmTravelled.getText().toString());
+                progressBar.setVisibility(View.GONE);
+                gridLayout.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                //Log.w(TAG, "onCancelled", databaseError.toException());
             }
+
         });
 
-        checkLocationpermissions();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference pendingDeliveryRef = database.child("Rider").child("Profile").child(currentUser).child("status");
-        pendingDeliveryRef.removeEventListener(riderAvabilityListener);
+
+    void getMoneyEarned (String ndeliveries, String km ) {
+        double money = 0;
+        String earned;
+        money = Float.parseFloat(ndeliveries)*2 + Float.parseFloat(km)*0.10;
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.DOWN);
+        earned = df.format(money);
+        mEarned.setText((earned) + " €");
     }
 
     private void checkLocationpermissions() {
@@ -134,7 +167,6 @@ public class DeliveryActivity extends AppCompatActivity implements
             this.startActivity(myIntent);
         }
     }
-
     public void navigationDrawerInitialization() {
         // Navigation Drawer Initialization
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -149,41 +181,27 @@ public class DeliveryActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         updateNavigatorInformation(navigationView);
-        switchSetOnClickListener(navigationView);
-        createRiderStatusListener(navigationView);
+        verifyRiderAvailability(navigationView);
     }
 
-    private void createRiderStatusListener(NavigationView navigationView) {
-        SwitchCompat  riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
-        riderAvabilityListener = riderStatusRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists())
-                    return;
-                boolean riderStatus = dataSnapshot.getValue(boolean.class);
-                riderAvailability.setChecked(riderStatus);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void switchSetOnClickListener(NavigationView navigationView) {
+    private void verifyRiderAvailability(NavigationView navigationView) {
         final SwitchCompat riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        final DatabaseReference riderRef = database.child("Rider").child("Profile").child(currentUser);
+        final DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        Boolean status = prefs.getBoolean("Status", false);
+        SmartLogger.d("status letto: " + status.toString());
+        riderAvailability.setChecked(status);
         riderAvailability.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean newStatus = riderAvailability.isChecked();
-                if (newStatus)
-                    riderRef.child("position").setValue(new Position(0, 0));
-                riderRef.child("status").setValue(newStatus);
+                boolean newStatus;
+                if (riderAvailability.isChecked())
+                    newStatus = true;
+                else
+                    newStatus = false;
+                editor.putBoolean("Status", newStatus);
+                riderStatusRef.setValue(newStatus);
+                editor.apply();
             }
         });
     }
@@ -197,8 +215,8 @@ public class DeliveryActivity extends AppCompatActivity implements
 
         GlideApp.with(this)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
 
@@ -219,57 +237,23 @@ public class DeliveryActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         if (id == R.id.nav_deliviries) {
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
+            Intent myIntent = new Intent(this, DeliveryActivity.class);
+            this.startActivity(myIntent);
         } else if (id == R.id.nav_profile) {
             Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);
-        }  else if (id==R.id.nav_analytic){
-            Intent myIntent = new Intent(this, AnalyticsActivity.class);
-            this.startActivity(myIntent);
-        }else if (id == R.id.nav_logout)
-                startLogout();
+        } else if (id==R.id.nav_analytic){
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+        }
+        else if (id == R.id.nav_logout)
+            startLogout();
         if (id == R.id.nav_switch)
             return true;
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    // Tabs
-    public void initializeTabs() {
-        // Add tabs
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        DeliveryPageAdapter myPagerAdapter = new DeliveryPageAdapter(getSupportFragmentManager(), this);
-        viewPager.setAdapter(myPagerAdapter);
-        TabLayout tablayout = (TabLayout) findViewById(R.id.tabLayout);
-        tablayout.setupWithViewPager(viewPager);
-
-        // Add actions on tab selected/reselected/unselected
-        tablayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-        });
-
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
     private void startLogout() {
         AuthUI.getInstance()
@@ -279,9 +263,17 @@ public class DeliveryActivity extends AppCompatActivity implements
                         // ...
                         editor.clear();
                         editor.apply();
-                        Intent intent = new Intent(DeliveryActivity.this, ProfileActivity.class);
+                        //startLogin();
+                        Intent intent = new Intent(AnalyticsActivity.this, ProfileActivity.class);
                         startActivity(intent);
                     }
                 });
+    }
+
+
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
     }
 }

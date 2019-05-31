@@ -23,4 +23,22 @@
     <string name="to_customer">il Cliente</string>
     <string name="start_navigation">Inizia la navigazione</string>
     <string name="road_to">Vai verso</string>
+    <string name="Profile">Profilo</string>
+    <string name="Pending">Pendenti</string>
+    <string name="History">Storico</string>
+    <string name="Deliveries">Consegne</string>
+    <string name="gps_permission_msg">Consenti l\'uso del GPS dalle impostazioni per permettere all\'app di lavorare correttamente.</string>
+    <string name="caricamento_fallito">Caricamento fallito</string>
+    <string name="pic_saved">Foto salvata!</string>
+    <string name="average_rating">Valutazione Media</string>
+    <string name="number_deliveries">Numero di consegne</string>
+    <string name="km_travelled">Km percorsi</string>
+    <string name="money_earned">Incasso totale</string>
+    <string name="deliveries">Consegne</string>
+    <string name="profile">Profilo</string>
+    <string name="analytics">Statistiche</string>
+    <string name="activeswitch">Disponibilità</string>
+    <string name="logout">Esci</string>
+    <string name="settings">Impostazioni</string>
+    <string name="my_stats">RIEPILOGO</string>
 </resources>

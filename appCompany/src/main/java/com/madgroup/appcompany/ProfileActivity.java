@@ -180,9 +180,10 @@ public class ProfileActivity extends AppCompatActivity
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_profile);
         stub.inflate();
-        this.setTitle("Profile");
+        this.setTitle(R.string.Profile);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
+
 
 
         // Getting the instance of Firebase
@@ -350,6 +351,11 @@ public class ProfileActivity extends AppCompatActivity
             // Change activity to Reservations
             Intent myIntent = new Intent(this, ReservationActivity.class);
             // myIntent.putExtra("key", value); //Optional parameters
+            this.startActivity(myIntent);
+
+        } else if (id == R.id.nav_analytics) {
+
+            Intent myIntent = new Intent(this, AnalyticsActivity.class);
             this.startActivity(myIntent);
 
         } else if (id == R.id.nav_profile) {

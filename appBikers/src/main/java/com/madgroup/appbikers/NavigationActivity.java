@@ -273,14 +273,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
                         getRoute(originPoint, destinationPoint);
 
-//                        boolean simulateRoute = false;
-//                        NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-//                                .directionsRoute(currentRoute)
-//                                .shouldSimulateRoute(simulateRoute)
-//                                .build();
-//                        // Call this method with Context from within an Activity
-////                        NavigationLauncher.startNavigation(NavigationActivity.this, options);
-//                        MyNavigationLauncher.startNavigation(NavigationActivity.this, options);
                     }
                 });
 
@@ -303,14 +295,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
                         getRoute(originPoint, destinationPoint);
 
-//                        boolean simulateRoute = false;
-//                        NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-//                                .directionsRoute(currentRoute)
-//                                .shouldSimulateRoute(simulateRoute)
-//                                .build();
-//                        // Call this method with Context from within an Activity
-////                        NavigationLauncher.startNavigation(NavigationActivity.this, options);
-//                        MyNavigationLauncher.startNavigation(NavigationActivity.this, options);
                     }
                 });
             }

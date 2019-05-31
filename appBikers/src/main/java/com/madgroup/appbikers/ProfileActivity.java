@@ -3,7 +3,6 @@ package com.madgroup.appbikers;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,7 +15,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,14 +23,12 @@ import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
@@ -40,8 +36,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.auth.AuthUI;
@@ -61,14 +55,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.madgroup.sdk.MyImageHandler;
 import com.madgroup.sdk.Position;
 import com.madgroup.sdk.RiderProfile;
 import com.madgroup.sdk.SmartLogger;
-import com.tapadoo.alerter.Alerter;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.ByteArrayOutputStream;
@@ -78,6 +70,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class ProfileActivity extends AppCompatActivity
@@ -124,11 +118,6 @@ public class ProfileActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        if (FirebaseAuth.getInstance().getCurrentUser()==null) {
-//            // Utente non ancora loggato
-//            startLogin();
-//            return;
-//        }
 
         // Getting the instance of Firebase
         database = FirebaseDatabase.getInstance();
@@ -139,6 +128,8 @@ public class ProfileActivity extends AppCompatActivity
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_main);
         stub.inflate();
+
+        setTitle(R.string.profile);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
@@ -210,10 +201,9 @@ public class ProfileActivity extends AppCompatActivity
                     modifyingInfo = false;
                     setFieldUnclickable();
                     saveFieldsOnFirebase();
-                    //if (!isDefaultImage)
+
                     uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
-                    //else
-                    //deleteProfilePic();
+
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -246,10 +236,9 @@ public class ProfileActivity extends AppCompatActivity
             modifyingInfo = false;
             setFieldUnclickable();
             saveFieldsOnFirebase();
-            //if (!isDefaultImage)
+
             uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
-            //else
-            //deleteProfilePic();
+
         } else
             super.onBackPressed();
     }
@@ -286,8 +275,6 @@ public class ProfileActivity extends AppCompatActivity
             name.setText(prefs.getString("Name", ""));
         if (prefs.contains("Email"))
             email.setText(prefs.getString("Email", ""));
-        // if(prefs.contains("Password"))
-        // password.setText(prefs.getString("Password", ""));
         if (prefs.contains("Phone"))
             phone.setText(prefs.getString("Phone", ""));
         if (prefs.contains("Information"))
@@ -510,7 +497,7 @@ public class ProfileActivity extends AppCompatActivity
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
                 } else {
                     // permission denied!
-                    Toast.makeText(getApplicationContext(), "Allow the GPS usage in settings to let the app work properly.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.gps_permission_msg), Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -615,8 +602,10 @@ public class ProfileActivity extends AppCompatActivity
             if (checkLocationpermissions()==PackageManager.PERMISSION_GRANTED) {
                 this.startActivity(myIntent);
             }
-        }
-        else if (id == R.id.nav_logout) {
+        }else if (id==R.id.nav_analytic) {
+            Intent myIntent = new Intent(this, AnalyticsActivity.class);
+            this.startActivity(myIntent);
+        }else if (id == R.id.nav_logout) {
             startLogout();
         }
         if(id  == R.id.nav_switch)
@@ -668,14 +657,6 @@ public class ProfileActivity extends AppCompatActivity
 
         imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
-        // TODO: Fare il check con l'immagine di default e decommentare
-        // Se è l'immagine di default, non salvo niente ed eventualmente elimino quella presente.
-//        if (isDefaultImage) {
-//            deleteProfilePic();
-//            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-//            return;
-//        }
-
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] data = stream.toByteArray();
@@ -688,7 +669,7 @@ public class ProfileActivity extends AppCompatActivity
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
-                Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                Toast.makeText(ProfileActivity.this, getString(R.string.caricamento_fallito), Toast.LENGTH_LONG).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -710,10 +691,10 @@ public class ProfileActivity extends AppCompatActivity
                         if (!task.isSuccessful()) {
                             // Handle failures
                             imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                            Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ProfileActivity.this, getString(R.string.caricamento_fallito), Toast.LENGTH_LONG).show();
                         } else {
                             imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                            Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), getString(R.string.pic_saved), Toast.LENGTH_SHORT).show();
                             updateNavigatorInformation();
                         }
                     }
@@ -812,7 +793,7 @@ public class ProfileActivity extends AppCompatActivity
                                         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                                             if (databaseError!= null) {
                                                 Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
-                                                // todo: rimuovere la registrazione dell'utente
+
                                             } else {
                                                 name.setText(user.getDisplayName());
                                                 email.setText(user.getEmail());
@@ -825,7 +806,7 @@ public class ProfileActivity extends AppCompatActivity
                                                 showFields();
                                             }
                                             updateNavigatorInformation();
-                                            // verifyRiderAvailability();
+
                                         }
                                     });
                         }

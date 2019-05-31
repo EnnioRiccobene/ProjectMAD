@@ -33,6 +33,8 @@
         </activity>
         <activity android:name=".DailyOfferActivity" />
         <activity android:name=".ReservationActivity" />
+        <activity android:name=".AnalyticsActivity" />
+
         <activity
             android:name=".EditOpeningHoursActivity"
             android:label="Opening hours"

@@ -28,7 +28,8 @@
         android:text="@string/road_to"
         android:textColor="@color/mapboxWhite"
         mapbox:layout_constraintStart_toStartOf="parent"
-        mapbox:layout_constraintTop_toTopOf="parent" />
+        mapbox:layout_constraintTop_toTopOf="parent"
+        tools:ignore="RtlHardcoded" />
 
     <Button
         android:id="@+id/restaurantButton"
