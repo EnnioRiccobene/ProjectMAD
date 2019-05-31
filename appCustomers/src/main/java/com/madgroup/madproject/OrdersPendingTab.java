@@ -39,7 +39,14 @@ import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Reservation;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -250,52 +257,83 @@ public class OrdersPendingTab extends Fragment {
 
             }
         });
-    }
 
-//    private void confirmOrderReceived(final Reservation currentItemR){
-//        // Ordine Arrivato:
-//        // Company: passare da accepted a history
-//        // Customer: passare da pending a history
-//        // Rider: passare da pending a history
-//        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//        // Company: prendo reservation, pongo status = 3, metto su history, rimuovo da pending
-//        DatabaseReference companyReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentItemR.getRestaurantID()).child(currentItemR.getOrderID());
-//        DatabaseReference customerReservationRef = database.child("Customer").child("Order").child("Pending").child(currentItemR.getCustomerID()).child(currentItemR.getOrderID());
-//        companyReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Reservation moveReservation = (Reservation) dataSnapshot.getValue(Reservation.class);
-//                moveReservation.setStatus(3);
-//                database.child("Company").child("Reservation").child("History").child(currentItemR.getRestaurantID()).child(currentItemR.getOrderID()).setValue(moveReservation);
-//                database.child("Company").child("Reservation").child("Accepted").child(currentItemR.getRestaurantID()).child(currentItemR.getOrderID()).setValue(null);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//        customerReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                // Customer: prendo reservation, pongo status = 1, metto su history, rimuovo da pending
-//                Reservation moveReservation = (Reservation) dataSnapshot.getValue(Reservation.class);
-//                moveReservation.setStatus(1);
-//                database.child("Customer").child("Order").child("History").child(currentItemR.getCustomerID()).child(currentItemR.getOrderID()).setValue(moveReservation);
-//                database.child("Customer").child("Order").child("Pending").child(currentItemR.getCustomerID()).child(currentItemR.getOrderID()).setValue(null);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//        // Rider: rimuovo da pending e pongo su history
-//        database.child("Rider").child("Delivery").child("Pending").child(currentUser).child(currentItemR.getOrderID()).setValue(null);
-//        database.child("Rider").child("Delivery").child("History").child(currentUser).child(currentItemR.getOrderID()).setValue(currentItemR);
-//
-//    }
+        // Raf: Inizializzo o incremento il contatore nel nodo TimingOrder per le statistiche. Il contatore equivale al numero di ordini effettuati dal ristorante in una certa fascia ORARIA.
+        Calendar calendar = Calendar.getInstance();
+        String year = Integer.toString(calendar.get(Calendar.YEAR));
+        String month = Integer.toString(calendar.get(Calendar.MONTH)+1);
+        String weekOfMonth = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH));
+        final String node = year+"_"+month+"_"+weekOfMonth;
+        String dayOfMonth = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
+        String dayOfWeek = Integer.toString(calendar.get(Calendar.DAY_OF_WEEK)-1);
+        String hourOfDay = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY)); // Fascia oraria
+        final String key = dayOfMonth+"_"+dayOfWeek+"_"+hourOfDay;
+
+        DatabaseReference timingOrderRef = database.child("Analytics").child("TimingOrder")
+                .child(currentItem.getRestaurantID()).child(node).child(key);
+        timingOrderRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Integer amountOfOrders = mutableData.getValue(Integer.class);
+                if (amountOfOrders == null)
+                    mutableData.setValue(1);
+                else
+                    mutableData.setValue(amountOfOrders + 1);
+                return Transaction.success(mutableData);
+            }
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                //System.out.println("Transaction completed");
+            }
+        });
+
+        // Aggiorno la tabella TopMeals
+        final HashMap<String, Integer> dishesIDQuantity = new HashMap<>();
+        DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood").child(currentItem.getRestaurantID()).child(currentItem.getOrderID());
+        orderedFoodRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists())
+                    return;
+                for(DataSnapshot currentDish : dataSnapshot.getChildren()) {
+                    //dishesID.add(currentDish.getValue(Dish.class).getId());
+                    String dishID = currentDish.getValue(OrderedDish.class).getId();
+                    Integer dishQuantity = Integer.parseInt(currentDish.getValue(OrderedDish.class).getQuantity());
+                    dishesIDQuantity.put(dishID, dishQuantity);
+                }
+                if(dishesIDQuantity.size() == 0)
+                    return;
+
+                DatabaseReference topMealsRef = database.child("Analytics").child("TopMeals")
+                        .child(currentItem.getRestaurantID()).child(node).child(key);
+                for (HashMap.Entry<String, Integer> entry : dishesIDQuantity.entrySet()) {
+                    final String dishID = entry.getKey();
+                    Integer dishQuantity = entry.getValue();
+                    topMealsRef.child(dishID).runTransaction(new Transaction.Handler() {
+                        @Override
+                        public Transaction.Result doTransaction(MutableData mutableData) {
+                            Integer amountOfOrders = mutableData.getValue(Integer.class);
+                            Integer dishQuantity = dishesIDQuantity.get(dishID);
+                            if (amountOfOrders == null)
+                                mutableData.setValue(dishQuantity);
+                            else
+                                mutableData.setValue(amountOfOrders + dishQuantity);
+                            return Transaction.success(mutableData);
+                        }
+                        @Override
+                        public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                            //System.out.println("Transaction completed");
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     private void buildRecyclerView(View view) {
         DatabaseReference pendingRef = FirebaseDatabase.getInstance().getReference().child("Customer").child("Order").child("Pending").child(currentUser);
