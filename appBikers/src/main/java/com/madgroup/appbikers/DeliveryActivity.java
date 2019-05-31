@@ -75,7 +75,7 @@ public class DeliveryActivity extends AppCompatActivity implements
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         currentUser = prefs.getString("currentUser", "");
         editor = prefs.edit();
-        this.setTitle("Deliveries");
+        this.setTitle(R.string.Deliveries);
         initializeTabs();
         navigationDrawerInitialization();
 
@@ -113,12 +113,6 @@ public class DeliveryActivity extends AppCompatActivity implements
             }
         });
 
-//        notificationText = getResources().getString(R.string.notification_text);
-//        if (prefs.contains("currentUser")) {
-//
-//            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
-//            notify.newOrderListner();
-//        }
         checkLocationpermissions();
     }
 
@@ -248,7 +242,7 @@ public class DeliveryActivity extends AppCompatActivity implements
     public void initializeTabs() {
         // Add tabs
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        DeliveryPageAdapter myPagerAdapter = new DeliveryPageAdapter(getSupportFragmentManager());
+        DeliveryPageAdapter myPagerAdapter = new DeliveryPageAdapter(getSupportFragmentManager(), this);
         viewPager.setAdapter(myPagerAdapter);
         TabLayout tablayout = (TabLayout) findViewById(R.id.tabLayout);
         tablayout.setupWithViewPager(viewPager);

@@ -29,4 +29,12 @@
     <string name="start_navigation">Start navigation</string>
     <string name="road_to">Road to</string>
     <string name="Profile">Profile</string>
+    <string name="Pending">Pending</string>
+    <string name="History">History</string>
+    <string name="Deliveries">Deliveries</string>
+    <string name="gps_permission_msg">Allow the GPS usage in settings to let the app work properly.</string>
+    <string name="caricamento_fallito">Upload Failure</string>
+    <string name="pic_saved">Pic Saved!</string>
+    <string name="activeswitch">ActiveSwitch</string>
+
 </resources>

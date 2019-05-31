@@ -124,11 +124,6 @@ public class ProfileActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        if (FirebaseAuth.getInstance().getCurrentUser()==null) {
-//            // Utente non ancora loggato
-//            startLogin();
-//            return;
-//        }
 
         // Getting the instance of Firebase
         database = FirebaseDatabase.getInstance();
@@ -212,10 +207,9 @@ public class ProfileActivity extends AppCompatActivity
                     modifyingInfo = false;
                     setFieldUnclickable();
                     saveFieldsOnFirebase();
-                    //if (!isDefaultImage)
+
                     uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
-                    //else
-                    //deleteProfilePic();
+
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -248,10 +242,9 @@ public class ProfileActivity extends AppCompatActivity
             modifyingInfo = false;
             setFieldUnclickable();
             saveFieldsOnFirebase();
-            //if (!isDefaultImage)
+
             uploadProfilePic(((BitmapDrawable)personalImage.getDrawable()).getBitmap());
-            //else
-            //deleteProfilePic();
+
         } else
             super.onBackPressed();
     }
@@ -280,8 +273,6 @@ public class ProfileActivity extends AppCompatActivity
             name.setText(prefs.getString("Name", ""));
         if (prefs.contains("Email"))
             email.setText(prefs.getString("Email", ""));
-        // if(prefs.contains("Password"))
-        // password.setText(prefs.getString("Password", ""));
         if (prefs.contains("Phone"))
             phone.setText(prefs.getString("Phone", ""));
         if (prefs.contains("Information"))
@@ -504,7 +495,7 @@ public class ProfileActivity extends AppCompatActivity
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
                 } else {
                     // permission denied!
-                    Toast.makeText(getApplicationContext(), "Allow the GPS usage in settings to let the app work properly.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.gps_permission_msg), Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -662,14 +653,6 @@ public class ProfileActivity extends AppCompatActivity
 
         imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
-        // TODO: Fare il check con l'immagine di default e decommentare
-        // Se è l'immagine di default, non salvo niente ed eventualmente elimino quella presente.
-//        if (isDefaultImage) {
-//            deleteProfilePic();
-//            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-//            return;
-//        }
-
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] data = stream.toByteArray();
@@ -682,7 +665,7 @@ public class ProfileActivity extends AppCompatActivity
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
-                Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                Toast.makeText(ProfileActivity.this, getString(R.string.caricamento_fallito), Toast.LENGTH_LONG).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -704,10 +687,10 @@ public class ProfileActivity extends AppCompatActivity
                         if (!task.isSuccessful()) {
                             // Handle failures
                             imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                            Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ProfileActivity.this, getString(R.string.caricamento_fallito), Toast.LENGTH_LONG).show();
                         } else {
                             imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                            Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), getString(R.string.pic_saved), Toast.LENGTH_SHORT).show();
                             updateNavigatorInformation();
                         }
                     }
@@ -819,7 +802,7 @@ public class ProfileActivity extends AppCompatActivity
                                                 showFields();
                                             }
                                             updateNavigatorInformation();
-                                            // verifyRiderAvailability();
+
                                         }
                                     });
                         }
