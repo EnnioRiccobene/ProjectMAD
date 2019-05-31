@@ -180,7 +180,7 @@ public class ProfileActivity extends AppCompatActivity
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_profile);
         stub.inflate();
-        this.setTitle("Profile");
+        this.setTitle(R.string.Profile);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
 

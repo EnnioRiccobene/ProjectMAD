@@ -169,4 +169,5 @@
     </string-array>
     <string name="delivery_cost">Costo di consegna</string>
     <string name="minimum_order">Ordine minimo</string>
+    <string name="Profile">Profilo</string>
 </resources>

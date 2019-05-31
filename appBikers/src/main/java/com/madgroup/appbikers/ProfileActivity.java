@@ -140,6 +140,8 @@ public class ProfileActivity extends AppCompatActivity
         stub.setLayoutResource(R.layout.activity_main);
         stub.inflate();
 
+        setTitle(R.string.Profile);
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
         currentUser = prefs.getString("currentUser", "noUser");
@@ -804,7 +806,7 @@ public class ProfileActivity extends AppCompatActivity
                                         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                                             if (databaseError!= null) {
                                                 Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
-                                                // todo: rimuovere la registrazione dell'utente
+
                                             } else {
                                                 name.setText(user.getDisplayName());
                                                 email.setText(user.getEmail());

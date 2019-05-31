@@ -70,27 +70,6 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!--<com.google.android.material.textfield.TextInputLayout-->
-                <!--android:id="@+id/nameInputLayout"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginTop="12dp"-->
-                <!--android:focusableInTouchMode="true"-->
-                <!--app:layout_constraintEnd_toEndOf="parent"-->
-                <!--app:layout_constraintStart_toStartOf="parent"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/imagePersonalPhoto">-->
-
-                <!--<EditText-->
-                    <!--android:id="@+id/editTextName"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:hint="@string/form_name"-->
-                    <!--android:inputType="textPersonName"-->
-                    <!--android:maxLength="50" />-->
-
-            <!--</com.google.android.material.textfield.TextInputLayout>-->
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/emailInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -112,38 +91,6 @@
                     android:maxLength="50" />
 
             </com.google.android.material.textfield.TextInputLayout>
-
-            <!--<com.google.android.material.textfield.TextInputLayout-->
-                <!--android:id="@+id/emailInputLayout"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginTop="12dp"-->
-                <!--app:layout_constraintEnd_toEndOf="parent"-->
-                <!--app:layout_constraintStart_toStartOf="parent"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/nameInputLayout">-->
-
-                <!--<EditText-->
-                    <!--android:id="@+id/editTextEmail"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginTop="@dimen/vertical_margin"-->
-                    <!--android:hint="@string/form_email"-->
-                    <!--android:inputType="textEmailAddress"-->
-                    <!--android:maxLength="50" />-->
-
-            <!--</com.google.android.material.textfield.TextInputLayout>-->
-
-            <!--<EditText-->
-            <!--android:id="@+id/editTextPassword"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="8dp"-->
-            <!--android:hint="@string/form_password"-->
-            <!--android:inputType="textPassword"-->
-            <!--android:maxLength="20"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toBottomOf="@+id/editTextEmail" />-->
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/phoneInputLayout"
@@ -179,6 +126,7 @@
                     android:id="@+id/editTextAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:padding="16dp"
                     android:hint="@string/form_address"
                     android:inputType="textPostalAddress"
                     android:dropDownAnchor="@id/addressInputLayout"/>
@@ -225,6 +173,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_margin"
                     android:ems="10"
+                    android:padding="16dp"
                     android:hint="@string/delivery_cost"
                     android:inputType="numberDecimal"
                     app:decimal_digits="2" />
@@ -247,6 +196,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/vertical_margin"
                     android:ems="10"
+                    android:padding="16dp"
                     android:hint="@string/minimum_order"
                     android:inputType="numberDecimal"
                     app:decimal_digits="2" />
@@ -436,7 +386,7 @@
                                 android:paddingStart="25dp"
                                 android:paddingEnd="25dp"
                                 android:text="@string/modify_hours"
-                                android:textColor="#006db3"
+                                android:textColor="@color/colorAccent"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
 

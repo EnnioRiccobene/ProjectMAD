@@ -172,5 +172,6 @@
     <string name="shopping_cart_title">Shopping Cart</string>
     <string name="evaluate_hidden_message">You have already reviewed this restaurant. You can only evaluate the delivery service.</string>
     <string name="mandatory_evaluate">The evaluation of restaurant, food and service is mandatory.</string>
+    <string name="Profile">Profile</string>
 
 </resources>
