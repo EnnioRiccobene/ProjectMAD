@@ -19,7 +19,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MyMapboxNavigationActivity"></activity>
+        <activity
+            android:name=".AnalyticsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".MyMapboxNavigationActivity" />
         <activity android:name=".NavigationActivity" />
         <activity
             android:name=".DeliveryActivity"

@@ -35,6 +35,17 @@
     <string name="gps_permission_msg">Allow the GPS usage in settings to let the app work properly.</string>
     <string name="caricamento_fallito">Upload Failure</string>
     <string name="pic_saved">Pic Saved!</string>
+
+    <string name="average_rating">Average Rating</string>
+    <string name="number_deliveries">Number of deliveries</string>
+    <string name="km_travelled">Km travelled</string>
+    <string name="money_earned">Money earned</string>
+    <string name="deliveries">Deliveries</string>
+    <string name="profile">Profile</string>
+    <string name="analytics">Analytics</string>
     <string name="activeswitch">ActiveSwitch</string>
+    <string name="logout">Logout</string>
+    <string name="settings">Settings</string>
+    <string name="my_stats">MY STATS</string>
 
 </resources>

@@ -7,11 +7,15 @@
     <item
         android:id="@+id/nav_deliviries"
         android:icon="@drawable/ic_delivery"
-        android:title="@string/Deliveries" />
+        android:title="@string/deliveries" />
     <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/ic_action_user"
-        android:title="@string/Profile" />
+        android:title="@string/profile" />
+    <item
+        android:id="@+id/nav_analytic"
+        android:icon="@drawable/ic_analytics"
+        android:title="@string/analytics" />
     <item
         android:id="@+id/nav_switch"
         android:icon="@drawable/ic_biker"
@@ -21,5 +25,6 @@
     <item
         android:id="@+id/nav_logout"
         android:icon="@drawable/ic_logout"
-        android:title="Logout" />
+        android:title="@string/logout" />
 </menu>
+

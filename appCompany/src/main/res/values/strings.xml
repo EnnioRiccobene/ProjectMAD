@@ -69,7 +69,11 @@
     <string name="delivery_cost">Delivery cost</string>
     <string name="minimum_order">Minimum Order</string>
     <string name="notification_text">A new order has arrived. Look at the reservation page to see it</string>
-    <string name="Profile">Profile</string>
+
+    <string name="daily_offer">Daily Offer</string>
+    <string name="reservations">Reservations</string>
+    <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
 
     <string-array name="hours_list">
         <item>00:00</item>
@@ -169,7 +173,4 @@
         <item>23:30</item>
         <item>23:45</item>
     </string-array>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
