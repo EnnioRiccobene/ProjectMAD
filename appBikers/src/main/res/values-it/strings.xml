@@ -27,4 +27,11 @@
     <string name="number_deliveries">Numero di consegne</string>
     <string name="km_travelled">Km percorsi</string>
     <string name="money_earned">Incasso totale</string>
+    <string name="deliveries">Consegne</string>
+    <string name="profile">Profilo</string>
+    <string name="analytics">Statistiche</string>
+    <string name="activeswitch">Disponibilità</string>
+    <string name="logout">Esci</string>
+    <string name="settings">Impostazioni</string>
+    <string name="my_stats">RIEPILOGO</string>
 </resources>

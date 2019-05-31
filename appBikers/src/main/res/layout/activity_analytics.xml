@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="MY STATS"
+            android:text="@string/my_stats"
             android:textColor="@android:color/white"
             android:textSize="30sp" />
 
@@ -72,7 +72,7 @@
                     android:id="@+id/textView1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Number of deliveries"
+                    android:text="@string/number_deliveries"
                     android:textAlignment="center"
                     android:textSize="18sp"
                     android:textStyle="bold|italic" />
@@ -112,7 +112,7 @@
                     android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Km travelled"
+                    android:text="@string/km_travelled"
                     android:textAlignment="center"
                     android:textSize="19sp"
                     android:textStyle="bold|italic" />
@@ -157,7 +157,7 @@
                     android:id="@+id/textView3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Money earned"
+                    android:text="@string/money_earned"
                     android:textAlignment="center"
                     android:textSize="18sp"
                     android:textStyle="bold|italic" />
@@ -207,7 +207,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="sans-serif"
-                    android:text="Average Rating"
+                    android:text="@string/average_rating"
                     android:textAlignment="center"
                     android:textAllCaps="false"
                     android:textSize="18sp"

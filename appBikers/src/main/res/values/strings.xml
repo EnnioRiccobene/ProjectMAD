@@ -32,5 +32,12 @@
     <string name="number_deliveries">Number of deliveries</string>
     <string name="km_travelled">Km travelled</string>
     <string name="money_earned">Money earned</string>
+    <string name="deliveries">Deliveries</string>
+    <string name="profile">Profile</string>
+    <string name="analytics">Analytics</string>
+    <string name="activeswitch">ActiveSwitch</string>
+    <string name="logout">Logout</string>
+    <string name="settings">Settings</string>
+    <string name="my_stats">MY STATS</string>
 
 </resources>

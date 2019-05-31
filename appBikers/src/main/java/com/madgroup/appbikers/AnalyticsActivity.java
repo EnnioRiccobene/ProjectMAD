@@ -110,10 +110,6 @@ public class AnalyticsActivity extends AppCompatActivity implements
         progressBar = findViewById(R.id.progress);
         gridLayout = findViewById(R.id.gridLayout);
 
-        textView.setText(R.string.average_rating);
-        textView1.setText(R.string.number_deliveries);
-        textView2.setText(R.string.km_travelled);
-        textView3.setText(R.string.money_earned);
 
 
         gridLayout.setVisibility(View.GONE);

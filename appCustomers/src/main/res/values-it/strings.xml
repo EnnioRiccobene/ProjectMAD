@@ -157,5 +157,10 @@
         <item>23:45</item>
     </string-array>
     <string name="order_price">prezzo dell\'ordine</string>
+    <string name="search_restaurant">Cerca ristorante</string>
+    <string name="orders">Ordini</string>
+    <string name="profile">Profilo</string>
+    <string name="logout">Esci</string>
+    <string name="shoppingcart">Carrello</string>
 
 </resources>
