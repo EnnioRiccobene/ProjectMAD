@@ -132,7 +132,8 @@ public class AnalyticsActivity extends AppCompatActivity implements
             this.startActivity(myIntent);
 
         } if (id == R.id.nav_analytics) {
-            onBackPressed();
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
 
         } else if (id == R.id.nav_profile) {
 
