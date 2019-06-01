@@ -184,8 +184,6 @@ public class ProfileActivity extends AppCompatActivity
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
 
-
-
         // Getting the instance of Firebase
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
