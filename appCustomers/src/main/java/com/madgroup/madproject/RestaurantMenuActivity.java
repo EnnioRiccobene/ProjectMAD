@@ -328,8 +328,8 @@ public class RestaurantMenuActivity extends AppCompatActivity {
                 .child("restaurants").child(restaurantID);
         GlideApp.with(this)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .skipMemoryCache(false)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(restaurantPhoto);
     }

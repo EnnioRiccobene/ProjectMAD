@@ -154,8 +154,8 @@ public class ChooseRiderAdapter extends
 
         GlideApp.with(context)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .error(GlideApp.with(context).load(R.drawable.personicon))
                 .into(holder.riderPhoto);
     }

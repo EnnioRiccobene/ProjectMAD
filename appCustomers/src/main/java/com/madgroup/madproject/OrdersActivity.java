@@ -91,7 +91,7 @@ public class OrdersActivity extends AppCompatActivity implements
         GlideApp.with(this)
                 .load(storageReference)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(false)
+                .skipMemoryCache(true)
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
     }
