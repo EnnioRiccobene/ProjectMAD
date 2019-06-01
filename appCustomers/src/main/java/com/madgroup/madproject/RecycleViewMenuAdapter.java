@@ -59,7 +59,7 @@ public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuVi
         GlideApp.with(mContext)
                 .load(storageReference)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(false)
+                .skipMemoryCache(true)
                 .error(GlideApp.with(mContext).load(R.drawable.personicon))
                 .into(holder.dishPhoto);
         holder.dishName.setText(dish.getName());

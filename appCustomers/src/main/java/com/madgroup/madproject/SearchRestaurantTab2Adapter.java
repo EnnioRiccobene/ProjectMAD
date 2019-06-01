@@ -110,8 +110,8 @@ public class SearchRestaurantTab2Adapter extends
 
         GlideApp.with(context)
                 .load(storageReference)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .error(GlideApp.with(context).load(R.drawable.personicon))
                 .into(holder.restaurant_photo);
 

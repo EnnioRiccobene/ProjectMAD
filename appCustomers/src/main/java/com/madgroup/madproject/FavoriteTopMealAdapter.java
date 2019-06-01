@@ -106,7 +106,7 @@ public class FavoriteTopMealAdapter extends
         GlideApp.with(context)
                 .load(storageReference)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(false)
+                .skipMemoryCache(true)
                 .error(GlideApp.with(context).load(R.drawable.personicon))
                 .into(holder.dishPhoto);
 
