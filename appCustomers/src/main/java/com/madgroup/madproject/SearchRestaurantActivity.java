@@ -46,9 +46,9 @@ SearchRestaurantTab2.OnFragmentInteractionListener,
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_favorite);
         stub.inflate();
-        this.setTitle("Looking for food?");
+        this.setTitle(R.string.looking_for_food);
         ViewPager viewPager = (ViewPager) findViewById(R.id.favoriteViewPager);
-        SearchRestaurantPageAdapter myPagerAdapter = new SearchRestaurantPageAdapter(getSupportFragmentManager());
+        SearchRestaurantPageAdapter myPagerAdapter = new SearchRestaurantPageAdapter(getSupportFragmentManager(), this);
         viewPager.setAdapter(myPagerAdapter);
         tabLayout = (TabLayout) findViewById(R.id.tablayout);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

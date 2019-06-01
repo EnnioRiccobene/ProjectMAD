@@ -100,13 +100,6 @@ public class ProfileActivity extends AppCompatActivity implements
 
         super.onCreate(savedInstanceState);
 
-        /*
-        if (FirebaseAuth.getInstance().getCurrentUser()==null) {
-            // Utente non ancora loggato
-            startLogin();
-            return;
-        }
-        */
 
         setContentView(R.layout.activity_navigation_drawer);
         ViewStub stub = (ViewStub)findViewById(R.id.stub);
@@ -141,9 +134,7 @@ public class ProfileActivity extends AppCompatActivity implements
 
         hideFields();
         imgProgressBar.setVisibility(View.INVISIBLE); // Nascondo la progress bar dell'immagine
-        //isDefaultImage = true;
-        //downloadProfilePic();
-        //loadFieldsFromFirebase();
+
 
         if (prefs.contains("currentUser")) {
             // Utente già loggato
@@ -153,10 +144,6 @@ public class ProfileActivity extends AppCompatActivity implements
         } else {
             startLogin();
         }
-
-
-        // Load saved information, if exist
-        //loadFields();
 
     }
 
@@ -171,7 +158,7 @@ public class ProfileActivity extends AppCompatActivity implements
                 if (!modifyingInfo) {         // I pressed for modifying data
                     modifyingInfo = true;
                     setFieldClickable();
-                    Toast.makeText(getApplicationContext(), "Edit fields", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.edit_fields), Toast.LENGTH_SHORT).show();
 
                 } else {                      // I pressed to come back
                     modifyingInfo = false;
@@ -399,26 +386,6 @@ public class ProfileActivity extends AppCompatActivity implements
         }
     }
 
-//    private void saveImageContent() {
-//        Bitmap bitmap = ((BitmapDrawable) personalImage.getDrawable()).getBitmap();
-//        String encoded = MyImageHandler.getInstance().fromBitmapToString(bitmap);
-//        editor.putString("PersonalImage", encoded);
-//        editor.apply();
-//    }
-
-//    private void restoreImageContent() {
-//        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-//        if(!ImageBitmap.equals("NoImage")){
-//            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
-//            personalImage.setImageBitmap(bitmap);
-//            //isDefaultImage = false;
-//        } else {
-//            Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
-//            personalImage.setImageDrawable(defaultImg);
-//            //isDefaultImage = true;
-//        }
-//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -461,7 +428,7 @@ public class ProfileActivity extends AppCompatActivity implements
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                 if (databaseError != null) {
                     progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                    Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.connection_error), Toast.LENGTH_SHORT).show();
                 } else {
                     // Dati salvati correttamente nel db
                     // Aggiorno le shared prefs
@@ -494,7 +461,7 @@ public class ProfileActivity extends AppCompatActivity implements
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
-                Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                Toast.makeText(ProfileActivity.this, getString(R.string.upload_failure), Toast.LENGTH_LONG).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -516,10 +483,10 @@ public class ProfileActivity extends AppCompatActivity implements
                         if (!task.isSuccessful()) {
                             // Handle failures
                             imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                            Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ProfileActivity.this, getString(R.string.upload_failure), Toast.LENGTH_LONG).show();
                         } else {
                             imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                            Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), getString(R.string.pic_saved), Toast.LENGTH_SHORT).show();
                             updateNavigatorInformation();
                         }
                     }
@@ -616,8 +583,8 @@ public class ProfileActivity extends AppCompatActivity implements
                                 @Override
                                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                                     if (databaseError!= null) {
-                                        Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
-                                        // todo: rimuovere la registrazione dell'utente
+                                        Toast.makeText(getApplicationContext(), getString(R.string.connection_error), Toast.LENGTH_SHORT).show();
+
                                     } else {
                                         name.setText(user.getDisplayName());
                                         email.setText(user.getEmail());

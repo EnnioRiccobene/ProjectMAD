@@ -191,34 +191,35 @@ public class EvaluationActivity extends AppCompatActivity {
                             @NonNull
                             @Override
                             public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                                //todo: inserire lo stesso controllo di sotto su mutableData != null per evitare crash
 
-                                String ratingCounter = mutableData.child("ratingCounter").getValue(String.class);
-                                String ratingAvg = mutableData.child("ratingAvg").getValue(String.class);
-                                String foodRatingAvg = mutableData.child("foodRatingAvg").getValue(String.class);
+                                if(mutableData != null) {
+                                    String ratingCounter = mutableData.child("ratingCounter").getValue(String.class);
+                                    String ratingAvg = mutableData.child("ratingAvg").getValue(String.class);
+                                    String foodRatingAvg = mutableData.child("foodRatingAvg").getValue(String.class);
 
-                                assert ratingCounter != null;
-                                if(ratingCounter.equals("0")){
-                                    mutableData.child("ratingCounter").setValue("1");
-                                } else {
-                                    int a = Integer.valueOf(ratingCounter) + 1;
-                                    mutableData.child("ratingCounter").setValue(String.valueOf(a));
-                                }
+                                    assert ratingCounter != null;
+                                    if (ratingCounter.equals("0")) {
+                                        mutableData.child("ratingCounter").setValue("1");
+                                    } else {
+                                        int a = Integer.valueOf(ratingCounter) + 1;
+                                        mutableData.child("ratingCounter").setValue(String.valueOf(a));
+                                    }
 
-                                assert ratingAvg != null;
-                                if(ratingAvg.equals("0")){
-                                    mutableData.child("ratingAvg").setValue(String.valueOf(restaurantRating));
-                                } else {
-                                    float a = ((Float.valueOf(ratingAvg) * Integer.valueOf(ratingCounter)) + restaurantRating) / (Integer.valueOf(ratingCounter) + 1);
-                                    mutableData.child("ratingAvg").setValue(String.valueOf(a));
-                                }
+                                    assert ratingAvg != null;
+                                    if (ratingAvg.equals("0")) {
+                                        mutableData.child("ratingAvg").setValue(String.valueOf(restaurantRating));
+                                    } else {
+                                        float a = ((Float.valueOf(ratingAvg) * Integer.valueOf(ratingCounter)) + restaurantRating) / (Integer.valueOf(ratingCounter) + 1);
+                                        mutableData.child("ratingAvg").setValue(String.valueOf(a));
+                                    }
 
-                                assert foodRatingAvg != null;
-                                if(foodRatingAvg.equals("0")){
-                                    mutableData.child("foodRatingAvg").setValue(String.valueOf(foodRating));
-                                } else {
-                                    float a = ((Float.valueOf(ratingAvg) * Integer.valueOf(ratingCounter)) + foodRating) / (Integer.valueOf(ratingCounter) + 1);
-                                    mutableData.child("foodRatingAvg").setValue(String.valueOf(a));
+                                    assert foodRatingAvg != null;
+                                    if (foodRatingAvg.equals("0")) {
+                                        mutableData.child("foodRatingAvg").setValue(String.valueOf(foodRating));
+                                    } else {
+                                        float a = ((Float.valueOf(ratingAvg) * Integer.valueOf(ratingCounter)) + foodRating) / (Integer.valueOf(ratingCounter) + 1);
+                                        mutableData.child("foodRatingAvg").setValue(String.valueOf(a));
+                                    }
                                 }
 
                                 return Transaction.success(mutableData);
@@ -237,7 +238,6 @@ public class EvaluationActivity extends AppCompatActivity {
                         @Override
                         public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
 
-                            //todo: problema: a volte (la prima) mutableData è null e non aggiorna il db anche se questo if evita il crash
                             if(mutableData != null){
                                 String ratingCounter = mutableData.child("ratingCounter").getValue(String.class);
                                 String ratingAvg = mutableData.child("ratingAvg").getValue(String.class);

@@ -52,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="The cart is empty"
+                android:text="@string/the_cart_is_empty"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:layout_below="@id/emptyImage"/>
@@ -85,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Minimum amount of the order isn't reached"
+                android:text="@string/minimum_amount_of_the_order_isn_t_reached"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:layout_below="@id/notEnoughImage"/>
@@ -160,7 +160,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="16dp"
                     android:textColor="#3d3d3d"
-                    android:text="3 €"
+                    android:text=""
                     android:textSize="16sp" />
 
                 <TextView
@@ -182,7 +182,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="16dp"
                     android:textColor="#3d3d3d"
-                    android:text="3 €"
+                    android:text=""
                     android:textSize="16sp" />
 
                 <View
@@ -212,7 +212,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="16dp"
                     android:textColor="#3d3d3d"
-                    android:text="3 €"
+                    android:text=""
                     android:textSize="16sp" />
 
                 <View
@@ -241,7 +241,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/name_bold"
                     android:layout_toEndOf="@+id/name_bold"
-                    android:text="Name"
+                    android:text=""
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
 
@@ -264,7 +264,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/address_bold"
                     android:layout_toEndOf="@+id/address_bold"
-                    android:text="Via Ponzio"
+                    android:text=""
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
 
@@ -286,7 +286,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/phone_bold"
                     android:layout_toEndOf="@+id/phone_bold"
-                    android:text="Phone Number"
+                    android:text=""
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
 
@@ -308,7 +308,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/time_bold"
                     android:layout_toEndOf="@+id/time_bold"
-                    android:text="11:50"
+                    android:text=""
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
 
@@ -330,7 +330,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/notes_bold"
                     android:layout_toEndOf="@+id/notes_bold"
-                    android:text="senza formaggio"
+                    android:text=""
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
 

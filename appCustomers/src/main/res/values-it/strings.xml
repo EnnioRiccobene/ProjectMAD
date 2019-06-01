@@ -175,5 +175,28 @@
     <string name="profile">Profilo</string>
     <string name="logout">Esci</string>
     <string name="shoppingcart">Carrello</string>
+    <string name="order_recap">Riepilogo ordine</string>
+    <string name="orders_title">Ordini</string>
+    <string name="pending">Pendenti</string>
+    <string name="history">Storico</string>
+    <string name="edit_fields">Modifica i campi</string>
+    <string name="connection_error">Errore di connessione.</string>
+    <string name="upload_failure">Caricamento fallito</string>
+    <string name="pic_saved">Foto salvata!</string>
+    <string name="not_available_quantity">La quantità selezionata non è disponibile</string>
+    <string name="Menu_title">Fai un ordine!</string>
+    <string name="looking_for_food">Cerchi un ristorante?</string>
+    <string name="search">Cerca</string>
+    <string name="Preferiti">Preferiti</string>
+    <string name="top_restaurant">Migliori Ristoranti</string>
+    <string name="the_cart_is_empty">Il carrello è vuoto</string>
+    <string name="minimum_amount_of_the_order_isn_t_reached">Il minimo prezzo per l\'ordine non è stato raggiunto</string>
+    <string name="dish">Piatto</string>
+    <string name="quantity">Quantità</string>
+    <string name="price">Prezzo</string>
+    <string name="ingredients">Ingredienti:</string>
+    <string name="food_category">Categorie di ristoranti</string>
+    <string name="menu">Menù</string>
+    <string name="best_meals">I migliori piatti</string>
 
 </resources>

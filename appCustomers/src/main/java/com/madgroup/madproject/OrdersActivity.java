@@ -47,7 +47,7 @@ public class OrdersActivity extends AppCompatActivity implements
         stub.inflate();
         prefs = getSharedPreferences("MyData", MODE_PRIVATE);
         editor = prefs.edit();
-        this.setTitle("Orders");
+        this.setTitle(R.string.orders_title);
         initializeTabs();
         initializeNavigationDrawer();
 
@@ -71,8 +71,7 @@ public class OrdersActivity extends AppCompatActivity implements
         // Set the photo of the Navigation Bar Icon (Need to be completed: refresh when new image is updated)
         updateNavigatorPersonalIcon(navigationView);
 
-        //TODO
-        // Set restaurant name and email on navigation header
+
         View headerView = navigationView.getHeaderView(0);
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
         TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
@@ -140,44 +139,13 @@ public class OrdersActivity extends AppCompatActivity implements
             layout.closeDrawer(GravityCompat.START);
         }
     }
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.reservation_menu, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.reservation_reload) {
-//            switch (tabLayout.getSelectedTabPosition()){
-//                case 0:
-//
-//                    break;
-//                case 1:
-//
-//                    break;
-//                case 2:
-//
-//                    break;
-//            }
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+
 
     // Tabs
     public void initializeTabs() {
         // Add tabs
         final ViewPager viewPager = (ViewPager) findViewById(R.id.reservationViewPager);
-        OrdersPageAdapter myPagerAdapter = new OrdersPageAdapter(getSupportFragmentManager());
+        OrdersPageAdapter myPagerAdapter = new OrdersPageAdapter(getSupportFragmentManager(), this);
         viewPager.setAdapter(myPagerAdapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
         tabLayout.setupWithViewPager(viewPager);

@@ -371,7 +371,7 @@
                         android:drawablePadding="8dp"
                         android:drawableTint="@color/colorPrimary"
                         android:gravity="center"
-                        android:text="Best Meals"
+                        android:text="@string/best_meals"
                         android:textColor="#3d3d3d"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -392,17 +392,6 @@
                         android:tint="@color/colorPrimary" />
                 </LinearLayout>
 
-                <!--<com.github.aakira.expandablelayout.ExpandableRelativeLayout-->
-                <!--android:id="@+id/hiddenFavorite"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:paddingTop="8dp"-->
-                <!--android:paddingBottom="8dp"-->
-                <!--app:ael_duration="200"-->
-                <!--app:ael_expanded="false"-->
-                <!--app:ael_interpolator="accelerate"-->
-                <!--app:ael_orientation="vertical">-->
-
                 <net.cachapa.expandablelayout.ExpandableLayout
                     android:id="@+id/hiddenFavorite"
                     android:layout_width="wrap_content"
@@ -417,20 +406,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp" />
                 </net.cachapa.expandablelayout.ExpandableLayout>
-                <!--</com.github.aakira.expandablelayout.ExpandableRelativeLayout>-->
 
             </LinearLayout>
 
-            <!--<ImageButton-->
-            <!--android:id="@+id/imageButtonCart"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginStart="8dp"-->
-            <!--android:layout_marginTop="8dp"-->
-            <!--android:layout_marginBottom="8dp"-->
-            <!--android:background="@color/colorPrimary"-->
-            <!--android:layout_below="@+id/oraarirelativelayout"-->
-            <!--app:srcCompat="@drawable/ic_shopping_cart" />-->
             <LinearLayout
                 android:id="@+id/menu_linear"
                 android:layout_width="match_parent"
@@ -456,7 +434,7 @@
                         android:drawablePadding="8dp"
                         android:drawableTint="@color/colorPrimary"
                         android:gravity="center"
-                        android:text="Menu"
+                        android:text="@string/menu"
                         android:textColor="#3d3d3d"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -477,17 +455,6 @@
                         android:tint="@color/colorPrimary" />
                 </LinearLayout>
 
-                <!--<com.github.aakira.expandablelayout.ExpandableRelativeLayout-->
-                <!--android:id="@+id/hiddenMenu"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:paddingTop="8dp"-->
-                <!--android:paddingBottom="8dp"-->
-                <!--app:ael_duration="200"-->
-                <!--app:ael_expanded="false"-->
-                <!--app:ael_interpolator="accelerate"-->
-                <!--app:ael_orientation="vertical">-->
-
                 <net.cachapa.expandablelayout.ExpandableLayout
                     android:id="@+id/hiddenMenu"
                     android:layout_width="wrap_content"
@@ -503,7 +470,7 @@
                         android:layout_marginTop="8dp" />
                 </net.cachapa.expandablelayout.ExpandableLayout>
 
-                <!--</com.github.aakira.expandablelayout.ExpandableRelativeLayout>-->
+
 
             </LinearLayout>
         </RelativeLayout>

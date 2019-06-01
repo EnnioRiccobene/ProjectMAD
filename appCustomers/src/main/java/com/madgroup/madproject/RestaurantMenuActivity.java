@@ -99,7 +99,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        this.setTitle("Place an order!");
+        this.setTitle(R.string.Menu_title);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
 
@@ -190,7 +190,6 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
             }
         });
-
 
     }
 

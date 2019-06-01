@@ -1,13 +1,18 @@
 package com.madgroup.madproject;
 
+import android.content.Context;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class SearchRestaurantPageAdapter extends FragmentStatePagerAdapter {
 
-    public SearchRestaurantPageAdapter(FragmentManager fm) {
+    Context context;
+
+    public SearchRestaurantPageAdapter(FragmentManager fm, Context context) {
         super(fm);
+        this.context = context;
     }
 
     @Override
@@ -33,11 +38,11 @@ public class SearchRestaurantPageAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Search";
+                return context.getString(R.string.search);
             case 1:
-                return "Top Restaurant";
+                return context.getString(R.string.top_restaurant);
             case 2:
-                return "Favorite";
+                return context.getString(R.string.Preferiti);
             default:
                 return null;
         }

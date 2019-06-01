@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:drawablePadding="8dp"
             android:drawableTint="@color/colorPrimary"
-            android:text="Food category"
+            android:text="@string/food_category"
             android:textColor="#3d3d3d"
             android:textSize="16sp"
             android:textStyle="bold" />

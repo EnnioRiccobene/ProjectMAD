@@ -49,9 +49,7 @@ public class FavoriteTopMealAdapter extends
         TextView dishName;
         CircleImageView dishPhoto;
         ImageView positionIcon;
-//        TextView dishRestaurant;
-//        TextView dishDescription;
-//        TextView dishPrice;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -80,9 +78,7 @@ public class FavoriteTopMealAdapter extends
         final Dish model = topDish.get(position);
 
         holder.dishName.setText(model.getName());
-//        holder.dishRestaurant.setText(model.getRestaurant());
-//        holder.dishDescription.setText(model.getDescription());
-//        holder.dishPrice.setText(model.getPrice());
+
         switch (counter) {
             case 0:
                 holder.positionIcon.setImageResource(R.drawable.ic_first);
@@ -110,24 +106,5 @@ public class FavoriteTopMealAdapter extends
                 .error(GlideApp.with(context).load(R.drawable.personicon))
                 .into(holder.dishPhoto);
 
-//        holder.layout.setOnClickListener(new View.OnClickListener() {
-//            @SuppressLint("ShowToast")
-//            @Override
-//            public void onClick(View v) {
-//                if (prefs.getString("Name", "").isEmpty() ||
-//                        prefs.getString("Email", "").isEmpty() ||
-//                        prefs.getString("Phone", "").isEmpty() ||
-//                        prefs.getString("Address", "").isEmpty()) {
-//
-//                    //Il profilo è da riempire
-//                    Intent homepage = new Intent(context, ProfileActivity.class);
-//                    context.startActivity(homepage);
-//                } else {
-//                    //il profilo è pieno e c'è in save preference
-//                    //Avvio la seguente Activity
-//                    RestaurantMenuActivity.start(context, model.getRestaurantId());
-//                }
-//            }
-//        });
     }
 }

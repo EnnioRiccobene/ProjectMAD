@@ -56,12 +56,12 @@ import static android.content.Context.MODE_PRIVATE;
  * create an instance of this fragment.
  */
 public class SearchRestaurantTab1 extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
+
     private String mParam1;
     private String mParam2;
     private ArrayList<ratedDish> topMeal;
@@ -88,7 +88,7 @@ public class SearchRestaurantTab1 extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment SearchRestaurantTab1.
      */
-    // TODO: Rename and change types and number of parameters
+
     public static SearchRestaurantTab1 newInstance(String param1, String param2) {
         SearchRestaurantTab1 fragment = new SearchRestaurantTab1();
         Bundle args = new Bundle();
@@ -119,7 +119,7 @@ public class SearchRestaurantTab1 extends Fragment {
         // Inflate the layout for this fragment
         return view;    }
 
-    // TODO: Rename method, update argument and hook method into UI event
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -154,7 +154,7 @@ public class SearchRestaurantTab1 extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         void onFragmentInteraction(Uri uri);
     }
 
@@ -253,8 +253,6 @@ public class SearchRestaurantTab1 extends Fragment {
                             holder.ratingBar.setVisibility(View.GONE);
                             holder.foodRating.setVisibility(View.GONE);
                         }
-
-
                     }
 
                     @NonNull

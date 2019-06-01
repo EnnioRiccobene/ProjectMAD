@@ -1,13 +1,18 @@
 package com.madgroup.madproject;
 
+import android.content.Context;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class OrdersPageAdapter extends FragmentStatePagerAdapter {
 
-    public OrdersPageAdapter(FragmentManager fm) {
+    Context context;
+
+    public OrdersPageAdapter(FragmentManager fm, Context context) {
         super(fm);
+        this.context = context;
     }
 
     @Override
@@ -31,9 +36,9 @@ public class OrdersPageAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Pending";
+                return context.getString(R.string.pending);
             case 1:
-                return "History";
+                return context.getString(R.string.history);
             default:
                 return null;
         }
