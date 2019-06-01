@@ -57,9 +57,10 @@ public class DetailedOrder extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         this.setTitle("Order recap");
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(true);
-
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
 
         subtotalPrice = findViewById(R.id.subtotalPrice);
         deliveryPrice = findViewById(R.id.deliveryPrice);
