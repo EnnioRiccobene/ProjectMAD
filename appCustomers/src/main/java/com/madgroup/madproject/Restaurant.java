@@ -81,6 +81,9 @@ public class Restaurant implements Parcelable {
         this.saturdayOpeningHours = saturdayOpeningHours;
         this.sundayOpeningHours = sundayOpeningHours;
         this.fCategoryANDdCost = foodCategory + "_" + deliveryCost.replace(".", "").replace(",", "");
+        this.ratingAvg = "0";
+        this.foodRatingAvg = "0";
+        this.ratingCounter = "0";
 
         if(foodCategory.contains("Pizza"))
             this.catPizza = "true";
@@ -170,6 +173,9 @@ public class Restaurant implements Parcelable {
         this.saturdayOpeningHours = saturdayOpeningHours;
         this.sundayOpeningHours = sundayOpeningHours;
         this.fCategoryANDdCost = foodCategory + "_" + deliveryCost;
+        this.ratingAvg = "0";
+        this.foodRatingAvg = "0";
+        this.ratingCounter = "0";
 
         if(foodCategory.contains("Pizza"))
             this.catPizza = "true";
@@ -284,6 +290,30 @@ public class Restaurant implements Parcelable {
 
     public String getFoodCategory() {
         return foodCategory;
+    }
+
+    public String getRatingAvg() {
+        return ratingAvg;
+    }
+
+    public void setRatingAvg(String ratingAvg) {
+        this.ratingAvg = ratingAvg;
+    }
+
+    public String getRatingCounter() {
+        return ratingCounter;
+    }
+
+    public void setRatingCounter(String ratingCounter) {
+        this.ratingCounter = ratingCounter;
+    }
+
+    public String getFoodRatingAvg() {
+        return foodRatingAvg;
+    }
+
+    public void setFoodRatingAvg(String foodRatingAvg) {
+        this.foodRatingAvg = foodRatingAvg;
     }
 
     public void setFoodCategory(String foodCategory) {
@@ -445,29 +475,5 @@ public class Restaurant implements Parcelable {
 
     public void setFavorite(Boolean favorite) {
         isFavorite = favorite;
-    }
-
-    public String getRatingAvg() {
-        return ratingAvg;
-    }
-
-    public void setRatingAvg(String ratingAvg) {
-        this.ratingAvg = ratingAvg;
-    }
-
-    public String getFoodRatingAvg() {
-        return foodRatingAvg;
-    }
-
-    public void setFoodRatingAvg(String foodRatingAvg) {
-        this.foodRatingAvg = foodRatingAvg;
-    }
-
-    public String getRatingCounter() {
-        return ratingCounter;
-    }
-
-    public void setRatingCounter(String ratingCounter) {
-        this.ratingCounter = ratingCounter;
     }
 }

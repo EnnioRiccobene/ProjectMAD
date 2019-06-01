@@ -177,6 +177,7 @@ public class reservationTab1 extends Fragment {
                                 HashMap<String, Object> multipleAtomicQuery = new HashMap<>();
                                 multipleAtomicQuery.put("Company/Reservation/Pending/" + currentUser + "/" + orderID, null);
                                 multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID, currentItem);
+                                multipleAtomicQuery.put("Customer/Order/Pending/" + currentItem.getCustomerID() + "/" + orderID + "/status", 1);
                                 database.updateChildren(multipleAtomicQuery);
                             }
                         });

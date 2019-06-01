@@ -153,8 +153,6 @@ public class DeliveryPendingTab1 extends Fragment {
                         holder.restaurantAddress.setText(currentItem.getRestaurantAddress());
                         setDistance(currentItem.getRestaurantAddress(), holder.distance);
                         holder.customerAddress.setText(currentItem.getCustomerAddress());
-                        // holder.bikerArrived.setImageResource(R.drawable.ic_circled_confirm);
-                        // ImageViewCompat.setImageTintList(holder.bikerArrived, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
 
                         holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -163,53 +161,6 @@ public class DeliveryPendingTab1 extends Fragment {
                             }
                         });
 
-//                        holder.bikerArrived.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                // Ordine Arrivato:
-//                                // Company: passare da accepted a history
-//                                // Customer: passare da pending a history
-//                                // Rider: passare da pending a history
-//                                final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//                                // Company: prendo reservation, pongo status = 3, metto su history, rimuovo da pending
-//                                DatabaseReference companyReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentItem.getRestaurantID()).child(currentItem.getOrderID());
-//                                DatabaseReference customerReservationRef = database.child("Customer").child("Order").child("Pending").child(currentItem.getCustomerID()).child(currentItem.getOrderID());
-//                                companyReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//                                    @Override
-//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                        Reservation moveReservation = (Reservation) dataSnapshot.getValue(Reservation.class);
-//                                        moveReservation.setStatus(3);
-//                                        database.child("Company").child("Reservation").child("History").child(currentItem.getRestaurantID()).child(currentItem.getOrderID()).setValue(moveReservation);
-//                                        database.child("Company").child("Reservation").child("Accepted").child(currentItem.getRestaurantID()).child(currentItem.getOrderID()).setValue(null);
-//                                    }
-//
-//                                    @Override
-//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                    }
-//                                });
-//
-//                                customerReservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//                                    @Override
-//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                        // Customer: prendo reservation, pongo status = 1, metto su history, rimuovo da pending
-//                                        Reservation moveReservation = (Reservation) dataSnapshot.getValue(Reservation.class);
-//                                        moveReservation.setStatus(1);
-//                                        database.child("Customer").child("Order").child("History").child(currentItem.getCustomerID()).child(currentItem.getOrderID()).setValue(moveReservation);
-//                                        database.child("Customer").child("Order").child("Pending").child(currentItem.getCustomerID()).child(currentItem.getOrderID()).setValue(null);
-//                                    }
-//
-//                                    @Override
-//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                    }
-//                                });
-//                                // Rider: rimuovo da pending e pongo su history
-//                                database.child("Rider").child("Delivery").child("Pending").child(currentUser).child(currentItem.getOrderID()).setValue(null);
-//                                database.child("Rider").child("Delivery").child("History").child(currentUser).child(currentItem.getOrderID()).setValue(currentItem);
-//
-//                            }
-//                        });
                     }
 
                     @NonNull

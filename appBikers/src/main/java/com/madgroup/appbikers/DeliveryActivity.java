@@ -1,8 +1,6 @@
 package com.madgroup.appbikers;
 
 import android.Manifest;
-import android.animation.ObjectAnimator;
-import android.animation.StateListAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,7 +20,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -43,7 +40,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.Position;
-import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +71,7 @@ public class DeliveryActivity extends AppCompatActivity implements
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         currentUser = prefs.getString("currentUser", "");
         editor = prefs.edit();
-        this.setTitle("Deliveries");
+        this.setTitle(R.string.Deliveries);
         initializeTabs();
         navigationDrawerInitialization();
 
@@ -113,12 +109,6 @@ public class DeliveryActivity extends AppCompatActivity implements
             }
         });
 
-//        notificationText = getResources().getString(R.string.notification_text);
-//        if (prefs.contains("currentUser")) {
-//
-//            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
-//            notify.newOrderListner();
-//        }
         checkLocationpermissions();
     }
 
@@ -234,7 +224,10 @@ public class DeliveryActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_profile) {
             Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);
-        } else if (id == R.id.nav_logout)
+        }  else if (id==R.id.nav_analytic){
+            Intent myIntent = new Intent(this, AnalyticsActivity.class);
+            this.startActivity(myIntent);
+        }else if (id == R.id.nav_logout)
                 startLogout();
         if (id == R.id.nav_switch)
             return true;
@@ -248,7 +241,7 @@ public class DeliveryActivity extends AppCompatActivity implements
     public void initializeTabs() {
         // Add tabs
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        DeliveryPageAdapter myPagerAdapter = new DeliveryPageAdapter(getSupportFragmentManager());
+        DeliveryPageAdapter myPagerAdapter = new DeliveryPageAdapter(getSupportFragmentManager(), this);
         viewPager.setAdapter(myPagerAdapter);
         TabLayout tablayout = (TabLayout) findViewById(R.id.tabLayout);
         tablayout.setupWithViewPager(viewPager);

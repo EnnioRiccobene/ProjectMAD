@@ -1,13 +1,18 @@
 package com.madgroup.appbikers;
 
+import android.content.Context;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class DeliveryPageAdapter extends FragmentStatePagerAdapter {
 
-    public DeliveryPageAdapter(FragmentManager fm) {
+    Context context;
+
+    public DeliveryPageAdapter(FragmentManager fm, Context context) {
         super(fm);
+        this.context = context;
     }
 
     @Override
@@ -30,9 +35,9 @@ public class DeliveryPageAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Pending";
+                return context.getString(R.string.Pending);
             case 1:
-                return "History";
+                return context.getString(R.string.History);
             default:
                 return null;
         }

@@ -113,7 +113,7 @@ public class ProfileActivity extends AppCompatActivity implements
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_profile);
         stub.inflate();
-        this.setTitle("Profile");
+        this.setTitle(R.string.Profile);
         prefs = getSharedPreferences("MyData", MODE_PRIVATE);
         editor = prefs.edit();
         // Getting the instance of Firebase
@@ -212,49 +212,37 @@ public class ProfileActivity extends AppCompatActivity implements
     // Functions
     private void setFieldUnclickable() {
         name.setEnabled(false);
+        name.setFocusable(false);
         email.setEnabled(false);
+        email.setFocusable(false);
         // password.setEnabled(false);
         phone.setEnabled(false);
+        phone.setFocusable(false);
         address.setEnabled(false);
+        address.setFocusable(false);
         additionalInformation.setEnabled(false);
+        additionalInformation.setFocusable(false);
         personalImage.setEnabled(false);
+        personalImage.setFocusable(false);
     }
 
     private void setFieldClickable() {
         name.setEnabled(true);
+        name.setFocusable(true);
+        name.setFocusableInTouchMode(true);
         email.setEnabled(false);
         // password.setEnabled(true);
         phone.setEnabled(true);
+        phone.setFocusable(true);
+        phone.setFocusableInTouchMode(true);
         address.setEnabled(true);
+        address.setFocusable(true);
+        address.setFocusableInTouchMode(true);
         additionalInformation.setEnabled(true);
+        additionalInformation.setFocusable(true);
+        additionalInformation.setFocusableInTouchMode(true);
         personalImage.setEnabled(true);
     }
-
-//    private void loadFields() {
-//        if (prefs.contains("Name"))
-//            name.setText(prefs.getString("Name", ""));
-//        if (prefs.contains("Email"))
-//            email.setText(prefs.getString("Email", ""));
-//        // if (prefs.contains("Password"))
-//            // password.setText(prefs.getString("Password", ""));
-//        if (prefs.contains("Phone"))
-//            phone.setText(prefs.getString("Phone", ""));
-//        if(prefs.contains("Address"))
-//            address.setText(prefs.getString("Address", ""));
-//        if(prefs.contains("Information"))
-//            additionalInformation.setText(prefs.getString("Information", ""));
-//        restoreImageContent();
-//    }
-//
-//    private void saveFields() {
-//        editor.putString("Name", name.getText().toString());
-//        editor.putString("Email", email.getText().toString());
-//        // editor.putString("Password", password.getText().toString());
-//        editor.putString("Phone", phone.getText().toString());
-//        editor.putString("Address", address.getText().toString());
-//        editor.putString("Information", additionalInformation.getText().toString());
-//        editor.apply();
-//    }
 
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
@@ -492,14 +480,6 @@ public class ProfileActivity extends AppCompatActivity implements
 
         imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
-        // TODO: Fare il check con l'immagine di default e decommentare
-        // Se è l'immagine di default, non salvo niente ed eventualmente elimino quella presente.
-//        if (isDefaultImage) {
-//            deleteProfilePic();
-//            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-//            return;
-//        }
-
         Bitmap bitmap = ((BitmapDrawable) personalImage.getDrawable()).getBitmap();
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -630,7 +610,7 @@ public class ProfileActivity extends AppCompatActivity implements
                             Customer currentUser = new Customer(user.getUid(), user.getDisplayName(), user.getEmail(),
                                     "","","");
                             String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            //database.getReference("Profiles").child("Customers")
+
                             database.getReference("Customer").child("Profile")
                                     .child(currentUid).setValue(currentUser, new DatabaseReference.CompletionListener() {
                                 @Override
@@ -657,8 +637,6 @@ public class ProfileActivity extends AppCompatActivity implements
                     }
                 });
     }
-
-
 
     private void startLogin() {
         // Choose authentication providers

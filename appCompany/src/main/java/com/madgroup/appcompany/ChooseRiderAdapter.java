@@ -90,15 +90,10 @@ public class ChooseRiderAdapter extends
         final RiderProfile rider = riderList.get(position);
         holder.riderName.setText(rider.getName());
         loadPhoto(holder, rider);
-        holder.riderDistance.setText(getDistance(restaurantAddress, rider.getPosition()));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callRider(rider);
-            }
-        });
-        if(rider.getRatingAvg() != null && rider.getRatingAvg().equals("0"))
+        holder.riderDistance.setText(getRiderDistance(restaurantAddress, rider.getPosition()));
+        if(rider.getRatingAvg() != null && rider.getRatingAvg().equals("0")) {
             holder.rating.setRating(Float.parseFloat(rider.getRatingAvg()));
+        }
         else{
             holder.rating.setVisibility(View.GONE);
             // when there isn't rating  -> "centerInParent = true" for the riderName
@@ -107,6 +102,12 @@ public class ChooseRiderAdapter extends
             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
             holder.riderName.setLayoutParams(layoutParams);
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callRider(rider);
+            }
+        });
     }
 
     private void callRider(RiderProfile rider) {
@@ -122,7 +123,7 @@ public class ChooseRiderAdapter extends
         multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID + "/status", 2);
         multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID + "/bikerID", rider.getId());
         multipleAtomicQuery.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID + "/bikerID", rider.getId());
-        multipleAtomicQuery.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID + "/status", 1);
+        multipleAtomicQuery.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID + "/status", 2);
 
         // Creating Delivery Item
         HashMap<String, String> Delivery = new HashMap<>();
@@ -133,6 +134,7 @@ public class ChooseRiderAdapter extends
         Delivery.put("customerAddress", reservation.getAddress());
         Delivery.put("orderID", reservation.getOrderID());
         Delivery.put("deliveryTime", reservation.getDeliveryTime());
+        Delivery.put("restaurantCustomerDistance", getCustomerDistance());
 
         //Delivery.put("seen", false);
         // deliveriesRef.child("Pending").child(rider.getId()).child(reservation.getOrderID()).setValue(Delivery);
@@ -141,6 +143,7 @@ public class ChooseRiderAdapter extends
         multipleAtomicQuery.put("Rider/Delivery/Pending/" + rider.getId() + "/" + reservation.getOrderID(), Delivery);
         multipleAtomicQuery.put("Rider/Delivery/Pending/NotifyFlag/" + rider.getId() + "/" + reservation.getOrderID() + "/seen", false);
         multipleAtomicQuery.put("Rider/Profile/" + rider.getId() + "/status", false);
+
         database.updateChildren(multipleAtomicQuery);
         ((Activity)context).finish();
     }
@@ -157,7 +160,7 @@ public class ChooseRiderAdapter extends
                 .into(holder.riderPhoto);
     }
 
-    String getDistance(String restaurantAddress, Position riderPosition){
+    String getRiderDistance(String restaurantAddress, Position riderPosition){
         if(riderPosition == null || (riderPosition.getLon() == 0 && riderPosition.getLat() == 0))
             return "N.A.";
         Geocoder geocoder = new Geocoder(context);
@@ -178,5 +181,31 @@ public class ChooseRiderAdapter extends
             return "N.A.";
         }
         return "N.A.";
+    }
+
+    private String getCustomerDistance() {
+        Geocoder geocoder = new Geocoder(this.context);
+        List<Address> restaurantGeocoder;
+        List<Address> customerGeocoder;
+        try {
+            restaurantGeocoder = geocoder.getFromLocationName(restaurantAddress, 1);
+            customerGeocoder = geocoder.getFromLocationName(reservation.getAddress(), 1);
+            if (restaurantGeocoder.size() > 0 && customerGeocoder.size() > 0) {
+                double latitude = restaurantGeocoder.get(0).getLatitude();
+                double longitude = restaurantGeocoder.get(0).getLongitude();
+                Position restaurantPosition = new Position(latitude, longitude);
+                latitude = customerGeocoder.get(0).getLatitude();
+                longitude = customerGeocoder.get(0).getLongitude();
+                Position customerPosition = new Position(latitude, longitude);
+                double distance = Haversine.distance(restaurantPosition, customerPosition);
+                DecimalFormat df = new DecimalFormat("#.##");
+                df.setMinimumFractionDigits(2);
+                return df.format(distance);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "0";
+        }
+        return "0";
     }
 }

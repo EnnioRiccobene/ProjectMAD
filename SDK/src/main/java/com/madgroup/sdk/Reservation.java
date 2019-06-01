@@ -34,8 +34,9 @@ public class Reservation implements Serializable {
 //    Status for Customer
 //    0: Da confermare/rifiutare        Tab1
 //    1: Confermato. Da preparare       Tab1
-//    2: Consegnato e concluso          Tab2
-//    3: Rifiutato                      Tab2
+//    2: Rider chiamato
+//    3: Consegnato e concluso          Tab2
+//    4: Rifiutato                      Tab2
 
     public Reservation() {
     }
@@ -49,6 +50,7 @@ public class Reservation implements Serializable {
         this.status = 0;
         this.restaurantID = restaurantID;
         this.deliveryCost = deliveryCost;
+        this.bikerID = "";
         //this.seen = false;
         // Compute total Price
         float x = 0;

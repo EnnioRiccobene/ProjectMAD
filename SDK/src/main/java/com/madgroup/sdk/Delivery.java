@@ -9,6 +9,7 @@ public class Delivery {
     private String restaurantAddress;
     private String customerAddress;
     private String paymentMethod;
+    private String restaurantCustomerDistance;
     private float price;
     private String customerPhone;
     private String restaurantPhone;
@@ -97,5 +98,13 @@ public class Delivery {
 
     public void setCustomerID(String customerID) {
         this.customerID = customerID;
+    }
+
+    public String getRestaurantCustomerDistance() {
+        return restaurantCustomerDistance;
+    }
+
+    public void setRestaurantCustomerDistance(String restaurantCustomerDistance) {
+        this.restaurantCustomerDistance = restaurantCustomerDistance;
     }
 }

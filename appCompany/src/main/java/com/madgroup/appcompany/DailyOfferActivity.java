@@ -134,7 +134,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
         progressBar.setVisibility(View.INVISIBLE);
 
-        //todo: interazione con il db
         Bitmap carbonaraIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.carbonara), THUMBSIZE, THUMBSIZE);
         Bitmap gnocchiIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.gnocchi), THUMBSIZE, THUMBSIZE);
 

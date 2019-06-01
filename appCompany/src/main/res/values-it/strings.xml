@@ -169,4 +169,8 @@
     </string-array>
     <string name="delivery_cost">Costo di consegna</string>
     <string name="minimum_order">Ordine minimo</string>
+    <string name="daily_offer">Offerta del giorno</string>
+    <string name="reservations">Ordini</string>
+    <string name="profile">Profilo</string>
+    <string name="logout">Esci</string>
 </resources>

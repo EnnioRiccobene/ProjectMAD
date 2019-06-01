@@ -51,7 +51,7 @@
     <string name="subtotal">Subtotal: </string>
     <string name="address">Address: </string>
     <string name="lunch_time">Delivery time: </string>
-    <string name="notes">Notes </string>
+    <string name="notes">Notes: </string>
     <string name="confirm_order">Confirm Order</string>
     <string name="total">Total</string>
     <string name="name">Name:</string>
@@ -160,5 +160,23 @@
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
     <string name="order_price">Order price</string>
+    <string name="evaluation">Evaluation</string>
+    <string name="yes">YES</string>
+    <string name="evaluate_dialog_message">Do you want to evaluate this order?</string>
+    <string name="error_evaluate_toast">Evaluate your order after receiving it</string>
+    <string name="RatingTitle">Rating</string>
+    <string name="rating_restaurant">Restaurant</string>
+    <string name="rating_food">Food cost</string>
+    <string name="rating_service">Delivery service</string>
+    <string name="rating_review">Review your order</string>
+    <string name="shopping_cart_title">Shopping Cart</string>
+    <string name="evaluate_hidden_message">You have already reviewed this restaurant. You can only evaluate the delivery service.</string>
+    <string name="mandatory_evaluate">The evaluation of restaurant, food and service is mandatory.</string>
+
+    <string name="search_restaurant">Search restaurant</string>
+    <string name="orders">Orders</string>
+    <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
+    <string name="shoppingcart">shoppingCart</string>
 
 </resources>

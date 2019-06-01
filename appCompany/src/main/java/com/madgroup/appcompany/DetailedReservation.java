@@ -120,7 +120,6 @@ public class DetailedReservation extends AppCompatActivity {
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
@@ -141,6 +140,9 @@ public class DetailedReservation extends AppCompatActivity {
         multipleAtomicQueries.put("Company/Reservation/Pending/" + currentUser + "/" + orderID, null);
         reservation.setStatus(ReservationActivity.HISTORY_REJECT_RESERVATION_CODE);
         multipleAtomicQueries.put("Company/Reservation/History/" + currentUser + "/" + orderID, reservation);
+        multipleAtomicQueries.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID, null);
+        reservation.setStatus(4);
+        multipleAtomicQueries.put("Customer/Order/History/" + reservation.getCustomerID()  + "/" + orderID, reservation);
         // DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
         // DatabaseReference historyReservationRef = database.child("Company").child("Reservation").child("History").child(currentUser);
         // pendingReservationRef.child(orderID).removeValue();

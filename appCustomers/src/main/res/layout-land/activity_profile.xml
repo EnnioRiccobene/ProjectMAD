@@ -25,109 +25,170 @@
             app:civ_border_width="2dp"
             app:civ_border_color="#FF000000"/>
 
-        <EditText
-            android:id="@+id/editTextName"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/editTextNameLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:hint="@string/form_name"
-            android:inputType="textPersonName"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imagePersonalPhoto"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
-            android:id="@+id/editTextEmail"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:hint="@string/form_name"
+                android:inputType="textPersonName"
+                android:maxLength="50" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/editTextEmailLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:hint="@string/form_email"
-            android:inputType="textEmailAddress"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imagePersonalPhoto"
-            app:layout_constraintTop_toBottomOf="@+id/editTextName" />
+            app:layout_constraintTop_toBottomOf="@+id/editTextNameLayout">
 
-        <!--<EditText-->
-            <!--android:id="@+id/editTextPassword"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_marginStart="8dp"-->
-            <!--android:layout_marginTop="8dp"-->
-            <!--android:layout_marginEnd="8dp"-->
-            <!--android:hint="@string/form_password"-->
-            <!--android:inputType="textPassword"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintStart_toEndOf="@+id/imagePersonalPhoto"-->
-            <!--app:layout_constraintTop_toBottomOf="@+id/editTextEmail" />-->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:hint="@string/form_email"
+                android:inputType="textEmailAddress"
+                android:maxLength="50" />
 
-        <EditText
-            android:id="@+id/editTextPhone"
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/editTextPhoneLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:hint="@string/form_phone"
-            android:inputType="phone"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imagePersonalPhoto"
-            app:layout_constraintTop_toBottomOf="@+id/editTextEmail" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextEmailLayout">
 
-        <com.madgroup.sdk.CustomAutoCompleteTextView
-            android:id="@+id/editTextAddress"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:hint="@string/form_phone"
+                android:inputType="phone"
+                android:maxLength="50" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/editTextAddressLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/vertical_margin"
-            android:hint="@string/form_address"
-            android:ems="10"
-            android:inputType="textPostalAddress"
+            android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextPhone" />
+            app:layout_constraintTop_toBottomOf="@+id/editTextPhoneLayout">
 
-        <EditText
-            android:id="@+id/additionalInformation"
-            android:layout_width="0dp"
+            <com.madgroup.sdk.CustomAutoCompleteTextView
+                android:id="@+id/editTextAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:layout_weight="1"
+                android:padding="16dp"
+                android:maxLength="50"
+                android:hint="@string/form_address"
+                android:inputType="textPostalAddress"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editTextPhoneLayout" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/additionalInformationLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/vertical_margin"
-            android:gravity="top|start"
-            android:hint="@string/form_info"
-            android:inputType="textMultiLine"
-            android:maxLength="150"
-            android:maxLines="5"
-            android:minLines="1"
-            android:scrollbars="vertical"
+            android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextAddress" />
+            app:layout_constraintTop_toBottomOf="@+id/editTextAddressLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/additionalInformation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:gravity="top|start"
+                android:hint="@string/form_info"
+                android:inputType="textMultiLine"
+                android:lines="3"
+                android:maxLength="150"
+                android:maxLines="5"
+                android:minLines="1"
+                android:scrollbars="vertical" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--<EditText-->
+            <!--android:id="@+id/additionalInformation"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="@dimen/vertical_margin"-->
+            <!--android:gravity="top|start"-->
+            <!--android:hint="@string/form_info"-->
+            <!--android:inputType="textMultiLine"-->
+            <!--android:maxLength="150"-->
+            <!--android:maxLines="5"-->
+            <!--android:minLines="1"-->
+            <!--android:scrollbars="vertical"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/editTextAddressLayout" />-->
 
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/additionalInformation"
+            app:layout_constraintBottom_toBottomOf="@+id/additionalInformationLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.785" />
+            app:layout_constraintVertical_bias="0.549" />
 
         <ProgressBar
             android:id="@+id/imgProgressBar"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/additionalInformation"
+            app:layout_constraintBottom_toBottomOf="@+id/additionalInformationLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.785" />
+            app:layout_constraintVertical_bias="0.543" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

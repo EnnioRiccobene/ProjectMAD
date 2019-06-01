@@ -39,6 +39,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.SmartLogger;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -162,8 +163,6 @@ public class SearchRestaurantTab1 extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         restaurantRef = database.getReference().child("Company").child("Profile");
 
-        StorageReference mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
-        DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads");
         mContext = this.getContext();
         CircleImageView photo = view.findViewById(R.id.restaurant_photo);
         searchRestaurant = view.findViewById(R.id.searchWidget);
@@ -194,67 +193,6 @@ public class SearchRestaurantTab1 extends Fragment {
         options = new FirebaseRecyclerOptions.Builder<Restaurant>()
                 .setQuery(restaurantRef, Restaurant.class)
                 .build();
-
-
-
-
-
-
-
-
-
-
-//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//        DatabaseReference restaurantRef = database.child("Company").child("Profile");
-//        DatabaseReference companyRef = database.child("Company");
-//        topMeal = new ArrayList<>();
-//
-//        companyRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if(!dataSnapshot.exists())
-//                    return;
-//                for(DataSnapshot restaurantProfile : dataSnapshot.child("Profile").getChildren()){
-//                    if(restaurantProfile.child("foodRatingAvg").getValue(String.class) == null
-//                            || restaurantProfile.child("foodRatingAvg").getValue(String.class).equals("0"))
-//                        continue;
-//                    String restaurantName = restaurantProfile.child("name").getValue(String.class);
-//                    String restaurantID = restaurantProfile.child("id").getValue(String.class);
-//                    Float foodRating = Float.parseFloat(restaurantProfile.child("foodRating").getValue(String.class));
-//                    for (DataSnapshot dish : dataSnapshot.child("Menu").child(restaurantID).getChildren()){
-//                        Dish currentDish = dish.getValue(Dish.class);
-//                        ratedDish newTopDish = new ratedDish(currentDish.getId(), currentDish.getName(), restaurantName, restaurantID, foodRating, Integer.parseInt(currentDish.getAvailableQuantity()), currentDish.getDescription(), currentDish.getPrice());
-//                        topMeal.add(newTopDish);
-//                    }
-//                }
-//                // ORDINARE LISTA
-//                Collections.sort(topMeal, new Comparator<ratedDish>() {
-//                    @Override
-//                    public int compare(ratedDish o1, ratedDish o2) {
-//                        float score1 = o1.getFoodRating() * o1.getOrderCount();
-//                        float score2 = o2.getFoodRating() * o2.getOrderCount();
-//                        if (score1 > score2)
-//                            return 1;
-//                        else if (score1 < score2)
-//                            return -1;
-//                        else
-//                            return 0;
-//                    }
-//                });
-//
-////                recyclerView = (RecyclerView) view.findViewById(R.id.favoriteRecyclerViewTab);
-////                SearchRestaurantTab2Adapter adapter = new SearchRestaurantTab2Adapter(topMeal);
-////                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
-////                recyclerView.setLayoutManager(mLayoutManager);
-////                recyclerView.setItemAnimator(new DefaultItemAnimator());
-////                recyclerView.setAdapter(adapter);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
     }
 
     @Override
@@ -306,10 +244,17 @@ public class SearchRestaurantTab1 extends Fragment {
                             }
                         });
 
-                        if(model.getRatingAvg() != null && !model.getRatingAvg().equals("0"))
+                        if(model.getRatingAvg() != null && !model.getRatingAvg().equals("0")){
                             holder.ratingBar.setRating(Float.parseFloat(model.getRatingAvg()));
-                        else
+                            holder.foodRating.setText(translateFoodRating(model.getFoodRatingAvg()));
+                        }
+
+                        else{
                             holder.ratingBar.setVisibility(View.GONE);
+                            holder.foodRating.setVisibility(View.GONE);
+                        }
+
+
                     }
 
                     @NonNull
@@ -338,6 +283,7 @@ public class SearchRestaurantTab1 extends Fragment {
         TextView minimum_order_amount;
         TextView delivery_cost;
         TextView delivery_cost_amount;
+        TextView foodRating;
         CheckBox favoriteCheckBox;
         AppCompatRatingBar ratingBar;
 
@@ -355,7 +301,8 @@ public class SearchRestaurantTab1 extends Fragment {
             delivery_cost = itemView.findViewById(R.id.delivery_cost);
             delivery_cost_amount = itemView.findViewById(R.id.delivery_cost_amount);
             favoriteCheckBox = itemView.findViewById(R.id.favoriteCheckBox);
-            ratingBar = itemView.findViewById(R.id.ratingBar);
+            ratingBar = itemView.findViewById(R.id.restaurantRating);
+            foodRating = itemView.findViewById(R.id.foodRating);
         }
     }
 
@@ -490,7 +437,8 @@ public class SearchRestaurantTab1 extends Fragment {
     private void manageFavorites(SearchRestaurantTab1.FindRestaurantViewHolder holder, final Restaurant model) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference favoriteListRef = database.child("Customer").child("Favorite").child(currentUser).child(model.getId());
-        if (holder.favoriteCheckBox.isChecked()) {
+        final boolean state = holder.favoriteCheckBox.isChecked();
+        if (state) {
             // Add to favorite
             DatabaseReference restaurantRef = database.child("Company").child("Profile").child(model.getId());
             restaurantRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -499,6 +447,7 @@ public class SearchRestaurantTab1 extends Fragment {
                     if (dataSnapshot.exists()) {
                         Restaurant newFavorite = dataSnapshot.getValue(Restaurant.class);
                         favoriteListRef.setValue(newFavorite);
+                        updateTopRestaurantRecyclerView(model, state);
                     }
                 }
 
@@ -510,6 +459,7 @@ public class SearchRestaurantTab1 extends Fragment {
         } else {
             // Remove from favorite
             favoriteListRef.removeValue();
+            updateTopRestaurantRecyclerView(model, state);
         }
     }
 
@@ -546,5 +496,36 @@ public class SearchRestaurantTab1 extends Fragment {
                 return true;
         }
         return true;
+    }
+
+    private void updateTopRestaurantRecyclerView(Restaurant model, boolean state) {
+        if(SearchRestaurantTab2.topRestaurant != null && SearchRestaurantTab2.recyclerView != null){
+            if(SearchRestaurantTab2.recyclerView.getAdapter() == null || SearchRestaurantTab2.topRestaurant.indexOf(model) == -1)
+                return;
+            int pos = SearchRestaurantTab2.topRestaurant.indexOf(model);
+            SearchRestaurantTab2.topRestaurant.get(pos).setFavorite(state);
+            SearchRestaurantTab2.recyclerView.getAdapter().notifyDataSetChanged();
+        }
+    }
+
+    private String translateFoodRating(String foodRatingAvg) {
+        String restaurantPrice = "";
+        String[] removeDecimal = foodRatingAvg.split("\\.");
+        SmartLogger.d(foodRatingAvg + " lenght: " + removeDecimal.length);
+        foodRatingAvg = removeDecimal[0];
+        switch (Integer.parseInt(foodRatingAvg)){
+            case 1:
+                restaurantPrice = "€";
+                break;
+            case 2:
+                restaurantPrice = "€€";
+                break;
+            case 3:
+                restaurantPrice = "€€€";
+                break;
+            default:
+                break;
+        }
+        return restaurantPrice;
     }
 }

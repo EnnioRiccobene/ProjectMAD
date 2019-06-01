@@ -121,6 +121,32 @@ public class ProfileActivity extends AppCompatActivity
     private ProgressBar progressBar;
     private ProgressBar imgProgressBar;
 
+    //campi di supporto per le query al db
+    private String fCategoryANDdCost;
+    private String catPizza;
+    private String catSandwiches;
+    private String catKebab;
+    private String catItalian;
+    private String catAmerican;
+    private String catDesserts;
+    private String catFry;
+    private String catVegetarian;
+    private String catAsian;
+    private String catMediterranean;
+    private String catSouthAmerican;
+
+    private String catPizzaDel;
+    private String catSandwichesDel;
+    private String catKebabDel;
+    private String catItalianDel;
+    private String catAmericanDel;
+    private String catDessertsDel;
+    private String catFryDel;
+    private String catVegetarianDel;
+    private String catAsianDel;
+    private String catMediterraneanDel;
+    private String catSouthAmericanDel;
+
     String notificationTitle = "MAD Company";
     String notificationText;
 
@@ -154,7 +180,7 @@ public class ProfileActivity extends AppCompatActivity
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_profile);
         stub.inflate();
-        this.setTitle("Profile");
+        this.setTitle(R.string.Profile);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
 
@@ -397,29 +423,53 @@ public class ProfileActivity extends AppCompatActivity
     // Functions
     private void setFieldUnclickable() {
         name.setEnabled(false);
+        name.setFocusable(false);
         email.setEnabled(false);
+        email.setFocusable(false);
         // password.setEnabled(false);
         phone.setEnabled(false);
+        phone.setFocusable(false);
         address.setEnabled(false);
+        address.setFocusable(false);
         additionalInformation.setEnabled(false);
+        additionalInformation.setFocusable(false);
         deliveryCost.setEnabled(false);
+        deliveryCost.setFocusable(false);
         minimumOrder.setEnabled(false);
+        minimumOrder.setFocusable(false);
         personalImage.setEnabled(false);
+        personalImage.setFocusable(false);
         editCategory.setEnabled(false);
+        editCategory.setFocusable(false);
         modifyHours.setEnabled(false);
     }
 
     private void setFieldClickable() {
         name.setEnabled(true);
-        email.setEnabled(false);
-        // password.setEnabled(true);
+        name.setFocusable(true);
+        name.setFocusableInTouchMode(true);
+        // email.setEnabled(false);
+        email.setFocusable(true);
         phone.setEnabled(true);
+        phone.setFocusable(true);
+        phone.setFocusableInTouchMode(true);
         address.setEnabled(true);
+        address.setFocusable(true);
+        address.setFocusableInTouchMode(true);
         additionalInformation.setEnabled(true);
+        additionalInformation.setFocusable(true);
+        additionalInformation.setFocusableInTouchMode(true);
         deliveryCost.setEnabled(true);
+        deliveryCost.setFocusable(true);
+        deliveryCost.setFocusableInTouchMode(true);
         minimumOrder.setEnabled(true);
+        minimumOrder.setFocusable(true);
+        minimumOrder.setFocusableInTouchMode(true);
         personalImage.setEnabled(true);
+        personalImage.setFocusable(true);
+        personalImage.setFocusableInTouchMode(true);
         editCategory.setEnabled(true);
+        editCategory.setFocusable(true);
         modifyHours.setEnabled(true);
     }
 
@@ -766,15 +816,6 @@ public class ProfileActivity extends AppCompatActivity
                 .error(GlideApp.with(this).load(R.drawable.personicon))
                 .into(nav_profile_icon);
 
-//        String ImageBitmap = prefs.getString("PersonalImage", "NoImage");
-//        if (!ImageBitmap.equals("NoImage")) {
-//            byte[] b = Base64.decode(prefs.getString("PersonalImage", ""), Base64.DEFAULT);
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
-//            nav_profile_icon.setImageBitmap(bitmap);
-//        } else {
-//            Drawable defaultImg = getResources().getDrawable(R.mipmap.ic_launcher_round);
-//            nav_profile_icon.setImageDrawable(defaultImg);
-//        }
 
         TextView navUsername = (TextView) headerView.findViewById(R.id.nav_profile_name);
         TextView navEmail = (TextView) headerView.findViewById(R.id.nav_email);
@@ -807,69 +848,126 @@ public class ProfileActivity extends AppCompatActivity
         startActivityForResult(intentHours, TEXT_REQUEST);
     }
 
-    //todo: aggiungere il menù nell'activity per la modifica degli orari con backbutton e conferma
+    public void setRProfileSupportFields(){
+        fCategoryANDdCost = editCategory.getText().toString() + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
+        if(editCategory.getText().toString().contains("Pizza"))
+            catPizza = "true";
+        else
+            catPizza = "false";
+        catPizzaDel = catPizza + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
-//    public void populateDatabaseWithDummyValues() {
-//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//        database.child("Company").removeValue();
-//
-//        ArrayList<RestaurantProfile> mRestaurantList = new ArrayList<>();
-//        mRestaurantList.add(new RestaurantProfile("Name1", "111", "Via malta", "email1", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
-//        mRestaurantList.add(new RestaurantProfile("Name2", "222", "Via malta", "email2", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
-//        mRestaurantList.add(new RestaurantProfile("Name3", "333", "Via malta", "email3", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
-//        mRestaurantList.add(new RestaurantProfile("Name4", "444", "Via malta", "email4", "Pizzeria", "5,00", "3,00", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h", "Open 24h"));
-//        DatabaseReference profileRef = database.child("Company").child("Profile");
-//
-//        for (RestaurantProfile element : mRestaurantList) {
-//            String email = element.getEmail();
-//            profileRef.child(email).setValue(element);
-//        }
-//
-//        ArrayList<OrderedDish> orderedDishList = new ArrayList<>();
-//        orderedDishList.add(new OrderedDish("Food1", 2, 6.4f));
-//        orderedDishList.add(new OrderedDish("Food2", 6, 10.4f));
-//        orderedDishList.add(new OrderedDish("Food3", 3, 6f));
-//        orderedDishList.add(new OrderedDish("Food4", 5, 9.4f));
-//        orderedDishList.add(new OrderedDish("Food5", 7, 1.5f));
-//
-//        // Compute total Price
-//        float x = 0;
-//        for (OrderedDish element : orderedDishList)
-//            x += element.getPrice() * element.getQuantity();
-//        DecimalFormat df = new DecimalFormat("#.##");
-//        df.setMinimumFractionDigits(2);
-//        String price = df.format(x);
-//
-//        ArrayList<Reservation> mReservationList = new ArrayList<>();
-//        mReservationList.add(new Reservation("Via Moretta 2", "18:45", 0, price));
-//        mReservationList.add(new Reservation("Piazza Sabotino 8", "19:00", 0, price));
-//        mReservationList.add(new Reservation("Via Villarbasse 12", "20:45", 0, price));
-//        mReservationList.add(new Reservation("Corso Rosselli 15", "21:00", 0, price));
-//        mReservationList.add(new Reservation("Address5", "Delivery Time", 0, price));
-//        mReservationList.add(new Reservation("Address6", "Delivery Time", 0, price));
-//        mReservationList.add(new Reservation("Address7", "Delivery Time", 0, price));
-//        mReservationList.add(new Reservation("Address8", "Delivery Time", 0, price));
-//
-//        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
-//        DatabaseReference orderedFoodRef = database.child("Company").child("Reservation").child("OrderedFood");
-//
-//        for (int i = 1; i < 5; i++) {
-//            for (Reservation element : mReservationList) {
-//                String orderID = pendingReservationRef.push().getKey();
-//                element.setOrderID(orderID);
-//                pendingReservationRef.child("email" + i).child(orderID).setValue(element);
-//                orderedFoodRef.child(orderID).setValue(orderedDishList);
-//            }
-//        }
-//
-//    }
+        if(editCategory.getText().toString().contains("Sandwiches") || editCategory.getText().toString().contains("Panini"))
+            catSandwiches = "true";
+        else
+            catSandwiches = "false";
+        catSandwichesDel = catSandwiches + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Kebab"))
+            catKebab = "true";
+        else
+            catKebab = "false";
+        catKebabDel = catKebab + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Italian") || editCategory.getText().toString().contains("Italiano"))
+            catItalian = "true";
+        else
+            catItalian = "false";
+        catItalianDel = catItalian + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("American") || editCategory.getText().toString().contains("Americano"))
+            catAmerican = "true";
+        else
+            catAmerican = "false";
+        catAmericanDel = catAmerican + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Desserts") || editCategory.getText().toString().contains("Dolci"))
+            catDesserts = "true";
+        else
+            catDesserts = "false";
+        catDessertsDel = catDesserts + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Fry") || editCategory.getText().toString().contains("Fritti"))
+            catFry = "true";
+        else
+            catFry = "false";
+        catFryDel = catFry + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Vegetarian") || editCategory.getText().toString().contains("Vegetariano"))
+            catVegetarian = "true";
+        else
+            catVegetarian = "false";
+        catVegetarianDel = catVegetarian + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Asian") || editCategory.getText().toString().contains("Asiatico"))
+            catAsian = "true";
+        else
+            catAsian = "false";
+        this.catAsianDel = catAsian + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("Mediterranean") || editCategory.getText().toString().contains("Mediterraneo"))
+            catMediterranean = "true";
+        else
+            catMediterranean = "false";
+        this.catMediterraneanDel = catMediterranean + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+
+        if(editCategory.getText().toString().contains("South American") || editCategory.getText().toString().contains("Sud Americano"))
+            catSouthAmerican = "true";
+        else
+            catSouthAmerican = "false";
+        catSouthAmericanDel = catSouthAmerican + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
+    }
 
     private void saveFieldsOnFirebase() {
         // progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
 
-        final String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        setRProfileSupportFields();
 
+        final String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
+
+        // Map for profile update
+        HashMap<String, Object> updateValues = new HashMap<>();
+        updateValues.put("name", name.getText().toString());
+        updateValues.put("phone", phone.getText().toString());
+        updateValues.put("address", address.getText().toString());
+        updateValues.put("foodCategory", editCategory.getText().toString());
+
+        updateValues.put("fCategoryANDdCost", fCategoryANDdCost);
+        updateValues.put("catPizza", catPizza);
+        updateValues.put("catSandwiches", catSandwiches);
+        updateValues.put("catKebab", catKebab);
+        updateValues.put("catItalian", catItalian);
+        updateValues.put("catAmerican", catAmerican);
+        updateValues.put("catDesserts", catDesserts);
+        updateValues.put("catFry", catFry);
+        updateValues.put("catVegetarian", catVegetarian);
+        updateValues.put("catAsian", catAsian);
+        updateValues.put("catMediterranean", catMediterranean);
+        updateValues.put("catSouthAmerican", catSouthAmerican);
+        updateValues.put("catPizzaDel", catPizzaDel);
+        updateValues.put("catSandwichesDel", catSandwichesDel);
+        updateValues.put("catKebabDel", catKebabDel);
+        updateValues.put("catItalianDel", catItalianDel);
+        updateValues.put("catAmericanDel", catAmericanDel);
+        updateValues.put("catDessertsDel", catDessertsDel);
+        updateValues.put("catFryDel", catFryDel);
+        updateValues.put("catVegetarianDel", catVegetarianDel);
+        updateValues.put("catAsianDel", catAsianDel);
+        updateValues.put("catMediterraneanDel", catMediterraneanDel);
+        updateValues.put("catSouthAmericanDel", catSouthAmericanDel);
+
+        updateValues.put("minOrder", minimumOrder.getText().toString());
+        updateValues.put("deliveryCost", deliveryCost.getText().toString());
+        updateValues.put("mondayOpeningHours", mondayHour.getText().toString());
+        updateValues.put("tuesdayOpeningHours", tuesdayHour.getText().toString());
+        updateValues.put("wednesdayOpeningHours", wednesdayHour.getText().toString());
+        updateValues.put("thursdayOpeningHours", thursdayHour.getText().toString());
+        updateValues.put("fridayOpeningHours", fridayHour.getText().toString());
+        updateValues.put("saturdayOpeningHours", saturdayHour.getText().toString());
+        updateValues.put("sundayOpeningHours", sundayHour.getText().toString());
+        updateValues.put("additionalInformation", additionalInformation.getText().toString());
+
+        // Map for favorite update
         final HashMap<String, Object> updateFavorite = new HashMap<>();
         updateFavorite.put("id", currentUid);
         updateFavorite.put("name", name.getText().toString());
@@ -887,19 +985,34 @@ public class ProfileActivity extends AppCompatActivity
         updateFavorite.put("saturdayOpeningHours", saturdayHour.getText().toString());
         updateFavorite.put("sundayOpeningHours", sundayHour.getText().toString());
         updateFavorite.put("additionalInformation", additionalInformation.getText().toString());
+//
+//        RestaurantProfile currentUser = new RestaurantProfile(uid, name.getText().toString(), phone.getText().toString(),
+//                address.getText().toString(), email.getText().toString(), editCategory.getText().toString(),
+//                minimumOrder.getText().toString(), deliveryCost.getText().toString(), mondayHour.getText().toString(), tuesdayHour.getText().toString(),
+//                wednesdayHour.getText().toString(), thursdayHour.getText().toString(), fridayHour.getText().toString(),
+//                saturdayHour.getText().toString(), sundayHour.getText().toString(), additionalInformation.getText().toString());
 
-        final RestaurantProfile currentUser = new RestaurantProfile(currentUid, name.getText().toString(), phone.getText().toString(),
-                address.getText().toString(), email.getText().toString(), editCategory.getText().toString(),
-                minimumOrder.getText().toString(), deliveryCost.getText().toString(), mondayHour.getText().toString(), tuesdayHour.getText().toString(),
-                wednesdayHour.getText().toString(), thursdayHour.getText().toString(), fridayHour.getText().toString(),
-                saturdayHour.getText().toString(), sundayHour.getText().toString(), additionalInformation.getText().toString());
-
-
+        //database.getReference("Profiles").child("Restaurants")
+        // Aggiorno il profilo
         final Map updateChildren = new HashMap();
-        updateChildren.put("Company/Profile/" + currentUid, currentUser);
-
+        database.getReference("Company").child("Profile")
+                .child(currentUid)
+                .updateChildren(updateValues, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                        if (databaseError != null) {
+                            // progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                            Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Dati salvati correttamente nel db
+                            // Aggiorno le shared prefs
+                            saveFields();
+                            // progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
+                        }
+                    }
+                });
+        // Aggiorni i favorite
         final DatabaseReference favoriteRef = database.getReference().child("Customer").child("Favorite");
-        database.getReference().child("Company").child("Profile").child(currentUid).setValue(currentUser);
         favoriteRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -907,7 +1020,7 @@ public class ProfileActivity extends AppCompatActivity
                     for (DataSnapshot child : dataSnapshot.getChildren())
                         if (child.child(currentUid).getValue() != null)
                             updateChildren.put("Customer/Favorite/" + child.getKey() + "/" + currentUid, updateFavorite);
-                            //favoriteRef.child(child.getKey()).child(currentUid).updateChildren(updateFavorite);
+                //favoriteRef.child(child.getKey()).child(currentUid).updateChildren(updateFavorite);
                 database.getReference().updateChildren(updateChildren);
             }
 
@@ -916,41 +1029,6 @@ public class ProfileActivity extends AppCompatActivity
 
             }
         });
-
-//        database.getReference().runTransaction(new Transaction.Handler() {
-//            @NonNull
-//            @Override
-//            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-//                mutableData.child("Company").child("Profile").child(currentUid).setValue(currentUser);
-//                Iterable<MutableData> it = mutableData.child("Customer").child("Favorite").getChildren();
-//                for (MutableData child : it){
-//                    if(child.child(currentUid).getValue() != null);
-//                        child.child(currentUid).setValue(updateValues);
-//                }
-//                return Transaction.success(mutableData);
-//            }
-//
-//            @Override
-//            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-//
-//            }
-//        });
-//        database.getReference("Company").child("Profile")
-//                .child(currentUid)
-//                .setValue(currentUser, new DatabaseReference.CompletionListener() {
-//                    @Override
-//                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-//                        if (databaseError != null) {
-//                            // progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-//                            Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            // Dati salvati correttamente nel db: aggiorno le shared prefs
-//                            saveFields();
-//                            // progressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-//                        }
-//                    }
-//                });
-
     }
 
     private void uploadProfilePic(Bitmap bitmap) {
