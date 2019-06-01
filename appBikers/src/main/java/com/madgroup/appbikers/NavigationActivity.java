@@ -111,6 +111,8 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
+        setTitle(R.string.navigation);
+
         getIncomingIntent();
 
         restaurantBtn = findViewById(R.id.restaurantButton);
