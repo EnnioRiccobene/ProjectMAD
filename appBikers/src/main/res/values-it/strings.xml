@@ -41,4 +41,5 @@
     <string name="logout">Esci</string>
     <string name="settings">Impostazioni</string>
     <string name="my_stats">RIEPILOGO</string>
+    <string name="navigation">Navigazione</string>
 </resources>
