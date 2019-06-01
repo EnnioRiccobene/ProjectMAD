@@ -68,18 +68,6 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
 
             });
 
-           /* mDeleteImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener!= null){
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            listener.onDeleteClick(position);
-                        }
-                    }
-
-                }
-            });*/
         }
     }
 
@@ -156,62 +144,4 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         reservationList.add(position,item);
         notifyItemInserted(position);
     }
-
-    // Elimino dalle pending e inserisco nelle accepted. Prima dal database, poi nella lista
-//    public void acceptReservation(Reservation currentItem, int index){
-//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
-//        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted");
-//        String orderID = currentItem.getOrderID();
-//        currentItem.setStatus(1);
-//        // Iniziare qui transazione ???
-//        pendingReservationRef.child("email1").child(orderID).removeValue();
-//        acceptedReservationRef.child("email1").child(orderID).setValue(currentItem);
-//        // Finire qui transazione   ???
-//        removeItem(index);
-//        reservationTab2.acceptedReservation.add(currentItem);
-//        reservationTab2.mAdapter.notifyItemInserted(reservationTab2.acceptedReservation.size());
-//    }
-
-    // Modifico lo status della query accepted. Prima dal database, poi nella lista
-//    public void openRiderPage(final Reservation currentItem, int index){
-//        String orderID = currentItem.getOrderID();
-//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child("email1").child(orderID);
-//        currentItem.setStatus(2);
-//        HashMap<String, Object> statusUpdate = new HashMap<>();
-//        statusUpdate.put("status", 2);
-//        acceptedReservationRef.updateChildren(statusUpdate);
-//        reservationTab2.mAdapter.notifyItemChanged(index);
-//
-//        // Rider search part
-//        final DatabaseReference riderRef = database.child("Rider").child("Profile");
-//        final DatabaseReference deliveriesRef = database.child("Rider").child("Delivery");
-//        Query query = riderRef.orderByChild("active").equalTo(true);
-//        query.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if(dataSnapshot.exists()){
-//                    if((int)dataSnapshot.getChildrenCount() == 0)
-//                        return;
-//                    Random rand = new Random();
-//                    int nActiveProfiles = rand.nextInt((int)dataSnapshot.getChildrenCount());
-//                    Iterator itr = dataSnapshot.getChildren().iterator();
-//                    SmartLogger.d("Active Profiles: " + (int)dataSnapshot.getChildrenCount() + "\nRandomNumber: " + nActiveProfiles);
-//                    for(int i = 0; i < nActiveProfiles; i++)
-//                        itr.next();
-//                    DataSnapshot childSnapshot = (DataSnapshot) itr.next();
-//                    RiderProfile choosenRider = childSnapshot.getValue(RiderProfile.class);
-//                    deliveriesRef.child("Pending").child(choosenRider.getEmail()).child(currentItem.getOrderID()).setValue(currentItem);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//    }
-
 }

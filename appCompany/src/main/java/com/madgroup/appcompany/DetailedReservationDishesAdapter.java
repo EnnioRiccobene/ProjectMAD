@@ -65,31 +65,12 @@ public class DetailedReservationDishesAdapter extends
                 .replace("$", "").replace("€", "")
                 .replace("$", "").replace("€", "")
                 .replaceAll("\\s", "")) * Integer.valueOf(dish.getQuantity());
-        // TODO: Inserire:
-//        Locale current = mContext.getResources().getConfiguration().locale;
-//        String currency = " €";
-//        if(current.equals("en_US")){
-//            currency = " $";
-//        } else if(current.equals("en_GB")){
-//            currency = " £";
-//        }
-//        holder.dishPrice.setText(String.valueOf(df.format(price))+ currency);
+
 
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);
         holder.dishPrice.setText(df.format(price));
 
-        //Lab3Ennio
-        // holder.dishQuantity.setText(String.valueOf("x " + dish.getAvailableQuantity()));
-        // float price = Float.valueOf(dish.getPrice()) * Integer.valueOf(dish.getAvailableQuantity());
-        // holder.dishPrice.setText(String.valueOf(price) + " €");
-
-        // Simone
-        // holder.dishQuantity.setText(String.valueOf("x " + dish.getQuantity()));
-        // float price = dish.getPrice() * dish.getQuantity();
-        // DecimalFormat df = new DecimalFormat("#.##");
-        // df.setMinimumFractionDigits(2);
-        // holder.dishPrice.setText(df.format(price) + " €");
 
     }
 }

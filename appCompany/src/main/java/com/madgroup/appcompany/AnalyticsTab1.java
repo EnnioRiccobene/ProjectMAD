@@ -71,27 +71,27 @@ public class AnalyticsTab1 extends Fragment {
 
     private void initMapMonths() {
         months = new HashMap<>();
-        months.put("1", "January");
-        months.put("2", "February");
-        months.put("3", "March");
-        months.put("4", "April");
-        months.put("5", "May");
-        months.put("6", "June");
-        months.put("7", "July");
-        months.put("8", "August");
-        months.put("9", "September");
-        months.put("01", "January");
-        months.put("02", "February");
-        months.put("03", "March");
-        months.put("04", "April");
-        months.put("05", "May");
-        months.put("06", "June");
-        months.put("07", "July");
-        months.put("08", "August");
-        months.put("09", "September");
-        months.put("10", "October");
-        months.put("11", "November");
-        months.put("12", "December");
+        months.put("1", getString(R.string.january));
+        months.put("2", getString(R.string.february));
+        months.put("3", getString(R.string.march));
+        months.put("4", getString(R.string.april));
+        months.put("5", getString(R.string.may));
+        months.put("6", getString(R.string.june));
+        months.put("7", getString(R.string.july));
+        months.put("8", getString(R.string.august));
+        months.put("9", getString(R.string.september));
+        months.put("01", getString(R.string.january));
+        months.put("02", getString(R.string.february));
+        months.put("03", getString(R.string.march));
+        months.put("04", getString(R.string.april));
+        months.put("05", getString(R.string.may));
+        months.put("06", getString(R.string.june));
+        months.put("07", getString(R.string.july));
+        months.put("08", getString(R.string.august));
+        months.put("09", getString(R.string.september));
+        months.put("10", getString(R.string.october));
+        months.put("11", getString(R.string.november));
+        months.put("12", getString(R.string.december));
     }
 
 
@@ -338,7 +338,7 @@ public class AnalyticsTab1 extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Dish dish = dataSnapshot.getValue(Dish.class);
                             topDishName.setText(dish.getName() + " (" + dish.getPrice() + ")");
-                            salesTextView.setText(topDishQuantity + " sales");
+                            salesTextView.setText(topDishQuantity + " " + getString(R.string.vendite));
                         }
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -348,7 +348,7 @@ public class AnalyticsTab1 extends Fragment {
                 else {
                     topMeal.setImageResource(R.drawable.ic_dish);
                     topDishName.setText("");
-                    salesTextView.setText("No sales detected in this day.");
+                    salesTextView.setText(getString(R.string.no_vendite));
                 }
             }
 

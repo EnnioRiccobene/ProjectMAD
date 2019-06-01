@@ -83,13 +83,13 @@ public class AnalyticsTab2 extends Fragment {
 
     private void initMapDayOfWeek() {
         mapDayOfWeek = new HashMap<>();
-        mapDayOfWeek.put("1","Mon");
-        mapDayOfWeek.put("2","Tue");
-        mapDayOfWeek.put("3","Wed");
-        mapDayOfWeek.put("4","Thu");
-        mapDayOfWeek.put("5","Fri");
-        mapDayOfWeek.put("6","Sat");
-        mapDayOfWeek.put("7","Sun");
+        mapDayOfWeek.put("1",getString(R.string.short_mon));
+        mapDayOfWeek.put("2",getString(R.string.short_tue));
+        mapDayOfWeek.put("3",getString(R.string.short_wed));
+        mapDayOfWeek.put("4",getString(R.string.short_thu));
+        mapDayOfWeek.put("5",getString(R.string.short_fri));
+        mapDayOfWeek.put("6",getString(R.string.short_sat));
+        mapDayOfWeek.put("7",getString(R.string.short_sun));
 
     }
 
@@ -140,14 +140,14 @@ public class AnalyticsTab2 extends Fragment {
         String currentYear = Integer.toString(calendar.get(Calendar.YEAR));
         String titleWeek = "";
         if (currentWeek.equals("1"))
-            titleWeek = currentWeek + "st";
+            titleWeek = currentWeek + getString(R.string.st);
         else if (currentWeek.equals("2"))
-            titleWeek = currentWeek + "nd";
+            titleWeek = currentWeek + getString(R.string.nd);
         else if (currentWeek.equals("3"))
-            titleWeek = currentWeek + "rd";
+            titleWeek = currentWeek + getString(R.string.rd);
         else
             titleWeek = currentWeek + "th";
-        currentFilter.setText(titleWeek + " Week " + " of " + months.get(currentMonth) + " " + currentYear);
+        currentFilter.setText(titleWeek + getString(R.string.week) + getString(R.string.of) + months.get(currentMonth) + " " + currentYear);
         this.selectedMonth = currentMonth;
         this.selectedYear = currentYear;
         this.selectedWeek = currentWeek;
@@ -174,14 +174,14 @@ public class AnalyticsTab2 extends Fragment {
                 }
                 String titleWeek = "";
                 if (selectedWeek.equals("1"))
-                    titleWeek = selectedWeek + "st";
+                    titleWeek = selectedWeek + getString(R.string.st);
                 else if (selectedWeek.equals("2"))
-                    titleWeek = selectedWeek + "nd";
+                    titleWeek = selectedWeek + getString(R.string.nd);
                 else if (selectedWeek.equals("3"))
-                    titleWeek = selectedWeek + "rd";
+                    titleWeek = selectedWeek + getString(R.string.rd);
                 else
                     titleWeek = selectedWeek + "th";
-                currentFilter.setText(titleWeek + " Week " + " of " + months.get(selectedMonth) + " " + selectedYear);
+                currentFilter.setText(titleWeek + getString(R.string.week) + getString(R.string.of) + months.get(selectedMonth) + " " + selectedYear);
                 initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
                 getTopMealOfWeek(res, topMeal, salesTextView, topDishName, selectedWeek, selectedMonth, selectedYear);
 
@@ -204,14 +204,14 @@ public class AnalyticsTab2 extends Fragment {
                 }
                 String titleWeek = "";
                 if (selectedWeek.equals("1"))
-                    titleWeek = selectedWeek + "st";
+                    titleWeek = selectedWeek + getString(R.string.st);
                 else if (selectedWeek.equals("2"))
-                    titleWeek = selectedWeek + "nd";
+                    titleWeek = selectedWeek + getString(R.string.nd);
                 else if (selectedWeek.equals("3"))
-                    titleWeek = selectedWeek + "rd";
+                    titleWeek = selectedWeek + getString(R.string.rd);
                 else
                     titleWeek = selectedWeek + "th";
-                currentFilter.setText(titleWeek + " Week " + " of " + months.get(selectedMonth) + " " + selectedYear);
+                currentFilter.setText(titleWeek + getString(R.string.week) + getString(R.string.of) + months.get(selectedMonth) + " " + selectedYear);
                 initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
                 getTopMealOfWeek(res, topMeal, salesTextView, topDishName, selectedWeek, selectedMonth, selectedYear);
 
@@ -385,7 +385,7 @@ public class AnalyticsTab2 extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Dish dish = dataSnapshot.getValue(Dish.class);
                             topDishName.setText(dish.getName() + " (" + dish.getPrice() + ")");
-                            salesTextView.setText(topDishQuantity + " sales");
+                            salesTextView.setText(topDishQuantity + " " + getString(R.string.vendite));
                         }
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -395,7 +395,7 @@ public class AnalyticsTab2 extends Fragment {
                 else {
                     topMeal.setImageResource(R.drawable.ic_dish);
                     topDishName.setText("");
-                    salesTextView.setText("No sales detected in this day.");
+                    salesTextView.setText(getString(R.string.no_vendite));
                 }
             }
 

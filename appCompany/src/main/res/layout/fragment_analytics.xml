@@ -56,7 +56,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Top meal"
+            android:text="@string/top_meal"
             android:textSize="15sp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
@@ -113,7 +113,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Timing order"
+            android:text="@string/timing_order"
             android:textSize="15sp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"

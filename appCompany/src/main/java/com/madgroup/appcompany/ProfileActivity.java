@@ -170,11 +170,6 @@ public class ProfileActivity extends AppCompatActivity
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        if (FirebaseAuth.getInstance().getCurrentUser()==null) {
-//            // Utente non ancora loggato
-//            startLogin();
-//        }
-
         setContentView(R.layout.activity_main);
         ViewStub stub = (ViewStub) findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
@@ -376,15 +371,14 @@ public class ProfileActivity extends AppCompatActivity
                 if (!modifyingInfo) {         // I pressed for modifying data
                     modifyingInfo = true;
                     setFieldClickable();
-                    Toast.makeText(getApplicationContext(), "Edit fields", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.edit_fields), Toast.LENGTH_SHORT).show();
                 } else {                      // I pressed to come back
                     modifyingInfo = false;
                     setFieldUnclickable();
                     saveFieldsOnFirebase();
-                    //if (!isDefaultImage)
+
                     uploadProfilePic(((BitmapDrawable) personalImage.getDrawable()).getBitmap());
-                    //else
-                    //deleteProfilePic();
+
                 }
                 updateNavigatorInformation();
         }
@@ -983,14 +977,8 @@ public class ProfileActivity extends AppCompatActivity
         updateFavorite.put("saturdayOpeningHours", saturdayHour.getText().toString());
         updateFavorite.put("sundayOpeningHours", sundayHour.getText().toString());
         updateFavorite.put("additionalInformation", additionalInformation.getText().toString());
-//
-//        RestaurantProfile currentUser = new RestaurantProfile(uid, name.getText().toString(), phone.getText().toString(),
-//                address.getText().toString(), email.getText().toString(), editCategory.getText().toString(),
-//                minimumOrder.getText().toString(), deliveryCost.getText().toString(), mondayHour.getText().toString(), tuesdayHour.getText().toString(),
-//                wednesdayHour.getText().toString(), thursdayHour.getText().toString(), fridayHour.getText().toString(),
-//                saturdayHour.getText().toString(), sundayHour.getText().toString(), additionalInformation.getText().toString());
 
-        //database.getReference("Profiles").child("Restaurants")
+
         // Aggiorno il profilo
         final Map updateChildren = new HashMap();
         database.getReference("Company").child("Profile")
@@ -1031,16 +1019,6 @@ public class ProfileActivity extends AppCompatActivity
 
     private void uploadProfilePic(Bitmap bitmap) {
 
-        // imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
-
-        // TODO: Fare il check con l'immagine di default e decommentare
-        // Se è l'immagine di default, non salvo niente ed eventualmente elimino quella presente.
-//        if (isDefaultImage) {
-//            deleteProfilePic();
-//            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-//            return;
-//        }
-
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] data = stream.toByteArray();
@@ -1053,7 +1031,7 @@ public class ProfileActivity extends AppCompatActivity
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
-                Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                Toast.makeText(ProfileActivity.this, getString(R.string.upload_failure), Toast.LENGTH_LONG).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -1075,10 +1053,10 @@ public class ProfileActivity extends AppCompatActivity
                         if (!task.isSuccessful()) {
                             // Handle failures
                             // imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                            Toast.makeText(ProfileActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ProfileActivity.this, getString(R.string.upload_failure), Toast.LENGTH_LONG).show();
                         } else {
                             // imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                            Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), getString(R.string.pic_saved), Toast.LENGTH_SHORT).show();
                             updateNavigatorInformation();
                         }
                     }
@@ -1089,32 +1067,6 @@ public class ProfileActivity extends AppCompatActivity
 
     private void downloadProfilePic() {
 
-        /*
-        final long ONE_MEGABYTE = 1024 * 1024;
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
-                .child("restaurants").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                // Scarico l'immagine e la setto
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                personalImage.setImageBitmap(bitmap);
-                isDefaultImage = false;
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-                int errorCode = ((StorageException) exception).getErrorCode();
-                if (errorCode==StorageException.ERROR_OBJECT_NOT_FOUND) {
-                    // La foto non è presente: carico immagine di default
-                    Drawable defaultImg = getResources().getDrawable(R.drawable.personicon);
-                    personalImage.setImageDrawable(defaultImg);
-                    isDefaultImage = true;
-                }
-            }
-        });
-        */
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
                 .child("restaurants").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         GlideApp.with(this)
@@ -1146,25 +1098,13 @@ public class ProfileActivity extends AppCompatActivity
 
     private void hideFields() {
         nestedScrollView.setVisibility(View.GONE);
-//        name.setVisibility(View.INVISIBLE);
-//        email.setVisibility(View.INVISIBLE);
-//        phone.setVisibility(View.INVISIBLE);
-//        address.setVisibility(View.INVISIBLE);
-//        additionalInformation.setVisibility(View.INVISIBLE);
-//        deliveryCost.setVisibility(View.INVISIBLE);
-//        minimumOrder.setVisibility(View.INVISIBLE);
+
         progressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
     }
 
     private void showFields() {
         nestedScrollView.setVisibility(View.VISIBLE);
-//        name.setVisibility(View.VISIBLE);
-//        email.setVisibility(View.VISIBLE);
-//        phone.setVisibility(View.VISIBLE);
-//        address.setVisibility(View.VISIBLE);
-//        additionalInformation.setVisibility(View.VISIBLE);
-//        deliveryCost.setVisibility(View.VISIBLE);
-//        minimumOrder.setVisibility(View.VISIBLE);
+
         progressBar.setVisibility(View.INVISIBLE);  // Nascondo la progress bar
     }
 
@@ -1215,8 +1155,8 @@ public class ProfileActivity extends AppCompatActivity
                                 @Override
                                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                                     if (databaseError != null) {
-                                        Toast.makeText(getApplicationContext(), "Connection error.", Toast.LENGTH_SHORT).show();
-                                        // todo: rimuovere la registrazione dell'utente
+                                        Toast.makeText(getApplicationContext(), getString(R.string.connection_error), Toast.LENGTH_SHORT).show();
+
                                     } else {
                                         name.setText(user.getDisplayName());
                                         email.setText(user.getEmail());
@@ -1271,6 +1211,5 @@ public class ProfileActivity extends AppCompatActivity
                     }
                 });
     }
-
 
 }

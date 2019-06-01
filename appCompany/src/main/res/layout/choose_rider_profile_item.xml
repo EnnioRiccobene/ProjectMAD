@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:layout_toEndOf="@id/rider_photo"
-            android:text="Simone Garofalo"
+            android:text="Rider name"
             android:textColor="#000"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
-            android:text="300 mt"
+            android:text=""
             android:textColor="#777"
             android:textSize="13sp" />
 

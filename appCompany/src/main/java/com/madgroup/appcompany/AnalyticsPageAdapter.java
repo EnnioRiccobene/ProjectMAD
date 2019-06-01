@@ -1,13 +1,18 @@
 package com.madgroup.appcompany;
 
+import android.content.Context;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class AnalyticsPageAdapter extends FragmentStatePagerAdapter {
 
-    public AnalyticsPageAdapter(FragmentManager fm){
+    Context context;
+
+    public AnalyticsPageAdapter(FragmentManager fm, Context context){
         super(fm);
+        this.context = context;
     }
 
     @Override
@@ -26,9 +31,9 @@ public class AnalyticsPageAdapter extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         switch (position){
-            case 0: return "Day";
-            case 1: return "Week";
-            case 2: return "Month";
+            case 0: return context.getString(R.string.day);
+            case 1: return context.getString(R.string.week);
+            case 2: return context.getString(R.string.month);
             default: return null;
         }
     }

@@ -38,6 +38,8 @@ public class EditOpeningHoursActivity extends AppCompatActivity {
 
         initWeekDayName();
 
+        setTitle(R.string.opening_hours_title);
+
         // Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -68,8 +70,6 @@ public class EditOpeningHoursActivity extends AppCompatActivity {
         initRecycleView();
     }
 
-    /*todo: mandare i valori all'activity principale, forse salvandoli su un hashmap (coppia chiave valore) -> ((String)weekday, (String)coppia orari scelti)
-    poi farò unaricerca con if(lunedì è presente nella mappa) allora prendo il valore. Metto nella mappa solo quelli con checkbox attiva*/
 
     private void initRecycleView(){
         RecyclerView recyclerView = findViewById(R.id.hoursrecycleview);

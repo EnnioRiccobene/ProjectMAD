@@ -114,7 +114,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_navigation_drawer);
         ViewStub stub = (ViewStub) findViewById(R.id.stub);
 
-
+        setTitle(R.string.daily_offer_title);
 
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_daily_offer);
@@ -165,16 +165,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
         getItemsFromDb();
 
-        //
-//        adapter.startListening();
-//
-//        // Serve per modificare il campo currentDialog dall'adapter
-//        adapter.adapterhandler = new AdapterHandler() {
-//            @Override
-//            public void setCurrentDialog(Dialog dialog) {
-//                DailyOfferActivity.this.currentDialog = dialog;
-//            }
-//        };
     }
 
     void getItemsFromDb() {
@@ -311,7 +301,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
     }
 
     // Dialog per la creazione di un NUOVO piatto
-    //todo creazione piatto nel db
     private void showDialog(final Dish item) {
         // custom dialog
         final Dialog dialog = new Dialog(this);
@@ -379,7 +368,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
                     Toast.makeText(getApplicationContext(), getString(R.string.requiredPrice), Toast.LENGTH_SHORT).show();
                 } else {
                     //formatto la stringa prezzo da mettere nel db
-                    BigDecimal dishPrice = new BigDecimal(floatPrice).setScale(2, RoundingMode.HALF_UP);//todo: sistemare crash
+                    BigDecimal dishPrice = new BigDecimal(floatPrice).setScale(2, RoundingMode.HALF_UP);
                     String stringPrice = String.valueOf(dishPrice);
                     if (local.equals("en_US")) {
                         stringPrice = stringPrice + " $";
@@ -437,15 +426,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
         final StorageReference photoRef = FirebaseStorage.getInstance().getReference("dish_pics")
                 .child(restaurantUid).child(dishID);
 
-        // imgProgressBar.setVisibility(View.VISIBLE);  // Mostro la progress bar
-
-        // TODO: Fare il check con l'immagine di default e decommentare
-        // Se è l'immagine di default, non salvo niente ed eventualmente elimino quella presente.
-//        if (isDefaultImage) {
-//            deletePic();
-//            imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-//            return;
-//        }
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         Bitmap img = ((BitmapDrawable)(dishImage.getDrawable())).getBitmap();
@@ -457,7 +437,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
-                Toast.makeText(DailyOfferActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                Toast.makeText(DailyOfferActivity.this, getString(R.string.upload_failure), Toast.LENGTH_LONG).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -479,10 +459,10 @@ public class DailyOfferActivity extends AppCompatActivity implements
                         if (!task.isSuccessful()) {
                             // Handle failures
                             // imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                            Toast.makeText(DailyOfferActivity.this, "Upload Failure", Toast.LENGTH_LONG).show();
+                            Toast.makeText(DailyOfferActivity.this, getString(R.string.upload_failure), Toast.LENGTH_LONG).show();
                         } else {
                             //imgProgressBar.setVisibility(View.GONE);  // Nascondo la progress bar
-                            Toast.makeText(getApplicationContext(), "Pic Saved!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), getString(R.string.pic_saved), Toast.LENGTH_SHORT).show();
                             adapter.notifyDataSetChanged();
                             progressBar.setVisibility(View.GONE);
                             recyclerView.setVisibility(View.VISIBLE);

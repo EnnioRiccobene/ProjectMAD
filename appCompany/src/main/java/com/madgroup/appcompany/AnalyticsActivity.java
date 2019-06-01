@@ -80,7 +80,7 @@ public class AnalyticsActivity extends AppCompatActivity implements
         stub.setInflatedId(R.id.inflatedActivity);
         stub.setLayoutResource(R.layout.activity_analytics);
         stub.inflate();
-        this.setTitle("Analytics");
+        this.setTitle(R.string.analytics_title);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
@@ -88,13 +88,11 @@ public class AnalyticsActivity extends AppCompatActivity implements
         initializeNavigationDrawer();
         initializeTabs();
 
-        //initializeDailyHistogram();
-
     }
 
     public void initializeTabs() {
         ViewPager viewPager = (ViewPager) findViewById(R.id.analytics_pager);
-        AnalyticsPageAdapter myPagerAdapter = new AnalyticsPageAdapter(getSupportFragmentManager());
+        AnalyticsPageAdapter myPagerAdapter = new AnalyticsPageAdapter(getSupportFragmentManager(), this);
         viewPager.setAdapter(myPagerAdapter);
         viewPager.setCurrentItem(0, true);
         tabLayout = (TabLayout) findViewById(R.id.analytics_tab_layout);
@@ -192,90 +190,4 @@ public class AnalyticsActivity extends AppCompatActivity implements
                 .into(nav_profile_icon);
     }
 
-
-//    public void initializeDailyHistogram() {
-//
-//        // Database references
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        String restaurantID = prefs.getString("currentUser", "");
-//        Calendar calendar = Calendar.getInstance();
-//        String year = Integer.toString(calendar.get(Calendar.YEAR));
-//        String month = Integer.toString(calendar.get(Calendar.MONTH));
-//        String weekOfMonth = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH));
-//        String node = year+"_"+month+"_"+weekOfMonth;
-//        //final String dayOfMonth = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
-//        final String dayOfMonth = "22";
-//        DatabaseReference timingOrederRef = database.getReference().child("Company").child("Reservation").child("TimingOrder")
-//                .child(restaurantID).child(node);
-//
-//
-//        // Riferimenti all'istogramma
-//        final AnyChartView anyChartView = findViewById(R.id.daily_histogram);
-//        anyChartView.setProgressBar(findViewById(R.id.daily_progress_bar));
-//        final Cartesian cartesian = AnyChart.column();
-//
-//        timingOrederRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//                // Inizializzo un'hashmap con tutti i valori da mostrare sull'asse delle x (cioè le fasce orarie)
-//                // Uso TreeMap perchè tiene in ordine le chiavi.
-//                TreeMap<String,Integer> hashMap = new TreeMap<>();
-//                for (int i=18; i<24; i++) {
-//                    hashMap.put(""+i, 0);
-//                }
-//
-//                // Leggo il numero di consegne per ogni fascia oraria e aggiorno la mappa
-//                for(DataSnapshot ds : dataSnapshot.getChildren()) {
-//                    String day_hourSlot = ds.getKey();
-//                    Integer amountOfOrders = ds.getValue(Integer.class);
-//                    // Se il giorno corrisponde al giorno selezionato lo vado a mostrare con la relativa fascia oraria
-//                    if(day_hourSlot.startsWith(dayOfMonth)) {
-//                        String fields[] = day_hourSlot.split("_");
-//                        String hourSlot = fields[1];
-//                        hashMap.put(hourSlot, amountOfOrders);
-//                        //data.add(new ValueDataEntry(hourSlot, amountOfOrders));
-//                    }
-//                }
-//
-//                // Converto la mappa in ArrayList (la libreria accetta questo formato)
-//                List<DataEntry> data = new ArrayList<>();
-//                for (TreeMap.Entry<String, Integer> entry : hashMap.entrySet()) {
-//                    String hourSlot = entry.getKey();
-//                    Integer amountOfOrders = entry.getValue();
-//                    data.add(new ValueDataEntry(hourSlot, amountOfOrders));
-//                }
-//
-//                Column column = cartesian.column(data);
-//                column.tooltip()
-//                        .titleFormat("{%X}")
-//                        .position(Position.CENTER_TOP)
-//                        .anchor(Anchor.CENTER_TOP)
-//                        .offsetX(0d)
-//                        .offsetY(5d);
-//                cartesian.animation(true);
-//                cartesian.title("Timing of orders");
-//                cartesian.yScale().minimum(0d);
-//                cartesian.yAxis(0).labels().enabled(false);
-//                //.format("{%Value}{groupsSeparator: }");
-//                cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
-//                cartesian.tooltip().title().text("Amount of deliveries");
-//                cartesian.tooltip().format("{%value}");
-//                cartesian.interactivity().hoverMode(HoverMode.BY_X);
-//                cartesian.xAxis(0).title("");
-//                //cartesian.yAxis(0).title("Amount of orders");
-//                anyChartView.setChart(cartesian);
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//            }
-//        });
-//    }
-
-    /*
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-    */
 }

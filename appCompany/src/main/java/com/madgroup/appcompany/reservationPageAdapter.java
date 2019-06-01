@@ -1,14 +1,18 @@
 package com.madgroup.appcompany;
 
+import android.content.Context;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class reservationPageAdapter extends FragmentStatePagerAdapter {
 
+    Context context;
 
-    public reservationPageAdapter(FragmentManager fm) {
+    public reservationPageAdapter(FragmentManager fm, Context context) {
         super(fm);
+        this.context = context;
     }
 
     @Override
@@ -33,11 +37,11 @@ public class reservationPageAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Pending";
+                return context.getString(R.string.pending);
             case 1:
-                return "Accepted";
+                return context.getString(R.string.accepted);
             case 2:
-                return "History";
+                return context.getString(R.string.history);
             default:
                 return null;
         }

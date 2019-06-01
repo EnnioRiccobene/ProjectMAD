@@ -24,8 +24,8 @@
     <string name="start_navigation">Inizia la navigazione</string>
     <string name="road_to">Vai verso</string>
     <string name="Profile">Profilo</string>
-    <string name="Pending">Pendenti</string>
-    <string name="History">Storico</string>
+    <string name="Pending">PENDENTI</string>
+    <string name="History">STORICO</string>
     <string name="Deliveries">Consegne</string>
     <string name="gps_permission_msg">Consenti l\'uso del GPS dalle impostazioni per permettere all\'app di lavorare correttamente.</string>
     <string name="caricamento_fallito">Caricamento fallito</string>

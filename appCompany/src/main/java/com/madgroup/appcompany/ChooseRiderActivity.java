@@ -36,7 +36,7 @@ public class ChooseRiderActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         restaurantAddress = prefs.getString("Address", "noAddress");
         if (restaurantAddress.equals("noAddress")) {
-            Toast.makeText(this, "No Address setted", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.no_address), Toast.LENGTH_LONG).show();
             finish();
         }
 
@@ -46,7 +46,7 @@ public class ChooseRiderActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        this.setTitle("Choose a rider");
+        this.setTitle(R.string.choose_rider);
 
         // RECYCLERVIEW
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);

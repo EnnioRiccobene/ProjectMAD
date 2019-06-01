@@ -47,9 +47,9 @@
                     android:id="@+id/dishesText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableRight="@drawable/ic_product"
+                    android:drawableEnd="@drawable/ic_product"
                     android:gravity="center"
-                    android:text="Ordered dishes"
+                    android:text="@string/ordered_dishes"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -83,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/firs_view"
                     android:layout_marginTop="16dp"
-                    android:text="Total: "
+                    android:text="@string/total"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -96,7 +96,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="18dp"
                     android:layout_marginEnd="16dp"
-                    android:text="3 €"
+                    android:text=""
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
 
@@ -114,7 +114,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/second_view"
                     android:layout_marginTop="16dp"
-                    android:text="Address: "
+                    android:text="@string/address_cart"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -125,7 +125,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/address_bold"
                     android:layout_toEndOf="@+id/address_bold"
-                    android:text="Via del buio"
+                    android:text=""
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
 
@@ -135,7 +135,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/address"
                     android:layout_marginTop="16dp"
-                    android:text="Lunch time: "
+                    android:text="@string/launch_time_cart"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -146,7 +146,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/time_bold"
                     android:layout_toEndOf="@+id/time_bold"
-                    android:text="11:50"
+                    android:text=""
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
 
@@ -156,7 +156,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/time"
                     android:layout_marginTop="16dp"
-                    android:text="Notes: "
+                    android:text="@string/notes"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -166,7 +166,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/notes_bold"
-                    android:layout_toRightOf="@+id/notes_bold"
+                    android:layout_toEndOf="@+id/notes_bold"
                     android:text="/"
                     android:textColor="#3d3d3d"
                     android:textSize="16sp" />
@@ -180,7 +180,7 @@
                     android:layout_marginTop="6dp"
                     android:gravity="center"
                     android:src="@drawable/ic_circled_confirm"
-                    android:text="Confirm Order"
+                    android:text="@string/confirm_order"
                     android:tint="@color/colorPrimaryDark" />
 
             </RelativeLayout>

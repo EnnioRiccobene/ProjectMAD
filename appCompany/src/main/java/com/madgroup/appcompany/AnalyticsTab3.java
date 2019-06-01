@@ -323,7 +323,7 @@ public class AnalyticsTab3 extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Dish dish = dataSnapshot.getValue(Dish.class);
                             topDishName.setText(dish.getName() + " (" + dish.getPrice() + ")");
-                            salesTextView.setText(topDishQuantity + " sales");
+                            salesTextView.setText(topDishQuantity + " " + getString(R.string.vendite));
                         }
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -333,7 +333,7 @@ public class AnalyticsTab3 extends Fragment {
                 else {
                     topMeal.setImageResource(R.drawable.ic_dish);
                     topDishName.setText("");
-                    salesTextView.setText("No sales detected in this day.");
+                    salesTextView.setText(getString(R.string.no_vendite));
                 }
             }
 

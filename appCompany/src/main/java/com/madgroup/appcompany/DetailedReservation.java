@@ -57,7 +57,7 @@ public class DetailedReservation extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        this.setTitle("Detailed Reservation");
+        this.setTitle(R.string.detreservation_title);
 
         // RECYCLERVIEW
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -143,10 +143,7 @@ public class DetailedReservation extends AppCompatActivity {
         multipleAtomicQueries.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID, null);
         reservation.setStatus(4);
         multipleAtomicQueries.put("Customer/Order/History/" + reservation.getCustomerID()  + "/" + orderID, reservation);
-        // DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
-        // DatabaseReference historyReservationRef = database.child("Company").child("Reservation").child("History").child(currentUser);
-        // pendingReservationRef.child(orderID).removeValue();
-        // historyReservationRef.child(orderID).setValue(reservation);
+
         database.updateChildren(multipleAtomicQueries);
     }
 }

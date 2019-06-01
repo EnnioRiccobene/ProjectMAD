@@ -26,11 +26,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- A RecyclerView with some commonly used attributes -->
-    <!--<androidx.recyclerview.widget.RecyclerView-->
-    <!--android:id="@+id/reservationRecyclerView"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:scrollbars="vertical"/>-->
+
 
 </LinearLayout>

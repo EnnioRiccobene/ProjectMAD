@@ -77,7 +77,7 @@ public class ReservationActivity extends AppCompatActivity implements
         stub.inflate();
 
         initializeTabs();
-        this.setTitle("Reservations");
+        this.setTitle(getString(R.string.reservations));
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = prefs.edit();
@@ -116,12 +116,6 @@ public class ReservationActivity extends AppCompatActivity implements
 
             }
         });
-
-//        notificationText = getResources().getString(R.string.notification_text);
-//        if (prefs.contains("currentUser")) {
-//            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
-//            notify.newOrderListner();
-//        }
 
     }
 
@@ -213,7 +207,7 @@ public class ReservationActivity extends AppCompatActivity implements
     public void initializeTabs(){
         // Add tabs
         final ViewPager viewPager = (ViewPager) findViewById(R.id.reservationViewPager);
-        reservationPageAdapter myPagerAdapter = new reservationPageAdapter(getSupportFragmentManager());
+        reservationPageAdapter myPagerAdapter = new reservationPageAdapter(getSupportFragmentManager(), this);
         viewPager.setAdapter(myPagerAdapter);
         tabLayout = (TabLayout) findViewById(R.id.tablayout);
         tabLayout.setupWithViewPager(viewPager);
@@ -244,21 +238,6 @@ public class ReservationActivity extends AppCompatActivity implements
 
     }
 
-    // TODO
-    public void reloadReservationList() {
-
-//        reservationTab1.pendingReservation = new ArrayList<>();
-//        reservationTab2.acceptedReservation = new ArrayList<>();
-//        reservationTab3.historyReservation = new ArrayList<>();
-//
-//        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//        DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending");
-//        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted");
-//        DatabaseReference hisotryReservationRef = database.child("Company").child("Reservation").child("History");
-        // RIEMPIERE LE LISTE E AGGIORNARE LE RECYCLER VIEW
-
-
-    }
 
     private void startLogout() {
         AuthUI.getInstance()

@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:text="Dish"
+            android:text="@string/dish"
             android:textColor="#222222"
             android:textSize="16dp" />
 
@@ -28,7 +28,7 @@
             android:layout_toRightOf="@id/dishName"
             android:layout_alignBaseline="@+id/dishName"
             android:layout_weight="0"
-            android:text="Quantity"
+            android:text="@string/quantity"
             android:textColor="#999999"
             android:textStyle="italic" />
 
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_weight="0"
-            android:text="Price"
+            android:text="@string/price"
             android:textColor="#222222" />
     </RelativeLayout>
 </RelativeLayout>

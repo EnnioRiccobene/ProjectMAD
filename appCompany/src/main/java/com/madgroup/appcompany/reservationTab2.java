@@ -56,12 +56,12 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class reservationTab2 extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
+
     private String mParam1;
     private String mParam2;
     private RecyclerView mRecyclerView;
@@ -83,7 +83,7 @@ public class reservationTab2 extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment reservationTab2.
      */
-    // TODO: Rename and change types and number of parameters
+
     public static reservationTab2 newInstance(String param1, String param2) {
         reservationTab2 fragment = new reservationTab2();
         Bundle args = new Bundle();
@@ -119,7 +119,7 @@ public class reservationTab2 extends Fragment {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -245,7 +245,7 @@ public class reservationTab2 extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists() || dataSnapshot.getChildrenCount() == 0) {
-                    Toast.makeText(getActivity(), "No rider available", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.no_rider), Toast.LENGTH_LONG).show();
                     return;
                 }
                 ArrayList<RiderProfile> riderList = new ArrayList<>();
@@ -253,7 +253,7 @@ public class reservationTab2 extends Fragment {
                     riderList.add(postSnapshot.getValue(RiderProfile.class));
 
                 if (riderList.size() == 0) {
-                    Toast.makeText(getActivity(), "No rider available", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.no_rider), Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -272,53 +272,6 @@ public class reservationTab2 extends Fragment {
 
             }
         });
-
-//        String orderID = currentItem.getOrderID();
-//        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-//        DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser).child(orderID);
-//        currentItem.setStatus(2);
-//        HashMap<String, Object> statusUpdate = new HashMap<>();
-//        statusUpdate.put("status", 2);
-//        acceptedReservationRef.updateChildren(statusUpdate);
-//
-//        // Rider search part
-//        final DatabaseReference riderRef = database.child("Rider").child("Profile");
-//        final DatabaseReference deliveriesRef = database.child("Rider").child("Delivery");
-//        Query query = riderRef.orderByChild("status").equalTo(true);
-//        query.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if (dataSnapshot.exists()) {
-//                    if ((int) dataSnapshot.getChildrenCount() == 0)
-//                        return;
-//                    Random rand = new Random();
-//                    int nActiveProfiles = rand.nextInt((int) dataSnapshot.getChildrenCount());
-//                    Iterator itr = dataSnapshot.getChildren().iterator();
-//                    for (int i = 0; i < nActiveProfiles; i++)
-//                        itr.next();
-//                    DataSnapshot childSnapshot = (DataSnapshot) itr.next();
-//                    RiderProfile choosenRider = childSnapshot.getValue(RiderProfile.class);
-//                    // Creating Delivery Item
-//                    HashMap<String, String> Delivery = new HashMap<>();
-//                    Delivery.put("restaurantID", currentUser);
-//                    Delivery.put("customerID", currentItem.getCustomerID());
-//                    Delivery.put("restaurantName", prefs.getString("Name", ""));
-//                    Delivery.put("restaurantAddress", prefs.getString("Address", ""));
-//                    Delivery.put("customerAddress", currentItem.getAddress());
-//                    Delivery.put("orderID", currentItem.getOrderID());
-//                    Delivery.put("deliveryTime", currentItem.getDeliveryTime());
-//                    //Delivery.put("seen", false);
-//                    deliveriesRef.child("Pending").child(choosenRider.getId()).child(currentItem.getOrderID()).setValue(Delivery);
-//                    final DatabaseReference notifyFlagRef = database.child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(choosenRider.getId()).child(currentItem.getOrderID()).child("seen");
-//                    notifyFlagRef.setValue(false);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
 
     }
 
