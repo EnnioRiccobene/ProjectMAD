@@ -128,6 +128,7 @@
     <string name="price">Price</string>
     <string name="top_meal">Top meal</string>
     <string name="timing_order">Timing order</string>
+    <string name="th">th</string>
 
     <string-array name="hours_list">
         <item>00:00</item>

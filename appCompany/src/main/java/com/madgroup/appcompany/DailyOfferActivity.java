@@ -217,6 +217,11 @@ public class DailyOfferActivity extends AppCompatActivity implements
             Intent myIntent = new Intent(this, ReservationActivity.class);
             this.startActivity(myIntent);
 
+        } else if (id == R.id.nav_analytics) {
+
+            Intent myIntent = new Intent(this, AnalyticsActivity.class);
+            this.startActivity(myIntent);
+
         } else if (id == R.id.nav_profile) {
             Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);

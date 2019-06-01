@@ -69,6 +69,9 @@ public class AnalyticsActivity extends AppCompatActivity implements
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     private TabLayout tabLayout;
+    String notificationTitle = "MAD Company";
+    String notificationText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +90,16 @@ public class AnalyticsActivity extends AppCompatActivity implements
 
         initializeNavigationDrawer();
         initializeTabs();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        notificationText = getResources().getString(R.string.notification_text);
+        if (prefs.contains("currentUser")) {
+
+            DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", ""));
+            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+            notify.newOrderListner();
+        }
 
     }
 
@@ -119,9 +132,12 @@ public class AnalyticsActivity extends AppCompatActivity implements
             this.startActivity(myIntent);
 
         } if (id == R.id.nav_analytics) {
+            onBackPressed();
 
         } else if (id == R.id.nav_profile) {
-            onBackPressed();
+
+            Intent myIntent = new Intent(this, ProfileActivity.class);
+            this.startActivity(myIntent);
         } else if (id == R.id.nav_logout) {
             startLogout();
         }

@@ -135,6 +135,11 @@ public class ReservationActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_reservations) {
             onBackPressed();
 
+        } else if (id == R.id.nav_analytics) {
+
+            Intent myIntent = new Intent(this, AnalyticsActivity.class);
+            this.startActivity(myIntent);
+
         } else if (id == R.id.nav_profile) {
             // Change activity to Daily Offer
             Intent myIntent = new Intent(this, ProfileActivity.class);
