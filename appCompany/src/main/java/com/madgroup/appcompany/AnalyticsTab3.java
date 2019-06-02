@@ -344,31 +344,30 @@ public class AnalyticsTab3 extends Fragment {
         });
     }
 
-
     private void initMapMonths() {
         months = new HashMap<>();
-        months.put("1", "January");
-        months.put("2", "February");
-        months.put("3", "March");
-        months.put("4", "April");
-        months.put("5", "May");
-        months.put("6", "June");
-        months.put("7", "July");
-        months.put("8", "August");
-        months.put("9", "September");
-        months.put("10", "October");
-        months.put("11", "November");
-        months.put("12", "December");
+        months.put("1", getString(R.string.january));
+        months.put("2", getString(R.string.february));
+        months.put("3", getString(R.string.march));
+        months.put("4", getString(R.string.april));
+        months.put("5", getString(R.string.may));
+        months.put("6", getString(R.string.june));
+        months.put("7", getString(R.string.july));
+        months.put("8", getString(R.string.august));
+        months.put("9", getString(R.string.september));
+        months.put("10", getString(R.string.october));
+        months.put("11", getString(R.string.november));
+        months.put("12", getString(R.string.december));
     }
     private void initMapDayOfWeek() {
         mapDayOfWeek = new HashMap<>();
-        mapDayOfWeek.put("1","Mon");
-        mapDayOfWeek.put("2","Tue");
-        mapDayOfWeek.put("3","Wed");
-        mapDayOfWeek.put("4","Thu");
-        mapDayOfWeek.put("5","Fri");
-        mapDayOfWeek.put("6","Sat");
-        mapDayOfWeek.put("7","Sun");
+        mapDayOfWeek.put("1", getString(R.string.short_mon));
+        mapDayOfWeek.put("2", getString(R.string.short_tue));
+        mapDayOfWeek.put("3", getString(R.string.short_wed));
+        mapDayOfWeek.put("4", getString(R.string.short_thu));
+        mapDayOfWeek.put("5", getString(R.string.short_fri));
+        mapDayOfWeek.put("6", getString(R.string.short_sat));
+        mapDayOfWeek.put("7", getString(R.string.short_sun));
     }
 
     public static String getNextMonth(String curDate) {

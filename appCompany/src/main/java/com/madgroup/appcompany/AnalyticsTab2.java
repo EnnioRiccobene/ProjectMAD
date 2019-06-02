@@ -147,7 +147,7 @@ public class AnalyticsTab2 extends Fragment {
             titleWeek = currentWeek + getString(R.string.rd);
         else
             titleWeek = currentWeek + getString(R.string.th);
-        currentFilter.setText(titleWeek +" " + getString(R.string.week) + " " + getString(R.string.of) + " " + months.get(currentMonth) + " " + currentYear);
+        currentFilter.setText(titleWeek + " " + getString(R.string.week) + " " + getString(R.string.of) + " " + months.get(currentMonth) + " " + currentYear);
         this.selectedMonth = currentMonth;
         this.selectedYear = currentYear;
         this.selectedWeek = currentWeek;
@@ -181,7 +181,7 @@ public class AnalyticsTab2 extends Fragment {
                     titleWeek = selectedWeek + getString(R.string.rd);
                 else
                     titleWeek = selectedWeek + getString(R.string.th);
-                currentFilter.setText(titleWeek + getString(R.string.week) + getString(R.string.of) + months.get(selectedMonth) + " " + selectedYear);
+                currentFilter.setText(titleWeek + " " + getString(R.string.week) + " " +getString(R.string.of) + " " +months.get(selectedMonth) + " " + selectedYear);
                 initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
                 getTopMealOfWeek(res, topMeal, salesTextView, topDishName, selectedWeek, selectedMonth, selectedYear);
 
@@ -211,7 +211,7 @@ public class AnalyticsTab2 extends Fragment {
                     titleWeek = selectedWeek + getString(R.string.rd);
                 else
                     titleWeek = selectedWeek + getString(R.string.th);
-                currentFilter.setText(titleWeek + getString(R.string.week) + getString(R.string.of) + months.get(selectedMonth) + " " + selectedYear);
+                currentFilter.setText(titleWeek + " " + getString(R.string.week) + " " + getString(R.string.of) + " " + months.get(selectedMonth) + " " + selectedYear);
                 initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
                 getTopMealOfWeek(res, topMeal, salesTextView, topDishName, selectedWeek, selectedMonth, selectedYear);
 
