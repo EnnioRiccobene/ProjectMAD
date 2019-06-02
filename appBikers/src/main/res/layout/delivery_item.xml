@@ -65,13 +65,12 @@
 
         <TextView
             android:id="@+id/customerAddress"
-            android:layout_width="261dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/customerAddress_bold"
             android:layout_marginTop="3dp"
             android:layout_toEndOf="@+id/customerAddress_bold"
             android:maxWidth="250dip"
-            android:text=""
             android:textColor="#777"
             android:textSize="13sp" />
 
@@ -79,8 +78,8 @@
             android:id="@+id/distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/customerAddress"
             android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@id/customerAddress"
             android:textColor="#777"
             android:textSize="13sp"
             android:textStyle="italic" />
