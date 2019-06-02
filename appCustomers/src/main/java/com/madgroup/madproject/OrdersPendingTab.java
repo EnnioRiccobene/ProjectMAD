@@ -282,8 +282,8 @@ public class OrdersPendingTab extends Fragment {
         database.updateChildren(multipleAtomicQuery);
 
         // 3.1 Rider: rimuovo da pending e pongo su history
-        DatabaseReference bikerDeliveryRef = database.child("Rider").child("Delivery").child("Pending");
-        bikerDeliveryRef.addValueEventListener(new ValueEventListener() {
+        DatabaseReference bikerDeliveryRef = database.child("Rider").child("Delivery").child("Pending").child(currentItem.getBikerID()).child(currentItem.getOrderID());
+        bikerDeliveryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists())

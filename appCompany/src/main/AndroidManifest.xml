@@ -31,7 +31,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.madgroup.appcompany.ReservationActivity" />
         </activity>
-        <activity android:name=".DailyOfferActivity" />
+        <activity android:name=".DailyOfferActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".ReservationActivity" />
         <activity android:name=".AnalyticsActivity" />
 
