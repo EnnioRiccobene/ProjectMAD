@@ -178,7 +178,7 @@ public class reservationTab1 extends Fragment {
                 database.updateChildren(multipleAtomicQuery);
 
                 //transazione per aggiornare il campo del db orderedQuantityTot dei piatti ordinati
-                updateDishesOrderedQuantityTot(currentItem);//todo testare cosa non funziona
+                updateDishesOrderedQuantityTot(currentItem);
 
                 dialog.dismiss();
             }
@@ -203,7 +203,7 @@ public class reservationTab1 extends Fragment {
 
                 if(mutableData.getValue() != null){
 
-                    for (int i = 0; i < currentItem.getOrderedDishList().size(); i++) { //todo: fallisce qui in maniera strana
+                    for (int i = 0; i < currentItem.getOrderedDishList().size(); i++) {
                         int a = Integer.valueOf((String) mutableData.child(currentItem.getOrderedDishList().get(i).getId()).child("orderedQuantityTot").getValue())
                                 + Integer.valueOf(currentItem.getOrderedDishList().get(i).getQuantity());
                         mutableData.child(currentItem.getOrderedDishList().get(i).getId()).child("orderedQuantityTot").setValue(String.valueOf(a));
@@ -239,7 +239,28 @@ public class reservationTab1 extends Fragment {
                             @Override
                             public void onClick(View v) {
 
-                                confirmAcceptanceDialog(getActivity(), "MADelivery", getString(R.string.msg_accept_dialog), currentItem);
+                                // Scarico dal DB orderedFood
+                                DatabaseReference fooddatabase = FirebaseDatabase.getInstance().getReference();
+                                String orderID = currentItem.getOrderID();
+                                DatabaseReference orderedFoodRef = fooddatabase.child("Company").child("Reservation").child("OrderedFood").child(currentUser).child(orderID);
+                                orderedFoodRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        ArrayList<OrderedDish> orderedFood = new ArrayList<>();
+                                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                                            OrderedDish post = postSnapshot.getValue(OrderedDish.class);
+                                            orderedFood.add(post);
+                                        }
+                                        currentItem.setOrderedDishList(orderedFood);
+
+                                        confirmAcceptanceDialog(getActivity(), "MADelivery", getString(R.string.msg_accept_dialog), currentItem);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
 
                             }
                         });
