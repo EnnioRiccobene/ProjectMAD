@@ -61,7 +61,7 @@ public class DetailedReservation extends AppCompatActivity {
 
         // RECYCLERVIEW
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        dAdapter = new DetailedReservationDishesAdapter(orderedFood);
+        dAdapter = new DetailedReservationDishesAdapter(orderedFood, this);
 
         // Make it unscrollable
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext()){
