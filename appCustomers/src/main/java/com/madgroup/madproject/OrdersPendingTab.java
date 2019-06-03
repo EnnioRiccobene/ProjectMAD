@@ -349,7 +349,11 @@ public class OrdersPendingTab extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                confirmOrderReceived(currentItem);
+                if(currentItem.getBikerID().equals("")){
+                    Toast.makeText(getActivity(),getString(R.string.error_evaluate_toast),Toast.LENGTH_SHORT).show();
+                } else {
+                    confirmOrderReceived(currentItem);
+                }
 
                 dialog.dismiss();
 

@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
@@ -32,6 +33,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Reservation;
@@ -174,6 +177,9 @@ public class reservationTab1 extends Fragment {
                 multipleAtomicQuery.put("Customer/Order/Pending/" + currentItem.getCustomerID() + "/" + orderID + "/status", 1);
                 database.updateChildren(multipleAtomicQuery);
 
+                //transazione per aggiornare il campo del db orderedQuantityTot dei piatti ordinati
+                updateDishesOrderedQuantityTot(currentItem);//todo testare cosa non funziona
+
                 dialog.dismiss();
             }
         });
@@ -184,6 +190,35 @@ public class reservationTab1 extends Fragment {
             }
         });
         builder.show();
+    }
+
+    private void updateDishesOrderedQuantityTot(final Reservation currentItem){
+
+        DatabaseReference menuRef = FirebaseDatabase.getInstance().getReference().child("Company").child("Menu").child(currentUser);
+
+        menuRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+
+                if(mutableData.getValue() != null){
+
+                    for (int i = 0; i < currentItem.getOrderedDishList().size(); i++) { //todo: fallisce qui in maniera strana
+                        int a = Integer.valueOf((String) mutableData.child(currentItem.getOrderedDishList().get(i).getId()).child("orderedQuantityTot").getValue())
+                                + Integer.valueOf(currentItem.getOrderedDishList().get(i).getQuantity());
+                        mutableData.child(currentItem.getOrderedDishList().get(i).getId()).child("orderedQuantityTot").setValue(String.valueOf(a));
+                    }
+
+                }
+
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+            }
+        });
     }
 
     // The following function set up the RecyclerView
