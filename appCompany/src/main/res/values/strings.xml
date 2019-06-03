@@ -129,6 +129,10 @@
     <string name="top_meal">Top meal</string>
     <string name="timing_order">Timing order</string>
     <string name="th">th</string>
+    <string name="yes">YES</string>
+    <string name="msg_accept_dialog">Do you want to accept this order?</string>
+    <string name="confirm_dialog_title">Are you sure?</string>
+    <string name="dialog_callbiker_msg">Do you want to call a biker?</string>
 
     <string-array name="hours_list">
         <item>00:00</item>

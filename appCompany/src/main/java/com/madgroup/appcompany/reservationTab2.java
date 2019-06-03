@@ -1,6 +1,9 @@
 package com.madgroup.appcompany;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -44,6 +47,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -154,8 +158,32 @@ public class reservationTab2 extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void confirmCallBikerDialog(Activity activity, String title, CharSequence message, final Reservation currentItem, final int index) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+//        if (title != null) builder.setTitle(title);
+
+        builder.setMessage(message);
+        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                openRiderPage(currentItem, index);
+
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     // The following function set up the RecyclerView
@@ -177,7 +205,8 @@ public class reservationTab2 extends Fragment {
                                 holder.mImageView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        openRiderPage(currentItem, index);
+//                                        openRiderPage(currentItem, index);
+                                        confirmCallBikerDialog(getActivity(), "", getString(R.string.dialog_callbiker_msg), currentItem, index);
                                     }
                                 });
                                 break;

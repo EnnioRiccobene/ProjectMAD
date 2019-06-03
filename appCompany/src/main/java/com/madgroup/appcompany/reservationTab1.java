@@ -1,6 +1,9 @@
 package com.madgroup.appcompany;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -21,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -77,7 +81,7 @@ public class reservationTab1 extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment reservationTab1.
      */
-    // TODO: Rename and change types and number of parameters
+
     public static reservationTab1 newInstance(String param1, String param2) {
         reservationTab1 fragment = new reservationTab1();
         Bundle args = new Bundle();
@@ -149,6 +153,39 @@ public class reservationTab1 extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    public void confirmAcceptanceDialog(Activity activity, String title, CharSequence message, final Reservation currentItem) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+//        if (title != null) builder.setTitle(title);
+
+        builder.setMessage(message);
+        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+                String orderID = currentItem.getOrderID();
+                currentItem.setStatus(ReservationActivity.ACCEPTED_RESERVATION_CODE);
+
+                HashMap<String, Object> multipleAtomicQuery = new HashMap<>();
+                multipleAtomicQuery.put("Company/Reservation/Pending/" + currentUser + "/" + orderID, null);
+                multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID, currentItem);
+                multipleAtomicQuery.put("Customer/Order/Pending/" + currentItem.getCustomerID() + "/" + orderID + "/status", 1);
+                database.updateChildren(multipleAtomicQuery);
+
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     // The following function set up the RecyclerView
     public void buildRecyclerView(View view) {
 
@@ -166,18 +203,9 @@ public class reservationTab1 extends Fragment {
                         holder.mImageView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                                // DatabaseReference pendingReservationRef = database.child("Company").child("Reservation").child("Pending").child(currentUser);
-                                // DatabaseReference acceptedReservationRef = database.child("Company").child("Reservation").child("Accepted").child(currentUser);
-                                String orderID = currentItem.getOrderID();
-                                currentItem.setStatus(ReservationActivity.ACCEPTED_RESERVATION_CODE);
-                                // pendingReservationRef.child(orderID).removeValue();
-                                // acceptedReservationRef.child(orderID).setValue(currentItem);
-                                HashMap<String, Object> multipleAtomicQuery = new HashMap<>();
-                                multipleAtomicQuery.put("Company/Reservation/Pending/" + currentUser + "/" + orderID, null);
-                                multipleAtomicQuery.put("Company/Reservation/Accepted/" + currentUser + "/" + orderID, currentItem);
-                                multipleAtomicQuery.put("Customer/Order/Pending/" + currentItem.getCustomerID() + "/" + orderID + "/status", 1);
-                                database.updateChildren(multipleAtomicQuery);
+
+                                confirmAcceptanceDialog(getActivity(), getString(R.string.confirm_dialog_title), getString(R.string.msg_accept_dialog), currentItem);
+
                             }
                         });
                         holder.mTextView1.setText(currentItem.getAddress());
@@ -228,7 +256,6 @@ public class reservationTab1 extends Fragment {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(adapter);
-
 
         adapter.startListening();
     }
