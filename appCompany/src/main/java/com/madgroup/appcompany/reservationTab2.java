@@ -165,7 +165,7 @@ public class reservationTab2 extends Fragment {
     public void confirmCallBikerDialog(Activity activity, String title, CharSequence message, final Reservation currentItem, final int index) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
-//        if (title != null) builder.setTitle(title);
+        if (title != null) builder.setTitle(title);
 
         builder.setMessage(message);
         builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
@@ -206,7 +206,7 @@ public class reservationTab2 extends Fragment {
                                     @Override
                                     public void onClick(View v) {
 //                                        openRiderPage(currentItem, index);
-                                        confirmCallBikerDialog(getActivity(), "", getString(R.string.dialog_callbiker_msg), currentItem, index);
+                                        confirmCallBikerDialog(getActivity(), "MADelivery", getString(R.string.dialog_callbiker_msg), currentItem, index);
                                     }
                                 });
                                 break;

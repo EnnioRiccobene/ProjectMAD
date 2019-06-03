@@ -156,7 +156,7 @@ public class reservationTab1 extends Fragment {
     public void confirmAcceptanceDialog(Activity activity, String title, CharSequence message, final Reservation currentItem) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
-//        if (title != null) builder.setTitle(title);
+        if (title != null) builder.setTitle(title);
 
         builder.setMessage(message);
         builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
@@ -204,7 +204,7 @@ public class reservationTab1 extends Fragment {
                             @Override
                             public void onClick(View v) {
 
-                                confirmAcceptanceDialog(getActivity(), getString(R.string.confirm_dialog_title), getString(R.string.msg_accept_dialog), currentItem);
+                                confirmAcceptanceDialog(getActivity(), "MADelivery", getString(R.string.msg_accept_dialog), currentItem);
 
                             }
                         });

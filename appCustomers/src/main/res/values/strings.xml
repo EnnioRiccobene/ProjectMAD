@@ -201,5 +201,6 @@
     <string name="food_category">Food category</string>
     <string name="menu">Menu</string>
     <string name="best_meals">Best Meals</string>
+    <string name="dialog_order_received_msg">Do you have received this order?</string>
 
 </resources>

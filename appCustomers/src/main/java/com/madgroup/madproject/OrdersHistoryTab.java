@@ -150,7 +150,7 @@ public class OrdersHistoryTab extends Fragment {
     public void showEvaluationDialog(Activity activity, String title, CharSequence message, final Reservation currentItem) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
-//        if (title != null) builder.setTitle(title);
+        if (title != null) builder.setTitle(title);
 
         builder.setMessage(message);
         builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
@@ -199,7 +199,7 @@ public class OrdersHistoryTab extends Fragment {
                         holder.evaluateOrder.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                showEvaluationDialog(getActivity(), getString(R.string.evaluation), getString(R.string.evaluate_dialog_message), currentItem);
+                                showEvaluationDialog(getActivity(), "MADelivery", getString(R.string.evaluate_dialog_message), currentItem);
                             }
                         });
 
