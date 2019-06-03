@@ -206,7 +206,10 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
                 String prevYear = (prevDate.split("/"))[0];
                 String prevMonth = Integer.toString(Integer.parseInt((prevDate.split("/"))[1]));
                 String prevDay = (prevDate.split("/"))[2];
-                currentFilter.setText(prevDay + " " + months.get(prevMonth) + " " + prevYear);
+                if (prevDay.startsWith("0"))
+                    currentFilter.setText(prevDay.substring(1,2) + " " + months.get(prevMonth) + " " + prevYear);
+                else
+                    currentFilter.setText(prevDay + " " + months.get(prevMonth) + " " + prevYear);
                 selectedDay = prevDay;
                 selectedMonth = prevMonth;
                 selectedYear = prevYear;
@@ -223,7 +226,10 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
                 String nextYear = (nextDate.split("/"))[0];
                 String nextMonth = Integer.toString(Integer.parseInt((nextDate.split("/"))[1]));
                 String nextDay = (nextDate.split("/"))[2];
-                currentFilter.setText(nextDay + " " + months.get(nextMonth) + " " + nextYear);
+                if (nextDay.startsWith("0"))
+                    currentFilter.setText(nextDay.substring(1,2) + " " + months.get(nextMonth) + " " + nextYear);
+                else
+                    currentFilter.setText(nextDay + " " + months.get(nextMonth) + " " + nextYear);
                 selectedDay = nextDay;
                 selectedMonth = nextMonth;
                 selectedYear = nextYear;
@@ -268,7 +274,10 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
                     String day_nameDay_hourSlot = ds.getKey();
                     Integer amountOfOrders = ds.getValue(Integer.class);
                     // Se il giorno corrisponde al giorno selezionato lo vado a mostrare con la relativa fascia oraria
-                    if(day_nameDay_hourSlot.startsWith(dayOfMonth)) {
+                    String formattedDayOfMonth = dayOfMonth;
+                    if (dayOfMonth.startsWith("0"))
+                        formattedDayOfMonth = dayOfMonth.substring(1, 2);
+                    if(day_nameDay_hourSlot.startsWith(formattedDayOfMonth)) {
                         String fields[] = day_nameDay_hourSlot.split("_");
                         String hourSlot = fields[2];
                         hashMap.put(Integer.parseInt(hourSlot), amountOfOrders);
@@ -333,7 +342,10 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
                 .child(restaurantID).child(node);
 
 
-        String hourSlotString = dayOfMonth + "_" + getDayOfWeek(dayOfMonth, month, year) + "_" + slotHour;
+        String formattedDayOfMonth = dayOfMonth;
+        if (dayOfMonth.startsWith("0"))
+            formattedDayOfMonth = dayOfMonth.substring(1, 2);
+        String hourSlotString = formattedDayOfMonth + "_" + getDayOfWeek(dayOfMonth, month, year) + "_" + slotHour;
         DatabaseReference selectedHourSlot = topMealRef.child(hourSlotString);
 
         final String[] topMealOfHourSlot = {""};
@@ -400,7 +412,10 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
 
                 // Per ogni fascia oraria relativa al giorno
                 for (DataSnapshot hourSlot : dataSnapshot.getChildren()) {
-                    if(hourSlot.getKey().startsWith(dayOfMonth)) {
+                    String formattedDayOfMonth = dayOfMonth;
+                    if (dayOfMonth.startsWith("0"))
+                        formattedDayOfMonth = dayOfMonth.substring(1, 2);
+                    if(hourSlot.getKey().startsWith(formattedDayOfMonth)) {
                         // Per ogni ID
                         for (DataSnapshot dishIDQuantity : hourSlot.getChildren()) {
                             Integer amount = dishIDQuantity.getValue(Integer.class);
