@@ -99,13 +99,11 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
 
         Integer totalSales = Math.round(h.getY());
         if (totalSales==0) {
-            descriptionChart.setText("No sales detected from " + startingHour + " to " + endingHour);
+            descriptionChart.setText("No orders detected from " + startingHour + " to " + endingHour+ "\n");
         } else {
-            String startingString = totalSales + " sales detected from " + startingHour + " to " + endingHour;
+            String startingString = totalSales + " orders detected from " + startingHour + " to " + endingHour;
             setDescriptionChart(startingString, slotHour, selectedDay, selectedMonth, selectedYear);
         }
-
-
     }
     @Override
     public void onNothingSelected() {
@@ -311,13 +309,9 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
                 chart.setDoubleTapToZoomEnabled(false);
 
                 chart.setOnChartValueSelectedListener(AnalyticsTab1.this);
-//                MyMarkerView marker = new MyMarkerView(getContext(), R.layout.marker_layout);
-//                marker.setChartView(chart);
-//                chart.setMarker(marker);
 
                 chart.invalidate(); // refresh
                 chart.animateY(1000);
-
 
             }
             @Override
@@ -365,7 +359,6 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
                         String dishName = dish.getName();
                         String bestMealString = "\nTop meal: " + dishName + "("+dish.getPrice()+"), "+ Integer.toString(finalMaxSales) + " sales.";
                         descriptionChart.setText(startingString + bestMealString);
-
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -501,7 +494,7 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
         }
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        Integer weekOfMonth = cal.get(Calendar.WEEK_OF_MONTH);
+        Integer weekOfMonth = cal.get(Calendar.WEEK_OF_MONTH) + 1;
         return Integer.toString(weekOfMonth);
     }
 
