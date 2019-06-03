@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--<color name="colorPrimary">#008577</color>-->
-    <!--<color name="colorPrimaryDark">#00574B</color>-->
-    <!--<color name="red">#FF0000</color>-->
-    <!--<color name="colorAccent">#D81B60</color>-->
-    <!--<color name="bgRowBackground">#FA315B</color>-->
-    <!--<color name="itemName">#535353</color>-->
 
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="primary_light">#C5CAE9</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#388E3C</color>
+    <color name="colorPrimaryDark">#00600F</color>
+    <color name="primary_light">#6ABF69</color>
+    <color name="colorAccent">#FF9100</color>
+    <color name="colorAccentDark">#C56200</color>
+    <color name="colorAccentLight">#FFC246</color>
+
+    <!--<color name="colorPrimary">#3F51B5</color>-->
+    <!--<color name="colorPrimaryDark">#303F9F</color>-->
+    <!--<color name="primary_light">#C5CAE9</color>-->
+    <!--<color name="colorAccent">#FF4081</color>-->
     <color name="red">#FF0000</color>
     <color name="bgRowBackground">#FA315B</color>
     <color name="primary_text">#212121</color>
