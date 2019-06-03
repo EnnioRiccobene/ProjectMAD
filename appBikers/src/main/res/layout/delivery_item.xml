@@ -47,6 +47,7 @@
             android:layout_alignBaseline="@+id/restaurantAddress_bold"
             android:layout_marginTop="3dp"
             android:layout_toEndOf="@+id/restaurantAddress_bold"
+            android:layout_marginStart="3dp"
             android:text=""
             android:textColor="#777"
             android:textSize="13sp" />
@@ -70,6 +71,7 @@
             android:layout_alignBaseline="@+id/customerAddress_bold"
             android:layout_marginTop="3dp"
             android:layout_toEndOf="@+id/customerAddress_bold"
+            android:layout_marginStart="3dp"
             android:maxWidth="250dip"
             android:textColor="#777"
             android:textSize="13sp" />
