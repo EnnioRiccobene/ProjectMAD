@@ -508,11 +508,11 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
                         }
                     });
                 }
-                else {
-                    topMeal.setImageResource(R.drawable.ic_dish);
-                    topDishName.setText("");
-                    salesTextView.setText(getString(R.string.no_vendite));
-                }
+//                else {
+//                    topMeal.setImageResource(R.drawable.ic_dish);
+//                    topDishName.setText("");
+//                    salesTextView.setText(getString(R.string.no_vendite));
+//                }
             }
 
             @Override
