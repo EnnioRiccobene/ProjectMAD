@@ -134,6 +134,8 @@
     <string name="msg_accept_dialog">Do you want to accept this order?</string>
     <string name="confirm_dialog_title">Are you sure?</string>
     <string name="dialog_callbiker_msg">Do you want to call a biker?</string>
+    <string name="food_rating">Food Rating</string>
+    <string name="restaurant_rating">Restaurant Rating</string>
 
     <string-array name="hours_list">
         <item>00:00</item>
