@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">appCustomers</string>
+    <string name="app_name">MADelivery</string>
     <string name="form_name">Nome</string>
     <string name="form_email">Email</string>
     <string name="form_password">Password</string>
