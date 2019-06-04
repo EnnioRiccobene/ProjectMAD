@@ -10,13 +10,6 @@
     android:padding="10dp">
 
 
-    <!--<de.hdodenhof.circleimageview.CircleImageView-->
-    <!--android:id="@+id/customerPhoto"-->
-    <!--android:layout_width="50dp"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:src="@mipmap/ic_launcher"-->
-    <!--app:civ_border_width="1dp" />-->
-
     <RelativeLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
@@ -39,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/customerName"
             android:layout_marginTop="3dp"
-            android:text="Food Rating"
+            android:text="@string/food_rating"
             android:textColor="#000"
             android:textSize="12sp" />
 
@@ -59,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/foodRating"
-            android:text="Restaurant Rating"
+            android:text="@string/restaurant_rating"
             android:textColor="#000"
             android:textSize="12sp" />
 

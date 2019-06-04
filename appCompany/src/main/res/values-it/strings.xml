@@ -233,5 +233,7 @@
     <string name="msg_accept_dialog">Vuoi accettare questo ordine?</string>
     <string name="confirm_dialog_title">Sei sicuro?</string>
     <string name="dialog_callbiker_msg">Vuoi chiamare un biker?</string>
+    <string name="food_rating">Prezzi</string>
+    <string name="restaurant_rating">Valutazione del ristorante</string>
 
 </resources>
