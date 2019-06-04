@@ -228,4 +228,5 @@
     <string name="top_meal">Miglior piatto</string>
     <string name="timing_order">Tempo degli ordini</string>
     <string name="th">°</string>
+    <string name="restaurantRatingActivity">Recensioni</string>
 </resources>

@@ -128,7 +128,7 @@ public class ChooseRiderAdapter extends
         // Creating Delivery Item
         HashMap<String, String> Delivery = new HashMap<>();
         Delivery.put("restaurantID", currentUser);
-        Delivery.put("customerID", reservation.getCustomerID());
+        Delivery.put("customerId", reservation.getCustomerID());
         Delivery.put("restaurantName", prefs.getString("Name", ""));
         Delivery.put("restaurantAddress", prefs.getString("Address", ""));
         Delivery.put("customerAddress", reservation.getAddress());

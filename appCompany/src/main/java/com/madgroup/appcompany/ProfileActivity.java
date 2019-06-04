@@ -351,6 +351,9 @@ public class ProfileActivity extends AppCompatActivity
             Intent myIntent = new Intent(this, AnalyticsActivity.class);
             this.startActivity(myIntent);
 
+        } else if (id == R.id.nav_reviews) {
+            Intent myIntent = new Intent(this, RestaurantRatingActivity.class);
+            this.startActivity(myIntent);
         } else if (id == R.id.nav_profile) {
             onBackPressed();
         } else if (id == R.id.nav_logout) {
@@ -840,70 +843,70 @@ public class ProfileActivity extends AppCompatActivity
         startActivityForResult(intentHours, TEXT_REQUEST);
     }
 
-    public void setRProfileSupportFields(){
+    public void setRProfileSupportFields() {
         fCategoryANDdCost = editCategory.getText().toString() + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
-        if(editCategory.getText().toString().contains("Pizza"))
+        if (editCategory.getText().toString().contains("Pizza"))
             catPizza = "true";
         else
             catPizza = "false";
         catPizzaDel = catPizza + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
-        if(editCategory.getText().toString().contains("Sandwiches") || editCategory.getText().toString().contains("Panini"))
+        if (editCategory.getText().toString().contains("Sandwiches") || editCategory.getText().toString().contains("Panini"))
             catSandwiches = "true";
         else
             catSandwiches = "false";
         catSandwichesDel = catSandwiches + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
-        if(editCategory.getText().toString().contains("Kebab"))
+        if (editCategory.getText().toString().contains("Kebab"))
             catKebab = "true";
         else
             catKebab = "false";
         catKebabDel = catKebab + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
-        if(editCategory.getText().toString().contains("Italian") || editCategory.getText().toString().contains("Italiano"))
+        if (editCategory.getText().toString().contains("Italian") || editCategory.getText().toString().contains("Italiano"))
             catItalian = "true";
         else
             catItalian = "false";
         catItalianDel = catItalian + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
-        if(editCategory.getText().toString().contains("American") || editCategory.getText().toString().contains("Americano"))
+        if (editCategory.getText().toString().contains("American") || editCategory.getText().toString().contains("Americano"))
             catAmerican = "true";
         else
             catAmerican = "false";
         catAmericanDel = catAmerican + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
-        if(editCategory.getText().toString().contains("Desserts") || editCategory.getText().toString().contains("Dolci"))
+        if (editCategory.getText().toString().contains("Desserts") || editCategory.getText().toString().contains("Dolci"))
             catDesserts = "true";
         else
             catDesserts = "false";
         catDessertsDel = catDesserts + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
-        if(editCategory.getText().toString().contains("Fry") || editCategory.getText().toString().contains("Fritti"))
+        if (editCategory.getText().toString().contains("Fry") || editCategory.getText().toString().contains("Fritti"))
             catFry = "true";
         else
             catFry = "false";
         catFryDel = catFry + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
-        if(editCategory.getText().toString().contains("Vegetarian") || editCategory.getText().toString().contains("Vegetariano"))
+        if (editCategory.getText().toString().contains("Vegetarian") || editCategory.getText().toString().contains("Vegetariano"))
             catVegetarian = "true";
         else
             catVegetarian = "false";
         catVegetarianDel = catVegetarian + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
-        if(editCategory.getText().toString().contains("Asian") || editCategory.getText().toString().contains("Asiatico"))
+        if (editCategory.getText().toString().contains("Asian") || editCategory.getText().toString().contains("Asiatico"))
             catAsian = "true";
         else
             catAsian = "false";
         this.catAsianDel = catAsian + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
-        if(editCategory.getText().toString().contains("Mediterranean") || editCategory.getText().toString().contains("Mediterraneo"))
+        if (editCategory.getText().toString().contains("Mediterranean") || editCategory.getText().toString().contains("Mediterraneo"))
             catMediterranean = "true";
         else
             catMediterranean = "false";
         this.catMediterraneanDel = catMediterranean + "_" + deliveryCost.getText().toString().replace(".", "").replace(",", "");
 
-        if(editCategory.getText().toString().contains("South American") || editCategory.getText().toString().contains("Sud Americano"))
+        if (editCategory.getText().toString().contains("South American") || editCategory.getText().toString().contains("Sud Americano"))
             catSouthAmerican = "true";
         else
             catSouthAmerican = "false";

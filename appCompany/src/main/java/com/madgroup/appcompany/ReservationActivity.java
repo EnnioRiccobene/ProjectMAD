@@ -131,19 +131,16 @@ public class ReservationActivity extends AppCompatActivity implements
             Intent myIntent = new Intent(this, DailyOfferActivity.class);
             // myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(myIntent);
-
         } else if (id == R.id.nav_reservations) {
             onBackPressed();
-
         } else if (id == R.id.nav_analytics) {
-
             Intent myIntent = new Intent(this, AnalyticsActivity.class);
             this.startActivity(myIntent);
-
+        } else if(id == R.id.nav_reviews){
+            Intent myIntent = new Intent(this, RestaurantRatingActivity.class);
+            this.startActivity(myIntent);
         } else if (id == R.id.nav_profile) {
-            // Change activity to Daily Offer
             Intent myIntent = new Intent(this, ProfileActivity.class);
-            // myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(myIntent);
         } else if (id == R.id.nav_logout)
             startLogout();

@@ -131,12 +131,14 @@ public class AnalyticsActivity extends AppCompatActivity implements
             // myIntent.putExtra("key", value); //Optional parameters
             this.startActivity(myIntent);
 
-        } if (id == R.id.nav_analytics) {
+        }
+        if (id == R.id.nav_analytics) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
-
+        } else if (id == R.id.nav_reviews) {
+            Intent myIntent = new Intent(this, RestaurantRatingActivity.class);
+            this.startActivity(myIntent);
         } else if (id == R.id.nav_profile) {
-
             Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);
         } else if (id == R.id.nav_logout) {
