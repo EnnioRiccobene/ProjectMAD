@@ -54,6 +54,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
     private SharedPreferences prefs;
     private NavigationView navigationView;
     private SharedPreferences.Editor editor;
+    String notificationTitle = "MADelivery";
+    String notificationText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +111,14 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
             }
         });
+
+        notificationText = getResources().getString(R.string.notification_text);
+        if (prefs.contains("currentUser")) {
+
+            DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", ""));
+            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+            notify.newOrderListner();
+        }
 
         initRecyclerView();
     }

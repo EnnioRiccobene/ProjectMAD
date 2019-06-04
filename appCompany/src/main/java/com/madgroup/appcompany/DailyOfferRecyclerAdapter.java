@@ -60,13 +60,13 @@ public class DailyOfferRecyclerAdapter extends
 //        Locale current = getResources().getConfiguration().locale;
         String current = Locale.getDefault().toString();
         String currency;
-        if (current.equals("en_US")) {
-            currency = " $";
-        } else if (current.equals("en_GB")) {
-            currency = " £";
-        } else {
+//        if (current.equals("en_US")) {
+//            currency = " $";
+//        } else if (current.equals("en_GB")) {
+//            currency = " £";
+//        } else {
             currency = " €";
-        }
+//        }
 
         viewHolder.dishPrice.setText("" + dishPrice + currency);
         viewHolder.dishQuantity.setText(mContext.getResources().getString(R.string.availableQuantity) + " " + dish.getAvailableQuantity());

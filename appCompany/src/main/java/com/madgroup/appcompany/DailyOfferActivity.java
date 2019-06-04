@@ -68,6 +68,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -95,7 +96,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
     private DatabaseReference dishRef;
     private StorageReference mStorageRef;
 
-    String notificationTitle = "MAD Company";
+    String notificationTitle = "MADelivery";
     String notificationText;
 
     private String restaurantUid;
@@ -316,6 +317,7 @@ public class DailyOfferActivity extends AppCompatActivity implements
         final EditText editDishDescription = (EditText) dialog.findViewById(R.id.editDishDescription);
         final EditText editDishQuantity = (EditText) dialog.findViewById(R.id.editDishQuantity);
         final CurrencyEditText editPrice = dialog.findViewById(R.id.editPrice);
+        editPrice.setLocale(Locale.forLanguageTag("it-IT"));
 
         if (item != null) {
             editDishName.setText(item.getName());
@@ -352,10 +354,10 @@ public class DailyOfferActivity extends AppCompatActivity implements
                 float floatPrice = 0;
 
                 if (local.equals("en_US")) {
-                    floatStringVal = formattedVal.replace(",", "").replace("$", "").replaceAll("\\s", "");
+                    floatStringVal = formattedVal.replace(",", "").replace("€", "").replace("$", "").replaceAll("\\s", "");
                     floatPrice = Float.parseFloat(floatStringVal);
                 } else if (local.equals("en_GB")) {
-                    floatStringVal = formattedVal.replace(",", "").replace("£", "").replaceAll("\\s", "");
+                    floatStringVal = formattedVal.replace(",", "").replace("€", "").replace("£", "").replaceAll("\\s", "");
                     floatPrice = Float.parseFloat(floatStringVal);
                 } else if (local.equals("it_IT")) {
                     floatStringVal = formattedVal.replace(".", "").replace(",", ".").replace("€", "").replaceAll("\\s", "");
@@ -370,13 +372,13 @@ public class DailyOfferActivity extends AppCompatActivity implements
                     //formatto la stringa prezzo da mettere nel db
                     BigDecimal dishPrice = new BigDecimal(floatPrice).setScale(2, RoundingMode.HALF_UP);
                     String stringPrice = String.valueOf(dishPrice);
-                    if (local.equals("en_US")) {
-                        stringPrice = stringPrice + " $";
-                    } else if (local.equals("en_GB")) {
-                        stringPrice = stringPrice + " £";
-                    } else if (local.equals("it_IT")) {
+//                    if (local.equals("en_US")) {
+//                        stringPrice = stringPrice + " $";
+//                    } else if (local.equals("en_GB")) {
+//                        stringPrice = stringPrice + " £";
+//                    } else if (local.equals("it_IT")) {
                         stringPrice = stringPrice + " €";
-                    }
+//                    }
                     if (editDishDescription.getText().toString().isEmpty()) {
                         currentDish = new Dish("", editDishName.getText().toString(), stringPrice,
                                 editDishQuantity.getText().toString(), "");

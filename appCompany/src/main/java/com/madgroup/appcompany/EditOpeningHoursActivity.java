@@ -27,7 +27,7 @@ public class EditOpeningHoursActivity extends AppCompatActivity {
     private LinkedHashMap<String, String> hourValue = new LinkedHashMap<>();
 
     private SharedPreferences prefs;
-    String notificationTitle = "MAD Company";
+    String notificationTitle = "MADelivery";
     String notificationText;
 
     @Override

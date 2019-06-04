@@ -29,6 +29,10 @@ public class ChooseRiderActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ChooseRiderAdapter adapter;
     private Reservation reservation;
+
+    String notificationTitle = "MADelivery";
+    String notificationText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,5 +58,14 @@ public class ChooseRiderActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        notificationText = getResources().getString(R.string.notification_text);
+        if (prefs.contains("currentUser")) {
+
+            DatabaseReference newOrderRef = database.getReference().child("Company").child("Reservation").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", ""));
+            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+            notify.newOrderListner();
+        }
     }
 }
