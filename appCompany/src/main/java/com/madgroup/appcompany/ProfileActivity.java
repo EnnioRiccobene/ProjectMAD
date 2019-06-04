@@ -1247,8 +1247,7 @@ public class ProfileActivity extends AppCompatActivity
                 // Per ogni fascia oraria
                 int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
                 int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-                simulateOrder(timingOrderRef.child(dayOfMonth+"_"+dayOfWeek+"_"+k),
-                        topMealsRef.child(dayOfMonth+"_"+dayOfWeek+"_"+k));
+                simulateOrder(timingOrderRef.child(dayOfMonth+"_"+dayOfWeek+"_"+k), topMealsRef.child(dayOfMonth+"_"+dayOfWeek+"_"+k));
             }
             cal.add(Calendar.DATE,1);
         }

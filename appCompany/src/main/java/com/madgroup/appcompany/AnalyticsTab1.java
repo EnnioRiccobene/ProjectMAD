@@ -101,9 +101,9 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
 
         Integer totalSales = Math.round(h.getY());
         if (totalSales==0) {
-            descriptionChart.setText("No orders detected from " + startingHour + " to " + endingHour+ ".\n");
+            descriptionChart.setText("No orders detected from " + startingHour + " to " + endingHour+ "\n");
         } else {
-            String startingString = totalSales + " orders detected from " + startingHour + " to " + endingHour+".";
+            String startingString = totalSales + " orders detected from " + startingHour + " to " + endingHour;
             setDescriptionChart(startingString, slotHour, selectedDay, selectedMonth, selectedYear);
         }
     }
@@ -302,8 +302,8 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
 
                 BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
 
-                dataSet.setColor(Color.parseColor("#42B0F4")); //resolved color
-                dataSet.setBarBorderColor(Color.parseColor("#41A9F4"));
+                dataSet.setColor(Color.parseColor("#FF9900")); //resolved color
+                dataSet.setBarBorderColor(Color.parseColor("#FF8400"));
                 dataSet.setBarBorderWidth(1);
                 dataSet.setDrawValues(false);
 
@@ -328,6 +328,8 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
 
                 chart.invalidate(); // refresh
                 descriptionChart.setText("");
+                chart.setScaleEnabled(false);
+
                 chart.animateY(1000);
 
             }
