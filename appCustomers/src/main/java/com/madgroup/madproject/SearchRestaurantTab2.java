@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -152,16 +153,20 @@ public class SearchRestaurantTab2 extends Fragment {
                 Collections.sort(topRestaurant, new Comparator<Restaurant>() {
                     @Override
                     public int compare(Restaurant o1, Restaurant o2) {
-                        float score1 = Float.parseFloat(o1.getRatingAvg()) * Float.parseFloat(o1.getRatingCounter());
-                        float score2 = Float.parseFloat(o2.getRatingAvg()) * Float.parseFloat(o2.getRatingCounter());
+                        float score1 = (0.75f * Float.parseFloat(o1.getRatingAvg())) * (0.25f * Float.parseFloat(o1.getRatingCounter()));
+                        float score2 = (0.75f * Float.parseFloat(o2.getRatingAvg())) * (0.25f * Float.parseFloat(o2.getRatingCounter()));
                         if (score1 > score2)
-                            return 1;
-                        else if (score1 < score2)
                             return -1;
+                        else if (score1 < score2)
+                            return 1;
                         else
                             return 0;
                     }
                 });
+                for (Restaurant element : topRestaurant) {
+                    float score1 = (0.75f * Float.parseFloat(element.getRatingAvg())) * (0.25f * Float.parseFloat(element.getRatingCounter()));
+                    SmartLogger.d("Score: " + String.valueOf(score1));
+                }
                 recyclerView = (RecyclerView) view.findViewById(R.id.favoriteRecyclerViewTab);
                 adapter = new SearchRestaurantTab2Adapter(getContext(), topRestaurant);
                 RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
