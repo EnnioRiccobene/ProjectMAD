@@ -56,7 +56,7 @@ public class DeliveryActivity extends AppCompatActivity implements
     private SharedPreferences.Editor editor;
     private String currentUser;
     private ValueEventListener riderAvabilityListener;
-    String notificationTitle = "MAD Bikers";
+    String notificationTitle = "MADelivery";
     String notificationText;
 
 

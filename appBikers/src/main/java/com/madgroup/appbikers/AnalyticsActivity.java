@@ -72,7 +72,7 @@ public class AnalyticsActivity extends AppCompatActivity implements
 
     private FirebaseDatabase database;
 
-    String notificationTitle = "MAD Bikers";
+    String notificationTitle = "MADelivery";
     String notificationText;
 
 
@@ -110,13 +110,17 @@ public class AnalyticsActivity extends AppCompatActivity implements
         progressBar = findViewById(R.id.progress);
         gridLayout = findViewById(R.id.gridLayout);
 
-
-
         gridLayout.setVisibility(View.GONE);
+
         database = FirebaseDatabase.getInstance();
-        final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", ""));
-        NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
-        notify.newOrderListner();
+        notificationText = getResources().getString(R.string.notification_text);
+        if (prefs.contains("currentUser")) {
+            final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", ""));
+            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+            notify.newOrderListner();
+        }
+
+
         checkLocationpermissions();
         DatabaseReference statsReference = FirebaseDatabase.getInstance().getReference().child("Rider").child("Profile").child(currentUser);
         statsReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -141,7 +145,6 @@ public class AnalyticsActivity extends AppCompatActivity implements
         });
 
     }
-
 
     void getMoneyEarned (String ndeliveries, String km ) {
         double money = 0;

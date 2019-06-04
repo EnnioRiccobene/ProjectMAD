@@ -20,6 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 // classes needed to initialize map
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.madgroup.sdk.SmartLogger;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
@@ -90,6 +92,12 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     private Point customerPoint;
     MapboxGeocoding mapboxGeocoding;
 
+    private FirebaseDatabase database;
+    private SharedPreferences prefs;
+    String notificationTitle = "MADelivery";
+    String notificationText;
+
+
     private boolean readyToNavigate = false;
 
     public static void start(Context context, String restaurantAddress, String customerAddress) {
@@ -119,6 +127,14 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         customerBtn = findViewById(R.id.customerButton);
 
         new GeocodeTask().execute("url");
+
+        database = FirebaseDatabase.getInstance();
+        notificationText = getResources().getString(R.string.notification_text);
+        if (prefs.contains("currentUser")) {
+            final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", ""));
+            NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);
+            notify.newOrderListner();
+        }
     }
 
     private void checkLocationpermissions() {
