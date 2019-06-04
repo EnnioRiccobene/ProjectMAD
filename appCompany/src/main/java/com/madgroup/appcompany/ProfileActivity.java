@@ -1298,6 +1298,7 @@ public class ProfileActivity extends AppCompatActivity
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
         GregorianCalendar firstDay = new GregorianCalendar(year, month, 1);
+        firstDay.setMinimalDaysInFirstWeek(7);
         int firstDayValue = firstDay.get(Calendar.DAY_OF_WEEK);
         if (firstDayValue == Calendar.MONDAY)
             return (cal.get(Calendar.WEEK_OF_MONTH));

@@ -222,6 +222,7 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String selectedDate = selectedYear+"/"+selectedMonth+"/"+selectedDay;
                 String nextDate = getNextDay(selectedDate);
                 String nextYear = (nextDate.split("/"))[0];
@@ -251,7 +252,9 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String restaurantID = prefs.getString("currentUser", "");
 
-        String weekOfMonth = getWeekOfMonth(dayOfMonth, month, year);
+        GregorianCalendar cal = new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month)-1, Integer.parseInt(dayOfMonth));
+        cal.setMinimalDaysInFirstWeek(7);
+        String weekOfMonth = Integer.toString(getWeekOfMonth(cal));
 
         String node = year+"_"+month+"_"+weekOfMonth;
         DatabaseReference timingOrederRef = database.getReference()
@@ -321,6 +324,7 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
                 chart.setOnChartValueSelectedListener(AnalyticsTab1.this);
 
                 chart.invalidate(); // refresh
+                descriptionChart.setText("");
                 chart.animateY(1000);
 
             }
@@ -336,7 +340,9 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final String restaurantID = prefs.getString("currentUser", "");
 
-        String weekOfMonth = getWeekOfMonth(dayOfMonth, month, year);
+        GregorianCalendar cal = new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month)-1, Integer.parseInt(dayOfMonth));
+        cal.setMinimalDaysInFirstWeek(7);
+        String weekOfMonth = Integer.toString(getWeekOfMonth(cal));
 
         String node = year+"_"+month+"_"+weekOfMonth;
         DatabaseReference topMealRef = database.getReference().child("Analytics").child("TopMeals")
@@ -400,7 +406,9 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final String restaurantID = prefs.getString("currentUser", "");
 
-        String weekOfMonth = getWeekOfMonth(dayOfMonth, month, year);
+        GregorianCalendar cal = new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month)-1, Integer.parseInt(dayOfMonth));
+        cal.setMinimalDaysInFirstWeek(7);
+        String weekOfMonth = Integer.toString(getWeekOfMonth(cal));
 
         String node = year+"_"+month+"_"+weekOfMonth;
         DatabaseReference topMealRef = database.getReference().child("Analytics").child("TopMeals")
@@ -530,6 +538,8 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
         GregorianCalendar firstDay = new GregorianCalendar(year, month, 1);
+        firstDay.setMinimalDaysInFirstWeek(7);
+
         int firstDayValue = firstDay.get(Calendar.DAY_OF_WEEK);
         if (firstDayValue == Calendar.MONDAY)
             return (cal.get(Calendar.WEEK_OF_MONTH));

@@ -40,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,10 +156,12 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
         topDishName = view.findViewById(R.id.top_dish_name);
         final Resources res = getResources();
 
-        Calendar calendar = Calendar.getInstance();
-        String currentWeek = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH)+1);
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setMinimalDaysInFirstWeek(7);
+        String currentWeek = Integer.toString(getWeekOfMonth(calendar));
         String currentMonth = Integer.toString(calendar.get(Calendar.MONTH)+1);
         String currentYear = Integer.toString(calendar.get(Calendar.YEAR));
+
         String titleWeek = "";
         if (currentWeek.equals("1"))
             titleWeek = currentWeek + getString(R.string.st);
@@ -244,21 +247,29 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
 
     }
 
-    private Integer getNumberOfWeeks(String selectedYear, String selectedMonth) {
-        Calendar calendar = Calendar.getInstance();
-        DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
-        String selectedDate = selectedYear+"/"+selectedMonth+"/01";
-        Date date = null;
-        try {
-            date = format.parse(selectedDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        calendar.setTime(date);
-        Integer numberOfWeeks = calendar.getActualMaximum(Calendar.WEEK_OF_MONTH) + 1;
-        return numberOfWeeks;
+    /* Ritorna il numero di settimane del mese */
+    private Integer getNumberOfWeeks(String year, String month) {
+        int yearInt = Integer.parseInt(year);
+        int monthInt = Integer.parseInt(month)-1;
+        int numberOfDays = getNumberOfDays(year, month);
+        GregorianCalendar cal = new GregorianCalendar(yearInt, monthInt, numberOfDays);
+        cal.setMinimalDaysInFirstWeek(7);
+        GregorianCalendar firstDay = new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month)-1, 1);
+        firstDay.setMinimalDaysInFirstWeek(7);
+        int firstDayValue = firstDay.get(Calendar.DAY_OF_WEEK);
+        if (firstDayValue == Calendar.MONDAY)
+            return (cal.get(Calendar.WEEK_OF_MONTH));
+        else
+            return (cal.get(Calendar.WEEK_OF_MONTH)+1);
     }
 
+    /* Ritorna il numero di giorni del mese */
+    private Integer getNumberOfDays(String year, String month) {
+        // Get the number of days in that month
+        Calendar mycal = new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month)-1, 1);
+        int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        return daysInMonth;
+    }
 
     public void initializeWeeklyHistogram(final BarChart chart, final String weekOfMonth, final String month,
                                           final String year) {
@@ -273,9 +284,6 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
         DatabaseReference timingOrederRef = database.getReference()
                 .child("Analytics").child("TimingOrder")
                 .child(restaurantID).child(node);
-
-        // Riferimenti all'istogramma
-
 
         timingOrederRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -302,15 +310,24 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
                 }
 
                 // Converto la mappa in ArrayList (la libreria accetta questo formato)
+                // In questo passaggio cambio le chiavi perchè sul DB 1 corrisponde a Domenica, 2 a Lunedì, 3 a Martedì...
+                // Io voglio iniziare da Lunedì
                 List<BarEntry> entries = new ArrayList<>();
+                entries.add(new BarEntry(1, hashMap.get("2")));
+                entries.add(new BarEntry(2, hashMap.get("3")));
+                entries.add(new BarEntry(3, hashMap.get("4")));
+                entries.add(new BarEntry(4, hashMap.get("5")));
+                entries.add(new BarEntry(5, hashMap.get("6")));
+                entries.add(new BarEntry(6, hashMap.get("7")));
+                entries.add(new BarEntry(7, hashMap.get("1")));
+                /*
                 int i =1;
                 for (TreeMap.Entry<String, Integer> entry : hashMap.entrySet()) {
-                    String dayOfWeek = entry.getKey();
                     Integer amountOfOrders = entry.getValue();
-                    String nameDay = mapDayOfWeek.get(dayOfWeek);
                     entries.add(new BarEntry(i, amountOfOrders));
                     i++;
                 }
+                */
 
                 BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
 
@@ -339,7 +356,7 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
                 chart.setOnChartValueSelectedListener(AnalyticsTab2.this);
 
                 chart.invalidate(); // refresh
-
+                descriptionChart.setText("");
 
                 chart.animateY(1000);
 
@@ -432,26 +449,6 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
         });
     }
 
-    @NotNull
-    private String getWeekOfMonth(String dayOfMonth, String month, String year) {
-
-        if (month.length()==1)
-            month = "0"+month;
-        String input = year+"/"+month+"/"+dayOfMonth;
-        String format = "yyyy/MM/dd";
-        SimpleDateFormat df = new SimpleDateFormat(format);
-        Date date = null;
-        try {
-            date = df.parse(input);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        Integer weekOfMonth = cal.get(Calendar.WEEK_OF_MONTH) + 1;
-        return Integer.toString(weekOfMonth);
-    }
-
     public void setDescriptionChart(final String startingString, final String weekOfMonth, final String dayOfWeek,
                                     final String month, final String year) {
         // Database references
@@ -508,11 +505,6 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
                         }
                     });
                 }
-//                else {
-//                    topMeal.setImageResource(R.drawable.ic_dish);
-//                    topDishName.setText("");
-//                    salesTextView.setText(getString(R.string.no_vendite));
-//                }
             }
 
             @Override
@@ -576,5 +568,18 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
             return nextDate;
         }
         return ((nextDate.split("/"))[1]);
+    }
+
+    /* Ritorna l'indice corrispondente alla settimana del mese relativa alla data passata per argomento. L'indice parte da 1. */
+    private Integer getWeekOfMonth(GregorianCalendar cal) {
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        GregorianCalendar firstDay = new GregorianCalendar(year, month, 1);
+        firstDay.setMinimalDaysInFirstWeek(7);
+        int firstDayValue = firstDay.get(Calendar.DAY_OF_WEEK);
+        if (firstDayValue == Calendar.MONDAY)
+            return (cal.get(Calendar.WEEK_OF_MONTH));
+        else
+            return (cal.get(Calendar.WEEK_OF_MONTH)+1);
     }
 }
