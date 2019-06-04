@@ -86,13 +86,8 @@ public class DetailedOrder extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        Locale current = getResources().getConfiguration().locale;
         String currency = " €";
-        if (current.equals("en_US")) {
-            currency = " $";
-        } else if (current.equals("en_GB")) {
-            currency = " £";
-        }
+
 
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);

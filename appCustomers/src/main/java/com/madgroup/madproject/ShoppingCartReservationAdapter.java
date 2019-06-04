@@ -45,13 +45,9 @@ public class ShoppingCartReservationAdapter extends RecyclerView.Adapter<Shoppin
         float price = Float.valueOf(dish.getPrice().replace(",", ".").replace("£", "")
                 .replace("$", "").replace("€", "")
                 .replaceAll("\\s", "")) * Integer.valueOf(dish.getQuantity());
-        Locale current = mContext.getResources().getConfiguration().locale;
+
         String currency = " €";
-        if(current.equals("en_US")){
-            currency = " $";
-        } else if(current.equals("en_GB")){
-            currency = " £";
-        }
+
         holder.dishPrice.setText(String.valueOf(df.format(price))+ currency);
     }
 
