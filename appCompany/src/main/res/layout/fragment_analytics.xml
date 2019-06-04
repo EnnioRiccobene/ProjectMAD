@@ -120,6 +120,16 @@
             android:textStyle="normal|bold"
             />
 
+        <TextView
+            android:id="@+id/description_chart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:textStyle="italic"
+            />
+
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/bar_chart"
             android:layout_width="match_parent"

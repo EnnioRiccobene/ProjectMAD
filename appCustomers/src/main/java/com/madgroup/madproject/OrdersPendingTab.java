@@ -202,7 +202,7 @@ public class OrdersPendingTab extends Fragment {
         Calendar calendar = Calendar.getInstance();
         String year = Integer.toString(calendar.get(Calendar.YEAR));
         String month = Integer.toString(calendar.get(Calendar.MONTH)+1);
-        String weekOfMonth = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH));
+        String weekOfMonth = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH)+1);
         final String node = year+"_"+month+"_"+weekOfMonth;
         String dayOfMonth = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
         String dayOfWeek = Integer.toString(calendar.get(Calendar.DAY_OF_WEEK)-1);

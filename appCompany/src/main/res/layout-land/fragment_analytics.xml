@@ -113,6 +113,18 @@
                 android:textStyle="normal|bold"
                 android:textAlignment="center"/>
 
+            <TextView
+                android:id="@+id/description_chart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="5dp"
+                android:textAlignment="center"
+                android:textStyle="italic"
+                />
+
+
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/bar_chart"
                 android:layout_width="match_parent"

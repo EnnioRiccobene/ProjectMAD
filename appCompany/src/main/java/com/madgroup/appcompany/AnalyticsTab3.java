@@ -23,6 +23,9 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,7 +35,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.Dish;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,7 +52,7 @@ import java.util.TreeMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class AnalyticsTab3 extends Fragment {
+public class AnalyticsTab3 extends Fragment implements OnChartValueSelectedListener {
 
     private OnFragmentInteractionListener mListener;
     private SharedPreferences.Editor editor;
@@ -60,6 +66,8 @@ public class AnalyticsTab3 extends Fragment {
     private CircleImageView topMeal;
     private TextView salesTextView;
     private TextView topDishName;
+    private TextView descriptionChart;
+
 
 
     public AnalyticsTab3() {
@@ -67,14 +75,107 @@ public class AnalyticsTab3 extends Fragment {
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            //initializeMonthlyHistogram();
-        } else {
+    public void onValueSelected(Entry e, Highlight h) {
+        if (e == null)
+            return;
 
+        Integer totalSales = Math.round(h.getY());
+        if (totalSales==0) {
+            descriptionChart.setText("No orders detected in thi\n");
+        } else {
+            String startingString = totalSales + " orders detected in this day.\n";
+            setDescriptionChart(startingString, selectedDay, selectedMonth, selectedYear);
         }
     }
+
+    private void setDescriptionChart(final String startingString, final String selectedDay,
+                                     String selectedMonth, String selectedYear) {
+        // Database references
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final String restaurantID = prefs.getString("currentUser", "");
+        String weekOfMont = getWeekOfMonth(selectedDay, selectedMonth, selectedYear);
+        String node = selectedYear+"_"+selectedMonth+"_"+weekOfMont;
+        DatabaseReference topMealRef = database.getReference().child("Analytics").child("TopMeals")
+                .child(restaurantID).child(node);
+
+        final HashMap<String, Integer> dishesIDQuantity = new HashMap<>();
+        topMealRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dayChild : dataSnapshot.getChildren()) {
+                    if (dayChild.getKey().startsWith(selectedDay)) {
+                        for (DataSnapshot dishIDQuantity : dayChild.getChildren()) {
+                            Integer amount = dishIDQuantity.getValue(Integer.class);
+                            Integer previousAmount = dishesIDQuantity.get(dishIDQuantity.getKey());
+                            if (previousAmount==null)
+                                dishesIDQuantity.put(dishIDQuantity.getKey(), amount);
+                            else
+                                dishesIDQuantity.put(dishIDQuantity.getKey(), amount+previousAmount);
+                        }
+
+                    }
+                }
+
+                // Cerco il massimo
+                Map.Entry<String, Integer> maxEntry = null;
+                for (Map.Entry<String, Integer> entry : dishesIDQuantity.entrySet())
+                {
+                    if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+                        maxEntry = entry;
+                }
+                if (maxEntry!=null) {
+                    final String topDishID = maxEntry.getKey();
+                    final Integer topDishQuantity = maxEntry.getValue();
+
+                    DatabaseReference ref = database.getReference().child("Company").child("Menu")
+                            .child(restaurantID).child(topDishID);
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Dish dish = dataSnapshot.getValue(Dish.class);
+                            String bestMealString = "Top meal: " + dish.getName() + "("+dish.getPrice()+"), "+ topDishQuantity + " sales.";
+                            descriptionChart.setText(startingString + bestMealString);
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+
+
+    }
+
+    @Override
+    public void onNothingSelected() {
+
+    }
+
+    @NotNull
+    private String getWeekOfMonth(String dayOfMonth, String month, String year) {
+
+        if (month.length()==1)
+            month = "0"+month;
+        String input = year+"/"+month+"/"+dayOfMonth;
+        String format = "yyyy/MM/dd";
+        SimpleDateFormat df = new SimpleDateFormat(format);
+        Date date = null;
+        try {
+            date = df.parse(input);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        Integer weekOfMonth = cal.get(Calendar.WEEK_OF_MONTH) + 1;
+        return Integer.toString(weekOfMonth);
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,6 +219,7 @@ public class AnalyticsTab3 extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         final BarChart chart = view.findViewById(R.id.bar_chart);
+        descriptionChart = view.findViewById(R.id.description_chart);
         ImageView previousButton = view.findViewById(R.id.previous_button);
         ImageView nextButton = view.findViewById(R.id.next_button);
         currentFilter = view.findViewById(R.id.current_filter);
@@ -248,6 +350,10 @@ public class AnalyticsTab3 extends Fragment {
 
                 BarData lineData = new BarData(dataSet);
                 chart.setData(lineData);
+                chart.setPinchZoom(false);
+                chart.setDoubleTapToZoomEnabled(false);
+
+                chart.setOnChartValueSelectedListener(AnalyticsTab3.this);
 
                 chart.invalidate(); // refresh
                 chart.animateY(1000);
