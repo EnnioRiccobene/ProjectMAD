@@ -56,7 +56,7 @@ public class ReservationActivity extends AppCompatActivity implements
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
 
-    String notificationTitle = "MAD Company";
+    String notificationTitle = "MADelivery";
     String notificationText;
 
     public final static int PENDING_RESERVATION_CODE = 0;

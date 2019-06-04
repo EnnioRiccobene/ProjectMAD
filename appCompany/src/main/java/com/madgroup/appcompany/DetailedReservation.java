@@ -39,7 +39,7 @@ public class DetailedReservation extends AppCompatActivity {
     private String currentUser;
     private SharedPreferences prefs;
 
-    String notificationTitle = "MAD Company";
+    String notificationTitle = "MADelivery";
     String notificationText;
 
     @Override

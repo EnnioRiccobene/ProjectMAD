@@ -75,11 +75,11 @@ public class DetailedReservationDishesAdapter extends
 
         Locale current = context.getResources().getConfiguration().locale;
         String currency = " €";
-        if (current.equals("en_US")) {
-            currency = " $";
-        } else if (current.equals("en_GB")) {
-            currency = " £";
-        }
+//        if (current.equals("en_US")) {
+//            currency = " $";
+//        } else if (current.equals("en_GB")) {
+//            currency = " £";
+//        }
 
         DecimalFormat df = new DecimalFormat("#.##");
         df.setMinimumFractionDigits(2);

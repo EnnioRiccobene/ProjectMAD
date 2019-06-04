@@ -64,6 +64,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -147,7 +148,7 @@ public class ProfileActivity extends AppCompatActivity
     private String catMediterraneanDel;
     private String catSouthAmericanDel;
 
-    String notificationTitle = "MAD Company";
+    String notificationTitle = "MADelivery";
     String notificationText;
 
     TextView hours;
@@ -273,7 +274,9 @@ public class ProfileActivity extends AppCompatActivity
         address = findViewById(R.id.editTextAddress);
         additionalInformation = findViewById(R.id.additionalInformation);
         deliveryCost = findViewById(R.id.deliveryCost);
+        deliveryCost.setLocale(Locale.forLanguageTag("it-IT"));
         minimumOrder = findViewById(R.id.minimumOrder);
+        minimumOrder.setLocale(Locale.forLanguageTag("it-IT"));
         modifyingInfo = false;
         progressBar = findViewById(R.id.progressBar);
         // imgProgressBar = findViewById(R.id.imgProgressBar);

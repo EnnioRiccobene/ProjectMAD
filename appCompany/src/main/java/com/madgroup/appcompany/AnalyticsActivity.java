@@ -69,7 +69,7 @@ public class AnalyticsActivity extends AppCompatActivity implements
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     private TabLayout tabLayout;
-    String notificationTitle = "MAD Company";
+    String notificationTitle = "MADelivery";
     String notificationText;
 
 
