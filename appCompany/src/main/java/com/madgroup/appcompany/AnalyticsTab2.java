@@ -122,6 +122,7 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
     public void onValueSelected(Entry e, Highlight h) {
         if (e == null)
             return;
+        descriptionChart.setText("...\n");
 
         String day = Integer.toString(Math.round(h.getX()));
         String nameOfDay = mapDayOfWeek.get(day);
@@ -129,7 +130,7 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
         if (totalSales==0) {
             descriptionChart.setText("No orders detected on " + nameOfDay + "\n");
         } else {
-            String startingString = totalSales + " orders detected on " + nameOfDay;
+            String startingString = totalSales + " orders detected on " + nameOfDay+".";
             setDescriptionChart(startingString, selectedWeek, day, selectedMonth, selectedYear);
         }
     }
@@ -154,6 +155,8 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
         topMeal = view.findViewById(R.id.top_meal);
         salesTextView = view.findViewById(R.id.sales_number);
         topDishName = view.findViewById(R.id.top_dish_name);
+        TextView topMealText = view.findViewById(R.id.top_meal_text);
+        topMealText.setText(topMealText.getText() + " " +getString(R.string.top_meal_week));
         final Resources res = getResources();
 
         GregorianCalendar calendar = new GregorianCalendar();
@@ -357,6 +360,7 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
 
                 chart.invalidate(); // refresh
                 descriptionChart.setText("");
+                chart.setScaleEnabled(false);
 
                 chart.animateY(1000);
 
@@ -496,7 +500,7 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Dish dish = dataSnapshot.getValue(Dish.class);
-                            String bestMealString = "\nTop meal: " + dish.getName() + "("+dish.getPrice()+"), "+ topDishQuantity + " sales.";
+                            String bestMealString = "\nTop meal: " + dish.getName() + " ("+dish.getPrice()+"), "+ topDishQuantity + " sales.";
                             descriptionChart.setText(startingString + bestMealString);
 
                         }

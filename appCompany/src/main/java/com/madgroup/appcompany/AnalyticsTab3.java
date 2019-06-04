@@ -59,7 +59,7 @@ public class AnalyticsTab3 extends Fragment implements OnChartValueSelectedListe
     private SharedPreferences prefs;
     private Map<String, String> mapDayOfWeek;
     private Map<String, String> months;
-    private String selectedDay = "";
+    //private String selectedDay = "";
     private String selectedMonth = "";
     private String selectedYear = "";
     private TextView currentFilter;
@@ -67,8 +67,6 @@ public class AnalyticsTab3 extends Fragment implements OnChartValueSelectedListe
     private TextView salesTextView;
     private TextView topDishName;
     private TextView descriptionChart;
-
-
 
     public AnalyticsTab3() {
         // Required empty public constructor
@@ -79,11 +77,15 @@ public class AnalyticsTab3 extends Fragment implements OnChartValueSelectedListe
         if (e == null)
             return;
 
+        descriptionChart.setText("...\n");
+
+        String selectedDay = Integer.toString(Math.round(h.getX()));
+        String str = selectedDay+" of "+months.get(selectedMonth);
         Integer totalSales = Math.round(h.getY());
         if (totalSales==0) {
-            descriptionChart.setText("No orders detected in thi\n");
+            descriptionChart.setText("No orders detected the "+str+".\n");
         } else {
-            String startingString = totalSales + " orders detected in this day.\n";
+            String startingString = totalSales + " orders detected the "+str+".\n";
             setDescriptionChart(startingString, selectedDay, selectedMonth, selectedYear);
         }
     }
@@ -93,8 +95,12 @@ public class AnalyticsTab3 extends Fragment implements OnChartValueSelectedListe
         // Database references
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final String restaurantID = prefs.getString("currentUser", "");
-        String weekOfMont = getWeekOfMonth(selectedDay, selectedMonth, selectedYear);
-        String node = selectedYear+"_"+selectedMonth+"_"+weekOfMont;
+
+        GregorianCalendar cal = new GregorianCalendar(Integer.parseInt(selectedYear), Integer.parseInt(selectedMonth)-1, Integer.parseInt(selectedDay));
+        cal.setMinimalDaysInFirstWeek(7);
+        String weekOfMonth = Integer.toString(getWeekOfMonth(cal));
+        String node = selectedYear+"_"+selectedMonth+"_"+weekOfMonth;
+
         DatabaseReference topMealRef = database.getReference().child("Analytics").child("TopMeals")
                 .child(restaurantID).child(node);
 
@@ -133,7 +139,7 @@ public class AnalyticsTab3 extends Fragment implements OnChartValueSelectedListe
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Dish dish = dataSnapshot.getValue(Dish.class);
-                            String bestMealString = "Top meal: " + dish.getName() + "("+dish.getPrice()+"), "+ topDishQuantity + " sales.";
+                            String bestMealString = "Top meal: " + dish.getName() + " ("+dish.getPrice()+"), "+ topDishQuantity + " sales.";
                             descriptionChart.setText(startingString + bestMealString);
                         }
                         @Override
@@ -156,26 +162,18 @@ public class AnalyticsTab3 extends Fragment implements OnChartValueSelectedListe
 
     }
 
-    @NotNull
-    private String getWeekOfMonth(String dayOfMonth, String month, String year) {
-
-        if (month.length()==1)
-            month = "0"+month;
-        String input = year+"/"+month+"/"+dayOfMonth;
-        String format = "yyyy/MM/dd";
-        SimpleDateFormat df = new SimpleDateFormat(format);
-        Date date = null;
-        try {
-            date = df.parse(input);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        Integer weekOfMonth = cal.get(Calendar.WEEK_OF_MONTH) + 1;
-        return Integer.toString(weekOfMonth);
+    /* Ritorna l'indice corrispondente alla settimana del mese relativa alla data passata per argomento. L'indice parte da 1. */
+    private Integer getWeekOfMonth(GregorianCalendar cal) {
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        GregorianCalendar firstDay = new GregorianCalendar(year, month, 1);
+        firstDay.setMinimalDaysInFirstWeek(7);
+        int firstDayValue = firstDay.get(Calendar.DAY_OF_WEEK);
+        if (firstDayValue == Calendar.MONDAY)
+            return (cal.get(Calendar.WEEK_OF_MONTH));
+        else
+            return (cal.get(Calendar.WEEK_OF_MONTH)+1);
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -226,28 +224,30 @@ public class AnalyticsTab3 extends Fragment implements OnChartValueSelectedListe
         topMeal = view.findViewById(R.id.top_meal);
         salesTextView = view.findViewById(R.id.sales_number);
         topDishName = view.findViewById(R.id.top_dish_name);
+        TextView topMealText = view.findViewById(R.id.top_meal_text);
+        topMealText.setText(topMealText.getText() + " " +getString(R.string.top_meal_month));
         final Resources res = getResources();
 
 
         Calendar calendar = Calendar.getInstance();
-        String currentDay = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
+        //String currentDay = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
         String currentMonth = Integer.toString(calendar.get(Calendar.MONTH)+1);
         String currentYear = Integer.toString(calendar.get(Calendar.YEAR));
         currentFilter.setText(months.get(currentMonth) + " " + currentYear);
-        this.selectedDay = currentDay;
+        //this.selectedDay = currentDay;
         this.selectedMonth = currentMonth;
         this.selectedYear = currentYear;
 
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String selectedDate = selectedYear+"/"+selectedMonth+"/"+selectedDay;
+                String selectedDate = selectedYear+"/"+selectedMonth+"/1";
                 String prevDate = getPreviousMonth(selectedDate);
                 String prevYear = (prevDate.split("/"))[0];
                 String prevMonth = Integer.toString(Integer.parseInt((prevDate.split("/"))[1]));
                 String prevDay = (prevDate.split("/"))[2];
                 currentFilter.setText(months.get(prevMonth) + " " + prevYear);
-                selectedDay = prevDay;
+                //selectedDay = prevDay;
                 selectedMonth = prevMonth;
                 selectedYear = prevYear;
                 initializeMonthlyHistogram(chart, selectedMonth, selectedYear);
@@ -259,13 +259,13 @@ public class AnalyticsTab3 extends Fragment implements OnChartValueSelectedListe
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String selectedDate = selectedYear+"/"+selectedMonth+"/"+selectedDay;
+                String selectedDate = selectedYear+"/"+selectedMonth+"/1";
                 String nextDate = getNextMonth(selectedDate);
                 String nextYear = (nextDate.split("/"))[0];
                 String nextMonth = Integer.toString(Integer.parseInt((nextDate.split("/"))[1]));
                 String nextDay = (nextDate.split("/"))[2];
                 currentFilter.setText(months.get(nextMonth) + " " + nextYear);
-                selectedDay = nextDay;
+                //selectedDay = nextDay;
                 selectedMonth = nextMonth;
                 selectedYear = nextYear;
                 initializeMonthlyHistogram(chart, selectedMonth, selectedYear);

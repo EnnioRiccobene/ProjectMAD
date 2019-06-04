@@ -189,13 +189,13 @@
     <string name="october">Ottobre</string>
     <string name="november">Novembre</string>
     <string name="december">Dicembre</string>
-    <string name="short_mon">Lun</string>
-    <string name="short_tue">Mar</string>
-    <string name="short_wed">Mer</string>
-    <string name="short_thu">Gio</string>
-    <string name="short_fri">Ven</string>
-    <string name="short_sat">Sab</string>
-    <string name="short_sun">Dom</string>
+    <string name="short_mon">Lunedì</string>
+    <string name="short_tue">Martedì</string>
+    <string name="short_wed">Mercoledì</string>
+    <string name="short_thu">Giovedì</string>
+    <string name="short_fri">Venerdì</string>
+    <string name="short_sat">Sabato</string>
+    <string name="short_sun">Domenica</string>
     <string name="st">°</string>
     <string name="nd">°</string>
     <string name="rd">°</string>
@@ -235,5 +235,9 @@
     <string name="dialog_callbiker_msg">Vuoi chiamare un biker?</string>
     <string name="food_rating">Prezzi</string>
     <string name="restaurant_rating">Valutazione del ristorante</string>
+    <string name="top_meal_day">del giorno</string>
+    <string name="top_meal_week">della settimana</string>
+    <string name="top_meal_month">del mese</string>
+
 
 </resources>

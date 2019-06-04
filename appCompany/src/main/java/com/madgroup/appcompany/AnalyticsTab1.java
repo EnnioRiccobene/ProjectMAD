@@ -89,6 +89,7 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
     public void onValueSelected(Entry e, Highlight h) {
         if (e == null)
             return;
+        descriptionChart.setText("...\n");
 
         String slotHour = Integer.toString(Math.round(h.getX()));
         String startingHour = Integer.toString(Math.round(h.getX())) + ":00";
@@ -100,9 +101,9 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
 
         Integer totalSales = Math.round(h.getY());
         if (totalSales==0) {
-            descriptionChart.setText("No orders detected from " + startingHour + " to " + endingHour+ "\n");
+            descriptionChart.setText("No orders detected from " + startingHour + " to " + endingHour+ ".\n");
         } else {
-            String startingString = totalSales + " orders detected from " + startingHour + " to " + endingHour;
+            String startingString = totalSales + " orders detected from " + startingHour + " to " + endingHour+".";
             setDescriptionChart(startingString, slotHour, selectedDay, selectedMonth, selectedYear);
         }
     }
@@ -188,6 +189,8 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
         final CircleImageView topMeal = view.findViewById(R.id.top_meal);
         salesTextView = view.findViewById(R.id.sales_number);
         topDishName = view.findViewById(R.id.top_dish_name);
+        TextView topMealText = view.findViewById(R.id.top_meal_text);
+        topMealText.setText(topMealText.getText() + " " +getString(R.string.top_meal_day));
         final Resources res = getResources();
 
         Calendar calendar = Calendar.getInstance();
@@ -334,7 +337,8 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
         });
     }
 
-    private void setDescriptionChart(final String startingString, final String slotHour, final String dayOfMonth, final String month, final String year) {
+    private void setDescriptionChart(final String startingString, final String slotHour, final String dayOfMonth,
+                                     final String month, final String year) {
 
         // Database references
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -376,7 +380,7 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Dish dish = dataSnapshot.getValue(Dish.class);
                         String dishName = dish.getName();
-                        String bestMealString = "\nTop meal: " + dishName + "("+dish.getPrice()+"), "+ Integer.toString(finalMaxSales) + " sales.";
+                        String bestMealString = "\nTop meal: " + dishName + " ("+dish.getPrice()+"), "+ Integer.toString(finalMaxSales) + " sales.";
                         descriptionChart.setText(startingString + bestMealString);
                     }
                     @Override
