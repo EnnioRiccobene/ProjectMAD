@@ -199,7 +199,7 @@ public class OrdersHistoryTab extends Fragment {
                         holder.evaluateOrder.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                showEvaluationDialog(getActivity(), getString(R.string.evaluation), getString(R.string.evaluate_dialog_message), currentItem);
+                                showEvaluationDialog(getActivity(), "MADelivery", getString(R.string.evaluate_dialog_message), currentItem);
                             }
                         });
 

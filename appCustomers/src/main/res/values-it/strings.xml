@@ -198,5 +198,6 @@
     <string name="food_category">Categorie di ristoranti</string>
     <string name="menu">Menù</string>
     <string name="best_meals">I migliori piatti</string>
+    <string name="dialog_order_received_msg">Hai ricevuto questo ordine?</string>
 
 </resources>

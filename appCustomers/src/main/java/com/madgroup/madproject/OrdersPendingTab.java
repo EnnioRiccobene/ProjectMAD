@@ -339,6 +339,36 @@ public class OrdersPendingTab extends Fragment {
         });
     }
 
+    public void confirmOrderReceivedDialog(Activity activity, String title, CharSequence message, final Reservation currentItem) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        if (title != null) builder.setTitle(title);
+
+        builder.setMessage(message);
+        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                if(currentItem.getBikerID().equals("")){
+                    Toast.makeText(getActivity(),getString(R.string.error_evaluate_toast),Toast.LENGTH_SHORT).show();
+                } else {
+                    confirmOrderReceived(currentItem);
+                }
+
+                dialog.dismiss();
+
+                showEvaluationDialog(getActivity(), "MADelivery", getString(R.string.evaluate_dialog_message), currentItem);
+            }
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     private void buildRecyclerView(View view) {
         DatabaseReference pendingRef = FirebaseDatabase.getInstance().getReference().child("Customer").child("Order").child("Pending").child(currentUser);
         FirebaseRecyclerOptions<Reservation> options = new FirebaseRecyclerOptions.Builder<Reservation>()
@@ -363,6 +393,8 @@ public class OrdersPendingTab extends Fragment {
                         holder.mView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+
+//                                confirmOrderReceivedDialog(getActivity(), "MADelivery", getString(R.string.dialog_order_received_msg), currentItem);
                                 // Scarico dal DB orderedFood
                                 String orderID = currentItem.getOrderID();
                                 String restaurantID = currentItem.getRestaurantID();
@@ -390,8 +422,8 @@ public class OrdersPendingTab extends Fragment {
                         holder.confirmOrder.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                confirmOrderReceived(currentItem);
-                                showEvaluationDialog(getActivity(), getString(R.string.evaluation), getString(R.string.evaluate_dialog_message), currentItem);
+                                confirmOrderReceivedDialog(getActivity(), "MADelivery", getString(R.string.dialog_order_received_msg), currentItem);
+
                             }
                         });
 

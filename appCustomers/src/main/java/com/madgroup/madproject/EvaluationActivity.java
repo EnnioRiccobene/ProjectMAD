@@ -194,7 +194,7 @@ public class EvaluationActivity extends AppCompatActivity {
                             @Override
                             public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
 
-                                if(mutableData != null) {
+                                if(mutableData.getValue() != null) {
                                     String ratingCounter = mutableData.child("ratingCounter").getValue(String.class);
                                     String ratingAvg = mutableData.child("ratingAvg").getValue(String.class);
                                     String foodRatingAvg = mutableData.child("foodRatingAvg").getValue(String.class);
@@ -219,7 +219,7 @@ public class EvaluationActivity extends AppCompatActivity {
                                     if (foodRatingAvg.equals("0")) {
                                         mutableData.child("foodRatingAvg").setValue(String.valueOf(foodRating));
                                     } else {
-                                        float a = ((Float.valueOf(ratingAvg) * Integer.valueOf(ratingCounter)) + foodRating) / (Integer.valueOf(ratingCounter) + 1);
+                                        float a = ((Float.valueOf(foodRatingAvg) * Integer.valueOf(ratingCounter)) + foodRating) / (Integer.valueOf(ratingCounter) + 1);
                                         mutableData.child("foodRatingAvg").setValue(String.valueOf(a));
                                     }
                                 }
@@ -240,7 +240,7 @@ public class EvaluationActivity extends AppCompatActivity {
                         @Override
                         public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
 
-                            if(mutableData != null){
+                            if(mutableData.getValue() != null){
                                 String ratingCounter = mutableData.child("ratingCounter").getValue(String.class);
                                 String ratingAvg = mutableData.child("ratingAvg").getValue(String.class);
 

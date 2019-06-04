@@ -106,7 +106,7 @@ public class DetailedOrder extends AppCompatActivity {
         time.setText(deliveryTime);
         notes.setText(note);
         deliveryPrice.setText(df.format(Float.valueOf(deliverCost)) + currency);
-        totalPrice.setText(currentReservation.getPrice() + currency);
+        totalPrice.setText(currentReservation.getPrice());
         currentReservation.setPrice(totalPrice.getText().toString());
     }
 

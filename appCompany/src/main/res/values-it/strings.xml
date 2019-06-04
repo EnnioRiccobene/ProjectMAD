@@ -229,4 +229,9 @@
     <string name="timing_order">Tempo degli ordini</string>
     <string name="th">°</string>
     <string name="restaurantRatingActivity">Recensioni</string>
+    <string name="yes">SI</string>
+    <string name="msg_accept_dialog">Vuoi accettare questo ordine?</string>
+    <string name="confirm_dialog_title">Sei sicuro?</string>
+    <string name="dialog_callbiker_msg">Vuoi chiamare un biker?</string>
+
 </resources>
