@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ProfileActivity"
-    tools:showIn="@layout/app_bar_navigation_drawer">
+    tools:context=".ProfileActivity">
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -33,7 +32,7 @@
             android:paddingEnd="16dp"
             tools:context=".ProfileActivity">
 
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imagePersonalPhoto"
                 android:layout_width="120dp"
                 android:layout_height="120dp"

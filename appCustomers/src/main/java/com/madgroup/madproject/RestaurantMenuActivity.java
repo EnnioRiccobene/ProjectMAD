@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -45,6 +46,7 @@ import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -64,6 +66,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
     private String delivery_cost_amount;
     private String minimumOrder;
 
+    LinearLayout favorite_linear;
     CircleImageView restaurantPhoto;
     TextView restaurantName;
     TextView foodCategories;
@@ -121,6 +124,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         fridayHours = findViewById(R.id.fridayhour);
         saturdayHours = findViewById(R.id.saturdayhour);
         sundayHours = findViewById(R.id.sundayhour);
+        favorite_linear = findViewById(R.id.favorite_linear);
 
         //Mi assicuro che l'Expandable Layout sia chiuso all'apertura dell'app
         if (!hiddenHours.isExpanded())
@@ -164,20 +168,26 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
         // Favorites Recycler View
         final ArrayList<Dish> topRatedDish = new ArrayList<>();
-        Query query = dishRef.orderByChild("orderedQuantityTot");
+        Query query = dishRef.orderByChild("orderedQuantityTot").limitToLast(3);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists())
+                if (!dataSnapshot.exists()) {
+                    favorite_linear.setVisibility(View.GONE);
                     return;
+                }
                 int i = 0;
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    if(i == 3)
+                    if (i == 3)
                         break;
                     Dish currentDish = postSnapshot.getValue(Dish.class);
                     topRatedDish.add(currentDish);
+                    SmartLogger.d(currentDish.getName());
                     i++;
                 }
+                if (i == 0)
+                    favorite_linear.setVisibility(View.GONE);
+                Collections.reverse(topRatedDish);
                 RecyclerView favoriteRecycler = (RecyclerView) findViewById(R.id.favorite_recycleView);
                 FavoriteTopMealAdapter adapter = new FavoriteTopMealAdapter(getApplicationContext(), topRatedDish, restaurantID);
                 favoriteRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));

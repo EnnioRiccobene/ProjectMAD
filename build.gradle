@@ -26,8 +26,6 @@ allprojects {
         mavenCentral()
         maven { url "https://jitpack.io"}
         maven { url 'https://mapbox.bintray.com/mapbox' }
-
-        
     }
 }
 

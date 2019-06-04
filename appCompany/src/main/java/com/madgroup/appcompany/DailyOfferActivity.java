@@ -135,9 +135,6 @@ public class DailyOfferActivity extends AppCompatActivity implements
 
         progressBar.setVisibility(View.INVISIBLE);
 
-        Bitmap carbonaraIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.carbonara), THUMBSIZE, THUMBSIZE);
-        Bitmap gnocchiIcon = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeResource(this.getResources(), R.drawable.gnocchi), THUMBSIZE, THUMBSIZE);
-
         initDailyOfferRecyclerView();
 
         notificationText = getResources().getString(R.string.notification_text);
@@ -210,19 +207,17 @@ public class DailyOfferActivity extends AppCompatActivity implements
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (id == R.id.nav_daily_offer) {
             onBackPressed();
-
         } else if (id == R.id.nav_reservations) {
             Intent myIntent = new Intent(this, ReservationActivity.class);
             this.startActivity(myIntent);
-
         } else if (id == R.id.nav_analytics) {
-
             Intent myIntent = new Intent(this, AnalyticsActivity.class);
             this.startActivity(myIntent);
-
+        } else if(id == R.id.nav_reviews){
+            Intent myIntent = new Intent(this, RestaurantRatingActivity.class);
+            this.startActivity(myIntent);
         } else if (id == R.id.nav_profile) {
             Intent myIntent = new Intent(this, ProfileActivity.class);
             this.startActivity(myIntent);

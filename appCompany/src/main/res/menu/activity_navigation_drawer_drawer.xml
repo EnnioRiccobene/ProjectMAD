@@ -13,19 +13,22 @@
             android:icon="@drawable/ic_action_order_food"
             android:title="@string/reservations" />
         <item
-            android:id="@+id/nav_profile"
-            android:icon="@drawable/ic_action_user"
-            android:title="@string/profile" />
+            android:id="@+id/nav_reviews"
+            android:title="@string/restaurantRatingActivity"
+            android:icon="@drawable/ic_nav_reviews"
+            />
         <item
             android:id="@+id/nav_analytics"
             android:title="@string/analytics"
             android:icon="@drawable/ic_analytics"
             />
         <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_action_user"
+            android:title="@string/profile" />
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
             android:title="@string/logout" />
     </group>
-
-
 </menu>

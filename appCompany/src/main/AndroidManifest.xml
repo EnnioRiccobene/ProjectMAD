@@ -18,7 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ChooseRiderActivity"
+        <activity android:name=".RestaurantRatingActivity" />
+        <activity
+            android:name=".ChooseRiderActivity"
             android:parentActivityName=".ReservationActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -31,15 +33,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.madgroup.appcompany.ReservationActivity" />
         </activity>
-        <activity android:name=".DailyOfferActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".DailyOfferActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".ReservationActivity" />
         <activity android:name=".AnalyticsActivity" />
-
         <activity
             android:name=".EditOpeningHoursActivity"
             android:label="Opening hours"
             android:parentActivityName=".ProfileActivity">
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.madgroup.appcompany.ProfileActivity" />

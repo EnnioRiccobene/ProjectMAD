@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RatingBar;
@@ -44,7 +45,7 @@ public class EvaluationActivity extends AppCompatActivity {
     private int serviceRating = 0;
     private String restaurantReview = "";
     private boolean justReviewed = false;
-
+    private SharedPreferences prefs;
     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     DatabaseReference companyRatingRef;
     DatabaseReference riderProfileRef;
@@ -73,7 +74,7 @@ public class EvaluationActivity extends AppCompatActivity {
         actionBar.setDisplayShowHomeEnabled(true);
 
         getIncomingIntent();
-
+        prefs = this.getSharedPreferences("MyData", MODE_PRIVATE);
         companyRatingRef = rootRef.child("Company").child("Rating").child(restaurantId).child(customerId);
         riderProfileRef = rootRef.child("Rider").child("Profile").child(riderId);
         companyProfileRef = rootRef.child("Company").child("Profile").child(restaurantId);
@@ -182,6 +183,7 @@ public class EvaluationActivity extends AppCompatActivity {
                         //Inserisco la valutazione in Company
                         companyRatingRef.child("customerId").setValue(customerId);
                         companyRatingRef.child("orderId").setValue(orderId);
+                        companyRatingRef.child("customerName").setValue(prefs.getString("Name", ""));
                         companyRatingRef.child("restaurantRating").setValue(String.valueOf(restaurantRating));
                         companyRatingRef.child("foodRating").setValue(String.valueOf(foodRating));
                         companyRatingRef.child("comment").setValue(reviewEditText.getText().toString());
