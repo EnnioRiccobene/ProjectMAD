@@ -18,13 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".RestaurantRatingActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".RestaurantRatingActivity" />
         <activity
             android:name=".ChooseRiderActivity"
             android:parentActivityName=".ReservationActivity">
@@ -48,6 +42,7 @@
             android:name=".EditOpeningHoursActivity"
             android:label="Opening hours"
             android:parentActivityName=".ProfileActivity">
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.madgroup.appcompany.ProfileActivity" />
@@ -55,7 +50,11 @@
         <activity
             android:name=".ProfileActivity"
             android:windowSoftInputMode="stateHidden|adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"

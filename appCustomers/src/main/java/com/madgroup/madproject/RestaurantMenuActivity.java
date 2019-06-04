@@ -164,12 +164,14 @@ public class RestaurantMenuActivity extends AppCompatActivity {
 
         // Favorites Recycler View
         final ArrayList<Dish> topRatedDish = new ArrayList<>();
-        Query query = dishRef.orderByChild("orderedQuantityTot");
+        Query query = dishRef.orderByChild("orderedQuantityTot").orderByKey();
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists())
+                if (!dataSnapshot.exists()){
+                    // Nascondere Top Meal Expandable Layout
                     return;
+                }
                 int i = 0;
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     if(i == 3)
