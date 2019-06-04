@@ -16,6 +16,7 @@
     <string name="notification_text">È arrivato un nuovo ordine. Controlla la pagina delle consegne per vederlo</string>
     <string name="delivery_to">Consegna a:&#160;</string>
     <string name="pick_up">Preleva da:&#160;</string>
+    <string name="customerName">Cliente:&#160;</string>
 
     <string name="user_location_permission_explanation">Quest\'app necessita pei permessi di localizzazione per funzionare.</string>
     <string name="user_location_permission_not_granted">Non hai dato i permessi sulla localizzazione.</string>

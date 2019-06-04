@@ -5,6 +5,7 @@ public class Delivery {
     private String orderID;
     private String restaurantID;
     private String customerID;
+    private String customerName;
     private String restaurantName;
     private String restaurantAddress;
     private String customerAddress;
@@ -106,5 +107,13 @@ public class Delivery {
 
     public void setRestaurantCustomerDistance(String restaurantCustomerDistance) {
         this.restaurantCustomerDistance = restaurantCustomerDistance;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 }

@@ -12,6 +12,7 @@ public class Reservation implements Serializable {
     private String bikerID;
     private ArrayList<OrderedDish> orderedDishList;
     private String restaurantName;
+    private String customerName;
     private String address;
     private String deliveryTime;
     private String deliveryCost;
@@ -41,8 +42,10 @@ public class Reservation implements Serializable {
     public Reservation() {
     }
 
-    public Reservation(String restaurantName, ArrayList<OrderedDish> orderedDishList, String address, String deliveryTime, String notes, String restaurantID, String deliveryCost ) {
+    public Reservation(String restaurantName, ArrayList<OrderedDish> orderedDishList, String address,
+                       String deliveryTime, String notes, String restaurantID, String deliveryCost, String customerName) {
         this.restaurantName = restaurantName;
+        this.customerName = customerName;
         this.orderedDishList = orderedDishList;
         this.address = address;
         this.deliveryTime = deliveryTime;
@@ -174,5 +177,14 @@ public class Reservation implements Serializable {
     public void setBikerID(String bikerID) {
         this.bikerID = bikerID;
     }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
 }
 
