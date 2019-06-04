@@ -717,25 +717,6 @@ public class ProfileActivity extends AppCompatActivity
                 .into(personalImage);
     }
 
-    private void deleteProfilePic() {
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
-                .child("bikers")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-        // Delete the file
-        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                // File deleted successfully
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // An error occurred
-            }
-        });
-    }
-
     private void hideFields() {
         name.setVisibility(View.INVISIBLE);
         email.setVisibility(View.INVISIBLE);

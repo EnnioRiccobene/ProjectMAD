@@ -69,11 +69,14 @@ public class AnalyticsActivity extends AppCompatActivity implements
     private TextView textView3;
     private ProgressBar progressBar;
     private GridLayout gridLayout;
+    private ValueEventListener riderAvabilityListener;
+    private SwitchCompat riderAvailability;
 
     private FirebaseDatabase database;
 
     String notificationTitle = "MADelivery";
     String notificationText;
+    private NavigationView navigationView;
 
 
     //Nel profilo del Biker ratingCounter e ratingAvg ne definiscono il rating;
@@ -88,7 +91,6 @@ public class AnalyticsActivity extends AppCompatActivity implements
         stub.setLayoutResource(R.layout.activity_analytics);
         stub.inflate();
         this.setTitle("Analytics");
-
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         currentUser = prefs.getString("currentUser", "noUser");
         if (currentUser.equals("noUser")) {
@@ -146,6 +148,15 @@ public class AnalyticsActivity extends AppCompatActivity implements
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference pendingDeliveryRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        pendingDeliveryRef.removeEventListener(riderAvabilityListener);
+
+    }
+
     void getMoneyEarned (String ndeliveries, String km ) {
         double money = 0;
         String earned;
@@ -181,13 +192,14 @@ public class AnalyticsActivity extends AppCompatActivity implements
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        updateNavigatorInformation(navigationView);
-        verifyRiderAvailability(navigationView);
+        updateNavigatorInformation();
+        verifyRiderAvailability();
+        createRiderStatusListener();
     }
 
-    private void verifyRiderAvailability(NavigationView navigationView) {
+    private void verifyRiderAvailability() {
         final SwitchCompat riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         final DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
@@ -209,7 +221,7 @@ public class AnalyticsActivity extends AppCompatActivity implements
         });
     }
 
-    public void updateNavigatorInformation(NavigationView navigationView) {
+    public void updateNavigatorInformation() {
         View headerView = navigationView.getHeaderView(0);
         CircleImageView nav_profile_icon = (CircleImageView) headerView.findViewById(R.id.nav_profile_icon);
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_pics")
@@ -238,7 +250,6 @@ public class AnalyticsActivity extends AppCompatActivity implements
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.nav_deliviries) {
             Intent myIntent = new Intent(this, DeliveryActivity.class);
             this.startActivity(myIntent);
@@ -278,5 +289,25 @@ public class AnalyticsActivity extends AppCompatActivity implements
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
+    }
+
+    private void createRiderStatusListener() {
+        riderAvailability = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_switch).getActionView().findViewById(R.id.drawer_switch);
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference riderStatusRef = database.child("Rider").child("Profile").child(currentUser).child("status");
+        riderAvabilityListener = riderStatusRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists())
+                    return;
+                boolean riderStatus = dataSnapshot.getValue(boolean.class);
+                riderAvailability.setChecked(riderStatus);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }
