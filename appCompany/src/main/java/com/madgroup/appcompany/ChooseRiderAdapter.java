@@ -135,6 +135,7 @@ public class ChooseRiderAdapter extends
         Delivery.put("orderID", reservation.getOrderID());
         Delivery.put("deliveryTime", reservation.getDeliveryTime());
         Delivery.put("restaurantCustomerDistance", getCustomerDistance());
+        Delivery.put("customerName", reservation.getCustomerName());
 
         //Delivery.put("seen", false);
         // deliveriesRef.child("Pending").child(rider.getId()).child(reservation.getOrderID()).setValue(Delivery);

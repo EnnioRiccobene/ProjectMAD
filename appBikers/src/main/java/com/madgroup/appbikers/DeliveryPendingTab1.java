@@ -152,7 +152,7 @@ public class DeliveryPendingTab1 extends Fragment {
                         holder.restaurantAddress.setText(currentItem.getRestaurantAddress());
                         setDistance(currentItem.getRestaurantAddress(), holder.distance);
                         holder.customerAddress.setText(currentItem.getCustomerAddress());
-
+                        holder.customerName.setText(currentItem.getCustomerName());
                         holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -188,6 +188,7 @@ public class DeliveryPendingTab1 extends Fragment {
         TextView restaurantAddress;
         TextView distance;
         TextView customerAddress;
+        TextView customerName;
 //        ImageView bikerArrived;
 
         public ViewHolder(@NonNull View itemView) {
@@ -198,6 +199,7 @@ public class DeliveryPendingTab1 extends Fragment {
             restaurantAddress = itemView.findViewById(R.id.restaurantAddress);
             distance = itemView.findViewById(R.id.distance);
             customerAddress = itemView.findViewById(R.id.customerAddress);
+            customerName = itemView.findViewById(R.id.customerName);
             // bikerArrived = itemView.findViewById(R.id.biker_arrived);
         }
 
@@ -206,7 +208,7 @@ public class DeliveryPendingTab1 extends Fragment {
     void setDistance(final String restaurantAddress, final TextView distanceTextView){
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference positionRef = database.child("Rider").child("Profile").child(currentUser).child("position");
-        positionRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        positionRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(!dataSnapshot.exists()){
