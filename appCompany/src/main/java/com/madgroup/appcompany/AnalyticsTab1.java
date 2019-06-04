@@ -47,6 +47,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -489,28 +490,8 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
         }
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        Integer weekOfMonth = cal.get(Calendar.DAY_OF_WEEK) - 1;
-        return Integer.toString(weekOfMonth);
-    }
-
-    @NotNull
-    private String getWeekOfMonth(String dayOfMonth, String month, String year) {
-
-        if (month.length()==1)
-            month = "0"+month;
-        String input = year+"/"+month+"/"+dayOfMonth;
-        String format = "yyyy/MM/dd";
-        SimpleDateFormat df = new SimpleDateFormat(format);
-        Date date = null;
-        try {
-            date = df.parse(input);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        Integer weekOfMonth = cal.get(Calendar.WEEK_OF_MONTH) + 1;
-        return Integer.toString(weekOfMonth);
+        Integer dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        return Integer.toString(dayOfWeek);
     }
 
 
@@ -542,5 +523,17 @@ public class AnalyticsTab1 extends Fragment implements OnChartValueSelectedListe
             return previousDate;
         }
         return previousDate;
+    }
+
+    /* Ritorna l'indice corrispondente alla settimana del mese relativa alla data passata per argomento. L'indice parte da 1. */
+    private Integer getWeekOfMonth(GregorianCalendar cal) {
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        GregorianCalendar firstDay = new GregorianCalendar(year, month, 1);
+        int firstDayValue = firstDay.get(Calendar.DAY_OF_WEEK);
+        if (firstDayValue == Calendar.MONDAY)
+            return (cal.get(Calendar.WEEK_OF_MONTH));
+        else
+            return (cal.get(Calendar.WEEK_OF_MONTH)+1);
     }
 }
