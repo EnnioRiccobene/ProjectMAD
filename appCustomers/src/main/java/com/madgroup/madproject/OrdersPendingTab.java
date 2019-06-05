@@ -38,9 +38,13 @@ import com.madgroup.sdk.Delivery;
 import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Reservation;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -202,10 +206,12 @@ public class OrdersPendingTab extends Fragment {
         Calendar calendar = Calendar.getInstance();
         String year = Integer.toString(calendar.get(Calendar.YEAR));
         String month = Integer.toString(calendar.get(Calendar.MONTH)+1);
-        String weekOfMonth = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH));
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setMinimalDaysInFirstWeek(7);
+        String weekOfMonth = Integer.toString(getWeekOfMonth(cal));
         final String node = year+"_"+month+"_"+weekOfMonth;
         String dayOfMonth = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
-        String dayOfWeek = Integer.toString(calendar.get(Calendar.DAY_OF_WEEK)-1);
+        String dayOfWeek = Integer.toString(calendar.get(Calendar.DAY_OF_WEEK));
         String hourOfDay = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY)); // Fascia oraria
         final String key = dayOfMonth+"_"+dayOfWeek+"_"+hourOfDay;
 
@@ -466,4 +472,20 @@ public class OrdersPendingTab extends Fragment {
             confirmOrder = itemView.findViewById(R.id.confirmOrEvaluate);
         }
     }
+
+    /* Ritorna l'indice corrispondente alla settimana del mese relativa alla data passata per argomento. L'indice parte da 1. */
+    private Integer getWeekOfMonth(GregorianCalendar cal) {
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        GregorianCalendar firstDay = new GregorianCalendar(year, month, 1);
+        firstDay.setMinimalDaysInFirstWeek(7);
+
+        int firstDayValue = firstDay.get(Calendar.DAY_OF_WEEK);
+        if (firstDayValue == Calendar.MONDAY)
+            return (cal.get(Calendar.WEEK_OF_MONTH));
+        else
+            return (cal.get(Calendar.WEEK_OF_MONTH)+1);
+    }
+
+
 }

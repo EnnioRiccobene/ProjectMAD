@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">appCompany</string>
+    <string name="app_name">MADelivery Restaurant</string>
     <string name="form_name">Restaurant name</string>
     <string name="form_email">Email</string>
     <string name="form_password">Password</string>
@@ -90,13 +90,13 @@
     <string name="october">October</string>
     <string name="november">November</string>
     <string name="december">December</string>
-    <string name="short_mon">Mon</string>
-    <string name="short_tue">Tue</string>
-    <string name="short_wed">Wed</string>
-    <string name="short_thu">Thu</string>
-    <string name="short_fri">Fri</string>
-    <string name="short_sat">Sat</string>
-    <string name="short_sun">Sun</string>
+    <string name="short_mon">Monday</string>
+    <string name="short_tue">Tuesday</string>
+    <string name="short_wed">Wednesday</string>
+    <string name="short_thu">Thursday</string>
+    <string name="short_fri">Friday</string>
+    <string name="short_sat">Saturday</string>
+    <string name="short_sun">Sunday</string>
     <string name="st">st</string>
     <string name="nd">nd</string>
     <string name="rd">rd</string>
@@ -127,7 +127,7 @@
     <string name="quantity">Quantity</string>
     <string name="price">Price</string>
     <string name="top_meal">Top meal</string>
-    <string name="timing_order">Timing order</string>
+    <string name="timing_order">Timing of orders</string>
     <string name="th">th</string>
     <string name="restaurantRatingActivity">Reviews</string>
     <string name="yes">YES</string>
@@ -136,6 +136,10 @@
     <string name="dialog_callbiker_msg">Do you want to call a biker?</string>
     <string name="food_rating">Food Rating</string>
     <string name="restaurant_rating">Restaurant Rating</string>
+    <string name="top_meal_day">of the day</string>
+    <string name="top_meal_week">of the week</string>
+    <string name="top_meal_month">of the month</string>
+
 
     <string-array name="hours_list">
         <item>00:00</item>

@@ -20,6 +20,9 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,12 +31,16 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.Dish;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +48,7 @@ import java.util.TreeMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class AnalyticsTab2 extends Fragment {
+public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListener {
 
     private OnFragmentInteractionListener mListener;
     private SharedPreferences.Editor editor;
@@ -55,6 +62,8 @@ public class AnalyticsTab2 extends Fragment {
     private CircleImageView topMeal;
     private TextView salesTextView;
     private TextView topDishName;
+    private TextView descriptionChart;
+
 
 
 
@@ -62,15 +71,6 @@ public class AnalyticsTab2 extends Fragment {
         // Required empty public constructor
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            //initializeWeeklyHistogram();
-        } else {
-
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,6 +118,28 @@ public class AnalyticsTab2 extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onValueSelected(Entry e, Highlight h) {
+        if (e == null)
+            return;
+        descriptionChart.setText("...\n");
+
+        String day = Integer.toString(Math.round(h.getX()));
+        String nameOfDay = mapDayOfWeek.get(day);
+        Integer totalSales = Math.round(h.getY());
+        if (totalSales==0) {
+            descriptionChart.setText("No orders detected on " + nameOfDay + "\n");
+        } else {
+            String startingString = totalSales + " orders detected on " + nameOfDay+".";
+            setDescriptionChart(startingString, selectedWeek, day, selectedMonth, selectedYear);
+        }
+    }
+
+    @Override
+    public void onNothingSelected() {
+
+    }
+
     public interface OnFragmentInteractionListener {
 
     }
@@ -126,18 +148,23 @@ public class AnalyticsTab2 extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         final BarChart chart = view.findViewById(R.id.bar_chart);
+        descriptionChart = view.findViewById(R.id.description_chart);
         ImageView previousButton = view.findViewById(R.id.previous_button);
         ImageView nextButton = view.findViewById(R.id.next_button);
         currentFilter = view.findViewById(R.id.current_filter);
         topMeal = view.findViewById(R.id.top_meal);
         salesTextView = view.findViewById(R.id.sales_number);
         topDishName = view.findViewById(R.id.top_dish_name);
+        TextView topMealText = view.findViewById(R.id.top_meal_text);
+        topMealText.setText(topMealText.getText() + " " +getString(R.string.top_meal_week));
         final Resources res = getResources();
 
-        Calendar calendar = Calendar.getInstance();
-        String currentWeek = Integer.toString(calendar.get(Calendar.WEEK_OF_MONTH));
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setMinimalDaysInFirstWeek(7);
+        String currentWeek = Integer.toString(getWeekOfMonth(calendar));
         String currentMonth = Integer.toString(calendar.get(Calendar.MONTH)+1);
         String currentYear = Integer.toString(calendar.get(Calendar.YEAR));
+
         String titleWeek = "";
         if (currentWeek.equals("1"))
             titleWeek = currentWeek + getString(R.string.st);
@@ -223,21 +250,29 @@ public class AnalyticsTab2 extends Fragment {
 
     }
 
-    private Integer getNumberOfWeeks(String selectedYear, String selectedMonth) {
-        Calendar calendar = Calendar.getInstance();
-        DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
-        String selectedDate = selectedYear+"/"+selectedMonth+"/01";
-        Date date = null;
-        try {
-            date = format.parse(selectedDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        calendar.setTime(date);
-        Integer numberOfWeeks = calendar.getActualMaximum(Calendar.WEEK_OF_MONTH);
-        return numberOfWeeks;
+    /* Ritorna il numero di settimane del mese */
+    private Integer getNumberOfWeeks(String year, String month) {
+        int yearInt = Integer.parseInt(year);
+        int monthInt = Integer.parseInt(month)-1;
+        int numberOfDays = getNumberOfDays(year, month);
+        GregorianCalendar cal = new GregorianCalendar(yearInt, monthInt, numberOfDays);
+        cal.setMinimalDaysInFirstWeek(7);
+        GregorianCalendar firstDay = new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month)-1, 1);
+        firstDay.setMinimalDaysInFirstWeek(7);
+        int firstDayValue = firstDay.get(Calendar.DAY_OF_WEEK);
+        if (firstDayValue == Calendar.MONDAY)
+            return (cal.get(Calendar.WEEK_OF_MONTH));
+        else
+            return (cal.get(Calendar.WEEK_OF_MONTH)+1);
     }
 
+    /* Ritorna il numero di giorni del mese */
+    private Integer getNumberOfDays(String year, String month) {
+        // Get the number of days in that month
+        Calendar mycal = new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month)-1, 1);
+        int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        return daysInMonth;
+    }
 
     public void initializeWeeklyHistogram(final BarChart chart, final String weekOfMonth, final String month,
                                           final String year) {
@@ -252,9 +287,6 @@ public class AnalyticsTab2 extends Fragment {
         DatabaseReference timingOrederRef = database.getReference()
                 .child("Analytics").child("TimingOrder")
                 .child(restaurantID).child(node);
-
-        // Riferimenti all'istogramma
-
 
         timingOrederRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -281,15 +313,24 @@ public class AnalyticsTab2 extends Fragment {
                 }
 
                 // Converto la mappa in ArrayList (la libreria accetta questo formato)
+                // In questo passaggio cambio le chiavi perchè sul DB 1 corrisponde a Domenica, 2 a Lunedì, 3 a Martedì...
+                // Io voglio iniziare da Lunedì
                 List<BarEntry> entries = new ArrayList<>();
+                entries.add(new BarEntry(1, hashMap.get("2")));
+                entries.add(new BarEntry(2, hashMap.get("3")));
+                entries.add(new BarEntry(3, hashMap.get("4")));
+                entries.add(new BarEntry(4, hashMap.get("5")));
+                entries.add(new BarEntry(5, hashMap.get("6")));
+                entries.add(new BarEntry(6, hashMap.get("7")));
+                entries.add(new BarEntry(7, hashMap.get("1")));
+                /*
                 int i =1;
                 for (TreeMap.Entry<String, Integer> entry : hashMap.entrySet()) {
-                    String dayOfWeek = entry.getKey();
                     Integer amountOfOrders = entry.getValue();
-                    String nameDay = mapDayOfWeek.get(dayOfWeek);
                     entries.add(new BarEntry(i, amountOfOrders));
                     i++;
                 }
+                */
 
                 BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
 
@@ -312,9 +353,15 @@ public class AnalyticsTab2 extends Fragment {
 
                 BarData lineData = new BarData(dataSet);
                 chart.setData(lineData);
-                chart.setTouchEnabled(false);
+                chart.setPinchZoom(false);
+                chart.setDoubleTapToZoomEnabled(false);
+
+                chart.setOnChartValueSelectedListener(AnalyticsTab2.this);
 
                 chart.invalidate(); // refresh
+                descriptionChart.setText("");
+                chart.setScaleEnabled(false);
+
                 chart.animateY(1000);
 
             }
@@ -406,6 +453,75 @@ public class AnalyticsTab2 extends Fragment {
         });
     }
 
+    public void setDescriptionChart(final String startingString, final String weekOfMonth, final String dayOfWeek,
+                                    final String month, final String year) {
+        // Database references
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final String restaurantID = prefs.getString("currentUser", "");
+
+        String node = year+"_"+month+"_"+weekOfMonth;
+        DatabaseReference topMealRef = database.getReference().child("Analytics").child("TopMeals")
+                .child(restaurantID).child(node);
+
+        final HashMap<String, Integer> dishesIDQuantity = new HashMap<>();
+        topMealRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String comparingDay = "";
+                if (dayOfWeek.equals("7"))
+                    comparingDay = "1";
+                else
+                    comparingDay = Integer.toString(Integer.parseInt(dayOfWeek) + 1);
+                // Per ogni fascia oraria relativa al giorno
+                for (DataSnapshot hourSlot : dataSnapshot.getChildren()) {
+                    if(hourSlot.getKey().contains("_"+comparingDay+"_")) {
+                        // Per ogni ID
+                        for (DataSnapshot dishIDQuantity : hourSlot.getChildren()) {
+                            Integer amount = dishIDQuantity.getValue(Integer.class);
+                            Integer previousAmount = dishesIDQuantity.get(dishIDQuantity.getKey());
+                            if (previousAmount==null)
+                                dishesIDQuantity.put(dishIDQuantity.getKey(), amount);
+                            else
+                                dishesIDQuantity.put(dishIDQuantity.getKey(), amount+previousAmount);
+                        }
+                    }
+                }
+
+                // Cerco il massimo tra tutte le fasce orarie
+                Map.Entry<String, Integer> maxEntry = null;
+                for (Map.Entry<String, Integer> entry : dishesIDQuantity.entrySet())
+                {
+                    if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+                        maxEntry = entry;
+                }
+                if (maxEntry!=null) {
+                    final String topDishID = maxEntry.getKey();
+                    final Integer topDishQuantity = maxEntry.getValue();
+
+                    DatabaseReference ref = database.getReference().child("Company").child("Menu")
+                            .child(restaurantID).child(topDishID);
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Dish dish = dataSnapshot.getValue(Dish.class);
+                            String bestMealString = "\nTop meal: " + dish.getName() + " ("+dish.getPrice()+"), "+ topDishQuantity + " sales.";
+                            descriptionChart.setText(startingString + bestMealString);
+
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
+
     private void initMapMonths() {
         months = new HashMap<>();
         months.put("1", getString(R.string.january));
@@ -430,6 +546,7 @@ public class AnalyticsTab2 extends Fragment {
         months.put("11", getString(R.string.november));
         months.put("12", getString(R.string.december));
     }
+
 
     public static String getPreviousMonth(String curDate) {
         String previousDate = "";
@@ -459,5 +576,18 @@ public class AnalyticsTab2 extends Fragment {
             return nextDate;
         }
         return ((nextDate.split("/"))[1]);
+    }
+
+    /* Ritorna l'indice corrispondente alla settimana del mese relativa alla data passata per argomento. L'indice parte da 1. */
+    private Integer getWeekOfMonth(GregorianCalendar cal) {
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        GregorianCalendar firstDay = new GregorianCalendar(year, month, 1);
+        firstDay.setMinimalDaysInFirstWeek(7);
+        int firstDayValue = firstDay.get(Calendar.DAY_OF_WEEK);
+        if (firstDayValue == Calendar.MONDAY)
+            return (cal.get(Calendar.WEEK_OF_MONTH));
+        else
+            return (cal.get(Calendar.WEEK_OF_MONTH)+1);
     }
 }

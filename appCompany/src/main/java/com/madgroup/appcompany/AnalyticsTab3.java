@@ -23,6 +23,9 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,7 +35,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.madgroup.sdk.Dish;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,34 +52,127 @@ import java.util.TreeMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class AnalyticsTab3 extends Fragment {
+public class AnalyticsTab3 extends Fragment implements OnChartValueSelectedListener {
 
     private OnFragmentInteractionListener mListener;
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
     private Map<String, String> mapDayOfWeek;
     private Map<String, String> months;
-    private String selectedDay = "";
+    //private String selectedDay = "";
     private String selectedMonth = "";
     private String selectedYear = "";
     private TextView currentFilter;
     private CircleImageView topMeal;
     private TextView salesTextView;
     private TextView topDishName;
-
+    private TextView descriptionChart;
 
     public AnalyticsTab3() {
         // Required empty public constructor
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            //initializeMonthlyHistogram();
-        } else {
+    public void onValueSelected(Entry e, Highlight h) {
+        if (e == null)
+            return;
 
+        descriptionChart.setText("...\n");
+
+        String selectedDay = Integer.toString(Math.round(h.getX()));
+        String str = selectedDay+" of "+months.get(selectedMonth);
+        Integer totalSales = Math.round(h.getY());
+        if (totalSales==0) {
+            descriptionChart.setText("No orders detected the "+str+".\n");
+        } else {
+            String startingString = totalSales + " orders detected the "+str+".\n";
+            setDescriptionChart(startingString, selectedDay, selectedMonth, selectedYear);
         }
+    }
+
+    private void setDescriptionChart(final String startingString, final String selectedDay,
+                                     String selectedMonth, String selectedYear) {
+        // Database references
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final String restaurantID = prefs.getString("currentUser", "");
+
+        GregorianCalendar cal = new GregorianCalendar(Integer.parseInt(selectedYear), Integer.parseInt(selectedMonth)-1, Integer.parseInt(selectedDay));
+        cal.setMinimalDaysInFirstWeek(7);
+        String weekOfMonth = Integer.toString(getWeekOfMonth(cal));
+        String node = selectedYear+"_"+selectedMonth+"_"+weekOfMonth;
+
+        DatabaseReference topMealRef = database.getReference().child("Analytics").child("TopMeals")
+                .child(restaurantID).child(node);
+
+        final HashMap<String, Integer> dishesIDQuantity = new HashMap<>();
+        topMealRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dayChild : dataSnapshot.getChildren()) {
+                    if (dayChild.getKey().startsWith(selectedDay)) {
+                        for (DataSnapshot dishIDQuantity : dayChild.getChildren()) {
+                            Integer amount = dishIDQuantity.getValue(Integer.class);
+                            Integer previousAmount = dishesIDQuantity.get(dishIDQuantity.getKey());
+                            if (previousAmount==null)
+                                dishesIDQuantity.put(dishIDQuantity.getKey(), amount);
+                            else
+                                dishesIDQuantity.put(dishIDQuantity.getKey(), amount+previousAmount);
+                        }
+
+                    }
+                }
+
+                // Cerco il massimo
+                Map.Entry<String, Integer> maxEntry = null;
+                for (Map.Entry<String, Integer> entry : dishesIDQuantity.entrySet())
+                {
+                    if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+                        maxEntry = entry;
+                }
+                if (maxEntry!=null) {
+                    final String topDishID = maxEntry.getKey();
+                    final Integer topDishQuantity = maxEntry.getValue();
+
+                    DatabaseReference ref = database.getReference().child("Company").child("Menu")
+                            .child(restaurantID).child(topDishID);
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Dish dish = dataSnapshot.getValue(Dish.class);
+                            String bestMealString = "Top meal: " + dish.getName() + " ("+dish.getPrice()+"), "+ topDishQuantity + " sales.";
+                            descriptionChart.setText(startingString + bestMealString);
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+
+
+    }
+
+    @Override
+    public void onNothingSelected() {
+
+    }
+
+    /* Ritorna l'indice corrispondente alla settimana del mese relativa alla data passata per argomento. L'indice parte da 1. */
+    private Integer getWeekOfMonth(GregorianCalendar cal) {
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        GregorianCalendar firstDay = new GregorianCalendar(year, month, 1);
+        firstDay.setMinimalDaysInFirstWeek(7);
+        int firstDayValue = firstDay.get(Calendar.DAY_OF_WEEK);
+        if (firstDayValue == Calendar.MONDAY)
+            return (cal.get(Calendar.WEEK_OF_MONTH));
+        else
+            return (cal.get(Calendar.WEEK_OF_MONTH)+1);
     }
 
     @Override
@@ -118,34 +217,37 @@ public class AnalyticsTab3 extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         final BarChart chart = view.findViewById(R.id.bar_chart);
+        descriptionChart = view.findViewById(R.id.description_chart);
         ImageView previousButton = view.findViewById(R.id.previous_button);
         ImageView nextButton = view.findViewById(R.id.next_button);
         currentFilter = view.findViewById(R.id.current_filter);
         topMeal = view.findViewById(R.id.top_meal);
         salesTextView = view.findViewById(R.id.sales_number);
         topDishName = view.findViewById(R.id.top_dish_name);
+        TextView topMealText = view.findViewById(R.id.top_meal_text);
+        topMealText.setText(topMealText.getText() + " " +getString(R.string.top_meal_month));
         final Resources res = getResources();
 
 
         Calendar calendar = Calendar.getInstance();
-        String currentDay = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
+        //String currentDay = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
         String currentMonth = Integer.toString(calendar.get(Calendar.MONTH)+1);
         String currentYear = Integer.toString(calendar.get(Calendar.YEAR));
         currentFilter.setText(months.get(currentMonth) + " " + currentYear);
-        this.selectedDay = currentDay;
+        //this.selectedDay = currentDay;
         this.selectedMonth = currentMonth;
         this.selectedYear = currentYear;
 
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String selectedDate = selectedYear+"/"+selectedMonth+"/"+selectedDay;
+                String selectedDate = selectedYear+"/"+selectedMonth+"/1";
                 String prevDate = getPreviousMonth(selectedDate);
                 String prevYear = (prevDate.split("/"))[0];
                 String prevMonth = Integer.toString(Integer.parseInt((prevDate.split("/"))[1]));
                 String prevDay = (prevDate.split("/"))[2];
                 currentFilter.setText(months.get(prevMonth) + " " + prevYear);
-                selectedDay = prevDay;
+                //selectedDay = prevDay;
                 selectedMonth = prevMonth;
                 selectedYear = prevYear;
                 initializeMonthlyHistogram(chart, selectedMonth, selectedYear);
@@ -157,13 +259,13 @@ public class AnalyticsTab3 extends Fragment {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String selectedDate = selectedYear+"/"+selectedMonth+"/"+selectedDay;
+                String selectedDate = selectedYear+"/"+selectedMonth+"/1";
                 String nextDate = getNextMonth(selectedDate);
                 String nextYear = (nextDate.split("/"))[0];
                 String nextMonth = Integer.toString(Integer.parseInt((nextDate.split("/"))[1]));
                 String nextDay = (nextDate.split("/"))[2];
                 currentFilter.setText(months.get(nextMonth) + " " + nextYear);
-                selectedDay = nextDay;
+                //selectedDay = nextDay;
                 selectedMonth = nextMonth;
                 selectedYear = nextYear;
                 initializeMonthlyHistogram(chart, selectedMonth, selectedYear);
@@ -229,8 +331,8 @@ public class AnalyticsTab3 extends Fragment {
 
                 BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
 
-                dataSet.setColor(Color.parseColor("#42B0F4")); //resolved color
-                dataSet.setBarBorderColor(Color.parseColor("#41A9F4"));
+                dataSet.setColor(Color.parseColor("#388E3C")); //resolved color
+                dataSet.setBarBorderColor(Color.parseColor("#00600F"));
                 dataSet.setBarBorderWidth(1);
                 dataSet.setDrawValues(false);
 
@@ -248,6 +350,10 @@ public class AnalyticsTab3 extends Fragment {
 
                 BarData lineData = new BarData(dataSet);
                 chart.setData(lineData);
+                chart.setPinchZoom(false);
+                chart.setDoubleTapToZoomEnabled(false);
+
+                chart.setOnChartValueSelectedListener(AnalyticsTab3.this);
 
                 chart.invalidate(); // refresh
                 chart.animateY(1000);

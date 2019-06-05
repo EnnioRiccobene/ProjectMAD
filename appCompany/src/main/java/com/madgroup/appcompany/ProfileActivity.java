@@ -59,9 +59,16 @@ import com.yalantis.ucrop.UCrop;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -170,7 +177,6 @@ public class ProfileActivity extends AppCompatActivity
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
         ViewStub stub = (ViewStub) findViewById(R.id.stub);
         stub.setInflatedId(R.id.inflatedActivity);
@@ -310,6 +316,10 @@ public class ProfileActivity extends AppCompatActivity
         } else {
             startLogin();
         }
+
+
+        //populateAnalytics();
+
     }
 
     //I seguenti due metodi sono per gestire l'animazione della freccia durante l'interazione con l'ExpandableLayout
@@ -1216,6 +1226,83 @@ public class ProfileActivity extends AppCompatActivity
                         startActivity(intent);
                     }
                 });
+    }
+
+    private void populateAnalytics() {
+        String restaurantID = prefs.getString("currentUser", "");
+        String year = "2019";
+        String month = "5";
+        GregorianCalendar cal = new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month)-1, 1);
+        cal.setMinimalDaysInFirstWeek(7);
+        for (int i=1; i<=getNumberOfDays(year, month); i++) {
+            // Per ogni giorno del mese
+            Integer weekOfMonth = getWeekOfMonth(cal);
+            DatabaseReference timingOrderRef = database.getReference()
+                    .child("Analytics").child("TimingOrder").child(restaurantID)
+                    .child(year+"_"+month+"_"+weekOfMonth);
+            DatabaseReference topMealsRef = database.getReference()
+                    .child("Analytics").child("TopMeals").child(restaurantID)
+                    .child(year+"_"+month+"_"+weekOfMonth);
+            for(int k=0; k<24; k++) {
+                // Per ogni fascia oraria
+                int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+                int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+                simulateOrder(timingOrderRef.child(dayOfMonth+"_"+dayOfWeek+"_"+k), topMealsRef.child(dayOfMonth+"_"+dayOfWeek+"_"+k));
+            }
+            cal.add(Calendar.DATE,1);
+        }
+    }
+
+    private void simulateOrder(final DatabaseReference timingOrderRef, final DatabaseReference topMealsRef) {
+
+        int totalOrders = (int)(Math.random() * 10 + 1); // random tra 1 e 10
+        for(int i=0; i<totalOrders; i++) {
+
+            timingOrderRef.setValue(totalOrders);
+
+            final int totalFoods = (int)(Math.random() * 3 + 1);
+
+            for(int j=0; j<totalFoods; j++) {
+                // Scelgo totalFoods ID di piatti (in maniera random) con quantità random da 1 a 3
+
+                ArrayList<String> dishesID = new ArrayList<>();
+                dishesID.add("-Leg141-Dh6Yvwb34ync");
+                dishesID.add("-Leg1TThnm2RcHRzmFWz");
+                dishesID.add("-Leg1lghXuXE10DQE9tJ");
+                dishesID.add("-Leg26LV_jZ6oh2bcBBw");
+                dishesID.add("-Leg2Q98QROL8xA2LzDN");
+                dishesID.add("-Leg2iV1Fvl8ZPpWvW1j");
+                dishesID.add("-Leg349oNcTIxyupEG_5");
+                dishesID.add("-Leg3KSXDtUANDgkk4-H");
+                dishesID.add("-Leg3Zx-_83yWxwla0zZ");
+                dishesID.add("-Leg3sCQgn9AC3Ohecmw");
+                int randomIndex = (int)(Math.random() * 9 + 0);    // I piatti totali sono 10
+                String dishID = dishesID.get(randomIndex);
+                int quantity = (int)(Math.random() * 3 + 1);
+                // Simulo l'aquisto di N pezzi
+                topMealsRef.child(dishID).setValue(quantity);
+            }
+        }
+    }
+
+    private Integer getNumberOfDays(String year, String month) {
+        // Get the number of days in that month
+        Calendar mycal = new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month)-1, 1);
+        int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        return daysInMonth;
+    }
+
+    /* Ritorna l'indice corrispondente alla settimana del mese relativa alla data passata per argomento. L'indice parte da 1. */
+    private Integer getWeekOfMonth(GregorianCalendar cal) {
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        GregorianCalendar firstDay = new GregorianCalendar(year, month, 1);
+        firstDay.setMinimalDaysInFirstWeek(7);
+        int firstDayValue = firstDay.get(Calendar.DAY_OF_WEEK);
+        if (firstDayValue == Calendar.MONDAY)
+            return (cal.get(Calendar.WEEK_OF_MONTH));
+        else
+            return (cal.get(Calendar.WEEK_OF_MONTH)+1);
     }
 
 }
