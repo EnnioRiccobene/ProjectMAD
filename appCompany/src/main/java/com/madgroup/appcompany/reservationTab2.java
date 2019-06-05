@@ -7,6 +7,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -50,6 +53,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -200,8 +205,9 @@ public class reservationTab2 extends Fragment {
                         final int index = i;
                         switch (currentItem.getStatus()) {
                             case 1:
-                                holder.mImageView.setImageResource(R.drawable.ic_call);
-                                ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                                holder.mImageView.setImageResource(R.drawable.ic_phone_call);
+                                holder.mImageView.setElevation(2f);
+                                // ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
                                 holder.mImageView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -211,8 +217,10 @@ public class reservationTab2 extends Fragment {
                                 });
                                 break;
                             case 2:
-                                holder.mImageView.setImageResource(R.drawable.ic_hourglass);
-                                ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                                holder.mImageView.setImageResource(R.drawable.ic_waiting);
+                                holder.mImageView.setBorderWidth(0);
+                                holder.mImageView.setElevation(0);
+                                // ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
                                 break;
                         }
                         holder.mTextView1.setText(currentItem.getAddress());
@@ -345,7 +353,7 @@ public class reservationTab2 extends Fragment {
     }
 
     public static class ReservationViewHolder extends RecyclerView.ViewHolder {
-        public ImageView mImageView;
+        public CircleImageView mImageView;
         public TextView mTextView1;  // Address
         public TextView mTextView2;  // Lunch_time
         public TextView mTextView3;  // Price

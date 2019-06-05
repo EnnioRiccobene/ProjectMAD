@@ -34,6 +34,8 @@ import com.madgroup.sdk.Reservation;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -156,12 +158,10 @@ public class reservationTab3 extends Fragment {
                         final int index = i;
                         switch (currentItem.getStatus()){
                             case 3:
-                                holder.mImageView.setImageResource(R.drawable.ic_circled_confirm);
-                                ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                                holder.mImageView.setImageResource(R.drawable.ic_confirmed_history);
                                 break;
                             case 4:
-                                holder.mImageView.setImageResource(R.drawable.ic_circled_reject);
-                                ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.red)));
+                                holder.mImageView.setImageResource(R.drawable.ic_rejected_history);
                                 break;
                         }
                         holder.mTextView1.setText(currentItem.getAddress());
@@ -215,7 +215,7 @@ public class reservationTab3 extends Fragment {
     }
 
     public static class ReservationViewHolder extends RecyclerView.ViewHolder {
-        public ImageView mImageView;
+        public CircleImageView mImageView;
         public TextView mTextView1;  // Address
         public TextView mTextView2;  // Lunch_time
         public TextView mTextView3;  // Price

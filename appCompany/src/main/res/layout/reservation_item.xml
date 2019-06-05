@@ -42,16 +42,17 @@
             android:layout_below="@+id/lunch_time"
             android:layout_marginTop="3dp"
             android:text="@string/order_price"
-            android:textStyle="bold"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/status_biker"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
-            android:src="@drawable/ic_action_confirm"/>
+            android:src="@drawable/ic_action_confirm"
+            app:civ_border_width="0.5dp" />
 
 
     </RelativeLayout>

@@ -7,6 +7,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -43,6 +46,8 @@ import com.madgroup.sdk.SmartLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
@@ -233,8 +238,8 @@ public class reservationTab1 extends Fragment {
                     @Override
                     protected void onBindViewHolder(@NonNull ReservationViewHolder holder, int i, @NonNull final Reservation currentItem) {
                         final int index = i;
-                        holder.mImageView.setImageResource(R.drawable.ic_circled_confirm);
-                        ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                        holder.mImageView.setImageResource(R.drawable.ic_confirm_5);
+                        // ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorAccent)));
                         holder.mImageView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -317,7 +322,7 @@ public class reservationTab1 extends Fragment {
     }
 
     public static class ReservationViewHolder extends RecyclerView.ViewHolder {
-        public ImageView mImageView;
+        public CircleImageView mImageView;
         public TextView mTextView1;  // Address
         public TextView mTextView2;  // Lunch_time
         public TextView mTextView3;  // Price
