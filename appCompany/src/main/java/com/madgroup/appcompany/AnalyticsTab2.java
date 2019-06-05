@@ -467,10 +467,14 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
         topMealRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                String comparingDay = "";
+                if (dayOfWeek.equals("7"))
+                    comparingDay = "1";
+                else
+                    comparingDay = Integer.toString(Integer.parseInt(dayOfWeek) + 1);
                 // Per ogni fascia oraria relativa al giorno
                 for (DataSnapshot hourSlot : dataSnapshot.getChildren()) {
-                    if(hourSlot.getKey().contains("_"+dayOfWeek+"_")) {
+                    if(hourSlot.getKey().contains("_"+comparingDay+"_")) {
                         // Per ogni ID
                         for (DataSnapshot dishIDQuantity : hourSlot.getChildren()) {
                             Integer amount = dishIDQuantity.getValue(Integer.class);
