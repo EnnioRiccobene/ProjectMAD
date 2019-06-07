@@ -7,7 +7,7 @@
     <color name="colorAccent">#FF9100</color>
     <color name="colorAccentDark">#C56200</color>
     <color name="colorAccentLight">#FFC246</color>
-
+    <color name="darkRed">#c40b0b</color>
     <!--<color name="colorPrimary">#3F51B5</color>-->
     <!--<color name="colorPrimaryDark">#303F9F</color>-->
     <!--<color name="primary_light">#C5CAE9</color>-->

@@ -3,10 +3,13 @@ package com.madgroup.appcompany;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -154,10 +158,12 @@ public class reservationTab3 extends Fragment {
                         final int index = i;
                         switch (currentItem.getStatus()){
                             case 3:
-                                holder.mImageView.setImageResource(R.drawable.ic_confirmed_history);
+                                holder.mImageView.setImageResource(R.drawable.ic_circled_confirm);
+                                ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
                                 break;
                             case 4:
-                                holder.mImageView.setImageResource(R.drawable.ic_error_3);
+                                holder.mImageView.setImageResource(R.drawable.ic_reject);
+                                ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.darkRed)));
                                 break;
                         }
                         holder.mTextView1.setText(currentItem.getAddress());
@@ -211,7 +217,7 @@ public class reservationTab3 extends Fragment {
     }
 
     public static class ReservationViewHolder extends RecyclerView.ViewHolder {
-        public CircleImageView mImageView;
+        public ImageView mImageView;
         public TextView mTextView1;  // Address
         public TextView mTextView2;  // Lunch_time
         public TextView mTextView3;  // Price

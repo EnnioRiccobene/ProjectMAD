@@ -19,7 +19,7 @@
             android:id="@+id/text_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="300dp"
+            android:maxWidth="250dp"
             android:text="@string/address"
             android:textColor="#000"
             android:textSize="17sp"
@@ -47,14 +47,13 @@
             android:textStyle="bold" />
 
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/status_biker"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="3dp"
-            app:civ_border_width="0.5dp" />
-
+           />
 
     </RelativeLayout>
 

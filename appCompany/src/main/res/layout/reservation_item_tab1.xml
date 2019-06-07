@@ -23,7 +23,7 @@
             android:textColor="#000"
             android:textSize="17sp"
             android:textStyle="bold"
-            android:maxWidth="300dp"/>
+            android:maxWidth="250dp"/>
 
         <TextView
             android:id="@+id/lunch_time"
