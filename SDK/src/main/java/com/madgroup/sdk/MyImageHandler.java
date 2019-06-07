@@ -53,8 +53,8 @@ public class MyImageHandler extends AppCompatActivity {
 
         options.withAspectRatio(1, 1);
         options.setHideBottomControls(true);    // Nascondo la barra delle opzioni
-        options.setStatusBarColor(Color.rgb(0, 87, 75));
-        options.setToolbarColor(Color.rgb(0, 133, 119));
+        options.setStatusBarColor(Color.rgb(27, 27, 27));
+        options.setToolbarColor(Color.rgb(66, 66, 66));
         options.setCircleDimmedLayer(true); // Mostro il cerchio
         return uCrop.withOptions(options);
     }

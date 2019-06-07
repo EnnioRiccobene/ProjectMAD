@@ -35,7 +35,7 @@
     <string name="Deliveries">Deliveries</string>
     <string name="gps_permission_msg">Allow the GPS usage in settings to let the app work properly.</string>
     <string name="caricamento_fallito">Upload Failure</string>
-    <string name="pic_saved">Pic Saved!</string>
+    <string name="pic_saved">Data Saved!</string>
 
     <string name="average_rating">Average Rating</string>
     <string name="number_deliveries">Number of deliveries</string>
