@@ -21,7 +21,6 @@
             android:id="@+id/restaurantName"
             android:layout_width="309dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text=""
             android:textColor="#000"
             android:textSize="20sp"
@@ -95,16 +94,6 @@
             android:textColor="#777"
             android:textSize="13sp" />
 
-        <!--<TextView-->
-            <!--android:id="@+id/distance"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignBottom="@id/customerName"-->
-            <!--android:layout_alignParentEnd="true"-->
-            <!--android:textColor="#777"-->
-            <!--android:textSize="13sp"-->
-            <!--android:textStyle="italic" />-->
-
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/startNavigationButton"
             android:layout_width="250dp"
@@ -114,7 +103,7 @@
             android:layout_marginTop="10dp"
             android:backgroundTint="@color/colorAccent"
             android:textColor="@color/mapboxWhite"
-            android:text="Start Navigation"
+            android:text="@string/start_navigation"
             android:textAlignment="center"
             app:autoSizeMaxTextSize="100sp"
             app:autoSizeMinTextSize="10sp"
