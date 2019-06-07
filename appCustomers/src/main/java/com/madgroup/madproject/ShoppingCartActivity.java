@@ -1,6 +1,9 @@
 package com.madgroup.madproject;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -179,12 +183,35 @@ public class ShoppingCartActivity extends AppCompatActivity {
 
                     @Override
                     public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                        Intent homepage = new Intent(ShoppingCartActivity.this, ProfileActivity.class);
-                        startActivity(homepage);
+
+                        showOrderSentDialog(ShoppingCartActivity.this, "MADelivery", getString(R.string.order_sent));
+
+//                        Intent homepage = new Intent(ShoppingCartActivity.this, ProfileActivity.class);
+//                        startActivity(homepage);
                     }
                 });
             }
         });
+    }
+
+    public void showOrderSentDialog(Activity activity, String title, CharSequence message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        if (title != null) builder.setTitle(title);
+
+        builder.setMessage(message);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                Intent homepage = new Intent(ShoppingCartActivity.this, ProfileActivity.class);
+                startActivity(homepage);
+
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
     }
 
     private void getIncomingIntent() {

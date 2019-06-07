@@ -185,7 +185,7 @@
     <string name="edit_fields">Edit fields</string>
     <string name="connection_error">Connection error.</string>
     <string name="upload_failure">Upload Failure</string>
-    <string name="pic_saved">Pic Saved!</string>
+    <string name="pic_saved">Data Saved!</string>
     <string name="not_available_quantity">The quantity selected is not available</string>
     <string name="Menu_title">Place an order!</string>
     <string name="looking_for_food">Looking for food?</string>
@@ -202,5 +202,6 @@
     <string name="menu">Menu</string>
     <string name="best_meals">Best Meals</string>
     <string name="dialog_order_received_msg">Do you have received this order?</string>
+    <string name="order_sent">Order sent.</string>
 
 </resources>
