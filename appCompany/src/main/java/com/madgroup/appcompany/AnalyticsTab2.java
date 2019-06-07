@@ -130,8 +130,13 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
         if (totalSales==0) {
             descriptionChart.setText("No orders detected on " + nameOfDay + "\n");
         } else {
+            String formattedMonth = "";
+            if (selectedMonth.startsWith("0"))
+                formattedMonth = selectedMonth.substring(1,2);
+            else
+                formattedMonth = selectedMonth;
             String startingString = totalSales + " orders detected on " + nameOfDay+".";
-            setDescriptionChart(startingString, selectedWeek, day, selectedMonth, selectedYear);
+            setDescriptionChart(startingString, selectedWeek, day, formattedMonth, selectedYear);
         }
     }
 
@@ -209,8 +214,13 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
                 else
                     titleWeek = selectedWeek + getString(R.string.th);
                 currentFilter.setText(titleWeek + " " + getString(R.string.week) + " " +getString(R.string.of) + " " +months.get(selectedMonth) + " " + selectedYear);
-                initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
-                getTopMealOfWeek(res, topMeal, salesTextView, topDishName, selectedWeek, selectedMonth, selectedYear);
+                String formattedMonth = "";
+                if (selectedMonth.startsWith("0"))
+                    formattedMonth = selectedMonth.substring(1,2);
+                else
+                    formattedMonth = selectedMonth;
+                initializeWeeklyHistogram(chart, selectedWeek, formattedMonth, selectedYear);
+                getTopMealOfWeek(res, topMeal, salesTextView, topDishName, selectedWeek, formattedMonth, selectedYear);
 
             }
         });
@@ -239,14 +249,24 @@ public class AnalyticsTab2 extends Fragment implements OnChartValueSelectedListe
                 else
                     titleWeek = selectedWeek + getString(R.string.th);
                 currentFilter.setText(titleWeek + " " + getString(R.string.week) + " " + getString(R.string.of) + " " + months.get(selectedMonth) + " " + selectedYear);
-                initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
-                getTopMealOfWeek(res, topMeal, salesTextView, topDishName, selectedWeek, selectedMonth, selectedYear);
+                String formattedMonth = "";
+                if (selectedMonth.startsWith("0"))
+                    formattedMonth = selectedMonth.substring(1,2);
+                else
+                    formattedMonth = selectedMonth;
+                initializeWeeklyHistogram(chart, selectedWeek, formattedMonth, selectedYear);
+                getTopMealOfWeek(res, topMeal, salesTextView, topDishName, selectedWeek, formattedMonth, selectedYear);
 
             }
         });
 
-        initializeWeeklyHistogram(chart, selectedWeek, selectedMonth, selectedYear);
-        getTopMealOfWeek(res, topMeal, salesTextView, topDishName, selectedWeek, selectedMonth, selectedYear);
+        String formattedMonth = "";
+        if (selectedMonth.startsWith("0"))
+            formattedMonth = selectedMonth.substring(1,2);
+        else
+            formattedMonth = selectedMonth;
+        initializeWeeklyHistogram(chart, selectedWeek, formattedMonth, selectedYear);
+        getTopMealOfWeek(res, topMeal, salesTextView, topDishName, selectedWeek, formattedMonth, selectedYear);
 
     }
 
