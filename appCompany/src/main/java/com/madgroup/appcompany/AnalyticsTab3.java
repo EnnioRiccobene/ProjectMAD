@@ -331,8 +331,8 @@ public class AnalyticsTab3 extends Fragment implements OnChartValueSelectedListe
 
                 BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
 
-                dataSet.setColor(Color.parseColor("#388E3C")); //resolved color
-                dataSet.setBarBorderColor(Color.parseColor("#00600F"));
+                dataSet.setColor(Color.parseColor("#FBC02D")); //resolved color
+                dataSet.setBarBorderColor(Color.parseColor("#C49000"));
                 dataSet.setBarBorderWidth(1);
                 dataSet.setDrawValues(false);
 
