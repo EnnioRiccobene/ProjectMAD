@@ -169,8 +169,8 @@ public class OrdersPendingTab extends Fragment {
         builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(currentItem.getBikerID().equals("")){
-                    Toast.makeText(getActivity(),getString(R.string.error_evaluate_toast),Toast.LENGTH_SHORT).show();
+                if (currentItem.getBikerID().equals("")) {
+                    Toast.makeText(getActivity(), getString(R.string.error_evaluate_toast), Toast.LENGTH_SHORT).show();
                 } else {
                     EvaluationActivity.start(getContext(), currentItem.getOrderID(), currentItem.getRestaurantID(), currentItem.getCustomerID(), currentItem.getBikerID());
                 }
@@ -185,7 +185,8 @@ public class OrdersPendingTab extends Fragment {
         });
         builder.show();
     }
-    private void confirmOrderReceived(final Reservation currentItem){
+
+    private void confirmOrderReceived(final Reservation currentItem) {
         // Ordine Arrivato:
         // Company: passare da accepted a history + Analytics
         // Customer: passare da pending a history
@@ -205,15 +206,15 @@ public class OrdersPendingTab extends Fragment {
         // Il contatore equivale al numero di ordini effettuati dal ristorante in una certa fascia ORARIA.
         Calendar calendar = Calendar.getInstance();
         String year = Integer.toString(calendar.get(Calendar.YEAR));
-        String month = Integer.toString(calendar.get(Calendar.MONTH)+1);
+        String month = Integer.toString(calendar.get(Calendar.MONTH) + 1);
         GregorianCalendar cal = new GregorianCalendar();
         cal.setMinimalDaysInFirstWeek(7);
         String weekOfMonth = Integer.toString(getWeekOfMonth(cal));
-        final String node = year+"_"+month+"_"+weekOfMonth;
+        final String node = year + "_" + month + "_" + weekOfMonth;
         String dayOfMonth = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
         String dayOfWeek = Integer.toString(calendar.get(Calendar.DAY_OF_WEEK));
         String hourOfDay = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY)); // Fascia oraria
-        final String key = dayOfMonth+"_"+dayOfWeek+"_"+hourOfDay;
+        final String key = dayOfMonth + "_" + dayOfWeek + "_" + hourOfDay;
 
         DatabaseReference timingOrderRef = database.child("Analytics").child("TimingOrder")
                 .child(currentItem.getRestaurantID()).child(node).child(key);
@@ -227,6 +228,7 @@ public class OrdersPendingTab extends Fragment {
                     mutableData.setValue(amountOfOrders + 1);
                 return Transaction.success(mutableData);
             }
+
             @Override
             public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
                 //System.out.println("Transaction completed");
@@ -239,15 +241,15 @@ public class OrdersPendingTab extends Fragment {
         orderedFoodRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists())
+                if (!dataSnapshot.exists())
                     return;
-                for(DataSnapshot currentDish : dataSnapshot.getChildren()) {
+                for (DataSnapshot currentDish : dataSnapshot.getChildren()) {
                     //dishesID.add(currentDish.getValue(Dish.class).getId());
                     String dishID = currentDish.getValue(OrderedDish.class).getId();
                     Integer dishQuantity = Integer.parseInt(currentDish.getValue(OrderedDish.class).getQuantity());
                     dishesIDQuantity.put(dishID, dishQuantity);
                 }
-                if(dishesIDQuantity.size() == 0)
+                if (dishesIDQuantity.size() == 0)
                     return;
 
                 DatabaseReference topMealsRef = database.child("Analytics").child("TopMeals")
@@ -266,6 +268,7 @@ public class OrdersPendingTab extends Fragment {
                                 mutableData.setValue(amountOfOrders + dishQuantity);
                             return Transaction.success(mutableData);
                         }
+
                         @Override
                         public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
                             //System.out.println("Transaction completed");
@@ -287,8 +290,11 @@ public class OrdersPendingTab extends Fragment {
         multipleAtomicQuery.put("Customer/Order/History/" + currentItem.getCustomerID() + "/" + currentItem.getOrderID(), currentItem);
         database.updateChildren(multipleAtomicQuery);
 
+
         // 3.1 Rider: rimuovo da pending e pongo su history
+        // 3.2 Rider: incrementare deliveryNumber e totDistance
         DatabaseReference bikerDeliveryRef = database.child("Rider").child("Delivery").child("Pending").child(currentItem.getBikerID()).child(currentItem.getOrderID());
+        final DatabaseReference riderProfileRef = database.child("Rider").child("Profile").child(currentItem.getBikerID());
         bikerDeliveryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -297,22 +303,7 @@ public class OrdersPendingTab extends Fragment {
                 Delivery currentDelivery = dataSnapshot.getValue(Delivery.class);
                 database.child("Rider").child("Delivery").child("Pending").child(currentItem.getBikerID()).child(currentItem.getOrderID()).setValue(null);
                 database.child("Rider").child("Delivery").child("History").child(currentItem.getBikerID()).child(currentItem.getOrderID()).setValue(currentDelivery);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        // 3.2 Rider: incrementare deliveryNumber e totDistance
-        final DatabaseReference riderProfileRef = database.child("Rider").child("Profile").child(currentItem.getBikerID());
-        bikerDeliveryRef.child(currentItem.getBikerID()).child(currentItem.getOrderID()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists())
-                    return;
-                final String distance = dataSnapshot.child("restaurantCustomerDistance").getValue(String.class);
+                final String distance = currentDelivery.getRestaurantCustomerDistance();
                 riderProfileRef.runTransaction(new Transaction.Handler() {
                     @NonNull
                     @Override
@@ -355,8 +346,8 @@ public class OrdersPendingTab extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                if(currentItem.getBikerID().equals("")){
-                    Toast.makeText(getActivity(),getString(R.string.error_evaluate_toast),Toast.LENGTH_SHORT).show();
+                if (currentItem.getBikerID().equals("")) {
+                    Toast.makeText(getActivity(), getString(R.string.error_evaluate_toast), Toast.LENGTH_SHORT).show();
                 } else {
                     confirmOrderReceived(currentItem);
                 }
@@ -424,14 +415,14 @@ public class OrdersPendingTab extends Fragment {
                                 });
                             }
                         });
-                        if(currentItem.getStatus() == 2)
+                        if (currentItem.getStatus() == 2)
                             holder.confirmOrder.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                confirmOrderReceivedDialog(getActivity(), "MADelivery", getString(R.string.dialog_order_received_msg), currentItem);
-                            }
-                        });
-                        else{
+                                @Override
+                                public void onClick(View v) {
+                                    confirmOrderReceivedDialog(getActivity(), "MADelivery", getString(R.string.dialog_order_received_msg), currentItem);
+                                }
+                            });
+                        else {
                             holder.confirmOrder.setImageResource(R.drawable.ic_waiting);
                             holder.confirmOrder.setBorderWidth(0);
                         }
@@ -484,7 +475,7 @@ public class OrdersPendingTab extends Fragment {
         if (firstDayValue == Calendar.MONDAY)
             return (cal.get(Calendar.WEEK_OF_MONTH));
         else
-            return (cal.get(Calendar.WEEK_OF_MONTH)+1);
+            return (cal.get(Calendar.WEEK_OF_MONTH) + 1);
     }
 
 
