@@ -30,7 +30,7 @@
     <string name="Deliveries">Consegne</string>
     <string name="gps_permission_msg">Consenti l\'uso del GPS dalle impostazioni per permettere all\'app di lavorare correttamente.</string>
     <string name="caricamento_fallito">Caricamento fallito</string>
-    <string name="pic_saved">Foto salvata!</string>
+    <string name="pic_saved">Dati salvati!</string>
     <string name="average_rating">Valutazione Media</string>
     <string name="number_deliveries">Numero di consegne</string>
     <string name="km_travelled">Km percorsi</string>

@@ -182,7 +182,7 @@
     <string name="edit_fields">Modifica i campi</string>
     <string name="connection_error">Errore di connessione.</string>
     <string name="upload_failure">Caricamento fallito</string>
-    <string name="pic_saved">Foto salvata!</string>
+    <string name="pic_saved">Dati salvati!</string>
     <string name="not_available_quantity">La quantità selezionata non è disponibile</string>
     <string name="Menu_title">Fai un ordine!</string>
     <string name="looking_for_food">Cerchi un ristorante?</string>
