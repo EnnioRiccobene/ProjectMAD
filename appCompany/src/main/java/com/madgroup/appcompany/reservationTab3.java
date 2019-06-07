@@ -3,13 +3,10 @@ package com.madgroup.appcompany;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +15,6 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -161,7 +157,7 @@ public class reservationTab3 extends Fragment {
                                 holder.mImageView.setImageResource(R.drawable.ic_confirmed_history);
                                 break;
                             case 4:
-                                holder.mImageView.setImageResource(R.drawable.ic_rejected_history);
+                                holder.mImageView.setImageResource(R.drawable.ic_error_3);
                                 break;
                         }
                         holder.mTextView1.setText(currentItem.getAddress());
@@ -201,7 +197,7 @@ public class reservationTab3 extends Fragment {
                     @NonNull
                     @Override
                     public ReservationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.reservation_item, parent, false);
+                        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.reservation_item_tab3, parent, false);
                         ReservationViewHolder evh = new ReservationViewHolder(v);
                         return evh;
                     }

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -150,10 +151,10 @@ public class DeliveryPendingTab1 extends Fragment {
                     protected void onBindViewHolder(@NonNull ViewHolder holder, int i, @NonNull final Delivery currentItem) {
                         holder.restaurantName.setText(currentItem.getRestaurantName());
                         holder.restaurantAddress.setText(currentItem.getRestaurantAddress());
-                        setDistance(currentItem.getRestaurantAddress(), holder.distance);
+                        // setDistance(currentItem.getRestaurantAddress(), holder.distance);
                         holder.customerAddress.setText(currentItem.getCustomerAddress());
                         holder.customerName.setText(currentItem.getCustomerName());
-                        holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
+                        holder.startNavigationButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 NavigationActivity.start(getContext(), currentItem.getRestaurantAddress(), currentItem.getCustomerAddress());
@@ -186,10 +187,11 @@ public class DeliveryPendingTab1 extends Fragment {
         RelativeLayout relativeLayout;
         TextView restaurantName;
         TextView restaurantAddress;
-        TextView distance;
+        // TextView distance;
         TextView customerAddress;
         TextView customerName;
 //        ImageView bikerArrived;
+        AppCompatButton startNavigationButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -197,10 +199,11 @@ public class DeliveryPendingTab1 extends Fragment {
             relativeLayout = itemView.findViewById(R.id.deliveryItemLayout);
             restaurantName = itemView.findViewById(R.id.restaurantName);
             restaurantAddress = itemView.findViewById(R.id.restaurantAddress);
-            distance = itemView.findViewById(R.id.distance);
+            // distance = itemView.findViewById(R.id.distance);
             customerAddress = itemView.findViewById(R.id.customerAddress);
             customerName = itemView.findViewById(R.id.customerName);
             // bikerArrived = itemView.findViewById(R.id.biker_arrived);
+            startNavigationButton = itemView.findViewById(R.id.startNavigationButton);
         }
 
     }

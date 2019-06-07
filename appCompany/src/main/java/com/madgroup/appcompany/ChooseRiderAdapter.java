@@ -91,7 +91,7 @@ public class ChooseRiderAdapter extends
         holder.riderName.setText(rider.getName());
         loadPhoto(holder, rider);
         holder.riderDistance.setText(getRiderDistance(restaurantAddress, rider.getPosition()));
-        if(rider.getRatingAvg() != null && rider.getRatingAvg().equals("0")) {
+        if(rider.getRatingAvg() != null && !rider.getRatingAvg().equals("0")) {
             holder.rating.setRating(Float.parseFloat(rider.getRatingAvg()));
         }
         else{

@@ -130,6 +130,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
         database = FirebaseDatabase.getInstance();
         notificationText = getResources().getString(R.string.notification_text);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (prefs.contains("currentUser")) {
             final DatabaseReference newOrderRef = database.getReference().child("Rider").child("Delivery").child("Pending").child("NotifyFlag").child(prefs.getString("currentUser", ""));
             NotificationHandler notify = new NotificationHandler(newOrderRef, this, this, notificationTitle, notificationText);

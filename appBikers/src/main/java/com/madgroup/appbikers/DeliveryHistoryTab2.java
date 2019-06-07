@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -144,9 +145,11 @@ public class DeliveryHistoryTab2 extends Fragment {
                 new FirebaseRecyclerAdapter<Delivery, ViewHolder>(options) {
                     @Override
                     protected void onBindViewHolder(@NonNull ViewHolder holder, int i, @NonNull final Delivery currentItem) {
+                        holder.startNavigationButton.setVisibility(View.GONE);
                         holder.restaurantName.setText(currentItem.getRestaurantName());
                         holder.restaurantAddress.setText(currentItem.getRestaurantAddress());
-                        holder.distance.setText("");
+                        // holder.distance.setText("");
+                        holder.customerName.setText(currentItem.getCustomerName());
                         holder.customerAddress.setText(currentItem.getCustomerAddress());
                         holder.deliveryItemCardView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -181,8 +184,10 @@ public class DeliveryHistoryTab2 extends Fragment {
         RelativeLayout relativeLayout;
         TextView restaurantName;
         TextView restaurantAddress;
-        TextView distance;
+        // TextView distance;
         TextView customerAddress;
+        TextView customerName;
+        AppCompatButton startNavigationButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -190,8 +195,10 @@ public class DeliveryHistoryTab2 extends Fragment {
             relativeLayout = itemView.findViewById(R.id.deliveryItemLayout);
             restaurantName = itemView.findViewById(R.id.restaurantName);
             restaurantAddress = itemView.findViewById(R.id.restaurantAddress);
-            distance = itemView.findViewById(R.id.distance);
+            // distance = itemView.findViewById(R.id.distance);
             customerAddress = itemView.findViewById(R.id.customerAddress);
+            customerName = itemView.findViewById(R.id.customerName);
+            startNavigationButton = itemView.findViewById(R.id.startNavigationButton);
         }
 
     }

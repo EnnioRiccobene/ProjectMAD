@@ -6,14 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground"
     app:cardCornerRadius="6dp"
-    app:cardElevation="6dp">
+    app:cardElevation="6dp"
+    >
 
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <RelativeLayout
         android:id="@+id/deliveryItemLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,7 +24,7 @@
             android:layout_weight="1"
             android:text=""
             android:textColor="#000"
-            android:textSize="16sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
@@ -46,7 +44,6 @@
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/restaurantAddress_bold"
             android:layout_marginStart="3dp"
-            android:layout_marginTop="3dp"
             android:layout_toEndOf="@+id/restaurantAddress_bold"
             android:text=""
             android:textColor="#777"
@@ -57,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/restaurantAddress"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="6dp"
             android:maxWidth="250dip"
             android:text="@string/delivery_to"
             android:textColor="#000"
@@ -70,7 +67,6 @@
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/customerAddress_bold"
             android:layout_marginStart="3dp"
-            android:layout_marginTop="3dp"
             android:layout_toEndOf="@+id/customerAddress_bold"
             android:maxWidth="250dip"
             android:textColor="#777"
@@ -81,7 +77,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/customerAddress"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="6dp"
             android:text="@string/customerName"
             android:textColor="#000"
             android:textSize="13sp"
@@ -99,15 +95,31 @@
             android:textColor="#777"
             android:textSize="13sp" />
 
-        <TextView
-            android:id="@+id/distance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/customerName"
-            android:layout_alignParentEnd="true"
-            android:textColor="#777"
-            android:textSize="13sp"
-            android:textStyle="italic" />
+        <!--<TextView-->
+            <!--android:id="@+id/distance"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignBottom="@id/customerName"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:textColor="#777"-->
+            <!--android:textSize="13sp"-->
+            <!--android:textStyle="italic" />-->
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/startNavigationButton"
+            android:layout_width="250dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/customerName"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/colorAccent"
+            android:textColor="@color/mapboxWhite"
+            android:text="Start Navigation"
+            android:textAlignment="center"
+            app:autoSizeMaxTextSize="100sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="2sp"
+            app:autoSizeTextType="uniform" />
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>
