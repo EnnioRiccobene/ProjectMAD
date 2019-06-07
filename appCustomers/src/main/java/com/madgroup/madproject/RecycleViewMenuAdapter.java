@@ -1,6 +1,7 @@
 package com.madgroup.madproject;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,6 +69,28 @@ public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuVi
         holder.dishQuantity.setText(String.valueOf(orderedQuantity[0]));
 //        float currDish = Float.valueOf(menu.get(position).getPrice().replace(",", ".").replace("£", "").replace("$", "").replace("€", "").replaceAll("\\s",""));
         final OrderedDish currentDish = new OrderedDish(dish.getId(), dish.getName(), "0", dish.getPrice());
+
+        holder.dishPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final Dialog dialog = new Dialog(mContext);
+                dialog.setCancelable(true);
+                dialog.setContentView(R.layout.detailed_image);
+                StorageReference storageReference = FirebaseStorage.getInstance().getReference("dish_pics")
+                        .child(restaurantID).child(dish.getId());
+                ImageView dishImage = dialog.findViewById(R.id.dish_image);
+                GlideApp.with(mContext)
+                        .load(storageReference)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .error(GlideApp.with(mContext).load(R.drawable.ic_dish))
+                        .into(dishImage);
+                dialog.show();
+
+            }
+        });
+
 
         holder.incrementButton.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("ShowToast")
