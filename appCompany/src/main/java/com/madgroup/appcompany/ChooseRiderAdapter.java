@@ -1,7 +1,9 @@
 package com.madgroup.appcompany;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
@@ -44,6 +46,7 @@ public class ChooseRiderAdapter extends
     private String currentUser;
     private SharedPreferences prefs;
     private Context context;
+    private Activity activity;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -63,10 +66,11 @@ public class ChooseRiderAdapter extends
         }
     }
 
-    public ChooseRiderAdapter(Context context, ArrayList<RiderProfile> riderList, Reservation reservation) {
+    public ChooseRiderAdapter(Context context, ArrayList<RiderProfile> riderList, Reservation reservation, Activity activity) {
         this.riderList = riderList;
         this.reservation = reservation;
         this.context = context;
+        this.activity = activity;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         currentUser = prefs.getString("currentUser", "noUser");
         restaurantAddress = prefs.getString("Address", "noAddress");
@@ -105,9 +109,34 @@ public class ChooseRiderAdapter extends
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callRider(rider);
+//                callRider(rider);
+                confirmCallBikerDialog(activity, "MADelivery", context.getString(R.string.dialog_callbiker_msg), rider);
             }
         });
+    }
+
+    public void confirmCallBikerDialog(Activity activity, String title, CharSequence message, final RiderProfile rider) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        if (title != null) builder.setTitle(title);
+
+        builder.setMessage(message);
+        builder.setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                callRider(rider);
+
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     private void callRider(RiderProfile rider) {

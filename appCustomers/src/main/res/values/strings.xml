@@ -202,6 +202,6 @@
     <string name="menu">Menu</string>
     <string name="best_meals">Best Meals</string>
     <string name="dialog_order_received_msg">Do you have received this order?</string>
-    <string name="order_sent">Order sent.</string>
+    <string name="order_sent">Your order has been sent correctly</string>
 
 </resources>
