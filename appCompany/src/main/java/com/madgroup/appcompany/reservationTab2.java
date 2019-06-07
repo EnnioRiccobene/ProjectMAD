@@ -6,18 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.ImageViewCompat;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,7 +21,6 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,13 +38,11 @@ import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Position;
 import com.madgroup.sdk.Reservation;
 import com.madgroup.sdk.RiderProfile;
-import com.madgroup.sdk.SmartLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -205,10 +197,10 @@ public class reservationTab2 extends Fragment {
                         final int index = i;
                         switch (currentItem.getStatus()) {
                             case 1:
-                                holder.mImageView.setImageResource(R.drawable.ic_phone_call);
-                                holder.mImageView.setElevation(2f);
+                                holder.mImageView.setVisibility(View.GONE);
+//                                holder.mImageView.setElevation(2f);
                                 // ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
-                                holder.mImageView.setOnClickListener(new View.OnClickListener() {
+                                holder.callRider.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
 //                                        openRiderPage(currentItem, index);
@@ -217,12 +209,15 @@ public class reservationTab2 extends Fragment {
                                 });
                                 break;
                             case 2:
+                                holder.callRider.setVisibility(View.GONE);
+                                holder.mImageView.setVisibility(View.VISIBLE);
                                 holder.mImageView.setImageResource(R.drawable.ic_waiting);
                                 holder.mImageView.setBorderWidth(0);
                                 holder.mImageView.setElevation(0);
                                 // ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
                                 break;
                         }
+
                         holder.mTextView1.setText(currentItem.getAddress());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
@@ -260,7 +255,7 @@ public class reservationTab2 extends Fragment {
                     @NonNull
                     @Override
                     public ReservationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.reservation_item, parent, false);
+                        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.reservation_item_tab2, parent, false);
                         ReservationViewHolder evh = new ReservationViewHolder(v);
                         return evh;
                     }
@@ -358,6 +353,7 @@ public class reservationTab2 extends Fragment {
         public TextView mTextView2;  // Lunch_time
         public TextView mTextView3;  // Price
         public RelativeLayout viewForeground;
+        private AppCompatButton callRider;
         View mView;
 
         public ReservationViewHolder(@NonNull View itemView) {
@@ -367,6 +363,7 @@ public class reservationTab2 extends Fragment {
             mTextView2 = itemView.findViewById(R.id.lunch_time);
             mTextView3 = itemView.findViewById(R.id.order_price);
             viewForeground = itemView.findViewById(R.id.view_foreground);
+            callRider = itemView.findViewById(R.id.callRider);
             mView = itemView;
         }
     }

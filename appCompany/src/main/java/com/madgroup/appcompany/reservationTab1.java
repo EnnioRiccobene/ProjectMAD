@@ -6,17 +6,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.ImageViewCompat;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,10 +20,8 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -41,11 +34,9 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Reservation;
-import com.madgroup.sdk.SmartLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -238,40 +229,53 @@ public class reservationTab1 extends Fragment {
                     @Override
                     protected void onBindViewHolder(@NonNull ReservationViewHolder holder, int i, @NonNull final Reservation currentItem) {
                         final int index = i;
-                        holder.mImageView.setImageResource(R.drawable.ic_confirm_5);
+                        // holder.mImageView.setImageResource(R.drawable.ic_confirm_5);
                         // ImageViewCompat.setImageTintList(holder.mImageView, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorAccent)));
-                        holder.mImageView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                                // Scarico dal DB orderedFood
-                                DatabaseReference fooddatabase = FirebaseDatabase.getInstance().getReference();
-                                String orderID = currentItem.getOrderID();
-                                DatabaseReference orderedFoodRef = fooddatabase.child("Company").child("Reservation").child("OrderedFood").child(currentUser).child(orderID);
-                                orderedFoodRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        ArrayList<OrderedDish> orderedFood = new ArrayList<>();
-                                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                                            OrderedDish post = postSnapshot.getValue(OrderedDish.class);
-                                            orderedFood.add(post);
-                                        }
-                                        currentItem.setOrderedDishList(orderedFood);
-
-                                        confirmAcceptanceDialog(getActivity(), "MADelivery", getString(R.string.msg_accept_dialog), currentItem);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-
-                            }
-                        });
+//                        holder.mImageView.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//
+//                                // Scarico dal DB orderedFood
+//                                DatabaseReference fooddatabase = FirebaseDatabase.getInstance().getReference();
+//                                String orderID = currentItem.getOrderID();
+//                                DatabaseReference orderedFoodRef = fooddatabase.child("Company").child("Reservation").child("OrderedFood").child(currentUser).child(orderID);
+//                                orderedFoodRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                    @Override
+//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                        ArrayList<OrderedDish> orderedFood = new ArrayList<>();
+//                                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+//                                            OrderedDish post = postSnapshot.getValue(OrderedDish.class);
+//                                            orderedFood.add(post);
+//                                        }
+//                                        currentItem.setOrderedDishList(orderedFood);
+//
+//                                        confirmAcceptanceDialog(getActivity(), "MADelivery", getString(R.string.msg_accept_dialog), currentItem);
+//                                    }
+//
+//                                    @Override
+//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                    }
+//                                });
+//
+//                            }
+//                        });
                         holder.mTextView1.setText(currentItem.getAddress());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
+                        holder.confirmButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                confirmOrder(currentItem);
+                            }
+                        });
+
+                        holder.refuseButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                rejectOrder(currentItem);
+                            }
+                        });
 
                         holder.mView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -307,7 +311,7 @@ public class reservationTab1 extends Fragment {
                     @NonNull
                     @Override
                     public ReservationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.reservation_item, parent, false);
+                        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.reservation_item_tab1, parent, false);
                         ReservationViewHolder evh = new ReservationViewHolder(v);
                         return evh;
                     }
@@ -327,17 +331,58 @@ public class reservationTab1 extends Fragment {
         public TextView mTextView2;  // Lunch_time
         public TextView mTextView3;  // Price
         public RelativeLayout viewForeground;
+        private AppCompatButton refuseButton;
+        private AppCompatButton confirmButton;
         View mView;
 
         public ReservationViewHolder(@NonNull View itemView) {
             super(itemView);
             mView = itemView;
-            mImageView = itemView.findViewById(R.id.status_biker);
+            // mImageView = itemView.findViewById(R.id.status_biker);
             mTextView1 = itemView.findViewById(R.id.text_address);
             mTextView2 = itemView.findViewById(R.id.lunch_time);
             mTextView3 = itemView.findViewById(R.id.order_price);
             viewForeground = itemView.findViewById(R.id.view_foreground);
-
+            refuseButton = itemView.findViewById(R.id.refuseButton);
+            confirmButton = itemView.findViewById(R.id.confirmButton);
         }
+    }
+
+    private void confirmOrder(final Reservation currentItem) {
+//      Scarico dal DB orderedFood
+        DatabaseReference fooddatabase = FirebaseDatabase.getInstance().getReference();
+        String orderID = currentItem.getOrderID();
+        DatabaseReference orderedFoodRef = fooddatabase.child("Company").child("Reservation").child("OrderedFood").child(currentUser).child(orderID);
+        orderedFoodRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ArrayList<OrderedDish> orderedFood = new ArrayList<>();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    OrderedDish post = postSnapshot.getValue(OrderedDish.class);
+                    orderedFood.add(post);
+                }
+                currentItem.setOrderedDishList(orderedFood);
+
+                confirmAcceptanceDialog(getActivity(), "MADelivery", getString(R.string.msg_accept_dialog), currentItem);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void rejectOrder(Reservation reservation) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        HashMap<String, Object> multipleAtomicQueries = new HashMap<>();
+        String orderID = reservation.getOrderID();
+        multipleAtomicQueries.put("Company/Reservation/Pending/" + currentUser + "/" + orderID, null);
+        reservation.setStatus(ReservationActivity.HISTORY_REJECT_RESERVATION_CODE);
+        multipleAtomicQueries.put("Company/Reservation/History/" + currentUser + "/" + orderID, reservation);
+        multipleAtomicQueries.put("Customer/Order/Pending/" + reservation.getCustomerID() + "/" + orderID, null);
+        reservation.setStatus(4);
+        multipleAtomicQueries.put("Customer/Order/History/" + reservation.getCustomerID()  + "/" + orderID, reservation);
+        database.updateChildren(multipleAtomicQueries);
     }
 }

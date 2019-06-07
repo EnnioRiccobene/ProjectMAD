@@ -19,11 +19,11 @@
             android:id="@+id/text_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:maxWidth="300dp"
             android:text="@string/address"
             android:textColor="#000"
             android:textSize="17sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/lunch_time"
@@ -39,19 +39,35 @@
             android:id="@+id/order_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/lunch_time"
+            android:layout_alignBaseline="@+id/lunch_time"
+            android:layout_alignParentEnd="true"
             android:layout_marginTop="3dp"
             android:text="@string/order_price"
             android:textSize="15sp"
             android:textStyle="bold" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/callRider"
+            android:layout_width="250dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/order_price"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/colorAccent"
+            android:text="@string/call_rider"
+            android:textAlignment="center"
+            android:textColor="@color/mapbox_plugins_white"
+            app:autoSizeMaxTextSize="100sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="2sp"
+            app:autoSizeTextType="uniform" />
+
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/status_biker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            app:civ_border_width="0.5dp" />
+            android:layout_marginTop="3dp"/>
 
 
     </RelativeLayout>

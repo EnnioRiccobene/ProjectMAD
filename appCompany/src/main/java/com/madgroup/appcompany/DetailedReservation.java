@@ -1,6 +1,7 @@
 package com.madgroup.appcompany;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,7 +29,7 @@ import java.util.ResourceBundle;
 
 public class DetailedReservation extends AppCompatActivity {
 
-    private ImageView confirmButton;
+    private AppCompatButton confirmButton;
     private TextView totalPrice;
     private TextView address;
     private TextView lunchTime;
@@ -75,7 +76,7 @@ public class DetailedReservation extends AppCompatActivity {
         recyclerView.setAdapter(dAdapter);
 
         // Fields
-        confirmButton = findViewById(R.id.detailed_reservation_confirm_button);
+        confirmButton = findViewById(R.id.callRider);
         totalPrice = findViewById(R.id.totalPrice);
         totalPrice.setText(reservation.getPrice());
         address = findViewById(R.id.address);

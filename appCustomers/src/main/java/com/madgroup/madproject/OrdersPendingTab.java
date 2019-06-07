@@ -477,6 +477,4 @@ public class OrdersPendingTab extends Fragment {
         else
             return (cal.get(Calendar.WEEK_OF_MONTH) + 1);
     }
-
-
 }

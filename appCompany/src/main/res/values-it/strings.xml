@@ -7,7 +7,6 @@
     <string name="form_phone">Numero di telefono</string>
     <string name="form_address">Indirizzo</string>
     <string name="form_info">Altre informazioni</string>
-    <string name="dialog_title">Seleziona le tue categorie di alimenti</string>
     <string name="ok_label">OK</string>
     <string name="dismiss_label">Annulla</string>
     <string name="clear_all_label">Cancella tutto</string>
@@ -22,6 +21,8 @@
     <string name="delete">Cancella</string>
     <string name="action_settings">Aggiungi Azione</string>
     <string name="order_price"> 19.99 €</string>
+    <string name="refuse">Rifiuta</string>
+
 
     <string name="gallerypermission">Abilita i permessi della galleria dalle impostazioni.</string>
     <string name="camerapermission">Abilita i permessi della fotocamera dalle impostazioni.</string>
@@ -238,6 +239,10 @@
     <string name="top_meal_day">del giorno</string>
     <string name="top_meal_week">della settimana</string>
     <string name="top_meal_month">del mese</string>
+    <string name="confirm">Conferma</string>
+    <string name="dialog_title">Seleziona la categoria</string>
+    <string name="call_rider">Chiama Rider</string>
+
 
 
 </resources>
