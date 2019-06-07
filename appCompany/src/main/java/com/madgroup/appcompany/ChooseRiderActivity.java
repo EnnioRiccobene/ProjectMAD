@@ -54,7 +54,7 @@ public class ChooseRiderActivity extends AppCompatActivity {
 
         // RECYCLERVIEW
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        adapter = new ChooseRiderAdapter(this, riderList, reservation);
+        adapter = new ChooseRiderAdapter(this, riderList, reservation, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);

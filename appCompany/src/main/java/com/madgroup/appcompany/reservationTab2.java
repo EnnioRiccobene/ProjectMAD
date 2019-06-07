@@ -159,29 +159,29 @@ public class reservationTab2 extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void confirmCallBikerDialog(Activity activity, String title, CharSequence message, final Reservation currentItem, final int index) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-        if (title != null) builder.setTitle(title);
-
-        builder.setMessage(message);
-        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                openRiderPage(currentItem, index);
-
-                dialog.dismiss();
-            }
-        });
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.show();
-    }
+//    public void confirmCallBikerDialog(Activity activity, String title, CharSequence message, final Reservation currentItem, final int index) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+//
+//        if (title != null) builder.setTitle(title);
+//
+//        builder.setMessage(message);
+//        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//
+//                openRiderPage(currentItem, index);
+//
+//                dialog.dismiss();
+//            }
+//        });
+//        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//            }
+//        });
+//        builder.show();
+//    }
 
     // The following function set up the RecyclerView
     public void buildRecyclerView(View view) {
@@ -203,8 +203,8 @@ public class reservationTab2 extends Fragment {
                                 holder.callRider.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-//                                        openRiderPage(currentItem, index);
-                                        confirmCallBikerDialog(getActivity(), "MADelivery", getString(R.string.dialog_callbiker_msg), currentItem, index);
+                                        openRiderPage(currentItem, index);
+//                                        confirmCallBikerDialog(getActivity(), "MADelivery", getString(R.string.dialog_callbiker_msg), currentItem, index);
                                     }
                                 });
                                 break;
