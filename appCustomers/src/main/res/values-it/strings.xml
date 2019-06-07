@@ -199,6 +199,6 @@
     <string name="menu">Menù</string>
     <string name="best_meals">I migliori piatti</string>
     <string name="dialog_order_received_msg">Hai ricevuto questo ordine?</string>
-    <string name="order_sent">Ordine inviato.</string>
+    <string name="order_sent">Il tuo ordine è stato inviato correttamente</string>
 
 </resources>
