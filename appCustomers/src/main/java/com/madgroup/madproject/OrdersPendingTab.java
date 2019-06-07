@@ -424,15 +424,17 @@ public class OrdersPendingTab extends Fragment {
                                 });
                             }
                         });
-
-                        holder.confirmOrder.setOnClickListener(new View.OnClickListener() {
+                        if(currentItem.getStatus() == 2)
+                            holder.confirmOrder.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 confirmOrderReceivedDialog(getActivity(), "MADelivery", getString(R.string.dialog_order_received_msg), currentItem);
-
                             }
                         });
-
+                        else{
+                            holder.confirmOrder.setImageResource(R.drawable.ic_waiting);
+                            holder.confirmOrder.setBorderWidth(0);
+                        }
                     }
 
                     @NonNull
@@ -456,7 +458,7 @@ public class OrdersPendingTab extends Fragment {
         private TextView mTextView2;  // Lunch_time
         private TextView mTextView3;  // Price
         private RelativeLayout viewForeground;
-        private ImageView confirmOrder;
+        private CircleImageView confirmOrder;
         View mView;
 
         public OrderViewHolder(@NonNull View itemView) {

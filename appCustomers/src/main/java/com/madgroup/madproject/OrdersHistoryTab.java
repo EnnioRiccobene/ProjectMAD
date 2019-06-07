@@ -194,8 +194,7 @@ public class OrdersHistoryTab extends Fragment {
                         holder.mTextView1.setText(currentItem.getRestaurantName());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
-                        holder.evaluateOrder.setImageResource(R.drawable.ic_like);
-                        ImageViewCompat.setImageTintList(holder.evaluateOrder, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                        holder.evaluateOrder.setImageResource(R.drawable.ic_review);
                         holder.evaluateOrder.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -255,7 +254,7 @@ public class OrdersHistoryTab extends Fragment {
         public TextView mTextView2;  // Lunch_time
         public TextView mTextView3;  // Price
         public RelativeLayout viewForeground;
-        private ImageView evaluateOrder;
+        private CircleImageView evaluateOrder;
         View mView;
 
         public OrderViewHolder(@NonNull View itemView) {
