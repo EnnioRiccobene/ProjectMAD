@@ -5,11 +5,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,8 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,19 +39,10 @@ import com.madgroup.sdk.Delivery;
 import com.madgroup.sdk.OrderedDish;
 import com.madgroup.sdk.Reservation;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.TreeMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -387,10 +379,9 @@ public class OrdersPendingTab extends Fragment {
                         holder.mTextView1.setText(currentItem.getRestaurantName());
                         holder.mTextView2.setText(currentItem.getDeliveryTime());
                         holder.mTextView3.setText(currentItem.getPrice());
-                        holder.mView.setOnClickListener(new View.OnClickListener() {
+                        holder.viewDetails.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
 //                                confirmOrderReceivedDialog(getActivity(), "MADelivery", getString(R.string.dialog_order_received_msg), currentItem);
                                 // Scarico dal DB orderedFood
                                 String orderID = currentItem.getOrderID();
@@ -422,10 +413,8 @@ public class OrdersPendingTab extends Fragment {
                                     confirmOrderReceivedDialog(getActivity(), "MADelivery", getString(R.string.dialog_order_received_msg), currentItem);
                                 }
                             });
-                        else {
-                            holder.confirmOrder.setImageResource(R.drawable.ic_waiting);
-                            holder.confirmOrder.setBorderWidth(0);
-                        }
+                        else
+                            holder.confirmOrder.getBackground().setColorFilter(ContextCompat.getColor(getContext(), android.R.color.darker_gray), PorterDuff.Mode.MULTIPLY);
                     }
 
                     @NonNull
@@ -448,8 +437,8 @@ public class OrdersPendingTab extends Fragment {
         private TextView mTextView1;  // Address
         private TextView mTextView2;  // Lunch_time
         private TextView mTextView3;  // Price
-        private RelativeLayout viewForeground;
-        private CircleImageView confirmOrder;
+        private AppCompatButton confirmOrder;
+        private AppCompatButton viewDetails;
         View mView;
 
         public OrderViewHolder(@NonNull View itemView) {
@@ -459,8 +448,8 @@ public class OrdersPendingTab extends Fragment {
             mTextView1 = itemView.findViewById(R.id.textRestaurantName);
             mTextView2 = itemView.findViewById(R.id.lunch_time);
             mTextView3 = itemView.findViewById(R.id.order_price);
-            viewForeground = itemView.findViewById(R.id.view_foreground);
-            confirmOrder = itemView.findViewById(R.id.confirmOrEvaluate);
+            confirmOrder = itemView.findViewById(R.id.confirmButton);
+            viewDetails = itemView.findViewById(R.id.viewDetails);
         }
     }
 

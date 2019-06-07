@@ -56,6 +56,8 @@
     <string name="total">Totale</string>
     <string name="name">Nome:</string>
     <string name="phone_number">Numero di telefono:</string>
+    <string name="view_details">Dettagli</string>
+    <string name="leave_review">Lascia recensione</string>
 
     <string-array name="hours_list">
         <item>Appena possibile</item>
@@ -185,7 +187,7 @@
     <string name="pic_saved">Dati salvati!</string>
     <string name="not_available_quantity">La quantità selezionata non è disponibile</string>
     <string name="Menu_title">Fai un ordine!</string>
-    <string name="looking_for_food">Cerchi un ristorante?</string>
+    <string name="looking_for_food">Ristoranti</string>
     <string name="search">Cerca</string>
     <string name="Preferiti">Preferiti</string>
     <string name="top_restaurant">Migliori Ristoranti</string>

@@ -12,37 +12,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:padding="10dp">
+        android:padding="13dp">
 
 
-        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/restaurantPhoto"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentStart="true"
-            android:layout_centerInParent="true"
             app:civ_border_color="#FF000000"
             app:civ_border_width="1dp" />
 
 
-        <LinearLayout
-            android:id="@+id/orderItemLL"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@+id/restaurantPhoto"
-            android:orientation="vertical">
+        <!--<LinearLayout-->
+            <!--android:id="@+id/orderItemLL"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="16dp"-->
+            <!--android:layout_toEndOf="@+id/restaurantPhoto"-->
+            <!--android:orientation="vertical">-->
 
             <TextView
                 android:id="@+id/textRestaurantName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:maxEms="12"
                 android:text="@string/restaurant_name"
                 android:textColor="#000"
                 android:textSize="17sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_toEndOf="@+id/restaurantPhoto"
+                android:layout_marginStart="16dp"/>
 
             <TextView
                 android:id="@+id/order_price"
@@ -52,27 +52,60 @@
                 android:maxEms="12"
                 android:text="@string/order_price"
                 android:textSize="15sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_alignBaseline="@+id/lunch_time"
+                android:layout_alignParentEnd="true" />
 
-            <TextView
-                android:id="@+id/lunch_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:maxEms="12"
-                android:text="@string/lunch_time"
-                android:textSize="10sp"
-                android:textStyle="italic" />
-        </LinearLayout>
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/confirmOrEvaluate"
+        <TextView
+            android:id="@+id/lunch_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_confirm_order"
-            app:civ_border_width="0.5dp"/>
+            android:layout_marginTop="3dp"
+            android:maxEms="12"
+            android:text="@string/lunch_time"
+            android:textSize="13sp"
+            android:textStyle="italic"
+            android:layout_below="@+id/textRestaurantName"
+            android:layout_toEndOf="@+id/restaurantPhoto"
+            android:layout_marginStart="16dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/order_price"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:layout_centerInParent="true">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/viewDetails"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="40"
+                android:text="@string/view_details"
+                android:textAlignment="center"
+                app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeMaxTextSize="100sp"
+                app:autoSizeStepGranularity="2sp"
+                android:textColor="#696969"
+                android:backgroundTint="@color/mapbox_plugins_white"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/confirmButton"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="40"
+                android:text="@string/confirm_order"
+                android:backgroundTint="@color/colorAccent"
+                android:textAlignment="center"
+                app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeMaxTextSize="100sp"
+                app:autoSizeStepGranularity="2sp"
+                android:textColor="@color/mapbox_plugins_white"/>
+
+        </LinearLayout>
 
     </RelativeLayout>
 
