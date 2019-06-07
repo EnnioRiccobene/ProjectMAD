@@ -82,8 +82,6 @@ public class RecycleViewMenuAdapter extends FirebaseRecyclerAdapter<Dish, MenuVi
                 ImageView dishImage = dialog.findViewById(R.id.dish_image);
                 GlideApp.with(mContext)
                         .load(storageReference)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(true)
                         .error(GlideApp.with(mContext).load(R.drawable.ic_dish))
                         .into(dishImage);
                 dialog.show();
