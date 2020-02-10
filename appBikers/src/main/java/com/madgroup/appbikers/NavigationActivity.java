@@ -113,7 +113,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         super.onCreate(savedInstanceState);
         checkLocationpermissions();
 
-        Mapbox.getInstance(this, "pk.eyJ1IjoiZW5uaW9yaWNjb2JlbmUiLCJhIjoiY2p2cDAwaWpiMWM2cTRhdm4xa2doMWR4aSJ9.13f4K6NH4ybrj9iPVzG7kA");
+        Mapbox.getInstance(this, "YOUR MAPBOX TOKEN");
         setContentView(R.layout.my_activity_navigation);
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -195,7 +195,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
         AndroidGeocoder geocoder = new AndroidGeocoder(this, Locale.getDefault());
         List<Address> address = null;
-        geocoder.setAccessToken("pk.eyJ1IjoiZW5uaW9yaWNjb2JlbmUiLCJhIjoiY2p2cDAwaWpiMWM2cTRhdm4xa2doMWR4aSJ9.13f4K6NH4ybrj9iPVzG7kA");
+        geocoder.setAccessToken("YOUR MAPBOX TOKEN");
         try {
             address = geocoder.getFromLocationName(strAddress, 1);
         } catch (IOException e) {
