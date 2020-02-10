@@ -7,3 +7,6 @@ Create an app that supports food delivery by bike riders
   - Bikers that offer their time to deliver food and get paid for that
 - Whenever an ordered meal is ready to be delivered, the app helps locating the nearest available rider that will deliver it
 - When the food is delivered, the end user acknowledge it via her app, thus informing all interested parties of the successful result of the process
+
+The project presentation can be can be viewed at the following link:
+https://drive.google.com/file/d/1lyuQf9DJLQRHW9MP1yWL6suUSTprC31_/view?usp=sharing
